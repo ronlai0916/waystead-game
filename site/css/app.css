@@ -237,6 +237,15 @@ img { max-width: 100%; display: block; }
 .shortcut strong { font-family: var(--f-display); }
 .shortcut svg { width: 22px; height: 22px; flex: none; fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
+.promo { margin-top: 28px; padding: 22px; display: grid; gap: 20px; align-items: center; background: var(--accent-soft); }
+.promo h2 { font-family: var(--f-display); margin: 0; }
+.promo p { margin: 0; }
+.promo__papers { position: relative; width: 112px; height: 132px; margin: 0 auto; }
+.promo__papers i { position: absolute; inset: 0; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.promo__papers i:nth-child(1) { transform: rotate(-8deg) translate(-10px, 4px); }
+.promo__papers i:nth-child(2) { transform: rotate(5deg) translate(8px, 2px); }
+.promo__papers i:nth-child(3) { background: repeating-linear-gradient(var(--surface) 0 18px, var(--line) 18px 19px, var(--surface) 19px 22px) content-box, var(--surface); padding: 26px 14px 14px; border-top: 6px solid var(--accent); }
+@media (min-width: 720px) { .promo { grid-template-columns: 150px 1fr; padding: 26px 28px; } }
 .steps { margin-top: 40px; }
 .steps ol { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 12px; counter-reset: s; }
 @media (min-width: 720px) { .steps ol { grid-template-columns: repeat(4, 1fr); } }
