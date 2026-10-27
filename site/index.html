@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script src="js/theme-boot.js"></script>
+  <title>Spellbright by Waystead — spelling practice for the 11+</title>
+  <meta name="description" content="Learn every word on the UK Year 3–6 statutory spelling list. Study each word, hear it in a British voice, then play hangman and take a chapter test.">
+  <meta name="theme-color" content="#FAF8F3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141318" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="Spellbright by Waystead">
+  <meta property="og:description" content="The UK Year 3–6 spelling list, 213 words, learned one chapter at a time.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_GB">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preload" href="assets/fonts/sora-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/manrope-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <button type="button" class="iconbtn topbar__back" id="back" aria-label="Go back" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <a class="brand" href="#/" aria-label="Spellbright home">
+        <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M16 34 L34 70 L50 26 L66 70 L84 34" class="brand__stroke"/>
+          <circle cx="50" cy="20" r="7.5" class="brand__dot"/>
+        </svg>
+        <span class="brand__words">
+          <span class="brand__name">Waystead</span>
+          <span class="brand__product">Spellbright</span>
+        </span>
+      </a>
+      <nav class="topbar__nav" aria-label="Main">
+        <a href="#/custom">Pick words</a>
+        <a href="#/tricky">Tricky words</a>
+        <a href="#/progress">Progress</a>
+      </nav>
+      <button type="button" class="iconbtn" id="theme" aria-label="Theme: match device. Change theme">
+        <svg class="ico-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" class="fill"/></svg>
+        <svg class="ico-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <noscript>
+      <section class="wrap prose">
+        <h1>Spellbright needs JavaScript</h1>
+        <p>Spellbright is a spelling game for the UK Year 3–6 word list. Turn on JavaScript in your browser to play.</p>
+      </section>
+    </noscript>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot__inner">
+      <p><a href="https://waystead.co.uk">Spellbright is part of Waystead</a> · <a href="#/about">For parents</a></p>
+      <p class="foot__small">Word list: English Appendix 1, the national curriculum in England (DfE, 2013). Contains public sector information licensed under the Open Government Licence v3.0.</p>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

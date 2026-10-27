@@ -1,0 +1,15 @@
+{
+  "name": "Spellbright by Waystead",
+  "short_name": "Spellbright",
+  "description": "Spelling practice for the UK Year 3–6 word list.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAF8F3",
+  "theme_color": "#FAF8F3",
+  "lang": "en-GB",
+  "icons": [
+    { "src": "assets/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "assets/icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

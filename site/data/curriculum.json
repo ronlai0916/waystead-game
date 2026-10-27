@@ -1,0 +1,3287 @@
+{
+  "_meta": {
+    "source": "English Appendix 1: Spelling (UK National Curriculum, DfE 2013, Crown Copyright)",
+    "license_note": "Statutory word lists reused under the Open Government Licence.",
+    "purpose": "Chapter-structured wordbank for the Hangman spelling game (11+ preparation).",
+    "spelling_variant": "British English",
+    "organisation": {
+      "year_3_4": "difficulty-based (easiest → hardest)",
+      "year_5_6": "pattern-based (themed by spelling rule)"
+    },
+    "version": 4,
+    "schema_notes": "Each word is now an object with fields: word, ipa, meaning {partOfSpeech, definition, example}, image. Meanings and IPA are embedded so the app needs no dictionary API at runtime. Image is the filename the app expects in assets/images/. v4 adds 'chunks': an array of 1-4 letter spelling chunks. Used by the Spell-Aloud feature to teach pronunciation chunk by chunk. Most chunks come from pyphen British English syllabification; single-syllable and pedagogically tricky words use manual overrides."
+  },
+  "year_3_4": {
+    "title": "Year 3 & 4",
+    "subtitle": "Step-by-step from easy to challenging",
+    "chapters": [
+      {
+        "id": "y34-ch01",
+        "title": "Chapter 1 — First steps",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "build",
+            "ipa": "/bɪld/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To make something by putting parts together.",
+              "example": "They want to build a tree house in the garden."
+            },
+            "image": "build.jpg",
+            "chunks": [
+              "bu",
+              "ild"
+            ]
+          },
+          {
+            "word": "earth",
+            "ipa": "/ɜːθ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Our planet; also the ground or soil.",
+              "example": "The Earth goes around the Sun."
+            },
+            "image": "earth.jpg",
+            "chunks": [
+              "ear",
+              "th"
+            ]
+          },
+          {
+            "word": "fruit",
+            "ipa": "/fruːt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The sweet, soft part of a plant that you can eat, like apples or bananas.",
+              "example": "Apples and oranges are my favourite fruit."
+            },
+            "image": "fruit.jpg",
+            "chunks": [
+              "fr",
+              "uit"
+            ]
+          },
+          {
+            "word": "group",
+            "ipa": "/ɡruːp/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Several people or things together.",
+              "example": "A group of children played in the park."
+            },
+            "image": "group.jpg",
+            "chunks": [
+              "gr",
+              "oup"
+            ]
+          },
+          {
+            "word": "guard",
+            "ipa": "/ɡɑːd/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A person who keeps watch and protects something.",
+              "example": "A guard stood at the palace gate."
+            },
+            "image": "guard.jpg",
+            "chunks": [
+              "gu",
+              "ard"
+            ]
+          },
+          {
+            "word": "heard",
+            "ipa": "/hɜːd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Took in sound through the ears (past tense of hear).",
+              "example": "I heard the doorbell ring."
+            },
+            "image": "heard.jpg",
+            "chunks": [
+              "hear",
+              "d"
+            ]
+          },
+          {
+            "word": "heart",
+            "ipa": "/hɑːt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part inside your chest that pumps blood; the shape ♥.",
+              "example": "Your heart beats faster when you run."
+            },
+            "image": "heart.jpg",
+            "chunks": [
+              "hear",
+              "t"
+            ]
+          },
+          {
+            "word": "learn",
+            "ipa": "/lɜːn/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To find out about something new.",
+              "example": "We learn maths every morning."
+            },
+            "image": "learn.jpg",
+            "chunks": [
+              "lear",
+              "n"
+            ]
+          },
+          {
+            "word": "reign",
+            "ipa": "/reɪn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The time when a king or queen rules.",
+              "example": "Queen Victoria had a long reign."
+            },
+            "image": "reign.jpg",
+            "chunks": [
+              "rei",
+              "gn"
+            ]
+          },
+          {
+            "word": "breath",
+            "ipa": "/breθ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The air that goes in and out of your lungs.",
+              "example": "She took a deep breath before diving in."
+            },
+            "image": "breath.jpg",
+            "chunks": [
+              "br",
+              "ea",
+              "th"
+            ]
+          },
+          {
+            "word": "length",
+            "ipa": "/leŋθ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How long something is.",
+              "example": "Measure the length of the table."
+            },
+            "image": "length.jpg",
+            "chunks": [
+              "leng",
+              "th"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch02",
+        "title": "Chapter 2 — Short & sweet",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "busy",
+            "ipa": "/ˈbɪz.i/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Having a lot to do; full of activity.",
+              "example": "Mum is busy cooking dinner right now."
+            },
+            "image": "busy.jpg",
+            "chunks": [
+              "busy"
+            ]
+          },
+          {
+            "word": "strength",
+            "ipa": "/streŋθ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How strong someone or something is.",
+              "example": "It takes strength to lift heavy boxes."
+            },
+            "image": "strength.jpg",
+            "chunks": [
+              "streng",
+              "th"
+            ]
+          },
+          {
+            "word": "early",
+            "ipa": "/ˈɜː.li/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Before the usual time.",
+              "example": "We woke up early to catch the bus."
+            },
+            "image": "early.jpg",
+            "chunks": [
+              "ear",
+              "ly"
+            ]
+          },
+          {
+            "word": "guide",
+            "ipa": "/ɡaɪd/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A person or thing that shows you the way.",
+              "example": "Our guide showed us round the museum."
+            },
+            "image": "guide.jpg",
+            "chunks": [
+              "gu",
+              "ide"
+            ]
+          },
+          {
+            "word": "often",
+            "ipa": "/ˈɒf.ən/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Many times.",
+              "example": "I often play football after school."
+            },
+            "image": "often.jpg",
+            "chunks": [
+              "of",
+              "ten"
+            ]
+          },
+          {
+            "word": "woman",
+            "ipa": "/ˈwʊm.ən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A grown-up female person.",
+              "example": "The woman waved at her daughter."
+            },
+            "image": "woman.jpg",
+            "chunks": [
+              "wo",
+              "man"
+            ]
+          },
+          {
+            "word": "women",
+            "ipa": "/ˈwɪm.ɪn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one woman.",
+              "example": "Several women walked into the shop."
+            },
+            "image": "women.jpg",
+            "chunks": [
+              "wo",
+              "men"
+            ]
+          },
+          {
+            "word": "actual",
+            "ipa": "/ˈæk.tʃu.əl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Real or true.",
+              "example": "The actual answer was different from what we guessed."
+            },
+            "image": "actual.jpg",
+            "chunks": [
+              "ac",
+              "tu",
+              "al"
+            ]
+          },
+          {
+            "word": "answer",
+            "ipa": "/ˈɑːn.sə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "What you say or write in reply to a question.",
+              "example": "Put up your hand if you know the answer."
+            },
+            "image": "answer.jpg",
+            "chunks": [
+              "ans",
+              "wer"
+            ]
+          },
+          {
+            "word": "centre",
+            "ipa": "/ˈsen.tə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The middle of something.",
+              "example": "Stand in the centre of the circle."
+            },
+            "image": "centre.jpg",
+            "chunks": [
+              "cen",
+              "tre"
+            ]
+          },
+          {
+            "word": "circle",
+            "ipa": "/ˈsɜː.kəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A perfectly round flat shape.",
+              "example": "Draw a circle around the right answer."
+            },
+            "image": "circle.jpg",
+            "chunks": [
+              "cir",
+              "cle"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch03",
+        "title": "Chapter 3 — Building up",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "island",
+            "ipa": "/ˈaɪ.lənd/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Land with water all the way around it.",
+              "example": "Britain is an island."
+            },
+            "image": "island.jpg",
+            "chunks": [
+              "is",
+              "land"
+            ]
+          },
+          {
+            "word": "recent",
+            "ipa": "/ˈriː.sənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Happening a short time ago.",
+              "example": "The recent rain made the garden grow."
+            },
+            "image": "recent.jpg",
+            "chunks": [
+              "re",
+              "cent"
+            ]
+          },
+          {
+            "word": "breathe",
+            "ipa": "/briːð/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To take air into your lungs and let it out again.",
+              "example": "Remember to breathe slowly when you feel nervous."
+            },
+            "image": "breathe.jpg",
+            "chunks": [
+              "br",
+              "ea",
+              "the"
+            ]
+          },
+          {
+            "word": "certain",
+            "ipa": "/ˈsɜː.tən/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Sure; without any doubt.",
+              "example": "I am certain I locked the door."
+            },
+            "image": "certain.jpg",
+            "chunks": [
+              "cer",
+              "tain"
+            ]
+          },
+          {
+            "word": "forward",
+            "ipa": "/ˈfɔː.wəd/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Towards the front.",
+              "example": "Take two steps forward."
+            },
+            "image": "forward.jpg",
+            "chunks": [
+              "for",
+              "ward"
+            ]
+          },
+          {
+            "word": "quarter",
+            "ipa": "/ˈkwɔː.tə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "One of four equal parts of something.",
+              "example": "Cut the pizza into quarters."
+            },
+            "image": "quarter.jpg",
+            "chunks": [
+              "quar",
+              "ter"
+            ]
+          },
+          {
+            "word": "strange",
+            "ipa": "/streɪndʒ/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Unusual or surprising.",
+              "example": "A strange noise came from the cupboard."
+            },
+            "image": "strange.jpg",
+            "chunks": [
+              "str",
+              "ange"
+            ]
+          },
+          {
+            "word": "famous",
+            "ipa": "/ˈfeɪ.məs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Known by lots of people.",
+              "example": "The Queen lives in a famous castle."
+            },
+            "image": "famous.jpg",
+            "chunks": [
+              "fa",
+              "mous"
+            ]
+          },
+          {
+            "word": "appear",
+            "ipa": "/əˈpɪə/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To start to be seen; to come into sight.",
+              "example": "Stars appear in the sky when it gets dark."
+            },
+            "image": "appear.jpg",
+            "chunks": [
+              "ap",
+              "pear"
+            ]
+          },
+          {
+            "word": "forwards",
+            "ipa": "/ˈfɔː.wədz/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Moving towards the front (same as forward).",
+              "example": "She leaned forwards to listen."
+            },
+            "image": "forwards.jpg",
+            "chunks": [
+              "for",
+              "wards"
+            ]
+          },
+          {
+            "word": "straight",
+            "ipa": "/streɪt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Going in one direction without bending.",
+              "example": "Draw a straight line with your ruler."
+            },
+            "image": "straight.jpg",
+            "chunks": [
+              "str",
+              "aigh",
+              "t"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch04",
+        "title": "Chapter 4 — Two-syllable words",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "various",
+            "ipa": "/ˈveə.ri.əs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Different from each other; several.",
+              "example": "We sell sweets in various flavours."
+            },
+            "image": "various.jpg",
+            "chunks": [
+              "var",
+              "i",
+              "ous"
+            ]
+          },
+          {
+            "word": "grammar",
+            "ipa": "/ˈɡræm.ə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The rules of how words work together in a language.",
+              "example": "Good grammar helps your writing make sense."
+            },
+            "image": "grammar.jpg",
+            "chunks": [
+              "gram",
+              "mar"
+            ]
+          },
+          {
+            "word": "decide",
+            "ipa": "/dɪˈsaɪd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To choose between different things.",
+              "example": "It was hard to decide which flavour to pick."
+            },
+            "image": "decide.jpg",
+            "chunks": [
+              "de",
+              "cide"
+            ]
+          },
+          {
+            "word": "minute",
+            "ipa": "/ˈmɪn.ɪt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Sixty seconds; a very short time.",
+              "example": "Please wait one minute."
+            },
+            "image": "minute.jpg",
+            "chunks": [
+              "min",
+              "ute"
+            ]
+          },
+          {
+            "word": "notice",
+            "ipa": "/ˈnəʊ.tɪs/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To see or hear something.",
+              "example": "Did you notice the new picture on the wall?"
+            },
+            "image": "notice.jpg",
+            "chunks": [
+              "no",
+              "tice"
+            ]
+          },
+          {
+            "word": "eight",
+            "ipa": "/eɪt/",
+            "meaning": {
+              "partOfSpeech": "number",
+              "definition": "The number 8.",
+              "example": "A spider has eight legs."
+            },
+            "image": "eight.jpg",
+            "chunks": [
+              "eigh",
+              "t"
+            ]
+          },
+          {
+            "word": "believe",
+            "ipa": "/bɪˈliːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To think that something is true.",
+              "example": "I believe she is telling the truth."
+            },
+            "image": "believe.jpg",
+            "chunks": [
+              "be",
+              "lieve"
+            ]
+          },
+          {
+            "word": "bicycle",
+            "ipa": "/ˈbaɪ.sɪ.kəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A vehicle with two wheels that you ride by pushing pedals with your feet.",
+              "example": "He rode his red bicycle to school."
+            },
+            "image": "bicycle.jpg",
+            "chunks": [
+              "bi",
+              "cy",
+              "cle"
+            ]
+          },
+          {
+            "word": "century",
+            "ipa": "/ˈsen.tʃə.ri/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A period of one hundred years.",
+              "example": "The castle was built over a century ago."
+            },
+            "image": "century.jpg",
+            "chunks": [
+              "cen",
+              "tury"
+            ]
+          },
+          {
+            "word": "extreme",
+            "ipa": "/ɪkˈstriːm/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very great in degree; as far as possible.",
+              "example": "Be careful in extreme weather."
+            },
+            "image": "extreme.jpg",
+            "chunks": [
+              "ex",
+              "treme"
+            ]
+          },
+          {
+            "word": "history",
+            "ipa": "/ˈhɪs.tər.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Things that happened in the past.",
+              "example": "We learn about Roman history at school."
+            },
+            "image": "history.jpg",
+            "chunks": [
+              "his",
+              "tory"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch05",
+        "title": "Chapter 5 — Common but tricky",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "library",
+            "ipa": "/ˈlaɪ.brər.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A place where books are kept that you can borrow.",
+              "example": "I go to the library to borrow books."
+            },
+            "image": "library.jpg",
+            "chunks": [
+              "li",
+              "brar",
+              "y"
+            ]
+          },
+          {
+            "word": "mention",
+            "ipa": "/ˈmen.ʃən/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To say something briefly.",
+              "example": "Did she mention the party to you?"
+            },
+            "image": "mention.jpg",
+            "chunks": [
+              "men",
+              "tion"
+            ]
+          },
+          {
+            "word": "natural",
+            "ipa": "/ˈnætʃ.ər.əl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Made by nature, not by people.",
+              "example": "Wood is a natural material."
+            },
+            "image": "natural.jpg",
+            "chunks": [
+              "nat",
+              "ur",
+              "al"
+            ]
+          },
+          {
+            "word": "perhaps",
+            "ipa": "/pəˈhæps/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Maybe.",
+              "example": "Perhaps it will snow tomorrow."
+            },
+            "image": "perhaps.jpg",
+            "chunks": [
+              "per",
+              "haps"
+            ]
+          },
+          {
+            "word": "popular",
+            "ipa": "/ˈpɒp.jə.lə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Liked by many people.",
+              "example": "Football is a popular sport."
+            },
+            "image": "popular.jpg",
+            "chunks": [
+              "pop",
+              "u",
+              "lar"
+            ]
+          },
+          {
+            "word": "promise",
+            "ipa": "/ˈprɒm.ɪs/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To say you will definitely do something.",
+              "example": "I promise to tidy my room."
+            },
+            "image": "promise.jpg",
+            "chunks": [
+              "pro",
+              "mise"
+            ]
+          },
+          {
+            "word": "purpose",
+            "ipa": "/ˈpɜː.pəs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The reason something is done.",
+              "example": "The purpose of a hat is to keep your head warm."
+            },
+            "image": "purpose.jpg",
+            "chunks": [
+              "pur",
+              "pose"
+            ]
+          },
+          {
+            "word": "regular",
+            "ipa": "/ˈreɡ.jə.lə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Happening often at the same times.",
+              "example": "I do regular exercise after school."
+            },
+            "image": "regular.jpg",
+            "chunks": [
+              "reg",
+              "u",
+              "lar"
+            ]
+          },
+          {
+            "word": "special",
+            "ipa": "/ˈspeʃ.əl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Different from the usual; better than ordinary.",
+              "example": "Today is a special day because it is my birthday."
+            },
+            "image": "special.jpg",
+            "chunks": [
+              "spe",
+              "cial"
+            ]
+          },
+          {
+            "word": "address",
+            "ipa": "/əˈdres/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The details of where someone lives or where a building is.",
+              "example": "Please write your address on the envelope."
+            },
+            "image": "address.jpg",
+            "chunks": [
+              "ad",
+              "dress"
+            ]
+          },
+          {
+            "word": "caught",
+            "ipa": "/kɔːt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Took hold of something that was moving (past tense of catch).",
+              "example": "She caught the ball with one hand."
+            },
+            "image": "caught.jpg",
+            "chunks": [
+              "c",
+              "augh",
+              "t"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch06",
+        "title": "Chapter 6 — Longer everyday words",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "eighth",
+            "ipa": "/eɪtθ/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Number 8 in a list or order.",
+              "example": "August is the eighth month of the year."
+            },
+            "image": "eighth.jpg",
+            "chunks": [
+              "eigh",
+              "th"
+            ]
+          },
+          {
+            "word": "height",
+            "ipa": "/haɪt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How tall something is.",
+              "example": "What is the height of the tree?"
+            },
+            "image": "height.jpg",
+            "chunks": [
+              "heigh",
+              "t"
+            ]
+          },
+          {
+            "word": "possess",
+            "ipa": "/pəˈzes/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To have or own something.",
+              "example": "She does not possess a mobile phone."
+            },
+            "image": "possess.jpg",
+            "chunks": [
+              "pos",
+              "sess"
+            ]
+          },
+          {
+            "word": "though",
+            "ipa": "/ðəʊ/",
+            "meaning": {
+              "partOfSpeech": "conjunction",
+              "definition": "Used to add a different idea (similar to 'but').",
+              "example": "I will come, though I might be late."
+            },
+            "image": "though.jpg",
+            "chunks": [
+              "th",
+              "ough"
+            ]
+          },
+          {
+            "word": "weight",
+            "ipa": "/weɪt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How heavy something is.",
+              "example": "Weigh the flour to find its weight."
+            },
+            "image": "weight.jpg",
+            "chunks": [
+              "weigh",
+              "t"
+            ]
+          },
+          {
+            "word": "arrive",
+            "ipa": "/əˈraɪv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To reach a place.",
+              "example": "We will arrive at the station at six o'clock."
+            },
+            "image": "arrive.jpg",
+            "chunks": [
+              "ar",
+              "rive"
+            ]
+          },
+          {
+            "word": "calendar",
+            "ipa": "/ˈkæl.ən.də/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A chart that shows all the days, weeks and months of the year.",
+              "example": "I marked my birthday on the calendar."
+            },
+            "image": "calendar.jpg",
+            "chunks": [
+              "cal",
+              "en",
+              "dar"
+            ]
+          },
+          {
+            "word": "complete",
+            "ipa": "/kəmˈpliːt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Finished; with nothing missing.",
+              "example": "My homework is complete."
+            },
+            "image": "complete.jpg",
+            "chunks": [
+              "com",
+              "plete"
+            ]
+          },
+          {
+            "word": "consider",
+            "ipa": "/kənˈsɪd.ə/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To think carefully about something.",
+              "example": "Please consider my idea before saying no."
+            },
+            "image": "consider.jpg",
+            "chunks": [
+              "con",
+              "si",
+              "der"
+            ]
+          },
+          {
+            "word": "continue",
+            "ipa": "/kənˈtɪn.juː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To keep doing something; to go on.",
+              "example": "Continue reading until the end of the page."
+            },
+            "image": "continue.jpg",
+            "chunks": [
+              "con",
+              "tin",
+              "ue"
+            ]
+          },
+          {
+            "word": "describe",
+            "ipa": "/dɪˈskraɪb/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To say what something or someone is like.",
+              "example": "Can you describe the man you saw?"
+            },
+            "image": "describe.jpg",
+            "chunks": [
+              "de",
+              "scribe"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch07",
+        "title": "Chapter 7 — More syllables, more care",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "February",
+            "ipa": "/ˈfeb.ru.ə.ri/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The second month of the year.",
+              "example": "Valentine's Day is in February."
+            },
+            "image": "february.jpg",
+            "chunks": [
+              "Feb",
+              "ru",
+              "ary"
+            ]
+          },
+          {
+            "word": "increase",
+            "ipa": "/ɪnˈkriːs/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To become bigger or more.",
+              "example": "The number of pupils will increase next year."
+            },
+            "image": "increase.jpg",
+            "chunks": [
+              "in",
+              "crease"
+            ]
+          },
+          {
+            "word": "interest",
+            "ipa": "/ˈɪn.trəst/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A feeling of wanting to know more about something.",
+              "example": "She has an interest in dinosaurs."
+            },
+            "image": "interest.jpg",
+            "chunks": [
+              "in",
+              "te",
+              "rest"
+            ]
+          },
+          {
+            "word": "material",
+            "ipa": "/məˈtɪə.ri.əl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "What something is made of, like wood, cloth or plastic.",
+              "example": "Wool is a warm material for jumpers."
+            },
+            "image": "material.jpg",
+            "chunks": [
+              "ma",
+              "te",
+              "ri",
+              "al"
+            ]
+          },
+          {
+            "word": "peculiar",
+            "ipa": "/pɪˈkjuː.li.ə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Strange or unusual.",
+              "example": "The soup had a peculiar smell."
+            },
+            "image": "peculiar.jpg",
+            "chunks": [
+              "pe",
+              "cu",
+              "liar"
+            ]
+          },
+          {
+            "word": "potatoes",
+            "ipa": "/pəˈteɪ.təʊz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Vegetables that grow under the ground; can be roasted, mashed or chipped.",
+              "example": "We had roast potatoes for dinner."
+            },
+            "image": "potatoes.jpg",
+            "chunks": [
+              "po",
+              "ta",
+              "toes"
+            ]
+          },
+          {
+            "word": "probably",
+            "ipa": "/ˈprɒb.ə.bli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Very likely.",
+              "example": "It will probably rain later."
+            },
+            "image": "probably.jpg",
+            "chunks": [
+              "prob",
+              "ab",
+              "ly"
+            ]
+          },
+          {
+            "word": "remember",
+            "ipa": "/rɪˈmem.bə/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To bring something back into your mind.",
+              "example": "Remember to take your packed lunch."
+            },
+            "image": "remember.jpg",
+            "chunks": [
+              "re",
+              "mem",
+              "ber"
+            ]
+          },
+          {
+            "word": "sentence",
+            "ipa": "/ˈsen.təns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A group of words that makes complete sense.",
+              "example": "Begin a sentence with a capital letter."
+            },
+            "image": "sentence.jpg",
+            "chunks": [
+              "sen",
+              "tence"
+            ]
+          },
+          {
+            "word": "surprise",
+            "ipa": "/səˈpraɪz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something unexpected.",
+              "example": "The birthday cake was a lovely surprise."
+            },
+            "image": "surprise.jpg",
+            "chunks": [
+              "sur",
+              "prise"
+            ]
+          },
+          {
+            "word": "thought",
+            "ipa": "/θɔːt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "An idea in your mind.",
+              "example": "A funny thought made her giggle."
+            },
+            "image": "thought.jpg",
+            "chunks": [
+              "th",
+              "ough",
+              "t"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch08",
+        "title": "Chapter 8 — Spotting the traps",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "through",
+            "ipa": "/θruː/",
+            "meaning": {
+              "partOfSpeech": "preposition",
+              "definition": "From one side to the other.",
+              "example": "The train went through the tunnel."
+            },
+            "image": "through.jpg",
+            "chunks": [
+              "th",
+              "rough"
+            ]
+          },
+          {
+            "word": "important",
+            "ipa": "/ɪmˈpɔː.tənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Mattering a lot.",
+              "example": "It is important to brush your teeth."
+            },
+            "image": "important.jpg",
+            "chunks": [
+              "im",
+              "por",
+              "tant"
+            ]
+          },
+          {
+            "word": "suppose",
+            "ipa": "/səˈpəʊz/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To think something might be true.",
+              "example": "I suppose he might be late."
+            },
+            "image": "suppose.jpg",
+            "chunks": [
+              "sup",
+              "pose"
+            ]
+          },
+          {
+            "word": "accident",
+            "ipa": "/ˈæk.sɪ.dənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something bad that happens by mistake, not on purpose.",
+              "example": "She had a small accident and dropped the glass."
+            },
+            "image": "accident.jpg",
+            "chunks": [
+              "ac",
+              "ci",
+              "dent"
+            ]
+          },
+          {
+            "word": "actually",
+            "ipa": "/ˈæk.tʃu.ə.li/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In fact; really.",
+              "example": "I thought it was sunny but actually it was raining."
+            },
+            "image": "actually.jpg",
+            "chunks": [
+              "ac",
+              "tu",
+              "ally"
+            ]
+          },
+          {
+            "word": "business",
+            "ipa": "/ˈbɪz.nɪs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The work of buying and selling things; a company.",
+              "example": "Her family runs a small bakery business."
+            },
+            "image": "business.jpg",
+            "chunks": [
+              "busi",
+              "ness"
+            ]
+          },
+          {
+            "word": "pressure",
+            "ipa": "/ˈpreʃ.ə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A force pushing on something.",
+              "example": "Air pressure can make balloons pop."
+            },
+            "image": "pressure.jpg",
+            "chunks": [
+              "pres",
+              "sure"
+            ]
+          },
+          {
+            "word": "imagine",
+            "ipa": "/ɪˈmædʒ.ɪn/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To make a picture of something in your mind.",
+              "example": "Imagine you could fly anywhere."
+            },
+            "image": "imagine.jpg",
+            "chunks": [
+              "i",
+              "ma",
+              "gine"
+            ]
+          },
+          {
+            "word": "different",
+            "ipa": "/ˈdɪf.ər.ənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not the same.",
+              "example": "These two shoes are different colours."
+            },
+            "image": "different.jpg",
+            "chunks": [
+              "dif",
+              "fer",
+              "ent"
+            ]
+          },
+          {
+            "word": "difficult",
+            "ipa": "/ˈdɪf.ɪ.kəlt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not easy; hard to do.",
+              "example": "This puzzle is difficult but fun."
+            },
+            "image": "difficult.jpg",
+            "chunks": [
+              "dif",
+              "fi",
+              "cult"
+            ]
+          },
+          {
+            "word": "disappear",
+            "ipa": "/ˌdɪs.əˈpɪə/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To stop being seen; to go out of sight.",
+              "example": "The magician made the rabbit disappear."
+            },
+            "image": "disappear.jpg",
+            "chunks": [
+              "dis",
+              "ap",
+              "pear"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch09",
+        "title": "Chapter 9 — Real challenge",
+        "description": "11 words to practise.",
+        "words": [
+          {
+            "word": "enough",
+            "ipa": "/ɪˈnʌf/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "As much as is needed.",
+              "example": "We have enough food for everyone."
+            },
+            "image": "enough.jpg",
+            "chunks": [
+              "e",
+              "nough"
+            ]
+          },
+          {
+            "word": "exercise",
+            "ipa": "/ˈek.sə.saɪz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Activity that makes your body or mind work to keep it healthy.",
+              "example": "Running is good exercise."
+            },
+            "image": "exercise.jpg",
+            "chunks": [
+              "ex",
+              "er",
+              "cise"
+            ]
+          },
+          {
+            "word": "medicine",
+            "ipa": "/ˈmed.sɪn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something you take to feel better when you are ill.",
+              "example": "The doctor gave me some medicine for my cough."
+            },
+            "image": "medicine.jpg",
+            "chunks": [
+              "me",
+              "di",
+              "cine"
+            ]
+          },
+          {
+            "word": "ordinary",
+            "ipa": "/ˈɔː.dɪn.ər.i/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Normal; nothing special.",
+              "example": "It was just an ordinary Tuesday."
+            },
+            "image": "ordinary.jpg",
+            "chunks": [
+              "or",
+              "di",
+              "nary"
+            ]
+          },
+          {
+            "word": "position",
+            "ipa": "/pəˈzɪʃ.ən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The place where someone or something is.",
+              "example": "Stand in your position on the field."
+            },
+            "image": "position.jpg",
+            "chunks": [
+              "po",
+              "si",
+              "tion"
+            ]
+          },
+          {
+            "word": "question",
+            "ipa": "/ˈkwes.tʃən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something you ask when you want to know an answer.",
+              "example": "Put up your hand if you have a question."
+            },
+            "image": "question.jpg",
+            "chunks": [
+              "ques",
+              "tion"
+            ]
+          },
+          {
+            "word": "separate",
+            "ipa": "/ˈsep.ər.ət/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Apart from each other; not together.",
+              "example": "Put the red socks in a separate pile."
+            },
+            "image": "separate.jpg",
+            "chunks": [
+              "sep",
+              "a",
+              "rate"
+            ]
+          },
+          {
+            "word": "naughty",
+            "ipa": "/ˈnɔː.ti/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not behaving well.",
+              "example": "The naughty puppy chewed my slippers."
+            },
+            "image": "naughty.jpg",
+            "chunks": [
+              "n",
+              "augh",
+              "ty"
+            ]
+          },
+          {
+            "word": "favourite",
+            "ipa": "/ˈfeɪ.vər.ɪt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "The one you like best.",
+              "example": "Pizza is my favourite food."
+            },
+            "image": "favourite.jpg",
+            "chunks": [
+              "fav",
+              "our",
+              "ite"
+            ]
+          },
+          {
+            "word": "knowledge",
+            "ipa": "/ˈnɒl.ɪdʒ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "All the things you know.",
+              "example": "Reading books gives you lots of knowledge."
+            },
+            "image": "knowledge.jpg",
+            "chunks": [
+              "know",
+              "ledge"
+            ]
+          },
+          {
+            "word": "therefore",
+            "ipa": "/ˈðeə.fɔː/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "For that reason.",
+              "example": "It was raining, therefore we stayed inside."
+            },
+            "image": "therefore.jpg",
+            "chunks": [
+              "there",
+              "fore"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y34-ch10",
+        "title": "Chapter 10 — Toughest of all",
+        "description": "10 words to practise.",
+        "words": [
+          {
+            "word": "although",
+            "ipa": "/ɔːlˈðəʊ/",
+            "meaning": {
+              "partOfSpeech": "conjunction",
+              "definition": "Even though; in spite of the fact that.",
+              "example": "Although it was cold, we still played outside."
+            },
+            "image": "although.jpg",
+            "chunks": [
+              "al",
+              "though"
+            ]
+          },
+          {
+            "word": "experience",
+            "ipa": "/ɪkˈspɪə.ri.əns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something that happens to you; knowledge from doing things.",
+              "example": "Going on holiday was a great experience."
+            },
+            "image": "experience.jpg",
+            "chunks": [
+              "ex",
+              "pe",
+              "ri",
+              "ence"
+            ]
+          },
+          {
+            "word": "experiment",
+            "ipa": "/ɪkˈsper.ɪ.mənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A test to find out what happens; often used in science.",
+              "example": "We did an experiment with magnets in class."
+            },
+            "image": "experiment.jpg",
+            "chunks": [
+              "ex",
+              "per",
+              "i",
+              "ment"
+            ]
+          },
+          {
+            "word": "occasion",
+            "ipa": "/əˈkeɪ.ʒən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A special time when something happens.",
+              "example": "A wedding is a happy occasion."
+            },
+            "image": "occasion.jpg",
+            "chunks": [
+              "oc",
+              "ca",
+              "sion"
+            ]
+          },
+          {
+            "word": "opposite",
+            "ipa": "/ˈɒp.ə.zɪt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Completely different from something.",
+              "example": "Hot is the opposite of cold."
+            },
+            "image": "opposite.jpg",
+            "chunks": [
+              "op",
+              "po",
+              "site"
+            ]
+          },
+          {
+            "word": "particular",
+            "ipa": "/pəˈtɪk.jə.lə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "One special one rather than any other.",
+              "example": "I want this particular pen, not the other one."
+            },
+            "image": "particular.jpg",
+            "chunks": [
+              "par",
+              "tic",
+              "u",
+              "lar"
+            ]
+          },
+          {
+            "word": "possible",
+            "ipa": "/ˈpɒs.ə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Able to happen or be done.",
+              "example": "It is possible to learn anything."
+            },
+            "image": "possible.jpg",
+            "chunks": [
+              "pos",
+              "si",
+              "ble"
+            ]
+          },
+          {
+            "word": "possession",
+            "ipa": "/pəˈzeʃ.ən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something you own.",
+              "example": "His favourite possession is his old teddy bear."
+            },
+            "image": "possession.jpg",
+            "chunks": [
+              "pos",
+              "ses",
+              "sion"
+            ]
+          },
+          {
+            "word": "accidentally",
+            "ipa": "/ˌæk.sɪˈden.təl.i/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Not on purpose; by mistake.",
+              "example": "He accidentally stepped on the cat's tail."
+            },
+            "image": "accidentally.jpg",
+            "chunks": [
+              "ac",
+              "ci",
+              "dent",
+              "ally"
+            ]
+          },
+          {
+            "word": "occasionally",
+            "ipa": "/əˈkeɪ.ʒən.ə.li/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Sometimes, but not often.",
+              "example": "We occasionally go to the seaside."
+            },
+            "image": "occasionally.jpg",
+            "chunks": [
+              "oc",
+              "ca",
+              "sion",
+              "ally"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "year_5_6": {
+    "title": "Year 5 & 6",
+    "subtitle": "Themed by spelling pattern",
+    "chapters": [
+      {
+        "id": "y56-ch01",
+        "title": "Chapter 1 — Everyday foundations",
+        "description": "A gentle start with shorter but unusual everyday words.",
+        "words": [
+          {
+            "word": "awkward",
+            "ipa": "/ˈɔː.kwəd/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Difficult or uncomfortable.",
+              "example": "It was an awkward silence at the table."
+            },
+            "image": "awkward.jpg",
+            "chunks": [
+              "awk",
+              "ward"
+            ]
+          },
+          {
+            "word": "forty",
+            "ipa": "/ˈfɔː.ti/",
+            "meaning": {
+              "partOfSpeech": "number",
+              "definition": "The number 40.",
+              "example": "There are forty children in the hall."
+            },
+            "image": "forty.jpg",
+            "chunks": [
+              "for",
+              "ty"
+            ]
+          },
+          {
+            "word": "symbol",
+            "ipa": "/ˈsɪm.bəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A picture or sign that stands for something.",
+              "example": "A heart is a symbol of love."
+            },
+            "image": "symbol.jpg",
+            "chunks": [
+              "sym",
+              "bol"
+            ]
+          },
+          {
+            "word": "system",
+            "ipa": "/ˈsɪs.təm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A set of things that work together.",
+              "example": "The solar system has eight planets."
+            },
+            "image": "system.jpg",
+            "chunks": [
+              "sys",
+              "tem"
+            ]
+          },
+          {
+            "word": "rhyme",
+            "ipa": "/raɪm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "When words end with the same sound, like cat and hat.",
+              "example": "Cat and hat are a rhyme."
+            },
+            "image": "rhyme.jpg",
+            "chunks": [
+              "rh",
+              "yme"
+            ]
+          },
+          {
+            "word": "rhythm",
+            "ipa": "/ˈrɪð.əm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A regular pattern of sounds or beats.",
+              "example": "Clap to the rhythm of the music."
+            },
+            "image": "rhythm.jpg",
+            "chunks": [
+              "rh",
+              "yth",
+              "m"
+            ]
+          },
+          {
+            "word": "yacht",
+            "ipa": "/jɒt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A boat used for sailing or racing.",
+              "example": "We saw a yacht in the harbour."
+            },
+            "image": "yacht.jpg",
+            "chunks": [
+              "y",
+              "acht"
+            ]
+          },
+          {
+            "word": "queue",
+            "ipa": "/kjuː/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A line of people waiting for something.",
+              "example": "We joined the queue for ice cream."
+            },
+            "image": "queue.jpg",
+            "chunks": [
+              "q",
+              "ueue"
+            ]
+          },
+          {
+            "word": "muscle",
+            "ipa": "/ˈmʌs.əl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The parts inside your body that help you move.",
+              "example": "Lifting weights builds muscle."
+            },
+            "image": "muscle.jpg",
+            "chunks": [
+              "mus",
+              "cle"
+            ]
+          },
+          {
+            "word": "bruise",
+            "ipa": "/bruːz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A dark mark on your skin from being hit.",
+              "example": "She had a bruise on her knee after falling."
+            },
+            "image": "bruise.jpg",
+            "chunks": [
+              "br",
+              "uise"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch02",
+        "title": "Chapter 2 — Silent & unusual letters",
+        "description": "Words containing silent letters or surprising spellings — the 'gh' in 'thorough', the 'lf' in 'twelfth'.",
+        "words": [
+          {
+            "word": "conscience",
+            "ipa": "/ˈkɒn.ʃəns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The feeling inside that tells you right from wrong.",
+              "example": "His conscience told him to say sorry."
+            },
+            "image": "conscience.jpg",
+            "chunks": [
+              "con",
+              "science"
+            ]
+          },
+          {
+            "word": "conscious",
+            "ipa": "/ˈkɒn.ʃəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Awake and aware of what is happening.",
+              "example": "She was conscious throughout the journey."
+            },
+            "image": "conscious.jpg",
+            "chunks": [
+              "con",
+              "scious"
+            ]
+          },
+          {
+            "word": "soldier",
+            "ipa": "/ˈsəʊl.dʒə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A person who fights for their country.",
+              "example": "The soldier stood at attention."
+            },
+            "image": "soldier.jpg",
+            "chunks": [
+              "sol",
+              "dier"
+            ]
+          },
+          {
+            "word": "stomach",
+            "ipa": "/ˈstʌm.ək/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part of your body where food goes after you eat.",
+              "example": "My stomach hurts because I ate too much."
+            },
+            "image": "stomach.jpg",
+            "chunks": [
+              "sto",
+              "mach"
+            ]
+          },
+          {
+            "word": "thorough",
+            "ipa": "/ˈθʌr.ə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Done carefully and completely.",
+              "example": "She did a thorough job of cleaning."
+            },
+            "image": "thorough.jpg",
+            "chunks": [
+              "thor",
+              "ough"
+            ]
+          },
+          {
+            "word": "twelfth",
+            "ipa": "/twelfθ/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Number 12 in a list or order.",
+              "example": "December is the twelfth month."
+            },
+            "image": "twelfth.jpg",
+            "chunks": [
+              "twel",
+              "fth"
+            ]
+          },
+          {
+            "word": "foreign",
+            "ipa": "/ˈfɒr.ən/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "From another country.",
+              "example": "I am learning a foreign language."
+            },
+            "image": "foreign.jpg",
+            "chunks": [
+              "for",
+              "eign"
+            ]
+          },
+          {
+            "word": "neighbour",
+            "ipa": "/ˈneɪ.bə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Someone who lives near you.",
+              "example": "Our neighbour brought us some apples."
+            },
+            "image": "neighbour.jpg",
+            "chunks": [
+              "neigh",
+              "bour"
+            ]
+          },
+          {
+            "word": "lightning",
+            "ipa": "/ˈlaɪt.nɪŋ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A bright flash of electricity in the sky during a storm.",
+              "example": "Lightning lit up the dark sky."
+            },
+            "image": "lightning.jpg",
+            "chunks": [
+              "light",
+              "ning"
+            ]
+          },
+          {
+            "word": "leisure",
+            "ipa": "/ˈleʒ.ə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Free time when you are not working.",
+              "example": "She spends her leisure time painting."
+            },
+            "image": "leisure.jpg",
+            "chunks": [
+              "leis",
+              "ure"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch03",
+        "title": "Chapter 3 — Double consonants",
+        "description": "Many words double a consonant — learn to spot when and which.",
+        "words": [
+          {
+            "word": "accommodate",
+            "ipa": "/əˈkɒm.ə.deɪt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To have enough space for someone or something.",
+              "example": "The hotel can accommodate two hundred guests."
+            },
+            "image": "accommodate.jpg",
+            "chunks": [
+              "ac",
+              "com",
+              "mo",
+              "date"
+            ]
+          },
+          {
+            "word": "accompany",
+            "ipa": "/əˈkʌm.pə.ni/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To go somewhere with someone.",
+              "example": "A teacher will accompany us on the trip."
+            },
+            "image": "accompany.jpg",
+            "chunks": [
+              "ac",
+              "com",
+              "pa",
+              "ny"
+            ]
+          },
+          {
+            "word": "according",
+            "ipa": "/əˈkɔː.dɪŋ/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "As stated by; following.",
+              "example": "According to the map, we go left."
+            },
+            "image": "according.jpg",
+            "chunks": [
+              "ac",
+              "cord",
+              "ing"
+            ]
+          },
+          {
+            "word": "aggressive",
+            "ipa": "/əˈɡres.ɪv/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Acting in an angry, fierce way.",
+              "example": "The aggressive dog barked at the postman."
+            },
+            "image": "aggressive.jpg",
+            "chunks": [
+              "ag",
+              "gres",
+              "sive"
+            ]
+          },
+          {
+            "word": "embarrass",
+            "ipa": "/ɪmˈbær.əs/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To make someone feel shy or ashamed.",
+              "example": "Tripping in front of class can embarrass you."
+            },
+            "image": "embarrass.jpg",
+            "chunks": [
+              "em",
+              "bar",
+              "rass"
+            ]
+          },
+          {
+            "word": "harass",
+            "ipa": "/ˈhær.əs/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To bother someone over and over again.",
+              "example": "Please don't harass your sister."
+            },
+            "image": "harass.jpg",
+            "chunks": [
+              "ha",
+              "rass"
+            ]
+          },
+          {
+            "word": "occupy",
+            "ipa": "/ˈɒk.jə.paɪ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To fill a space or take someone's time.",
+              "example": "Toys can occupy a baby for hours."
+            },
+            "image": "occupy.jpg",
+            "chunks": [
+              "oc",
+              "cu",
+              "py"
+            ]
+          },
+          {
+            "word": "occur",
+            "ipa": "/əˈkɜː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To happen.",
+              "example": "Storms occur in autumn."
+            },
+            "image": "occur.jpg",
+            "chunks": [
+              "oc",
+              "cur"
+            ]
+          },
+          {
+            "word": "committee",
+            "ipa": "/kəˈmɪt.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A group of people chosen to make decisions together.",
+              "example": "The school committee planned the fair."
+            },
+            "image": "committee.jpg",
+            "chunks": [
+              "com",
+              "mit",
+              "tee"
+            ]
+          },
+          {
+            "word": "necessary",
+            "ipa": "/ˈnes.ə.ser.i/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Needed to be done.",
+              "example": "It is necessary to wash your hands before meals."
+            },
+            "image": "necessary.jpg",
+            "chunks": [
+              "nec",
+              "es",
+              "sary"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch04",
+        "title": "Chapter 4 — More doubles & 'equ' family",
+        "description": "Further double-letter patterns, plus the 'equ' family (equip, equipped, equipment).",
+        "words": [
+          {
+            "word": "appreciate",
+            "ipa": "/əˈpriː.ʃi.eɪt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To be grateful for something; to value it.",
+              "example": "I really appreciate your help."
+            },
+            "image": "appreciate.jpg",
+            "chunks": [
+              "ap",
+              "pre",
+              "ci",
+              "ate"
+            ]
+          },
+          {
+            "word": "attached",
+            "ipa": "/əˈtætʃt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Joined or fastened to something.",
+              "example": "A label was attached to the suitcase."
+            },
+            "image": "attached.jpg",
+            "chunks": [
+              "at",
+              "tached"
+            ]
+          },
+          {
+            "word": "communicate",
+            "ipa": "/kəˈmjuː.nɪ.keɪt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To share ideas or messages with others.",
+              "example": "We communicate by talking or writing."
+            },
+            "image": "communicate.jpg",
+            "chunks": [
+              "com",
+              "mu",
+              "ni",
+              "cate"
+            ]
+          },
+          {
+            "word": "exaggerate",
+            "ipa": "/ɪɡˈzædʒ.ə.reɪt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To say something is bigger or more than it really is.",
+              "example": "He likes to exaggerate his stories."
+            },
+            "image": "exaggerate.jpg",
+            "chunks": [
+              "ex",
+              "ag",
+              "ger",
+              "ate"
+            ]
+          },
+          {
+            "word": "equip",
+            "ipa": "/ɪˈkwɪp/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To give someone the things they need.",
+              "example": "We equip the team with new boots."
+            },
+            "image": "equip.jpg",
+            "chunks": [
+              "e",
+              "quip"
+            ]
+          },
+          {
+            "word": "equipped",
+            "ipa": "/ɪˈkwɪpt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Given the things needed (past tense of equip).",
+              "example": "The climbers were equipped with ropes."
+            },
+            "image": "equipped.jpg",
+            "chunks": [
+              "e",
+              "quipped"
+            ]
+          },
+          {
+            "word": "equipment",
+            "ipa": "/ɪˈkwɪp.mənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The things you need for a particular activity.",
+              "example": "Sports equipment includes balls and bats."
+            },
+            "image": "equipment.jpg",
+            "chunks": [
+              "e",
+              "quip",
+              "ment"
+            ]
+          },
+          {
+            "word": "interrupt",
+            "ipa": "/ˌɪn.təˈrʌpt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To stop someone while they are talking or doing something.",
+              "example": "Please don't interrupt me while I am reading."
+            },
+            "image": "interrupt.jpg",
+            "chunks": [
+              "in",
+              "ter",
+              "rupt"
+            ]
+          },
+          {
+            "word": "interfere",
+            "ipa": "/ˌɪn.təˈfɪə/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To get in the way of something.",
+              "example": "Don't interfere with the experiment."
+            },
+            "image": "interfere.jpg",
+            "chunks": [
+              "in",
+              "ter",
+              "fere"
+            ]
+          },
+          {
+            "word": "suggest",
+            "ipa": "/səˈdʒest/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To put forward an idea.",
+              "example": "May I suggest going to the park?"
+            },
+            "image": "suggest.jpg",
+            "chunks": [
+              "sug",
+              "gest"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch05",
+        "title": "Chapter 5 — Endings: -ent & -ence",
+        "description": "These endings follow rules tied to root words — see Appendix 1.",
+        "words": [
+          {
+            "word": "convenience",
+            "ipa": "/kənˈviː.ni.əns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something that makes life easier.",
+              "example": "A microwave is a great convenience."
+            },
+            "image": "convenience.jpg",
+            "chunks": [
+              "con",
+              "ven",
+              "ience"
+            ]
+          },
+          {
+            "word": "existence",
+            "ipa": "/ɪɡˈzɪs.təns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Being real; living.",
+              "example": "The existence of dragons is just a story."
+            },
+            "image": "existence.jpg",
+            "chunks": [
+              "ex",
+              "ist",
+              "ence"
+            ]
+          },
+          {
+            "word": "excellent",
+            "ipa": "/ˈek.səl.ənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very good indeed.",
+              "example": "She did excellent work in art class."
+            },
+            "image": "excellent.jpg",
+            "chunks": [
+              "ex",
+              "cel",
+              "lent"
+            ]
+          },
+          {
+            "word": "frequently",
+            "ipa": "/ˈfriː.kwənt.li/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Often.",
+              "example": "We frequently visit Grandma."
+            },
+            "image": "frequently.jpg",
+            "chunks": [
+              "fre",
+              "quent",
+              "ly"
+            ]
+          },
+          {
+            "word": "sufficient",
+            "ipa": "/səˈfɪʃ.ənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Enough.",
+              "example": "Make sure there is sufficient water."
+            },
+            "image": "sufficient.jpg",
+            "chunks": [
+              "suf",
+              "fi",
+              "cient"
+            ]
+          },
+          {
+            "word": "ancient",
+            "ipa": "/ˈeɪn.tʃənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very old, from long ago.",
+              "example": "We saw ancient ruins in Rome."
+            },
+            "image": "ancient.jpg",
+            "chunks": [
+              "an",
+              "cient"
+            ]
+          },
+          {
+            "word": "apparent",
+            "ipa": "/əˈpær.ənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Easy to see or understand; obvious.",
+              "example": "It was apparent that he was tired."
+            },
+            "image": "apparent.jpg",
+            "chunks": [
+              "ap",
+              "par",
+              "ent"
+            ]
+          },
+          {
+            "word": "relevant",
+            "ipa": "/ˈrel.ə.vənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Connected to what is being discussed.",
+              "example": "Please give a relevant answer."
+            },
+            "image": "relevant.jpg",
+            "chunks": [
+              "rel",
+              "e",
+              "vant"
+            ]
+          },
+          {
+            "word": "hindrance",
+            "ipa": "/ˈhɪn.drəns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something that gets in the way.",
+              "example": "The heavy bag was a hindrance on the walk."
+            },
+            "image": "hindrance.jpg",
+            "chunks": [
+              "hin",
+              "drance"
+            ]
+          },
+          {
+            "word": "nuisance",
+            "ipa": "/ˈnjuː.səns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something or someone annoying.",
+              "example": "The buzzing fly was a real nuisance."
+            },
+            "image": "nuisance.jpg",
+            "chunks": [
+              "nui",
+              "sance"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch06",
+        "title": "Chapter 6 — Endings: -ate, -ise & long words",
+        "description": "Verbs ending in -ate, -ise, and other long words built from common roots.",
+        "words": [
+          {
+            "word": "criticise",
+            "ipa": "/ˈkrɪt.ɪ.saɪz/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To say what is wrong with something.",
+              "example": "Try not to criticise others unkindly."
+            },
+            "image": "criticise.jpg",
+            "chunks": [
+              "crit",
+              "i",
+              "cise"
+            ]
+          },
+          {
+            "word": "recognise",
+            "ipa": "/ˈrek.əɡ.naɪz/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To know who someone is when you see them.",
+              "example": "I didn't recognise you with your new hair!"
+            },
+            "image": "recognise.jpg",
+            "chunks": [
+              "rec",
+              "og",
+              "nise"
+            ]
+          },
+          {
+            "word": "sacrifice",
+            "ipa": "/ˈsæk.rɪ.faɪs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Giving something up for someone else.",
+              "example": "Her parents made sacrifices for her education."
+            },
+            "image": "sacrifice.jpg",
+            "chunks": [
+              "sac",
+              "ri",
+              "fice"
+            ]
+          },
+          {
+            "word": "definite",
+            "ipa": "/ˈdef.ɪ.nət/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Sure; without any doubt.",
+              "example": "We have a definite answer at last."
+            },
+            "image": "definite.jpg",
+            "chunks": [
+              "def",
+              "i",
+              "nite"
+            ]
+          },
+          {
+            "word": "desperate",
+            "ipa": "/ˈdes.pər.ət/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Feeling so worried you will try anything.",
+              "example": "He was desperate to find his lost dog."
+            },
+            "image": "desperate.jpg",
+            "chunks": [
+              "des",
+              "per",
+              "ate"
+            ]
+          },
+          {
+            "word": "immediate",
+            "ipa": "/ɪˈmiː.di.ət/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Happening right now without waiting.",
+              "example": "I need an immediate answer please."
+            },
+            "image": "immediate.jpg",
+            "chunks": [
+              "im",
+              "me",
+              "di",
+              "ate"
+            ]
+          },
+          {
+            "word": "immediately",
+            "ipa": "/ɪˈmiː.di.ət.li/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Right away, without delay.",
+              "example": "Stop immediately when I shout stop."
+            },
+            "image": "immediately.jpg",
+            "chunks": [
+              "im",
+              "me",
+              "di",
+              "ate",
+              "ly"
+            ]
+          },
+          {
+            "word": "competition",
+            "ipa": "/ˌkɒm.pəˈtɪʃ.ən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A test of who is best at something.",
+              "example": "She won the spelling competition."
+            },
+            "image": "competition.jpg",
+            "chunks": [
+              "com",
+              "pe",
+              "ti",
+              "tion"
+            ]
+          },
+          {
+            "word": "explanation",
+            "ipa": "/ˌek.spləˈneɪ.ʃən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Saying what something means or why it happened.",
+              "example": "Please give an explanation for your lateness."
+            },
+            "image": "explanation.jpg",
+            "chunks": [
+              "ex",
+              "pla",
+              "na",
+              "tion"
+            ]
+          },
+          {
+            "word": "pronunciation",
+            "ipa": "/prəˌnʌn.siˈeɪ.ʃən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The way a word is said.",
+              "example": "Practise the pronunciation of new words."
+            },
+            "image": "pronunciation.jpg",
+            "chunks": [
+              "pro",
+              "nun",
+              "ci",
+              "a",
+              "tion"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch07",
+        "title": "Chapter 7 — Greek & foreign-origin words",
+        "description": "Words borrowed from Greek, French and Latin — they don't always follow English rules.",
+        "words": [
+          {
+            "word": "amateur",
+            "ipa": "/ˈæm.ə.tə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Someone who does something for fun, not as a job.",
+              "example": "He is an amateur photographer."
+            },
+            "image": "amateur.jpg",
+            "chunks": [
+              "am",
+              "a",
+              "teur"
+            ]
+          },
+          {
+            "word": "vehicle",
+            "ipa": "/ˈviː.ə.kəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A car, bus, lorry or other machine for transport.",
+              "example": "A bus is a large vehicle."
+            },
+            "image": "vehicle.jpg",
+            "chunks": [
+              "ve",
+              "hi",
+              "cle"
+            ]
+          },
+          {
+            "word": "language",
+            "ipa": "/ˈlæŋ.ɡwɪdʒ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The words people use to talk to each other.",
+              "example": "English is my favourite language."
+            },
+            "image": "language.jpg",
+            "chunks": [
+              "lan",
+              "guage"
+            ]
+          },
+          {
+            "word": "restaurant",
+            "ipa": "/ˈres.trɒnt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A place where you can buy and eat meals.",
+              "example": "We went to a restaurant for my birthday."
+            },
+            "image": "restaurant.jpg",
+            "chunks": [
+              "rest",
+              "au",
+              "rant"
+            ]
+          },
+          {
+            "word": "category",
+            "ipa": "/ˈkæt.ə.ɡər.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A group of things that are alike.",
+              "example": "Apples and pears are in the fruit category."
+            },
+            "image": "category.jpg",
+            "chunks": [
+              "cat",
+              "e",
+              "gory"
+            ]
+          },
+          {
+            "word": "cemetery",
+            "ipa": "/ˈsem.ə.tər.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A place where dead people are buried.",
+              "example": "The old cemetery had stone monuments."
+            },
+            "image": "cemetery.jpg",
+            "chunks": [
+              "cem",
+              "e",
+              "tery"
+            ]
+          },
+          {
+            "word": "dictionary",
+            "ipa": "/ˈdɪk.ʃən.ər.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A book that lists words and tells you what they mean.",
+              "example": "Look up the word in a dictionary."
+            },
+            "image": "dictionary.jpg",
+            "chunks": [
+              "dic",
+              "tio",
+              "nary"
+            ]
+          },
+          {
+            "word": "controversy",
+            "ipa": "/ˈkɒn.trə.vɜː.si/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A big disagreement that lots of people argue about.",
+              "example": "The new rule caused a lot of controversy."
+            },
+            "image": "controversy.jpg",
+            "chunks": [
+              "con",
+              "tro",
+              "ver",
+              "sy"
+            ]
+          },
+          {
+            "word": "secretary",
+            "ipa": "/ˈsek.rə.tər.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A person who helps in an office with letters and appointments.",
+              "example": "The secretary booked the meeting."
+            },
+            "image": "secretary.jpg",
+            "chunks": [
+              "sec",
+              "re",
+              "tary"
+            ]
+          },
+          {
+            "word": "physical",
+            "ipa": "/ˈfɪz.ɪ.kəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "To do with the body.",
+              "example": "PE means physical education."
+            },
+            "image": "physical.jpg",
+            "chunks": [
+              "phys",
+              "i",
+              "cal"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch08",
+        "title": "Chapter 8 — Schwa & vowel traps",
+        "description": "Words where an unstressed vowel sounds like 'uh' — easy to misspell. Learn the parent word!",
+        "words": [
+          {
+            "word": "familiar",
+            "ipa": "/fəˈmɪl.i.ə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Well known to you.",
+              "example": "Her face looked familiar but I forgot her name."
+            },
+            "image": "familiar.jpg",
+            "chunks": [
+              "fa",
+              "mil",
+              "iar"
+            ]
+          },
+          {
+            "word": "temperature",
+            "ipa": "/ˈtem.prə.tʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How hot or cold something is.",
+              "example": "The doctor took my temperature."
+            },
+            "image": "temperature.jpg",
+            "chunks": [
+              "tem",
+              "per",
+              "a",
+              "ture"
+            ]
+          },
+          {
+            "word": "signature",
+            "ipa": "/ˈsɪɡ.nə.tʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Your name written your own special way.",
+              "example": "Please put your signature on the form."
+            },
+            "image": "signature.jpg",
+            "chunks": [
+              "sig",
+              "na",
+              "ture"
+            ]
+          },
+          {
+            "word": "persuade",
+            "ipa": "/pəˈsweɪd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To make someone agree to do something.",
+              "example": "Can you persuade her to come too?"
+            },
+            "image": "persuade.jpg",
+            "chunks": [
+              "per",
+              "suade"
+            ]
+          },
+          {
+            "word": "curiosity",
+            "ipa": "/ˌkjʊə.riˈɒs.ə.ti/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Wanting to know about things.",
+              "example": "Her curiosity led her to read every book."
+            },
+            "image": "curiosity.jpg",
+            "chunks": [
+              "cu",
+              "ri",
+              "os",
+              "ity"
+            ]
+          },
+          {
+            "word": "average",
+            "ipa": "/ˈæv.ər.ɪdʒ/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Normal; in the middle, not too high or low.",
+              "example": "He is of average height for his age."
+            },
+            "image": "average.jpg",
+            "chunks": [
+              "av",
+              "er",
+              "age"
+            ]
+          },
+          {
+            "word": "develop",
+            "ipa": "/dɪˈvel.əp/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To grow or get better over time.",
+              "example": "Plants develop from tiny seeds."
+            },
+            "image": "develop.jpg",
+            "chunks": [
+              "de",
+              "vel",
+              "op"
+            ]
+          },
+          {
+            "word": "environment",
+            "ipa": "/ɪnˈvaɪ.rən.mənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The world around us and all of nature.",
+              "example": "We must protect the environment."
+            },
+            "image": "environment.jpg",
+            "chunks": [
+              "en",
+              "vi",
+              "ron",
+              "ment"
+            ]
+          },
+          {
+            "word": "shoulder",
+            "ipa": "/ˈʃəʊl.də/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part of your body where your arm joins.",
+              "example": "He carried his bag on his shoulder."
+            },
+            "image": "shoulder.jpg",
+            "chunks": [
+              "shoul",
+              "der"
+            ]
+          },
+          {
+            "word": "achieve",
+            "ipa": "/əˈtʃiːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To do something well after trying hard.",
+              "example": "She worked hard to achieve good marks."
+            },
+            "image": "achieve.jpg",
+            "chunks": [
+              "a",
+              "chieve"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch09",
+        "title": "Chapter 9 — Tricky everyday long words",
+        "description": "Long words used often in writing — worth learning thoroughly.",
+        "words": [
+          {
+            "word": "community",
+            "ipa": "/kəˈmjuː.nə.ti/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A group of people living together in one place.",
+              "example": "Our community held a summer fair."
+            },
+            "image": "community.jpg",
+            "chunks": [
+              "com",
+              "mu",
+              "ni",
+              "ty"
+            ]
+          },
+          {
+            "word": "government",
+            "ipa": "/ˈɡʌv.ən.mənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The group of people who run a country.",
+              "example": "The government makes the laws."
+            },
+            "image": "government.jpg",
+            "chunks": [
+              "gov",
+              "ern",
+              "ment"
+            ]
+          },
+          {
+            "word": "individual",
+            "ipa": "/ˌɪn.dɪˈvɪd.ju.əl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "One single person.",
+              "example": "Every individual matters."
+            },
+            "image": "individual.jpg",
+            "chunks": [
+              "in",
+              "di",
+              "vid",
+              "ual"
+            ]
+          },
+          {
+            "word": "marvellous",
+            "ipa": "/ˈmɑː.vəl.əs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Wonderful or amazing.",
+              "example": "The fireworks were marvellous."
+            },
+            "image": "marvellous.jpg",
+            "chunks": [
+              "mar",
+              "vel",
+              "lous"
+            ]
+          },
+          {
+            "word": "mischievous",
+            "ipa": "/ˈmɪs.tʃɪ.vəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Behaving in a playful, naughty way.",
+              "example": "The mischievous kitten knocked over the vase."
+            },
+            "image": "mischievous.jpg",
+            "chunks": [
+              "mis",
+              "chie",
+              "vous"
+            ]
+          },
+          {
+            "word": "parliament",
+            "ipa": "/ˈpɑː.lə.mənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The group of people who make the laws of a country.",
+              "example": "Parliament meets in London."
+            },
+            "image": "parliament.jpg",
+            "chunks": [
+              "par",
+              "lia",
+              "ment"
+            ]
+          },
+          {
+            "word": "profession",
+            "ipa": "/prəˈfeʃ.ən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A job that needs special training.",
+              "example": "Being a doctor is a respected profession."
+            },
+            "image": "profession.jpg",
+            "chunks": [
+              "pro",
+              "fes",
+              "sion"
+            ]
+          },
+          {
+            "word": "opportunity",
+            "ipa": "/ˌɒp.əˈtjuː.nə.ti/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A good chance to do something.",
+              "example": "School trips are a great opportunity to learn."
+            },
+            "image": "opportunity.jpg",
+            "chunks": [
+              "op",
+              "por",
+              "tun",
+              "ity"
+            ]
+          },
+          {
+            "word": "programme",
+            "ipa": "/ˈprəʊ.ɡræm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A show on TV or a plan of events.",
+              "example": "My favourite programme is on at six."
+            },
+            "image": "programme.jpg",
+            "chunks": [
+              "pro",
+              "gramme"
+            ]
+          },
+          {
+            "word": "guarantee",
+            "ipa": "/ˌɡær.ənˈtiː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To promise that something will happen.",
+              "example": "I guarantee you will enjoy this book."
+            },
+            "image": "guarantee.jpg",
+            "chunks": [
+              "guar",
+              "an",
+              "tee"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "y56-ch10",
+        "title": "Chapter 10 — Final hardest set",
+        "description": "The toughest words on the Year 5/6 list — once you can spell these, you can spell anything.",
+        "words": [
+          {
+            "word": "bargain",
+            "ipa": "/ˈbɑː.ɡɪn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something bought cheaply; a good deal.",
+              "example": "These shoes were a real bargain."
+            },
+            "image": "bargain.jpg",
+            "chunks": [
+              "bar",
+              "gain"
+            ]
+          },
+          {
+            "word": "correspond",
+            "ipa": "/ˌkɒr.ɪˈspɒnd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To match or write letters to each other.",
+              "example": "The two children correspond by email."
+            },
+            "image": "correspond.jpg",
+            "chunks": [
+              "cor",
+              "re",
+              "spond"
+            ]
+          },
+          {
+            "word": "determined",
+            "ipa": "/dɪˈtɜː.mɪnd/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Decided to do something and not give up.",
+              "example": "She was determined to win the race."
+            },
+            "image": "determined.jpg",
+            "chunks": [
+              "de",
+              "ter",
+              "mined"
+            ]
+          },
+          {
+            "word": "disastrous",
+            "ipa": "/dɪˈzɑː.strəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very bad; causing a disaster.",
+              "example": "The cake was a disastrous mess."
+            },
+            "image": "disastrous.jpg",
+            "chunks": [
+              "dis",
+              "as",
+              "trous"
+            ]
+          },
+          {
+            "word": "especially",
+            "ipa": "/ɪˈspeʃ.ə.li/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "More than other things; particularly.",
+              "example": "I like fruit, especially apples."
+            },
+            "image": "especially.jpg",
+            "chunks": [
+              "es",
+              "pe",
+              "cial",
+              "ly"
+            ]
+          },
+          {
+            "word": "identity",
+            "ipa": "/aɪˈden.tə.ti/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Who someone is.",
+              "example": "Your name and date of birth show your identity."
+            },
+            "image": "identity.jpg",
+            "chunks": [
+              "i",
+              "den",
+              "tity"
+            ]
+          },
+          {
+            "word": "prejudice",
+            "ipa": "/ˈpredʒ.ə.dɪs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "An unfair feeling against someone before you know them.",
+              "example": "We must work against prejudice."
+            },
+            "image": "prejudice.jpg",
+            "chunks": [
+              "prej",
+              "u",
+              "dice"
+            ]
+          },
+          {
+            "word": "privilege",
+            "ipa": "/ˈprɪv.əl.ɪdʒ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A special right or advantage.",
+              "example": "Getting to read first was a privilege."
+            },
+            "image": "privilege.jpg",
+            "chunks": [
+              "priv",
+              "i",
+              "lege"
+            ]
+          },
+          {
+            "word": "recommend",
+            "ipa": "/ˌrek.əˈmend/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To tell someone something is good.",
+              "example": "I recommend this book to everyone."
+            },
+            "image": "recommend.jpg",
+            "chunks": [
+              "rec",
+              "om",
+              "mend"
+            ]
+          },
+          {
+            "word": "sincere",
+            "ipa": "/sɪnˈsɪə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Really meaning what you say.",
+              "example": "She gave a sincere apology."
+            },
+            "image": "sincere.jpg",
+            "chunks": [
+              "sin",
+              "cere"
+            ]
+          },
+          {
+            "word": "sincerely",
+            "ipa": "/sɪnˈsɪə.li/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a real, honest way.",
+              "example": "Yours sincerely is used at the end of a letter."
+            },
+            "image": "sincerely.jpg",
+            "chunks": [
+              "sin",
+              "cere",
+              "ly"
+            ]
+          },
+          {
+            "word": "variety",
+            "ipa": "/vəˈraɪ.ə.ti/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Many different kinds.",
+              "example": "We have a variety of sandwiches."
+            },
+            "image": "variety.jpg",
+            "chunks": [
+              "va",
+              "ri",
+              "ety"
+            ]
+          },
+          {
+            "word": "available",
+            "ipa": "/əˈveɪ.lə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Ready to be used or seen.",
+              "example": "Tickets are still available for the show."
+            },
+            "image": "available.jpg",
+            "chunks": [
+              "a",
+              "vail",
+              "able"
+            ]
+          },
+          {
+            "word": "vegetable",
+            "ipa": "/ˈvedʒ.tə.bəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A plant we eat, like a carrot or potato.",
+              "example": "Carrots are my favourite vegetable."
+            },
+            "image": "vegetable.jpg",
+            "chunks": [
+              "veg",
+              "e",
+              "table"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
