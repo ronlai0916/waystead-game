@@ -1,5 +1,5 @@
-// Loads the game data. Word graphs are big, so only the list a game needs is
-// fetched, and each one only once.
+// Loads the game data, each file only once. One word graph (words_all.dawg)
+// holds every word list, so every level and every player share it.
 import { loadBoard } from './engine/board.js';
 import { loadWordGraph } from './engine/words.js';
 
@@ -27,14 +27,11 @@ export const boardJson = (id) => json('data/board_' + id + '.json');
 export const board = (id) => once('board:' + id, () => boardJson(id).then(loadBoard));
 export const tiles = () => json('data/tiles.json');
 export const starWords = () => json('data/star_words.json');
-export const wordGraph = (list) => once('graph:' + list, () => fetchOk('data/words_' + list + '.dawg').then((r) => r.arrayBuffer()).then(loadWordGraph));
+export const wordGraph = () => once('graph', () => fetchOk('data/words_all.dawg').then((r) => r.arrayBuffer()).then(loadWordGraph));
 
 // Everything the engine needs for one game: the board, tiles, Star words and
-// the word lists in `lists` (by name, e.g. ['full']).
-export async function gameEnv(boardId, lists) {
-  const [b, t, s, graphs] = await Promise.all([
-    board(boardId), tiles(), starWords(),
-    Promise.all(lists.map(wordGraph)),
-  ]);
-  return { board: b, tiles: t, starWords: s, graphs: Object.fromEntries(lists.map((l, i) => [l, graphs[i]])) };
+// the word graph.
+export async function gameEnv(boardId) {
+  const [b, t, s, words] = await Promise.all([board(boardId), tiles(), starWords(), wordGraph()]);
+  return { board: b, tiles: t, starWords: s, words };
 }

@@ -15,6 +15,7 @@ export const ICON = {
   lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
   plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
   cross: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>',
   external: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
 };
 
@@ -58,6 +59,33 @@ export function ask(title, text, yes, no = 'Cancel') {
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-yes autofocus>' + esc(yes) + '</button>'
       + '<button type="button" class="btn btn--ghost" data-no>' + esc(no) + '</button></div>';
     d.querySelector('[data-yes]').addEventListener('click', () => close(true));
+    d.querySelector('[data-no]').addEventListener('click', () => close(false));
+  }).then((v) => v === true);
+}
+
+// A grown-up check: add two two-digit numbers (a new sum each time).
+// Resolves true when the answer is right, false if cancelled.
+export function grownUpCheck(what) {
+  const a = 11 + Math.floor(Math.random() * 79);
+  const b = 11 + Math.floor(Math.random() * 79);
+  return modal('dlg--ask', (d, close) => {
+    d.setAttribute('aria-labelledby', 'dlg-title');
+    d.innerHTML = '<h2 id="dlg-title">Grown-up check</h2>'
+      + '<p>' + esc(what) + '</p>'
+      + '<form class="stack" data-check novalidate><label for="gu-answer">What is ' + a + ' + ' + b + '?</label>'
+      + '<input id="gu-answer" class="field" type="text" inputmode="numeric" autocomplete="off" maxlength="3" autofocus>'
+      + '<p class="small gu-wrong" data-wrong role="alert"></p>'
+      + '<div class="btnrow"><button type="submit" class="btn btn--primary">Allow</button>'
+      + '<button type="button" class="btn btn--ghost" data-no>Cancel</button></div></form>';
+    const input = d.querySelector('input');
+    d.querySelector('[data-check]').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (Number(input.value.trim()) === a + b) close(true);
+      else {
+        d.querySelector('[data-wrong]').textContent = 'That is not right. Try again.';
+        input.select();
+      }
+    });
     d.querySelector('[data-no]').addEventListener('click', () => close(false));
   }).then((v) => v === true);
 }

@@ -14,13 +14,14 @@ const json = (name) => JSON.parse(readFileSync(DATA + name, 'utf8'));
 export const tiles = json('tiles.json');
 export const starWords = json('star_words.json');
 export const boards = Object.fromEntries(BOARD_IDS.map((id) => [id, loadBoard(json(`board_${id}.json`))]));
-export const graphs = Object.fromEntries(LIST_IDS.map((id) => [id, loadWordGraph(readFileSync(DATA + `words_${id}.dawg`))]));
+// The one graph the game uses: every word, tagged with its tier.
+export const words = loadWordGraph(readFileSync(DATA + 'words_all.dawg'));
 
 export function env(boardId) {
-  return { board: boards[boardId], tiles, starWords, graphs };
+  return { board: boards[boardId], tiles, starWords, words };
 }
 
-export const fullList = (w) => isWord(w, graphs.full);
+export const fullList = (w) => isWord(w, words, 2);
 
 // Tiles for a word laid from (r, c). "?" before a letter makes it a blank.
 export function lay(word, r, c, dir = 'across') {

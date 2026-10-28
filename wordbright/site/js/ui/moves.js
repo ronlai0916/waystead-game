@@ -1,5 +1,6 @@
 // Words made in a move, Star-word meaning cards, and the scores strip.
 import { esc } from './dom.js';
+import { pictureHtml } from '../ai/characters.js';
 
 export function starEntry(starWords, word) {
   return starWords.find((s) => s.word === word) || null;
@@ -28,6 +29,7 @@ export function wordsHtml(score) {
 export function scoresHtml(state, { bag = null } = {}) {
   const items = state.players.map((p, i) => '<li class="scores__p' + (i === state.turn && !state.over ? ' is-turn' : '') + '"'
     + (i === state.turn && !state.over ? ' aria-current="true"' : '') + '>'
+    + (p.computer ? pictureHtml(p.strength, 'portrait', 128, 'avatar avatar--chip') : '')
     + '<span class="scores__name">' + esc(p.name) + '</span><span class="scores__pts">' + p.score + '</span></li>').join('');
   return '<ul class="scores" aria-label="Scores">' + items + '</ul>'
     + (bag == null ? '' : '<p class="bagcount">Tiles in the bag: <b>' + bag + '</b></p>');

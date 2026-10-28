@@ -1,7 +1,35 @@
 // Text pages: how to play, for parents, not found.
 import { BRAND } from '../brand.js';
-import { esc } from '../ui/dom.js';
+import { esc, ICON } from '../ui/dom.js';
+import { allowedWords, disallowWord } from '../store.js';
 import { SQUARE_ICON, SQUARE_TEXT, KINDS } from '../ui/board.js';
+
+const WORD_COUNT = 'We accept about 177,000 British words; no names, places, abbreviations or American spellings.';
+
+// Four small boards: lower case = a tile already on the board, upper case =
+// a tile put down this turn, "." = an empty square.
+const PLACEMENTS = [
+  { ok: true, rows: ['.....', 'cat..', '..O..', '..P..'], text: 'One straight line that joins a word on the board (TOP).' },
+  { ok: true, rows: ['...u.', '...p.', 'catS.', '.....'], text: 'One tile can make two words at once (CATS and UPS).' },
+  { ok: false, rows: ['.....', 'catS.', '.....', 'O....'], text: 'Not allowed: tiles in two different places.' },
+  { ok: false, rows: ['.....', 'cat..', '..O..', '..PS.'], text: 'Not allowed: an L-shape. Keep to one line.' },
+];
+
+function placementsHtml() {
+  const boards = PLACEMENTS.map((p) => {
+    const cells = p.rows.join('').split('').map((ch) => {
+      if (ch === '.') return '<span class="pcell"></span>';
+      const fresh = ch === ch.toUpperCase();
+      return '<span class="pcell pcell--' + (fresh ? 'new' : 'old') + '">' + ch.toUpperCase() + '</span>';
+    }).join('');
+    return '<figure class="place place--' + (p.ok ? 'ok' : 'no') + '">'
+      + '<div class="place__grid" aria-hidden="true">' + cells + '</div>'
+      + '<figcaption><span class="place__mark">' + (p.ok ? ICON.play : ICON.cross) + '<span class="sr">' + (p.ok ? 'Allowed: ' : '') + '</span></span>'
+      + esc(p.text) + '</figcaption></figure>';
+  }).join('');
+  return '<div class="places">' + boards + '</div>'
+    + '<p class="small muted">Dark tiles were already on the board. Coloured tiles are the ones put down this turn.</p>';
+}
 
 export function rules(main) {
   const squares = KINDS.map((k) => '<li><span class="sq sq--' + k.toLowerCase() + ' legend__sq"><span class="sq__icon">' + SQUARE_ICON[k] + '</span></span>'
@@ -12,7 +40,8 @@ export function rules(main) {
     + '<ol class="rules">'
     + '<li><b>Your tiles.</b> Everyone has 7 letter tiles. Each tile shows its points (E is 1, Q is 7).</li>'
     + '<li><b>First word.</b> It must cover the start square (on the Large board: at least one of the four start squares in the middle). It can go across or down.</li>'
-    + '<li><b>Taking a turn.</b> Put 1 or more tiles in one straight line, across or down, with no gaps. Every new word must join a word already on the board. Every word you make (the long one and any short ones across it) must be a real word.</li>'
+    + '<li><b>Taking a turn.</b> Put 1 or more tiles in one straight line, across or down, with no gaps. Every new word must join a word already on the board. Every word you make (the long one and any short ones across it) must be a real word. ' + WORD_COUNT
+      + placementsHtml() + '</li>'
     + '<li><b>Points.</b> Add up the points on the tiles in each word you made. Bonus squares count only on the turn a tile is first placed on them:'
     + '<ul class="legend legend--page">' + squares + '</ul>'
     + 'Two word squares in one word multiply together (two Shines make the word count four times).</li>'
@@ -21,6 +50,7 @@ export function rules(main) {
     + '<li><b>Blank tiles.</b> A blank can be any letter. It scores 0.</li>'
     + '<li><b>Swap or pass.</b> Instead of playing, you can swap some tiles with the bag (only while it has at least 7 tiles; you miss that turn), or pass.</li>'
     + '<li><b>New tiles.</b> After your turn, take tiles from the bag until you have 7 again.</li>'
+    + '<li><b>Hints.</b> Each child has 3 hints per game. A hint shows a good word you could make with your tiles; you can use it or say no thanks. If no word is found, the hint is not used up.</li>'
     + '<li><b>End of the game.</b> The game ends when the bag is empty and one player has used all their tiles, or after three full rounds in which nobody scores (passes and swaps both count). Each player takes away the points of the tiles still in their rack, but no score goes below 0. Highest score wins.</li>'
     + '</ol>'
     + '<h2>Playing with a keyboard</h2>'
@@ -32,9 +62,12 @@ export function rules(main) {
 export function about(main) {
   main.innerHTML = '<section class="wrap page prose">'
     + '<span class="eyebrow">For parents</span><h1>About ' + esc(BRAND.product) + '</h1>'
-    + '<p>' + esc(BRAND.product) + ' is a word-tile board game for children preparing for the 11+, and for anyone who likes words. Two to four people take turns on one device. Computer players are coming soon.</p>'
+    + '<p>' + esc(BRAND.product) + ' is a word-tile board game for children preparing for the 11+, and for anyone who likes words. Two to four players take turns on one device: children, and computer players if you like (Pip the dormouse is Easy, Ottie the otter Normal, Bramble the badger Hard, Fizz the magpie Crazy). Each player has their own word level.</p>'
     + '<h2>Words and Star words</h2>'
-    + '<p>Only British spellings are allowed ("colour", not "color"), and the word lists have been filtered to keep them suitable for children. The word level you choose sets which list is used. Star words are the school spelling words for that level; making one scores 5 extra points and shows what it means.</p>'
+    + '<p>' + WORD_COUNT + ' Only British spellings count ("colour", not "color"), and the list has been filtered to keep it suitable for children. Children may play any of these words at every level. The word level sets which words the computer players know, which words hints suggest, and which Star words count. Star words are the school spelling words for that level; making one scores 5 extra points and shows what it means.</p>'
+    + '<h2>Words you have allowed</h2>'
+    + '<p>If a real word is missing, a grown-up can allow it when Play is refused ("Grown-up: allow this word"). Allowed words count for children on this device only; computer players and hints never use them.</p>'
+    + '<div data-allowed></div>'
     + '<h2>Privacy</h2>'
     + '<p>There is no account and no sign-in. The saved game is kept in this browser on this device and is never sent to us. There are no adverts, no tracking and no analytics.</p>'
     + '<h2>Credits</h2>'
@@ -49,6 +82,24 @@ export function about(main) {
     + '<h2>Who makes it</h2>'
     + '<p>' + esc(BRAND.product) + ' is made by <a href="https://waystead.co.uk">' + esc(BRAND.maker) + '</a>, as is <a href="../spellbright/">Spellbright</a>. It is an independent project and is not affiliated with the Department for Education, any exam board or any other word game.</p>'
     + '</section>';
+  drawAllowed(main.querySelector('[data-allowed]'));
+}
+
+function drawAllowed(box) {
+  const words = allowedWords();
+  box.innerHTML = words.length
+    ? '<ul class="allowed">' + words.map((w) => '<li><span class="allowed__word">' + esc(w.toUpperCase()) + '</span>'
+      + '<button type="button" class="btn btn--ghost btn--small" data-remove="' + esc(w) + '" aria-label="Remove ' + esc(w.toUpperCase()) + '">Remove</button></li>').join('') + '</ul>'
+    : '<p class="muted">None yet.</p>';
+  box.onclick = (e) => {
+    const b = e.target.closest('[data-remove]');
+    if (!b) return;
+    const i = words.indexOf(b.dataset.remove);
+    disallowWord(b.dataset.remove);
+    drawAllowed(box);
+    const again = box.querySelectorAll('[data-remove]');
+    (again[Math.min(i, again.length - 1)] || box).focus?.();
+  };
 }
 
 export function notFound(main) {

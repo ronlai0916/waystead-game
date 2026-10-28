@@ -98,15 +98,15 @@ Word lists, child-safe filter, Star words, letter values and three tile bags in 
 
 ### Word level (separate choice: Year 1 … Year 13, Degree, Master, Doctor)
 Each choice maps to a word band. No reliable data separates neighbouring years, so they share a band.
-| Choice | Band | Computer knows (ESDB size) | Player may play | Star words |
+| Choice | Band | Computer knows (ESDB size) | Player may play (C3a: 80 at every level) | Star words |
 |---|---|---|---|---|
-| Year 1–2 | A | 35, up to 6 letters | Full (60) | Y1–2 common exception words (to add from English Appendix 1, OGL) |
-| Year 3–4 | B | 35 | Full (60) | Y3–4 list |
-| Year 5–6 | C | 50 | Full (60) | Y5–6 list |
-| Year 7–9 | D | 50 | Full (60) | all KS1–2 lists |
-| Year 10–11 | E | 60 | Full (60) | all KS1–2 lists |
-| Year 12–13 | F | 60 | 70 | all KS1–2 lists |
-| Degree | G | 70 | 70 | — |
+| Year 1–2 | A | 35, up to 6 letters | 80 | Y1–2 common exception words (to add from English Appendix 1, OGL) |
+| Year 3–4 | B | 35 | 80 | Y3–4 list |
+| Year 5–6 | C | 50 | 80 | Y5–6 list |
+| Year 7–9 | D | 50 | 80 | all KS1–2 lists |
+| Year 10–11 | E | 60 | 80 | all KS1–2 lists |
+| Year 12–13 | F | 60 | 80 | all KS1–2 lists |
+| Degree | G | 70 | 80 | — |
 | Master | H | 70 | 80 | — |
 | Doctor | I | 80 | 80 | — |
 Needs: F2 re-run to make size-70 and size-80 lists with the same child-safe filter.
@@ -147,3 +147,18 @@ Star words: 316 (Y1 43, Y2 61, Y3–4 109, Y5–6 104) in star_words.json, each 
 - One word graph for all levels: words_xlarge tagged with the smallest list each word belongs to (decide/implement in C3).
 - Compression of .dawg files: fix in the server slice (nginx gzip for /wordbright/data, or Caddy encode match).
 - Saved game holds the bag in draw order; for online play the server never sends the bag.
+
+## C3 decisions (28 Oct)
+- **One word graph:** `words_all.dawg` holds the xlarge list once, each word tagged with the smallest list it is in (tier 0 starter … 4 xlarge). The game loads only this file (670 KB, 517 KB gzipped, against 1,477 KB for the five single-list files, removed from the site in C3a; `--single-lists` still builds them). Each edge also stores the smallest tier further on, so the move finder skips words a player does not know.
+- **Each player has their own word level.** Children's words are checked against their level's player list, computers play from their level's computer list (band A: up to 6 letters), and Star words count by each player's own level.
+- **Characters:** Easy = Pip (dormouse), Normal = Ottie (otter), Hard = Bramble (badger), Crazy = Fizz (magpie). Two computers of the same kind are "Ottie" and "Ottie 2". Moods: thinking while it plays, happy after its move scores 15+, surprised when the child before it scores 20+ or makes a Star word.
+- **Strengths:** Easy = a move at the 20th–40th percentile of scores, swaps about 1 turn in 8; Normal = random from its top 10; Hard = best score; Crazy = best score + a simple rack-leave value (keep blanks, S, E; avoid doubles, Q without U, too many vowels or consonants; with the bag empty, tiles left count against it). Choices use a seed from the game state, so a position always gives the same move. Time cap 3 s (5 s on Large) plus a 1–2 s pause; the move finder runs in a Web Worker.
+- **Hints:** 3 per child per game, stored on the player and in the history (so a replay keeps them). A hint uses the words a computer at the child's level knows (not rarer ones) and picks one of the 5 best moves at random. Shown as faint tiles on the board and lit rack tiles; "Use this" places the tiles (Play still needed), "No thanks" clears it. A hint is used up when it is shown; if no move is found ("No word found — try swapping") it is not. Available on an empty board too.
+- **Turn flow:** with one child there is no "pass the device" screen; each computer move is shown on the board with its words, then "Your turn". With two or more children the pass screen stays before each child's turn.
+
+## C3a decisions (28 Oct)
+- **Children may play any word in the whole list (size 80, about 177,000 British words) at every level.** No names, places, abbreviations or American spellings. The level still sets what the computer players know, what hints suggest, and which Star words count.
+- **"Grown-up: allow this word":** shown when Play is refused only because of words not in the list (a–z, 2–20 letters). A two-number sum (new each time) checks for a grown-up; the word goes into `wb.allowed` on this device and the move is played. Allowed words count for children only; computers and hints never use them. The For parents page lists them with Remove.
+- How to play has a small drawn picture of where tiles can go (two right, two wrong).
+- The five single-list `.dawg` files are gone from the site; only `words_all.dawg` ships.
+

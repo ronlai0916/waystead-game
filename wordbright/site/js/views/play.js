@@ -1,20 +1,25 @@
-// The game screen: board, rack, turn controls, and the pass-the-device screen
-// between turns. The engine decides everything; this file only shows it.
-import { play, swap, pass, checkPlay, starCheck } from '../engine/game.js';
+// The game screen: board, rack, turn controls, hints, the computer players'
+// turns, and the pass-the-device screen between children's turns. The engine
+// decides everything; this file only shows it.
+import { play, swap, pass, act, checkPlay, starCheck, useHint, hintsLeft, allowableWords } from '../engine/game.js';
 import { scoreMove, RACK_SIZE } from '../engine/score.js';
 import { checkMove } from '../engine/rules.js';
 import { tilesLeft, BLANK } from '../engine/bag.js';
-import { level } from '../engine/levels.js';
 import { gameEnv } from '../data.js';
-import { savedGame, saveGame } from '../store.js';
-import { esc, ICON, toast, ask, pickLetter, isPhone } from '../ui/dom.js';
+import { savedGame, saveGame, allowedWords, allowWords } from '../store.js';
+import { esc, ICON, toast, ask, pickLetter, isPhone, grownUpCheck } from '../ui/dom.js';
 import { boardHtml, legendHtml, squareInner, squareLabel, squareClass, tileHtml } from '../ui/board.js';
 import { enableDrag } from '../ui/drag.js';
 import { starEntry, starCardHtml, wordsHtml, scoresHtml } from '../ui/moves.js';
+import { askComputer, askHint } from '../ai/client.js';
+import { character, pictureHtml } from '../ai/characters.js';
 
 const LENS = 1; // the phone preview shows the chosen square and one square each side
 const ROOMY = 44; // px: squares this big show their names as well as icons
 const anyWord = () => true; // word helper off: check where the tiles are, not the words
+const HAPPY_AT = 15; // a computer looks happy after scoring this many
+const WOW_AT = 20; // and surprised when a child scores this many (or makes a Star word)
+const SURPRISE_MS = 1200;
 
 export function playView(main) {
   const saved = savedGame();
@@ -32,11 +37,10 @@ export function playView(main) {
   let env = null;
   let alive = true;
   const stops = [];
-  const lists = [...new Set(state.players.map((p) => level(p.level).player))];
-  gameEnv(state.board, lists).then((e) => {
+  gameEnv(state.board).then((e) => {
     if (!alive) return;
-    env = e;
-    handoff(null);
+    env = { ...e, allowed: new Set(allowedWords()) };
+    next(null);
   }).catch((err) => {
     console.error(err);
     if (alive) main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>The game did not load</h1><p class="muted">Check your connection, then reload the page.</p></div></section>';
@@ -44,31 +48,149 @@ export function playView(main) {
 
   const stopAll = () => { while (stops.length) stops.pop()(); };
   const player = () => state.players[state.turn];
+  const children = state.players.filter((p) => !p.computer).length;
+  const wait = (ms) => new Promise((resolve) => {
+    const t = setTimeout(resolve, ms);
+    stops.push(() => clearTimeout(t));
+  });
+
+  // After every move: whose turn, and which screen. With one child there is
+  // nothing to hide, so no "pass the device" screen.
+  function next(last) {
+    if (state.over) handoff(last);
+    else if (player().computer) computerView(last);
+    else if (children > 1) handoff(last);
+    else turn();
+  }
+
+  function moveCardHtml(last) {
+    let body = '';
+    if (last.type === 'play') {
+      const stars = last.score.words.filter((w) => w.star).map((w) => starEntry(env.starWords, w.word)).filter(Boolean);
+      body = '<h2>' + esc(last.name) + ' scored ' + last.score.total + '</h2>' + wordsHtml(last.score)
+        + stars.map((s) => starCardHtml(s, { pop: true })).join('');
+    } else if (last.type === 'swap') {
+      body = '<h2>' + esc(last.name) + ' swapped ' + last.count + (last.count === 1 ? ' tile' : ' tiles') + '</h2>';
+    } else {
+      body = '<h2>' + esc(last.name) + ' passed</h2>';
+    }
+    return '<div class="card movecard" aria-live="polite">' + body + '</div>';
+  }
+
+  // Square size decides whether the names fit.
+  function sizeBoard(boardEl) {
+    const n = env.board.size;
+    boardEl.style.setProperty('--n', n);
+    const ro = new ResizeObserver(() => {
+      boardEl.classList.toggle('board--roomy', boardEl.getBoundingClientRect().width / n >= ROOMY);
+    });
+    ro.observe(boardEl);
+    stops.push(() => ro.disconnect());
+  }
+
+  // Show the board as it stands, for watching. `fresh`: the squares just played.
+  function drawWatch(boardEl, fresh = new Set()) {
+    const board = env.board;
+    boardEl.querySelectorAll('[data-sq]').forEach((el) => {
+      const i = Number(el.dataset.sq);
+      const t = state.cells[i];
+      el.innerHTML = squareInner(board, i, t, env.tiles.values);
+      el.setAttribute('aria-label', squareLabel(board, i, t) + (fresh.has(i) ? ', just played' : ''));
+      el.classList.toggle('has-tile', !!t);
+      el.classList.toggle('is-new', fresh.has(i));
+    });
+  }
+
+  // ---- A computer player's turn ------------------------------------------
+  async function computerView(last) {
+    stopAll();
+    const me = player();
+    const ch = character(me.strength);
+    const n = env.board.size;
+    const wow = last && last.type === 'play' && !last.computer && (last.score.total >= WOW_AT || last.score.words.some((w) => w.star));
+    main.innerHTML = '<section class="wrap wrap--game page game game--watch" data-game>'
+      + '<h1 class="sr">' + esc(me.name) + '’s turn</h1>'
+      + '<div class="game__scores">' + scoresHtml(state, { bag: tilesLeft(state.bag) }) + '</div>'
+      + '<div class="game__board">' + boardHtml(env.board, env.board.title + ' board, ' + n + ' by ' + n) + '</div>'
+      + '<div class="game__legend">' + legendHtml(env.board) + '</div>'
+      + '<div class="game__side">'
+      + '<div class="card botcard"><div data-face></div><div class="botcard__text"><span class="eyebrow">' + esc(ch.label) + '</span>'
+      + '<p class="botcard__status" data-status role="status" aria-live="polite"></p></div></div>'
+      + (last ? moveCardHtml(last) : '')
+      + '<div data-after></div></div></section>';
+    const boardEl = main.querySelector('[data-board]');
+    sizeBoard(boardEl);
+    drawWatch(boardEl);
+    const face = main.querySelector('[data-face]');
+    const status = main.querySelector('[data-status]');
+    const mood = (m, text) => {
+      face.innerHTML = pictureHtml(me.strength, m, 256, 'avatar avatar--big');
+      status.textContent = text;
+    };
+
+    const started = performance.now();
+    let pause = 1000 + Math.random() * 1000; // feels like thinking, however quick the move finder is
+    if (wow) {
+      mood('surprised', 'Wow, ' + last.name + '! ' + me.name + ' did not see that coming.');
+      pause += SURPRISE_MS;
+      await wait(SURPRISE_MS);
+      if (!alive) return;
+    }
+    mood('thinking', me.name + ' is thinking…');
+    let res;
+    try {
+      res = await askComputer(state, env);
+    } catch (err) {
+      console.error(err);
+      res = { action: { type: 'pass' } };
+    }
+    await wait(Math.max(0, pause - (performance.now() - started)));
+    if (!alive) return;
+
+    let out = act(state, res.action, env);
+    if (!out.ok) { console.error(out.message); out = pass(state, env); }
+    state = out.state;
+    saveGame(state);
+
+    const done = { name: me.name, computer: true, type: res.action.type };
+    let fresh = new Set();
+    if (done.type === 'play') {
+      done.score = out.score;
+      fresh = new Set(res.action.tiles.map((t) => t.r * n + t.c));
+    } else if (done.type === 'swap') done.count = res.action.tiles.length;
+    drawWatch(boardEl, fresh);
+    main.querySelector('.game__scores').innerHTML = scoresHtml(state, { bag: tilesLeft(state.bag) });
+    const word = done.type === 'play' ? done.score.words.find((w) => w.main) : null;
+    if (done.type === 'play') {
+      mood(done.score.total >= HAPPY_AT ? 'happy' : 'portrait', me.name + ' played ' + word.word.toUpperCase() + ' for ' + done.score.total + (done.score.total === 1 ? ' point.' : ' points.'));
+    } else {
+      mood('portrait', done.type === 'swap' ? me.name + ' swapped ' + done.count + (done.count === 1 ? ' tile.' : ' tiles.') : me.name + ' passed.');
+    }
+    const soloChild = children === 1 && !state.over && !player().computer;
+    const label = state.over ? 'See the final scores' : soloChild ? 'Your turn' : 'Continue';
+    main.querySelector('[data-after]').innerHTML = (done.type === 'play' ? moveCardHtml(done) : '')
+      + '<button type="button" class="btn btn--primary" data-next>' + label + ICON.arrow + '</button>';
+    const card = main.querySelector('.movecard');
+    if (card && last) card.remove(); // the earlier move's card makes way for this one
+    const btn = main.querySelector('[data-next]');
+    btn.addEventListener('click', () => {
+      if (state.over) location.hash = '#/end';
+      else next(null);
+    });
+    btn.focus({ preventScroll: true });
+  }
 
   // ---- Between turns: what just happened, then "pass the device" -------
   function handoff(last) {
     stopAll();
-    const next = player();
-    let moveCard = '';
-    if (last) {
-      let body = '';
-      if (last.type === 'play') {
-        const stars = last.score.words.filter((w) => w.star).map((w) => starEntry(env.starWords, w.word)).filter(Boolean);
-        body = '<h2>' + esc(last.name) + ' scored ' + last.score.total + '</h2>' + wordsHtml(last.score)
-          + stars.map((s) => starCardHtml(s, { pop: true })).join('');
-      } else if (last.type === 'swap') {
-        body = '<h2>' + esc(last.name) + ' swapped ' + last.count + (last.count === 1 ? ' tile' : ' tiles') + '</h2>';
-      } else {
-        body = '<h2>' + esc(last.name) + ' passed</h2>';
-      }
-      moveCard = '<div class="card movecard" aria-live="polite">' + body + '</div>';
-    }
+    const who = player();
+    const moveCard = last ? moveCardHtml(last) : '';
     const over = state.over;
     const ready = over
       ? '<div class="card handoff__card"><h1>The game is over</h1><a class="btn btn--primary" href="#/end">See the final scores' + ICON.arrow + '</a></div>'
       : '<div class="card handoff__card"><span class="eyebrow">Next turn</span>'
-        + '<h1>Pass the device to ' + esc(next.name) + '</h1>'
-        + '<p class="muted">' + esc(next.name) + ', your tiles are hidden until you are ready.</p>'
+        + '<h1>Pass the device to ' + esc(who.name) + '</h1>'
+        + '<p class="muted">' + esc(who.name) + ', your tiles are hidden until you are ready.</p>'
         + '<button type="button" class="btn btn--primary" data-ready>Show my tiles' + ICON.arrow + '</button></div>';
     main.innerHTML = '<section class="wrap page handoff">' + moveCard + ready
       + '<div class="card handoff__scores">' + scoresHtml(state, { bag: tilesLeft(state.bag) }) + '</div></section>';
@@ -95,6 +217,10 @@ export function playView(main) {
       swapping: false,
       swapSel: new Set(),
       error: '',
+      note: '', // a message that is not an error (e.g. "No word found")
+      hint: null, // { move, idxs: Set of rack positions } while a hint is shown
+      hintBusy: false,
+      allow: null, // { words, message }: words a grown-up could allow after Play was refused
     };
     const empty = state.cells.every((c) => c === null);
     ui.cursor = empty ? Math.min(...board.start) : Math.floor(n / 2) * n + Math.floor(n / 2);
@@ -107,6 +233,7 @@ export function playView(main) {
       + '<div class="game__side">'
       + '<div class="look"><div class="lens" data-lens aria-hidden="true"></div>'
       + '<p class="preview" data-preview role="status" aria-live="polite"></p></div>'
+      + '<p class="allowlink" data-allow hidden><button type="button" class="linkbtn" data-act="allow"></button></p>'
       + '<div class="rack" data-rack-zone role="group" aria-label="Your tiles"></div>'
       + '<div class="controls" data-controls></div>'
       + '<p class="keyhelp small muted">' + (phone ? 'Tap a tile, then tap a square. Tap a placed tile to take it back.'
@@ -119,9 +246,10 @@ export function playView(main) {
     const rackEl = root.querySelector('[data-rack-zone]');
     const controlsEl = root.querySelector('[data-controls]');
     const previewEl = root.querySelector('[data-preview]');
+    const allowEl = root.querySelector('[data-allow]');
     const lensEl = root.querySelector('[data-lens]');
     const scoresEl = root.querySelector('[data-scores]');
-    boardEl.style.setProperty('--n', n);
+    sizeBoard(boardEl);
     lensEl.style.setProperty('--n', 2 * LENS + 1);
 
     const pendingAt = (i) => ui.pending.find((p) => p.i === i) || null;
@@ -131,21 +259,16 @@ export function playView(main) {
       const p = pendingAt(i);
       return p ? { letter: p.letter, blank: p.blank, pending: true } : state.cells[i];
     };
+    const ghostAt = (i) => (ui.hint && !filled(i) ? ui.hint.move.tiles.find((t) => t.r * n + t.c === i) || null : null);
     const placedTiles = () => ui.pending.map((p) => ({ r: Math.floor(p.i / n), c: p.i % n, letter: p.letter, blank: p.blank }));
-
-    // Square size decides whether the names fit.
-    const ro = new ResizeObserver(() => {
-      const w = boardEl.getBoundingClientRect().width / n;
-      boardEl.classList.toggle('board--roomy', w >= ROOMY);
-    });
-    ro.observe(boardEl);
-    stops.push(() => ro.disconnect());
 
     // ---- Drawing ----
     function drawBoard() {
       sqEls.forEach((el, i) => {
         const t = tileAt(i);
-        const html = squareInner(board, i, t, values);
+        const g = t ? null : ghostAt(i);
+        const html = g ? tileHtml(g.letter, { blank: g.blank, value: values[g.letter], extra: 'tile--ghost' }) : squareInner(board, i, t, values);
+        el.classList.toggle('is-ghost', !!g);
         if (el.dataset.html !== html) { el.innerHTML = html; el.dataset.html = html; }
         el.setAttribute('aria-label', squareLabel(board, i, t));
         el.classList.toggle('has-tile', !!t);
@@ -180,8 +303,9 @@ export function playView(main) {
       let html = shown.map((idx) => {
         const t = rack[idx];
         const on = ui.swapping ? ui.swapSel.has(idx) : ui.selected === idx;
-        const name = t === BLANK ? 'Blank tile' : 'Tile ' + t.toUpperCase() + ', ' + values[t] + (values[t] === 1 ? ' point' : ' points');
-        return '<button type="button" class="rackbtn' + (on ? ' is-on' : '') + '" data-rack="' + idx + '" aria-pressed="' + on + '" aria-label="' + esc(name) + '">'
+        const hinted = !!(ui.hint && ui.hint.idxs.has(idx));
+        const name = (t === BLANK ? 'Blank tile' : 'Tile ' + t.toUpperCase() + ', ' + values[t] + (values[t] === 1 ? ' point' : ' points')) + (hinted ? ', used in the hint' : '');
+        return '<button type="button" class="rackbtn' + (on ? ' is-on' : '') + (hinted ? ' is-hinted' : '') + '" data-rack="' + idx + '" aria-pressed="' + on + '" aria-label="' + esc(name) + '">'
           + tileHtml(t, { value: values[t], blank: false }) + '</button>';
       }).join('');
       for (let k = shown.length; k < RACK_SIZE; k++) html += '<span class="rackslot" aria-hidden="true"></span>';
@@ -201,21 +325,39 @@ export function playView(main) {
           + '<button type="button" class="btn btn--ghost" data-act="swap-cancel">Cancel</button></div>';
         return;
       }
+      if (ui.hint) {
+        const m = ui.hint.move;
+        const word = m.score.words.find((w) => w.main);
+        controlsEl.innerHTML = '<div class="hintbar" role="status"><p><b>Hint:</b> ' + esc(word.word.toUpperCase()) + ' for ' + m.score.total + (m.score.total === 1 ? ' point' : ' points')
+          + (m.score.words.length > 1 ? ' (with ' + esc(m.score.words.filter((w) => !w.main).map((w) => w.word.toUpperCase()).join(', ')) + ')' : '') + '.</p>'
+          + '<p class="small muted">The faint tiles on the board show where. The lit tiles in your rack are the ones it uses.</p>'
+          + '<div class="btnrow"><button type="button" class="btn btn--primary" data-act="hint-use">Use this</button>'
+          + '<button type="button" class="btn btn--ghost" data-act="hint-no">No thanks</button></div></div>';
+        return;
+      }
       const none = ui.pending.length === 0;
       const canSwap = bag >= RACK_SIZE;
+      const hints = hintsLeft(player());
       controlsEl.innerHTML = '<div class="controls__row">'
         + '<button type="button" class="btn btn--quiet btn--small" data-act="shuffle">' + ICON.shuffle + 'Shuffle</button>'
         + '<button type="button" class="btn btn--quiet btn--small" data-act="recall"' + (none ? ' disabled' : '') + '>' + ICON.recall + 'Recall</button>'
         + '<button type="button" class="btn btn--quiet btn--small" data-act="swap"' + (canSwap ? '' : ' disabled aria-describedby="swapnote"') + '>' + ICON.swap + 'Swap</button>'
         + '<button type="button" class="btn btn--quiet btn--small" data-act="pass">' + ICON.pass + 'Pass</button>'
         + '</div>'
-        + '<button type="button" class="btn btn--primary btn--play" data-act="play"' + (none ? ' disabled' : '') + '>' + ICON.play + 'Play</button>'
+        + '<div class="controls__main">'
+        + '<button type="button" class="btn btn--ghost btn--hint" data-act="hint" aria-label="Hint, ' + hints + ' left"' + (hints && !ui.hintBusy ? '' : ' disabled') + '>'
+        + ICON.bulb + (ui.hintBusy ? 'Looking…' : 'Hint (' + hints + ')') + '</button>'
+        + '<button type="button" class="btn btn--primary btn--play" data-act="play"' + (none ? ' disabled' : '') + '>' + ICON.play + 'Play</button></div>'
         + (canSwap ? '' : '<p class="small muted" id="swapnote">You can swap only while the bag has at least 7 tiles.</p>');
     }
 
     function drawPreview() {
+      const offer = ui.allow && ui.error === ui.allow.message;
+      allowEl.hidden = !offer;
+      if (offer) allowEl.firstChild.textContent = 'Grown-up: allow ' + (ui.allow.words.length === 1 ? 'this word' : 'these words');
       previewEl.classList.toggle('is-error', !!ui.error);
       if (ui.error) { previewEl.textContent = ui.error; return; }
+      if (ui.note) { previewEl.textContent = ui.note; return; }
       if (ui.swapping) { previewEl.textContent = ''; return; }
       if (!ui.pending.length) {
         previewEl.textContent = empty
@@ -264,6 +406,8 @@ export function playView(main) {
       ui.pending.push({ idx, i, letter, blank });
       ui.selected = null;
       ui.error = '';
+      ui.note = '';
+      ui.hint = null;
       ui.cursor = i;
       refresh();
       return true;
@@ -271,11 +415,69 @@ export function playView(main) {
     function recall(i) {
       ui.pending = ui.pending.filter((p) => p.i !== i);
       ui.error = '';
+      ui.note = '';
       refresh();
     }
     function recallAll() {
       ui.pending = [];
       ui.error = '';
+      ui.note = '';
+    }
+
+    // ---- Hints ----
+    async function showHint() {
+      if (ui.hintBusy || hintsLeft(player()) <= 0) return;
+      ui.hintBusy = true;
+      ui.error = '';
+      ui.note = '';
+      refresh();
+      let res = null;
+      try {
+        res = await askHint(state, env);
+      } catch (err) {
+        console.error(err);
+      }
+      if (!alive || !root.isConnected) return;
+      ui.hintBusy = false;
+      if (!res || !res.move) {
+        // Nothing found: the hint is not used up.
+        ui.note = 'No word found — try swapping.';
+        refresh();
+        toast(ui.note);
+        return;
+      }
+      const used = useHint(state);
+      if (!used.ok) { toast(used.message); refresh(); return; }
+      state = used.state;
+      saveGame(state);
+      // Which rack tiles the hint uses (a blank where the move has one).
+      const rack = player().rack;
+      const idxs = new Set();
+      for (const t of res.move.tiles) {
+        const want = t.blank ? BLANK : t.letter;
+        const idx = ui.order.find((k) => !idxs.has(k) && rack[k] === want);
+        if (idx !== undefined) idxs.add(idx);
+      }
+      recallAll();
+      ui.selected = null;
+      ui.hint = { move: res.move, idxs };
+      refresh();
+      controlsEl.querySelector('[data-act="hint-use"]').focus();
+    }
+    function useShownHint() {
+      const { move, idxs } = ui.hint;
+      const rack = player().rack;
+      const free = new Set(idxs);
+      ui.pending = move.tiles.map((t) => {
+        const want = t.blank ? BLANK : t.letter;
+        const idx = [...free].find((k) => rack[k] === want);
+        free.delete(idx);
+        return { idx, i: t.r * n + t.c, letter: t.letter, blank: t.blank };
+      });
+      ui.hint = null;
+      ui.cursor = ui.pending[ui.pending.length - 1].i;
+      refresh();
+      controlsEl.querySelector('[data-act="play"]').focus();
     }
     function setCursor(i, focus = true) {
       ui.cursor = i;
@@ -292,6 +494,7 @@ export function playView(main) {
       const el = e.target.closest('[data-sq]');
       if (!el || drag.justDragged() || ui.swapping) return;
       const i = Number(el.dataset.sq);
+      if (ui.hint) { ui.hint = null; refresh(); }
       if (pendingAt(i)) { recall(i); setCursor(i); return; }
       if (!state.cells[i] && ui.selected != null) { place(ui.selected, i); return; }
       setCursor(i);
@@ -333,6 +536,8 @@ export function playView(main) {
         if (idx === undefined) { ui.error = 'You do not have ' + letter.toUpperCase() + ' in your rack.'; drawPreview(); return; }
         ui.pending.push({ idx, i: target, letter, blank });
         ui.error = '';
+        ui.note = '';
+        ui.hint = null;
         ui.cursor = nextEmpty(target);
         refresh();
         sqEls[ui.cursor].focus();
@@ -411,6 +616,7 @@ export function playView(main) {
         refresh();
       } else if (act === 'swap') {
         recallAll();
+        ui.hint = null;
         ui.selected = null;
         ui.swapping = true;
         ui.swapSel.clear();
@@ -433,6 +639,14 @@ export function playView(main) {
         if (res.ok) finish(res, { type: 'pass' });
       } else if (act === 'play') {
         submit();
+      } else if (act === 'hint') {
+        showHint();
+      } else if (act === 'hint-use') {
+        useShownHint();
+      } else if (act === 'hint-no') {
+        ui.hint = null;
+        refresh();
+        controlsEl.querySelector('[data-act="hint"]').focus();
       }
     });
 
@@ -440,8 +654,11 @@ export function playView(main) {
       if (!ui.pending.length) return;
       const res = play(state, placedTiles(), env);
       if (!res.ok) {
-        // Tiles stay where they are; show the engine's hint.
+        // Tiles stay where they are; show the engine's hint. If only unknown
+        // words stop it, a grown-up may allow them on this device.
         ui.error = res.message;
+        const words = res.error === 'not-a-word' ? allowableWords(state, placedTiles(), env) : null;
+        ui.allow = words ? { words, message: res.message } : null;
         drawPreview();
         toast(res.message);
         return;
@@ -449,11 +666,27 @@ export function playView(main) {
       finish(res, { type: 'play', score: res.score });
     }
 
+    allowEl.addEventListener('click', () => allowAndPlay());
+
+    async function allowAndPlay() {
+      if (!ui.allow) return;
+      const words = ui.allow.words;
+      const list = words.map((w) => w.toUpperCase()).join(', ');
+      const ok = await grownUpCheck('Allow ' + list + ' for children on this device? You can remove it later on the For parents page.');
+      if (!alive || !root.isConnected) return;
+      if (!ok) { allowEl.querySelector('button').focus(); return; }
+      allowWords(words);
+      env.allowed = new Set(allowedWords());
+      ui.allow = null;
+      ui.error = '';
+      submit();
+    }
+
     function finish(res, last) {
       last.name = player().name;
       state = res.state;
       saveGame(state);
-      handoff(last);
+      next(last);
       window.scrollTo(0, 0);
     }
 

@@ -67,15 +67,19 @@ Missing pictures show a lettered tile.
 ## Wordbright (in progress)
 
 A word-tile board game for 11+ practice, to be served at `/wordbright/`.
-The plan, rules and boards are in `wordbright-design/`. Pass-and-play for
-2–4 people works; computer players come next.
+The plan, rules and boards are in `wordbright-design/`. Two to four players
+on one device: children (pass-and-play) and computer players (Pip Easy, Ottie
+Normal, Bramble Hard, Fizz Crazy), each with their own word level. Children
+get 3 hints per game.
 
 ```
 wordbright/
 ├── LICENSE-ESDB.txt, LICENSE-LDNOOBW.txt   # word-list licences (keep with the data)
 ├── site/index.html, css/app.css
-├── site/data/        # built: words_*.dawg, board_*.json, tiles.json, star_words.json
-├── site/js/engine/   # board, bag, words, rules, score, game, levels (pure ES modules)
+├── site/data/        # built: words_all.dawg (every list, tagged), board_*.json, tiles.json, star_words.json
+├── site/assets/characters/  # built: the four computer players, WebP 256/128 px
+├── site/js/engine/   # board, bag, words, rules, score, game, levels, movegen (pure ES modules)
+├── site/js/ai/       # computer players and hints (pure), worker.js + client.js (Web Worker)
 ├── site/js/views/    # home, setup (new game), play, end, pages (rules, for parents)
 ├── site/js/ui/       # board drawing, drag-and-drop, dialogs, move cards
 └── tests/            # node --test
@@ -87,13 +91,23 @@ Try it locally:
 python3 -m http.server 8000 --directory wordbright/site
 ```
 
-Open http://localhost:8000. The saved game lives in `wb.game`; the theme is
-shared with Spellbright (`sb.theme`).
+Open http://localhost:8000. The saved game lives in `wb.game`, the last
+new-game choices in `wb.setup`, and words a grown-up allowed in `wb.allowed`;
+the theme is shared with Spellbright (`sb.theme`).
 
-Rebuild the word graphs and data after changing the word lists or boards:
+Rebuild the word graphs and data after changing the word lists or boards,
+and the character pictures after changing them in `wordbright-design/assets-raw/`:
 
 ```bash
 python3 tools/build-wordgraph.py
+python3 tools/wordbright-characters.py
+```
+
+Computer players play each other (strengths, move times, illegal moves):
+
+```bash
+node tools/wordbright-bots.mjs            # full run, about 2 minutes
+node tools/wordbright-bots.mjs --games 20 # quick
 ```
 
 Run the tests (Node 26, no npm packages):

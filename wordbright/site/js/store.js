@@ -1,7 +1,7 @@
 // Everything stays in this browser (localStorage). Nothing leaves the device.
 // The theme is shared with Spellbright ("sb.theme"); Wordbright's own keys start with "wb.".
 
-const KEYS = { theme: 'sb.theme', game: 'wb.game', setup: 'wb.setup' };
+const KEYS = { theme: 'sb.theme', game: 'wb.game', setup: 'wb.setup', allowed: 'wb.allowed' };
 
 function read(key, fallback) {
   try {
@@ -28,6 +28,18 @@ export function clearGame() {
 // The last choices on the new-game screen.
 export const lastSetup = () => read(KEYS.setup, null);
 export const saveSetup = (setup) => write(KEYS.setup, setup);
+
+// Words a grown-up has allowed on this device (children only; a sorted list).
+export function allowedWords() {
+  const list = read(KEYS.allowed, []);
+  return Array.isArray(list) ? list.filter((w) => typeof w === 'string' && /^[a-z]{2,20}$/.test(w)) : [];
+}
+export function allowWords(words) {
+  write(KEYS.allowed, [...new Set([...allowedWords(), ...words])].sort());
+}
+export function disallowWord(word) {
+  write(KEYS.allowed, allowedWords().filter((w) => w !== word));
+}
 
 export function getTheme() {
   try {

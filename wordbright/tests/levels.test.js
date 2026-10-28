@@ -12,20 +12,20 @@ test('16 word levels: Year 1 … Year 13, Degree, Master, Doctor', () => {
 
 test('the Rev 4 table, row by row', () => {
   const rows = {
-    // level: [band, computer list, computer max length, player list]
-    'year-1': ['A', 'starter', 6, 'full'],
-    'year-2': ['A', 'starter', 6, 'full'],
-    'year-3': ['B', 'starter', undefined, 'full'],
-    'year-4': ['B', 'starter', undefined, 'full'],
-    'year-5': ['C', 'steady', undefined, 'full'],
-    'year-6': ['C', 'steady', undefined, 'full'],
-    'year-7': ['D', 'steady', undefined, 'full'],
-    'year-9': ['D', 'steady', undefined, 'full'],
-    'year-10': ['E', 'full', undefined, 'full'],
-    'year-11': ['E', 'full', undefined, 'full'],
-    'year-12': ['F', 'full', undefined, 'large'],
-    'year-13': ['F', 'full', undefined, 'large'],
-    degree: ['G', 'large', undefined, 'large'],
+    // level: [band, computer list, computer max length, player list (xlarge at every level, C3a)]
+    'year-1': ['A', 'starter', 6, 'xlarge'],
+    'year-2': ['A', 'starter', 6, 'xlarge'],
+    'year-3': ['B', 'starter', undefined, 'xlarge'],
+    'year-4': ['B', 'starter', undefined, 'xlarge'],
+    'year-5': ['C', 'steady', undefined, 'xlarge'],
+    'year-6': ['C', 'steady', undefined, 'xlarge'],
+    'year-7': ['D', 'steady', undefined, 'xlarge'],
+    'year-9': ['D', 'steady', undefined, 'xlarge'],
+    'year-10': ['E', 'full', undefined, 'xlarge'],
+    'year-11': ['E', 'full', undefined, 'xlarge'],
+    'year-12': ['F', 'full', undefined, 'xlarge'],
+    'year-13': ['F', 'full', undefined, 'xlarge'],
+    degree: ['G', 'large', undefined, 'xlarge'],
     master: ['H', 'large', undefined, 'xlarge'],
     doctor: ['I', 'xlarge', undefined, 'xlarge'],
   };

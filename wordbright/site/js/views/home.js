@@ -26,7 +26,7 @@ export function home(main) {
     + '<div class="hero"><div class="stack">'
     + '<span class="eyebrow">' + esc(BRAND.full) + '</span>'
     + '<h1>Make words. Light up the board.</h1>'
-    + '<p class="hero__lede">A word-tile game for 11+ practice. Play with 2 to 4 people on one device, find the bonus squares, and score extra for the school spelling words.</p>'
+    + '<p class="hero__lede">A word-tile game for 11+ practice. Play against Pip, Ottie, Bramble and Fizz, or with up to 4 people on one device. Find the bonus squares, and score extra for the school spelling words.</p>'
     + '<div class="btnrow"><a class="btn btn--primary" href="#/new">New game' + ICON.arrow + '</a>'
     + '<a class="btn btn--ghost" href="#/rules">How to play</a></div></div>'
     + '<div class="hero__art" aria-hidden="true"><div class="hero__tiles">' + word + '</div></div>'

@@ -1,11 +1,15 @@
-// New-game screen: board, word level, word helper, players.
+// New-game screen: board, word helper, and 2–4 seats. Each seat is a child
+// (with a name) or a computer player (a character, which sets its strength),
+// and each seat has its own word level.
 import { LEVELS, level, STAR_YEARS } from '../engine/levels.js';
 import { MIN_PLAYERS, MAX_PLAYERS, newGame } from '../engine/game.js';
 import { BOARD_IDS, BOARD_MINUTES, boardJson, gameEnv } from '../data.js';
 import { savedGame, saveGame, lastSetup, saveSetup } from '../store.js';
 import { esc, ICON, ask, isPhone, toast } from '../ui/dom.js';
+import { CHARACTERS, STRENGTH_ORDER, character, pictureHtml } from '../ai/characters.js';
 
 const MAX_NAME = 16;
+const DEFAULT_LEVEL = 'year-5';
 
 const LIST_TEXT = {
   starter: 'common words',
@@ -24,53 +28,59 @@ export function starText(years) {
 
 export function levelText(id) {
   const l = level(id);
-  return 'You can play ' + LIST_TEXT[l.player] + '; ' + starText(l.starYears) + '.';
+  return 'You can play any of about 177,000 British words; ' + starText(l.starYears) + '.';
 }
 
-function defaultSetup() {
-  return { board: 'standard', level: 'year-5', helper: true, names: ['', ''] };
+function computerLevelText(id) {
+  const l = level(id);
+  return 'Knows ' + LIST_TEXT[l.computer.list] + (l.computer.maxLength ? ' of up to ' + l.computer.maxLength + ' letters' : '') + '.';
+}
+
+const knownLevel = (id) => LEVELS.some((l) => l.id === id);
+
+// The saved choices, including those saved before computer players (names + one level).
+function savedSetup() {
+  const prev = lastSetup() || {};
+  const lvl = knownLevel(prev.level) ? prev.level : DEFAULT_LEVEL;
+  let seats = Array.isArray(prev.seats) ? prev.seats : null;
+  if (!seats && Array.isArray(prev.names)) seats = prev.names.map((name) => ({ type: 'child', name }));
+  if (!seats) seats = [{ type: 'child', name: '' }, { type: 'computer', strength: 'normal' }];
+  seats = seats.slice(0, MAX_PLAYERS).map((s) => ({
+    type: s.type === 'computer' ? 'computer' : 'child',
+    name: typeof s.name === 'string' ? s.name.slice(0, MAX_NAME) : '',
+    strength: STRENGTH_ORDER.includes(s.strength) ? s.strength : 'normal',
+    level: knownLevel(s.level) ? s.level : lvl,
+  }));
+  while (seats.length < MIN_PLAYERS) seats.push({ type: 'computer', strength: 'normal', name: '', level: lvl });
+  return { board: prev.board || 'standard', helper: prev.helper !== false, level: lvl, seats };
 }
 
 export function setup(main) {
-  const prev = { ...defaultSetup(), ...(lastSetup() || {}) };
+  const prev = savedSetup();
   const phone = isPhone();
   if (phone && prev.board === 'large') prev.board = 'standard';
-  if (!LEVELS.some((l) => l.id === prev.level)) prev.level = 'year-5';
-  prev.helper = prev.helper !== false;
-  let names = (Array.isArray(prev.names) ? prev.names : ['', '']).slice(0, MAX_PLAYERS);
-  while (names.length < MIN_PLAYERS) names.push('');
-
-  const levelOptions = (from, to) => LEVELS.slice(from, to).map((l) =>
-    '<option value="' + l.id + '"' + (l.id === prev.level ? ' selected' : '') + '>' + esc(l.label) + '</option>').join('');
+  let seats = prev.seats;
 
   main.innerHTML = '<section class="wrap page setup">'
     + '<div class="pagehead"><span class="eyebrow">New game</span><h1>Set up a game</h1></div>'
     + '<form class="stack" data-form novalidate>'
     + '<fieldset class="card setting"><legend>Board</legend><div class="boards" data-boards></div></fieldset>'
-    + '<fieldset class="card setting"><legend>Word level</legend>'
-    + '<label class="field-label" for="level">Choose by school year or beyond</label>'
-    + '<select id="level" class="field" data-level>'
-    + '<optgroup label="School">' + levelOptions(0, 13) + '</optgroup>'
-    + '<optgroup label="Beyond school">' + levelOptions(13) + '</optgroup></select>'
-    + '<p class="muted small" data-level-text aria-live="polite"></p></fieldset>'
+    + '<fieldset class="card setting"><legend>Players</legend>'
+    + '<p class="muted small">Two to four players take turns on this device, with at least one child. Each player has their own word level.</p>'
+    + '<div class="seats" data-seats></div>'
+    + '<div class="btnrow"><button type="button" class="btn btn--ghost btn--small" data-add>' + ICON.plus + 'Add a player</button></div>'
+    + '<p class="small seats__error" data-seat-error role="alert"></p></fieldset>'
     + '<fieldset class="card setting"><legend>Word helper</legend>'
     + '<label class="switch"><input type="checkbox" role="switch" data-helper' + (prev.helper ? ' checked' : '') + ' aria-describedby="helper-text">'
     + '<span class="switch__track" aria-hidden="true"></span><span class="switch__label">Check words before Play</span></label>'
     + '<p class="muted small" id="helper-text" data-helper-text aria-live="polite"></p></fieldset>'
-    + '<fieldset class="card setting"><legend>Players</legend>'
-    + '<p class="muted small">Two to four people take turns on this device. Names are optional.</p>'
-    + '<div class="seats" data-seats></div>'
-    + '<div class="btnrow"><button type="button" class="btn btn--ghost btn--small" data-add>' + ICON.plus + 'Add a player</button>'
-    + '<button type="button" class="btn btn--ghost btn--small" disabled aria-describedby="soon">Add a computer player</button></div>'
-    + '<p class="muted small" id="soon">Computer players are coming soon.</p></fieldset>'
     + '<div class="btnrow"><button type="submit" class="btn btn--primary" data-start>Start game' + ICON.arrow + '</button></div>'
     + '</form></section>';
 
   const form = main.querySelector('[data-form]');
-  const levelSel = main.querySelector('[data-level]');
-  const levelTextEl = main.querySelector('[data-level-text]');
-  const seats = main.querySelector('[data-seats]');
+  const seatsEl = main.querySelector('[data-seats]');
   const addBtn = main.querySelector('[data-add]');
+  const seatError = main.querySelector('[data-seat-error]');
   const helperBox = main.querySelector('[data-helper]');
   const helperTextEl = main.querySelector('[data-helper-text]');
 
@@ -89,10 +99,6 @@ export function setup(main) {
     main.querySelectorAll('[data-mini]').forEach((el) => el.style.setProperty('--n', el.dataset.mini));
   }).catch(() => { main.querySelector('[data-boards]').innerHTML = '<p>The boards did not load. Check your connection, then reload the page.</p>'; });
 
-  const showLevel = () => { levelTextEl.textContent = levelText(levelSel.value); };
-  levelSel.addEventListener('change', showLevel);
-  showLevel();
-
   const showHelper = () => {
     helperTextEl.textContent = helperBox.checked
       ? 'On: while you place tiles, the game says whether your words are allowed.'
@@ -101,39 +107,102 @@ export function setup(main) {
   helperBox.addEventListener('change', showHelper);
   showHelper();
 
-  function readNames() {
-    names = [...seats.querySelectorAll('input')].map((i) => i.value);
+  // ---- Seats ----
+  const levelOptions = (chosen) => '<optgroup label="School">' + LEVELS.slice(0, 13).map((l) => opt(l, chosen)).join('') + '</optgroup>'
+    + '<optgroup label="Beyond school">' + LEVELS.slice(13).map((l) => opt(l, chosen)).join('') + '</optgroup>';
+  const opt = (l, chosen) => '<option value="' + l.id + '"' + (l.id === chosen ? ' selected' : '') + '>' + esc(l.label) + '</option>';
+  const seatNote = (s) => (s.type === 'computer' ? character(s.strength).about + ' ' + computerLevelText(s.level) : levelText(s.level));
+
+  function seatHtml(s, i) {
+    const n = i + 1;
+    const who = s.type === 'computer'
+      ? '<div class="seat__who seat__who--computer">' + pictureHtml(s.strength, 'portrait', 128, 'avatar avatar--seat')
+        + '<label class="sr" for="c' + i + '">Computer player ' + n + '</label>'
+        + '<select id="c' + i + '" class="field" data-strength="' + i + '">'
+        + STRENGTH_ORDER.map((k) => '<option value="' + k + '"' + (k === s.strength ? ' selected' : '') + '>'
+          + esc(CHARACTERS[k].name + ' — ' + CHARACTERS[k].label) + '</option>').join('') + '</select></div>'
+      : '<div class="seat__who"><label class="sr" for="p' + i + '">Name of player ' + n + '</label>'
+        + '<input id="p' + i + '" class="field" type="text" maxlength="' + MAX_NAME + '" autocomplete="off" placeholder="Player ' + n + '" value="' + esc(s.name) + '" data-name="' + i + '"></div>';
+    return '<fieldset class="seat" data-seat="' + i + '"><legend class="seat__title">Player ' + n + '</legend>'
+      + '<div class="seg" role="radiogroup" aria-label="Player ' + n + ' is">'
+      + ['child', 'computer'].map((t) => '<label class="seg__opt"><input type="radio" name="type' + i + '" value="' + t + '" data-type="' + i + '"'
+        + (s.type === t ? ' checked' : '') + '><span>' + (t === 'child' ? 'Child' : 'Computer') + '</span></label>').join('')
+      + '</div>'
+      + who
+      + '<div class="seat__level"><label class="small" for="l' + i + '">Word level</label>'
+      + '<select id="l' + i + '" class="field" data-level="' + i + '">' + levelOptions(s.level) + '</select></div>'
+      + '<p class="muted small seat__note" data-note="' + i + '">' + esc(seatNote(s)) + '</p>'
+      + (seats.length > MIN_PLAYERS ? '<button type="button" class="iconbtn seat__remove" data-remove="' + i + '" aria-label="Remove player ' + n + '">' + ICON.cross + '</button>' : '')
+      + '</fieldset>';
   }
+
   function drawSeats() {
-    seats.innerHTML = names.map((n, i) => '<div class="seat">'
-      + '<label for="p' + i + '">Player ' + (i + 1) + '</label>'
-      + '<input id="p' + i + '" class="field" type="text" maxlength="' + MAX_NAME + '" autocomplete="off" placeholder="Player ' + (i + 1) + '" value="' + esc(n) + '">'
-      + (names.length > MIN_PLAYERS ? '<button type="button" class="iconbtn" data-remove="' + i + '" aria-label="Remove player ' + (i + 1) + '">' + ICON.cross + '</button>' : '')
-      + '</div>').join('');
-    addBtn.disabled = names.length >= MAX_PLAYERS;
+    seatsEl.innerHTML = seats.map(seatHtml).join('');
+    addBtn.disabled = seats.length >= MAX_PLAYERS;
   }
   drawSeats();
-  addBtn.addEventListener('click', () => {
-    readNames();
-    if (names.length < MAX_PLAYERS) names.push('');
-    drawSeats();
-    seats.querySelector('#p' + (names.length - 1)).focus();
+
+  seatsEl.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.dataset.name != null) seats[Number(t.dataset.name)].name = t.value;
   });
-  seats.addEventListener('click', (e) => {
+  seatsEl.addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.dataset.type != null) {
+      const i = Number(t.dataset.type);
+      seats[i].type = t.value;
+      seatError.textContent = '';
+      drawSeats();
+      seatsEl.querySelector('[data-type="' + i + '"][value="' + t.value + '"]').focus();
+    } else if (t.dataset.strength != null) {
+      const i = Number(t.dataset.strength);
+      seats[i].strength = t.value;
+      drawSeats();
+      seatsEl.querySelector('#c' + i).focus();
+    } else if (t.dataset.level != null) {
+      const i = Number(t.dataset.level);
+      seats[i].level = t.value;
+      prev.level = t.value; // new seats start at the last level chosen
+      seatsEl.querySelector('[data-note="' + i + '"]').textContent = seatNote(seats[i]);
+    }
+  });
+  seatsEl.addEventListener('click', (e) => {
     const b = e.target.closest('[data-remove]');
     if (!b) return;
-    readNames();
-    names.splice(Number(b.dataset.remove), 1);
+    seats.splice(Number(b.dataset.remove), 1);
     drawSeats();
     addBtn.focus();
   });
+  addBtn.addEventListener('click', () => {
+    if (seats.length >= MAX_PLAYERS) return;
+    const hasChild = seats.some((s) => s.type === 'child');
+    seats.push(hasChild ? { type: 'computer', strength: 'normal', name: '', level: prev.level } : { type: 'child', name: '', level: prev.level });
+    drawSeats();
+    seatsEl.querySelector('[data-seat="' + (seats.length - 1) + '"] input, [data-seat="' + (seats.length - 1) + '"] select').focus();
+  });
+
+  // Computer players are named after their character ("Ottie", "Ottie 2").
+  function players() {
+    const used = new Map();
+    return seats.map((s, i) => {
+      if (s.type === 'child') return { name: s.name.trim().slice(0, MAX_NAME) || 'Player ' + (i + 1), level: s.level };
+      const base = character(s.strength).name;
+      const k = (used.get(base) || 0) + 1;
+      used.set(base, k);
+      return { name: k > 1 ? base + ' ' + k : base, level: s.level, computer: true, strength: s.strength };
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    readNames();
     const picked = form.querySelector('input[name="board"]:checked');
     if (!picked) { toast('Choose a board.'); return; }
-    const choice = { board: picked.value, level: levelSel.value, helper: helperBox.checked, names };
+    if (!seats.some((s) => s.type === 'child')) {
+      seatError.textContent = 'At least one player must be a child. Change a computer player to Child.';
+      seatsEl.querySelector('[data-type]').focus();
+      return;
+    }
+    const choice = { board: picked.value, level: prev.level, helper: helperBox.checked, seats: seats.map((s) => ({ ...s })) };
     saveSetup(choice);
     const current = savedGame();
     if (current && !current.state.over) {
@@ -143,11 +212,9 @@ export function setup(main) {
     const start = main.querySelector('[data-start]');
     start.disabled = true;
     try {
-      const lvl = level(choice.level);
-      const env = await gameEnv(choice.board, [lvl.player]);
+      const env = await gameEnv(choice.board);
       const seed = crypto.getRandomValues(new Uint32Array(1))[0];
-      const players = names.map((n, i) => ({ name: n.trim().slice(0, MAX_NAME) || 'Player ' + (i + 1) }));
-      saveGame(newGame({ board: choice.board, seed, level: choice.level, helper: choice.helper, players }, env));
+      saveGame(newGame({ board: choice.board, seed, level: seats[0].level, helper: choice.helper, players: players() }, env));
       location.hash = '#/play';
     } catch (err) {
       console.error(err);
