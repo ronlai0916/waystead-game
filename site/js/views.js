@@ -20,6 +20,12 @@ function yearStats(yearId) {
   const words = chs.reduce((n, c) => n + c.words.length, 0);
   return { passed, total: chs.length, words };
 }
+// "Start game" goes straight to the chapter to work on: the first one whose
+// test isn't passed yet (or the year's list once every chapter is passed).
+function startHref(yearId) {
+  const ch = D.chapters(yearId).find((c) => !S.chapterProgress(c.id).passed && isUnlocked(c));
+  return ch ? href(yearId, ch.slug) : href(yearId);
+}
 function wordEntries(ch) { return ch.words.map((w) => D.entry(w.word)); }
 
 function notFound(main) {
@@ -47,8 +53,9 @@ export function home(main) {
     + '<div class="stack"><span class="eyebrow">Spellbright</span>'
     + '<h1>Every word on the Year 3–6 list, one chapter at a time.</h1>'
     + '<p class="hero__lede">213 words from the national curriculum spelling list. Study each one, hear it in a British voice, save the flower with it, then prove it in a chapter test.</p>'
-    + '<div class="btnrow"><a class="btn btn--primary" href="' + href('y34') + '">Start with Year 3 &amp; 4' + ICON.arrow + '</a>'
-    + '<a class="btn btn--ghost" href="#/y56">Year 5 &amp; 6</a></div></div>'
+    + '<div class="btnrow"><a class="btn btn--primary" href="' + startHref('y34') + '">Start game with Year 3 &amp; 4' + ICON.arrow + '</a>'
+    + '<a class="btn btn--primary" href="' + startHref('y56') + '">Start game with Year 5 &amp; 6' + ICON.arrow + '</a></div>'
+    + '<p class="muted small">Each button opens the next chapter to work on.</p></div>'
     + '<div class="card today" aria-label="Word of the day">'
     + '<span class="eyebrow">Today\'s word</span>'
     + '<div class="today__word">' + chunked(w) + '</div>'
