@@ -31,4 +31,7 @@ A word-tile board game, to be served at /wordbright/. Design files and decisions
 - Board size and start squares come from the board file; never hard-code 9, 13 or 20.
 - `wordbright/site/data/` is generated: rebuild with `python3 tools/build-wordgraph.py`, never edit by hand. The licence files in `wordbright/` travel with it.
 - Never use other games' names or terms (see PLAN.md section 2); `wordbright/tests/names.test.js` checks.
+- The product name is only in `BRAND` (`wordbright/site/js/brand.js`); the HTML `<title>` is the one static copy, for link previews.
+- localStorage: theme is `sb.theme` (shared with Spellbright); everything else starts with `wb.`.
+- Squares: never show codes like DL/TW/2L/3W; use the names (Spark, Glow, Shine, Star) and our icons.
 - Tests: `node --test wordbright/tests/` (no npm packages).

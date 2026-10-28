@@ -35,8 +35,9 @@ function fail(state, error) {
   return { ok: false, error, message: HINTS[error], state };
 }
 
-// config: { board: 'standard', seed: 12345, level: 'year-5',
+// config: { board: 'standard', seed: 12345, level: 'year-5', helper?,
 //           players: [{ name, level?, computer? }] }  (2–4 players)
+// helper (the word helper switch) is kept for the screen; the engine ignores it.
 export function newGame(config, env) {
   if (config.board !== env.board.id) throw new Error(`env.board is "${env.board.id}", not "${config.board}"`);
   const n = (config.players || []).length;

@@ -67,16 +67,28 @@ Missing pictures show a lettered tile.
 ## Wordbright (in progress)
 
 A word-tile board game for 11+ practice, to be served at `/wordbright/`.
-The plan, rules and boards are in `wordbright-design/`. So far only the
-engine and its data exist:
+The plan, rules and boards are in `wordbright-design/`. Pass-and-play for
+2–4 people works; computer players come next.
 
 ```
 wordbright/
 ├── LICENSE-ESDB.txt, LICENSE-LDNOOBW.txt   # word-list licences (keep with the data)
+├── site/index.html, css/app.css
 ├── site/data/        # built: words_*.dawg, board_*.json, tiles.json, star_words.json
 ├── site/js/engine/   # board, bag, words, rules, score, game, levels (pure ES modules)
+├── site/js/views/    # home, setup (new game), play, end, pages (rules, for parents)
+├── site/js/ui/       # board drawing, drag-and-drop, dialogs, move cards
 └── tests/            # node --test
 ```
+
+Try it locally:
+
+```bash
+python3 -m http.server 8000 --directory wordbright/site
+```
+
+Open http://localhost:8000. The saved game lives in `wb.game`; the theme is
+shared with Spellbright (`sb.theme`).
 
 Rebuild the word graphs and data after changing the word lists or boards:
 
@@ -89,6 +101,27 @@ Run the tests (Node 26, no npm packages):
 ```bash
 node --test wordbright/tests/
 ```
+
+## Wordbright preview (password)
+
+Until launch, `/wordbright/` asks for a password and sends
+`X-Robots-Tag: noindex, nofollow`. The game's own nginx checks it (Caddy and
+`waystead-server` are unchanged), using a password file that lives only on
+the server and must never be committed:
+
+```bash
+mkdir -p /home/ubuntu/waystead-secrets
+printf 'NAME:%s\n' "$(openssl passwd -apr1)" > /home/ubuntu/waystead-secrets/wordbright.htpasswd
+chmod 644 /home/ubuntu/waystead-secrets/wordbright.htpasswd   # nginx in the container must read it
+```
+
+Make the file before `docker compose up`: if it is missing, Docker creates
+an empty folder in its place and `/wordbright/` gives an error. To change the
+password, run the `printf` line again (no restart needed).
+
+At launch, delete the two `auth_basic` lines (and `X-Robots-Tag`) in the
+`/wordbright/` block of `nginx/default.conf`, then
+`docker compose up -d --force-recreate`.
 
 ## Deploy (waystead-prod)
 

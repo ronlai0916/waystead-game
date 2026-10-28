@@ -5,3 +5,4 @@ __pycache__/
 .env.*
 tools/audio-samples/
 wordbright-design/assets-raw/options/
+*.htpasswd
