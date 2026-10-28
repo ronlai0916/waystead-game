@@ -38,14 +38,11 @@ export function runSession(main, opts) {
       + '<div class="status"><span class="progressline">Word ' + (index + 1) + ' of ' + words.length + '</span>'
       + '<span class="lives" aria-label="Lives">' + '<i></i>'.repeat(maxWrong) + '</span></div>'
       + '<div class="play__top">' + picture(w, { blur: MAX_BLUR }) + flower(maxWrong) + '</div>'
-      + (mode === 'full'
-        ? '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hearmain>' + ICON.play + 'Hear the word</button></div>'
-        : '')
+      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hearmain>' + ICON.play + 'Hear the word</button></div>'
       + '<div class="blanks" aria-live="polite"></div>'
       + '<details class="hint"><summary>Show the meaning</summary><div class="hint__body">'
       + '<p><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span> ' + esc(w.meaning.definition) + '</p>'
       + '<p class="example">' + redact(w.meaning.example, w.word) + '</p>'
-      + (mode === 'full' ? '' : '<div class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-hear>' + ICON.play + 'Hear the word</button></div>')
       + '</div></details>'
       + '<div data-slot>' + keyboard() + '</div>'
       + '<p class="muted small" data-wrongtext></p>'
