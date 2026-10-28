@@ -46,7 +46,7 @@ export function home(main) {
     + '<div class="hero">'
     + '<div class="stack"><span class="eyebrow">Spellbright</span>'
     + '<h1>Every word on the Year 3–6 list, one chapter at a time.</h1>'
-    + '<p class="hero__lede">213 words from the national curriculum spelling list. Study each one, hear it in a British voice, play hangman with it, then prove it in a chapter test.</p>'
+    + '<p class="hero__lede">213 words from the national curriculum spelling list. Study each one, hear it in a British voice, save the flower with it, then prove it in a chapter test.</p>'
     + '<div class="btnrow"><a class="btn btn--primary" href="' + href('y34') + '">Start with Year 3 &amp; 4' + ICON.arrow + '</a>'
     + '<a class="btn btn--ghost" href="#/y56">Year 5 &amp; 6</a></div></div>'
     + '<div class="card today" aria-label="Word of the day">'
@@ -74,8 +74,8 @@ export function home(main) {
     + '</aside>'
     + '<div class="steps"><span class="eyebrow">How a chapter works</span><ol>'
     + '<li><strong>Study</strong>Read the meaning, hear the word and see its spelling parts.</li>'
-    + '<li><strong>Quick game</strong>Hangman with 6 lives. The picture gets clearer as you miss.</li>'
-    + '<li><strong>Practice</strong>Full hangman, 10 lives. The picture stays hidden until the end.</li>'
+    + '<li><strong>Quick game</strong>Guess the letters before the flower loses its 6 petals. The picture gets clearer as you miss.</li>'
+    + '<li><strong>Practice</strong>The full game, with 10 petals. The picture stays hidden until the end.</li>'
     + '<li><strong>Test</strong>Hear each word and type it. Get every word right to open the next chapter.</li>'
     + '</ol></div></section>';
   applyMeters(main);
@@ -131,7 +131,7 @@ export function chapter(main, { yearId, slug }) {
     + '<div class="phases">'
     + '<div class="card phase"><span class="eyebrow">Step 1</span><h2>Study the words</h2><p class="muted small">Meaning, sound and spelling parts for all ' + ch.words.length + ' words, then a quick game.</p>' + done(p.studied)
     + '<a class="btn btn--primary" href="' + base + '/study">Study</a></div>'
-    + '<div class="card phase"><span class="eyebrow">Step 2</span><h2>Practice</h2><p class="muted small">Full hangman with every word in the chapter.</p>' + done(p.practised)
+    + '<div class="card phase"><span class="eyebrow">Step 2</span><h2>Practice</h2><p class="muted small">The flower game with 10 petals, for every word in the chapter.</p>' + done(p.practised)
     + '<a class="btn ' + (p.studied ? 'btn--primary' : 'btn--ghost') + '" href="' + base + '/practice">Practise</a></div>'
     + '<div class="card phase"><span class="eyebrow">Step 3</span><h2>Chapter test</h2><p class="muted small">Hear each word and type it. All ' + ch.words.length + ' right opens the next chapter.</p>'
     + (p.passed ? '<span class="pill pill--done">Passed</span>' : (p.attempts ? '<span class="pill pill--warm">Best ' + p.best + ' of ' + ch.words.length + '</span>' : '<span class="pill">Not yet</span>'))
@@ -510,7 +510,7 @@ export function about(main) {
     + '<span class="eyebrow">For parents</span><h1>About Spellbright</h1>'
     + '<p>Spellbright covers every word in the statutory spelling list for Years 3 to 6 in the national curriculum for England (English Appendix 1). That is 109 words for Years 3–4 and 104 for Years 5–6, the same words schools teach and that 11+ spelling questions draw on.</p>'
     + '<h2>How a chapter works</h2>'
-    + '<p>Each chapter has about ten words. Your child studies them (meaning, example, British pronunciation and the word split into spelling parts), plays a quick game of hangman, then a full practice game, then a test where they hear the word and type it. Every word right opens the next chapter.</p>'
+    + '<p>Each chapter has about ten words. Your child studies them (meaning, example, British pronunciation and the word split into spelling parts), plays a quick letter game where a flower loses a petal for each wrong guess, then a full practice game, then a test where they hear the word and type it. Every word right opens the next chapter.</p>'
     + '<p>Year 3–4 chapters go from easier to harder. Year 5–6 chapters group words by spelling pattern, such as silent letters or double consonants.</p>'
     + '<h2>Little and often</h2>'
     + '<p>Ten to fifteen minutes, three or four times a week, works better than one long session. Start each session with a few tricky words before moving on.</p>'

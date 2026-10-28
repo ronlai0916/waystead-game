@@ -1,13 +1,13 @@
 # CLAUDE.md — Waystead Games (Spellbright)
 
 ## What this is
-Spellbright by Waystead: a static spelling-hangman site at game.waystead.co.uk/hangman/.
+Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbright/. A wrong letter makes a flower lose a petal (no hangman imagery: it's for children).
 
 ## Hard constraints
 - Static only: HTML5, plain CSS (custom properties), vanilla ES modules. No framework, no build step, no npm runtime deps.
 - No backend, no accounts, no analytics, no third-party requests. Progress stays in localStorage (`sb.*` keys).
 - Content Security Policy is strict (`nginx/default.conf`): no inline `<script>`, no inline `style=""` attributes, no external hosts. Set styles from JS via `el.style` or classes.
-- All paths are relative (the site is served under `/hangman/`).
+- All paths are relative (the site is served under `/spellbright/`; the old `/hangman/` redirects).
 - British English in all copy.
 - No secrets in this repo, ever. Audio generation uses the gcloud login token, not an API key.
 

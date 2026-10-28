@@ -1,8 +1,9 @@
-// One play session: a list of words, played as hangman one after another.
+// One play session: a list of words, played one after another as the
+// flower game (guess letters before the petals fall).
 // Used by the quick game (6 wrong guesses, picture sharpens as you miss),
 // the full practice (10 wrong guesses, picture stays blurred until the end)
 // and "Pick words".
-import { Round, gallows, drawGallows } from './hangman.js';
+import { Round, flower, drawFlower } from './flower.js';
 import { speak, stop } from './speech.js';
 import { esc, picture, setBlur, revealPicture, chunked, redact, keyboard, ICON } from './ui.js';
 
@@ -36,7 +37,7 @@ export function runSession(main, opts) {
       + '<div class="pagehead"><span class="eyebrow">' + esc(eyebrow) + '</span><h1>' + esc(title) + '</h1></div>'
       + '<div class="status"><span class="progressline">Word ' + (index + 1) + ' of ' + words.length + '</span>'
       + '<span class="lives" aria-label="Lives">' + '<i></i>'.repeat(maxWrong) + '</span></div>'
-      + '<div class="play__top">' + picture(w, { blur: MAX_BLUR }) + gallows(mode) + '</div>'
+      + '<div class="play__top">' + picture(w, { blur: MAX_BLUR }) + flower(maxWrong) + '</div>'
       + (mode === 'full'
         ? '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hearmain>' + ICON.play + 'Hear the word</button></div>'
         : '')
@@ -64,7 +65,7 @@ export function runSession(main, opts) {
       if (st === 'lost') return '<span class="missed">' + c + '</span>';
       return '<span aria-label="blank">&nbsp;</span>';
     }).join('');
-    drawGallows(main.querySelector('.gallows'), mode, round.wrong);
+    drawFlower(main.querySelector('.flower'), round.wrong);
     main.querySelectorAll('.lives i').forEach((el, i) => el.classList.toggle('lost', i >= maxWrong - round.wrong));
     main.querySelector('[data-wrongtext]').textContent = 'Wrong guesses: ' + round.wrong + ' of ' + maxWrong;
     if (mode === 'mini' && st === 'playing') setBlur(main, MAX_BLUR * (1 - round.wrong / maxWrong));

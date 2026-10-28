@@ -43,6 +43,8 @@
   --warm-soft: var(--amber-50);
   --good: #1F7A4D;
   --good-soft: #E7F3EC;
+  --petal: #F7B8C8;
+  --petal-edge: #E58BA3;
   --bad: #B3362B;
   --bad-soft: #FBEAE7;
   --stroke: var(--ink);
@@ -74,6 +76,8 @@
   --warm-soft: #3A2C10;
   --good: #5BC58E;
   --good-soft: #15301F;
+  --petal: #E58BA3;
+  --petal-edge: #C9657F;
   --bad: #F08A7E;
   --bad-soft: #3A1A16;
   --stroke: #F3F1EC;
@@ -96,6 +100,10 @@
     --warm-soft: #3A2C10;
     --good: #5BC58E;
     --good-soft: #15301F;
+    --petal: #E58BA3;
+    --petal-edge: #C9657F;
+  --petal: #E58BA3;
+  --petal-edge: #C9657F;
     --bad: #F08A7E;
     --bad-soft: #3A1A16;
     --stroke: #F3F1EC;
@@ -298,16 +306,23 @@ img { max-width: 100%; display: block; }
 .spell .pic { max-width: 220px; }
 .spell__word { font-size: clamp(2.6rem, 12vw, 4.4rem); }
 
-/* ---- Play (hangman) ---------------------------------------------------- */
+/* ---- Play (flower game) ------------------------------------------------ */
 .play { display: grid; gap: 14px; }
 .play__top { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
 @media (min-width: 720px) { .play__top { grid-template-columns: 220px 1fr; } }
 .play__top .pic { max-width: 220px; }
-.gallows { width: 100%; max-height: 240px; }
-.gallows .g { fill: none; stroke: var(--stroke); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity 200ms ease; }
-.gallows .g.on { opacity: 1; }
-.gallows .g--base { opacity: 1; stroke: var(--line); }
-.gallows .head { fill: var(--amber); stroke: none; }
+.flower { width: 100%; max-height: 240px; overflow: visible; }
+.flower__ground { fill: none; stroke: var(--line); stroke-width: 6; stroke-linecap: round; }
+.flower__stem { fill: none; stroke: var(--good); stroke-width: 6; stroke-linecap: round; }
+.flower__leaf { fill: var(--good); }
+.flower__centre { fill: var(--amber); }
+.flower__eye { fill: var(--ink); }
+.flower__smile { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.petal { transform-box: view-box; transform-origin: 90px 72px; transition: transform 900ms cubic-bezier(.4, .1, .6, 1), opacity 900ms ease; }
+.petal ellipse { fill: var(--petal); stroke: var(--petal-edge); stroke-width: 2; }
+.petal.fallen { transform: translate(var(--dx, 0px), 118px) rotate(var(--rot, 45deg)); opacity: 0; }
+.flower--bare .flower__smile { transform: translate(0, 8px) scale(1, -1); transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .petal { transition: opacity 200ms ease; } .petal.fallen { transform: none; } }
 .status { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-weight: 700; }
 .lives { display: inline-flex; gap: 5px; }
 .lives i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }

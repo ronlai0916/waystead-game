@@ -2,7 +2,7 @@
 
 **Spellbright by Waystead** is a spelling game for the UK Year 3–6 statutory
 word list (213 words, English Appendix 1). It lives at
-**https://game.waystead.co.uk/hangman/**.
+**https://game.waystead.co.uk/spellbright/**.
 
 Static site: HTML + CSS + vanilla JS modules. No framework, no build step, no
 backend, no database, no secrets. Progress is kept in the browser
@@ -10,7 +10,7 @@ backend, no database, no secrets. Progress is kept in the browser
 
 ```
 waystead-game/
-├── site/                      # served at /hangman/
+├── site/                      # served at /spellbright/
 │   ├── index.html
 │   ├── css/app.css            # Waystead brand tokens (Ink, Paper, Teal, Amber)
 │   ├── js/                    # app.js (router), views.js, play.js, …
@@ -20,7 +20,7 @@ waystead-game/
 │   ├── assets/audio/          # words/*.mp3, letters/*.mp3 (British voice)
 │   ├── assets/images/         # <word>.jpg pictures (optional)
 │   └── sw.js                  # offline cache — bump VERSION every deploy
-├── nginx/default.conf         # headers + CSP, / → /hangman/
+├── nginx/default.conf         # headers + CSP, / → /spellbright/, /hangman/ → /spellbright/
 ├── docker-compose.yml         # waystead-game-web on the `web` network
 └── tools/
     ├── generate-audio.py      # Google Cloud TTS, en-GB-Neural2-A, via gcloud login

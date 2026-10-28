@@ -2,7 +2,7 @@
 // and audio are cached the first time they're used (and, if the asset list
 // names them, fetched in the background after install).
 // Bump VERSION on every deploy so phones pick up the new files.
-const VERSION = 'spellbright-2026-10-27b';
+const VERSION = 'spellbright-2026-10-28a';
 
 const SHELL = [
   './',
@@ -14,7 +14,7 @@ const SHELL = [
   'js/store.js',
   'js/speech.js',
   'js/ui.js',
-  'js/hangman.js',
+  'js/flower.js',
   'js/play.js',
   'js/views.js',
   'data/curriculum.json',
