@@ -186,3 +186,18 @@ test('hints: picked from the 5 best moves; computers have none; works on an empt
   assert.ok(move.score.total >= Math.min(...top));
   assert.equal(hintsLeft(s.players[1]), 0);
 });
+
+// ---- End screen: who celebrates -------------------------------------------
+import { celebration } from '../site/js/views/end.js';
+
+test('end screen: a winning computer celebrates; else the first computer cheers; children only: nobody', () => {
+  const st = (players, winners) => ({ players, result: { winners } });
+  const ava = { name: 'Ava' };
+  const ben = { name: 'Ben' };
+  const pip = { name: 'Pip', computer: true, strength: 'easy' };
+  const fizz = { name: 'Fizz', computer: true, strength: 'crazy' };
+  assert.deepEqual(celebration(st([ava, pip, fizz], [2])), { player: fizz, won: true });
+  assert.deepEqual(celebration(st([ava, pip, fizz], [0])), { player: pip, won: false });
+  assert.deepEqual(celebration(st([ava, fizz], [0, 1])), { player: fizz, won: true }); // a draw with a computer
+  assert.equal(celebration(st([ava, ben], [1])), null);
+});

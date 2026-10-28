@@ -162,3 +162,11 @@ Star words: 316 (Y1 43, Y2 61, Y3–4 109, Y5–6 104) in star_words.json, each 
 - How to play has a small drawn picture of where tiles can go (two right, two wrong).
 - The five single-list `.dawg` files are gone from the site; only `words_all.dawg` ships.
 
+## C4 decisions (28 Oct)
+- **Home page** at `/` (`hub/site/`, files under `/home-assets/`): "Waystead Game" in one `BRAND`, Plum accent (dark: #B08AE6, as Spellbright), hero picture with the heading on its empty left side, muted welcome loop only without reduced motion. Game cards wear their own game's colour: Spellbright Plum (not Teal: Teal is Waystead Learning's only), Wordbright Indigo. `WORDBRIGHT_LIVE = false` until launch ("Coming soon", not a link). Indexable.
+- **Win videos** on the Wordbright end screen: the winning computer celebrates, or the first computer cheers for the child who won; children-only games have none. Muted, plays once, the happy picture with reduced motion.
+- **Offline:** Wordbright has its own service worker (`wordbright-*` caches, scope /wordbright/): app shell, word graph, data and character pictures on install; videos the first time they play (byte ranges answered from the cached file).
+- **Grown-up PIN** (4 digits, salted SHA-256 in `wb.pin`) replaces the sum for "allow this word"; "Forgot PIN?" clears the PIN and the allowed words together. It is a gate for children, not a lock.
+- Credits and privacy on the For parents page and the home page, including "Pictures and videos made with xAI Grok Imagine" and "not affiliated with any board-game publisher".
+- Launch steps are the README "Launch checklist".
+

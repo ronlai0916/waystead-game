@@ -17,6 +17,7 @@ services:
       - /tmp
     volumes:
       - ./site:/usr/share/nginx/html/spellbright:ro
+      - ./hub/site:/usr/share/nginx/hub:ro
       # Wordbright preview, behind a password until launch (see README).
       - ./wordbright/site:/usr/share/nginx/html/wordbright:ro
       - /home/ubuntu/waystead-secrets/wordbright.htpasswd:/etc/nginx/wordbright.htpasswd:ro

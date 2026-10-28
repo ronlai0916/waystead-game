@@ -20,7 +20,8 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 ## Rules that bit before
 - The keyboard is three `.keyboard-row` containers (10/9/7 keys) with `flex-wrap: nowrap`. Check in a 390px viewport that P stays on row 1.
 - Every word's `chunks` must join to the word exactly (checked at load).
-- Bump `VERSION` in `site/sw.js` on every release.
+- Bump `VERSION` in `site/sw.js` on every Spellbright release, and in `wordbright/site/sw.js` on every Wordbright release. Each worker deletes only its own caches (`spellbright-*`, `wordbright-*`).
+- The home page (`hub/site/`, served at `/`) keeps every file under `/home-assets/` so it never clashes with a game path. Its name is only in `BRAND` (`hub/site/home-assets/js/config.js`); `WORDBRIGHT_LIVE` there turns the Wordbright card into a link at launch (README "Launch checklist").
 
 ## Workflow
 Build and STOP before commit. Ron reviews, commits and pushes, then pulls on the server.

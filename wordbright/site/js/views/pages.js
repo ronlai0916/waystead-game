@@ -1,7 +1,8 @@
 // Text pages: how to play, for parents, not found.
 import { BRAND } from '../brand.js';
-import { esc, ICON } from '../ui/dom.js';
-import { allowedWords, disallowWord } from '../store.js';
+import { esc, ICON, ask, askPin, toast } from '../ui/dom.js';
+import { allowedWords, disallowWord, storedPin, savePin, forgetPin } from '../store.js';
+import { makePin, checkPin, PIN_RE } from '../pin.js';
 import { SQUARE_ICON, SQUARE_TEXT, KINDS } from '../ui/board.js';
 
 const WORD_COUNT = 'We accept about 177,000 British words; no names, places, abbreviations or American spellings.';
@@ -65,11 +66,14 @@ export function about(main) {
     + '<p>' + esc(BRAND.product) + ' is a word-tile board game for children preparing for the 11+, and for anyone who likes words. Two to four players take turns on one device: children, and computer players if you like (Pip the dormouse is Easy, Ottie the otter Normal, Bramble the badger Hard, Fizz the magpie Crazy). Each player has their own word level.</p>'
     + '<h2>Words and Star words</h2>'
     + '<p>' + WORD_COUNT + ' Only British spellings count ("colour", not "color"), and the list has been filtered to keep it suitable for children. Children may play any of these words at every level. The word level sets which words the computer players know, which words hints suggest, and which Star words count. Star words are the school spelling words for that level; making one scores 5 extra points and shows what it means.</p>'
+    + '<h2 id="pin">Grown-up PIN</h2>'
+    + '<p>If a real word is missing, a grown-up can allow it when Play is refused ("Grown-up: allow this word"), with a 4-digit PIN. The PIN is kept on this device only, scrambled (as a salted hash), never as the digits.</p>'
+    + '<div data-pin></div>'
     + '<h2>Words you have allowed</h2>'
-    + '<p>If a real word is missing, a grown-up can allow it when Play is refused ("Grown-up: allow this word"). Allowed words count for children on this device only; computer players and hints never use them.</p>'
+    + '<p>Allowed words count for children on this device only; computer players and hints never use them.</p>'
     + '<div data-allowed></div>'
     + '<h2>Privacy</h2>'
-    + '<p>There is no account and no sign-in. The saved game is kept in this browser on this device and is never sent to us. There are no adverts, no tracking and no analytics.</p>'
+    + '<p>There are no accounts and no sign-in, no adverts, no tracking and no analytics. Progress and the saved game stay in this browser on this device and are never sent to us.</p>'
     + '<h2>Credits</h2>'
     + '<p>Word lists are made from the English Speller Database (ESDB), with this notice:</p>'
     + '<blockquote class="notice">Copyright 2000-2026 by Kevin Atkinson<br><br>'
@@ -79,10 +83,65 @@ export function about(main) {
     + 'The primary source of words for ESDB comes from 12dicts and ENABLE2K. Both are in the Public Domain, but Alan Beale deserves special credit as he is the author of 12dicts and a major contributor to ENABLE2K. In addition, he gave me an incredible amount of feedback and created a number of special lists in order to help improve the overall quality of ESDB.</blockquote>'
     + '<p>The child-safe filter uses the <a href="https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words">List of Dirty, Naughty, Obscene, and Otherwise Bad Words</a> (LDNOOBW), licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, with our own additions and changes.</p>'
     + '<p>Star words: English Appendix 1, the national curriculum in England (DfE, 2013). Contains public sector information licensed under the Open Government Licence v3.0.</p>'
+    + '<p>Pictures and videos made with xAI Grok Imagine.</p>'
     + '<h2>Who makes it</h2>'
-    + '<p>' + esc(BRAND.product) + ' is made by <a href="https://waystead.co.uk">' + esc(BRAND.maker) + '</a>, as is <a href="../spellbright/">Spellbright</a>. It is an independent project and is not affiliated with the Department for Education, any exam board or any other word game.</p>'
+    + '<p>' + esc(BRAND.product) + ' is made by <a href="https://waystead.co.uk">' + esc(BRAND.maker) + '</a>, as is <a href="../spellbright/">Spellbright</a>. It is an independent project, not affiliated with any board-game publisher, the Department for Education or any exam board.</p>'
     + '</section>';
-  drawAllowed(main.querySelector('[data-allowed]'));
+  const allowedBox = main.querySelector('[data-allowed]');
+  drawAllowed(allowedBox);
+  drawPin(main.querySelector('[data-pin]'), () => drawAllowed(allowedBox));
+}
+
+// Set, change or forget the grown-up PIN.
+function drawPin(box, onForget) {
+  const pin = storedPin();
+  const form = (title, button) => '<form class="pinform stack" data-pin-form novalidate>'
+    + (title ? '<p><b>' + title + '</b></p>' : '')
+    + '<div class="pinform__row"><label for="pin-new">New PIN (4 digits)</label>'
+    + '<input id="pin-new" class="field field--pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></div>'
+    + '<div class="pinform__row"><label for="pin-again">Type it again</label>'
+    + '<input id="pin-again" class="field field--pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></div>'
+    + '<p class="small gu-wrong" data-pin-error role="alert"></p>'
+    + '<div class="btnrow"><button type="submit" class="btn btn--primary">' + button + '</button>'
+    + (pin ? '<button type="button" class="btn btn--ghost" data-pin-cancel>Cancel</button>' : '') + '</div></form>';
+  box.innerHTML = pin
+    ? '<p>A PIN is set on this device.</p><div class="btnrow"><button type="button" class="btn btn--ghost btn--small" data-pin-change>Change PIN</button>'
+      + '<button type="button" class="btn btn--ghost btn--small" data-pin-forget>Forgot PIN?</button></div>'
+    : '<p class="muted">No PIN yet.</p>' + form('', 'Save PIN');
+
+  const wireForm = (focus) => {
+    box.querySelector('[data-pin-form]').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const a = box.querySelector('#pin-new').value.trim();
+      const b = box.querySelector('#pin-again').value.trim();
+      const err = box.querySelector('[data-pin-error]');
+      if (!PIN_RE.test(a)) { err.textContent = 'A PIN is 4 digits, like 2580.'; return; }
+      if (a !== b) { err.textContent = 'The two PINs are not the same.'; return; }
+      savePin(await makePin(a));
+      toast('PIN saved.');
+      drawPin(box, onForget);
+      box.querySelector('button').focus();
+    });
+    const cancel = box.querySelector('[data-pin-cancel]');
+    if (cancel) cancel.addEventListener('click', () => drawPin(box, onForget));
+    if (focus) box.querySelector('#pin-new').focus();
+  };
+  if (!pin) { wireForm(false); return; }
+
+  box.querySelector('[data-pin-change]').addEventListener('click', async () => {
+    const ok = await askPin('To change the PIN, enter the one you have now.', (entered) => checkPin(entered, pin));
+    if (!ok) return;
+    box.innerHTML = form('Choose a new PIN', 'Save new PIN');
+    wireForm(true);
+  });
+  box.querySelector('[data-pin-forget]').addEventListener('click', async () => {
+    const ok = await ask('Forgot the PIN?', 'This clears the PIN and every word allowed on this device. You can then set a new PIN.', 'Clear PIN and words', 'Keep them');
+    if (!ok) return;
+    forgetPin();
+    toast('PIN and allowed words cleared.');
+    drawPin(box, onForget);
+    onForget();
+  });
 }
 
 function drawAllowed(box) {

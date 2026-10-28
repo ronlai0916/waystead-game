@@ -6,8 +6,9 @@ import { scoreMove, RACK_SIZE } from '../engine/score.js';
 import { checkMove } from '../engine/rules.js';
 import { tilesLeft, BLANK } from '../engine/bag.js';
 import { gameEnv } from '../data.js';
-import { savedGame, saveGame, allowedWords, allowWords } from '../store.js';
-import { esc, ICON, toast, ask, pickLetter, isPhone, grownUpCheck } from '../ui/dom.js';
+import { savedGame, saveGame, allowedWords, allowWords, storedPin } from '../store.js';
+import { esc, ICON, toast, ask, pickLetter, isPhone, askPin, explainPin } from '../ui/dom.js';
+import { checkPin } from '../pin.js';
 import { boardHtml, legendHtml, squareInner, squareLabel, squareClass, tileHtml } from '../ui/board.js';
 import { enableDrag } from '../ui/drag.js';
 import { starEntry, starCardHtml, wordsHtml, scoresHtml } from '../ui/moves.js';
@@ -672,7 +673,10 @@ export function playView(main) {
       if (!ui.allow) return;
       const words = ui.allow.words;
       const list = words.map((w) => w.toUpperCase()).join(', ');
-      const ok = await grownUpCheck('Allow ' + list + ' for children on this device? You can remove it later on the For parents page.');
+      const what = 'Allow ' + list + ' for children on this device? You can remove it later on the For parents page.';
+      const pin = storedPin();
+      if (!pin) { await explainPin(what); return; } // the game is saved; For parents is one tap away
+      const ok = await askPin(what, (entered) => checkPin(entered, pin));
       if (!alive || !root.isConnected) return;
       if (!ok) { allowEl.querySelector('button').focus(); return; }
       allowWords(words);

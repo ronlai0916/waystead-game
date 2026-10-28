@@ -1,8 +1,10 @@
-# Waystead Games — Spellbright
+# Waystead Game — Spellbright, Wordbright and the home page
 
+**https://game.waystead.co.uk/** is the Waystead Game home page (`hub/site/`).
 **Spellbright by Waystead** is a spelling game for the UK Year 3–6 statutory
-word list (213 words, English Appendix 1). It lives at
-**https://game.waystead.co.uk/spellbright/**.
+word list (213 words, English Appendix 1), at
+**https://game.waystead.co.uk/spellbright/**. **Wordbright** (below) will be at
+`/wordbright/`.
 
 Static site: HTML + CSS + vanilla JS modules. No framework, no build step, no
 backend, no database, no secrets. Progress is kept in the browser
@@ -20,14 +22,39 @@ waystead-game/
 │   ├── assets/audio/          # words/*.mp3, letters/*.mp3 (British voice)
 │   ├── assets/images/         # <word>.jpg pictures (optional)
 │   └── sw.js                  # offline cache — bump VERSION every deploy
-├── nginx/default.conf         # headers + CSP, / → /spellbright/, /hangman/ → /spellbright/
+├── hub/site/                  # served at /: the Waystead Game home page
+│   ├── index.html
+│   └── home-assets/           # its own path, so it never clashes with a game:
+│                              #   css, js (config.js: BRAND, WORDBRIGHT_LIVE), fonts, icons, img, video
+├── wordbright/                # served at /wordbright/ (see below)
+├── nginx/default.conf         # headers + CSP, / = home page, /hangman/ → /spellbright/
 ├── docker-compose.yml         # waystead-game-web on the `web` network
 └── tools/
     ├── generate-audio.py      # Google Cloud TTS, en-GB-Neural2-A, via gcloud login
     ├── generate-images.py     # xAI grok-imagine-image, key from Keychain
     ├── image-prompts.json
-    └── build-assets-manifest.py
+    ├── build-assets-manifest.py
+    ├── build-media.py         # home-page hero and loop, Wordbright win videos (Pillow + ffmpeg)
+    └── …                      # Wordbright tools (below)
 ```
+
+## Waystead Game home page
+
+`hub/site/` is plain HTML, CSS and one small script: the two game cards, the
+Waystead Learning panel, and privacy and credits. The name is only in `BRAND`
+(`hub/site/home-assets/js/config.js`; the `<title>` is the one static copy).
+`WORDBRIGHT_LIVE` there is `false` until launch: the Wordbright card says
+"Coming soon" and is not a link. The theme is shared with the games (`sb.theme`).
+The welcome loop plays muted, and never with reduced motion.
+
+Remake the hero pictures and videos from `wordbright-design/assets-raw/`
+(needs `brew install ffmpeg`):
+
+```bash
+python3 tools/build-media.py
+```
+
+Try it locally: `python3 -m http.server 8000 --directory hub/site`.
 
 ## Run it locally
 
@@ -133,9 +160,7 @@ Make the file before `docker compose up`: if it is missing, Docker creates
 an empty folder in its place and `/wordbright/` gives an error. To change the
 password, run the `printf` line again (no restart needed).
 
-At launch, delete the two `auth_basic` lines (and `X-Robots-Tag`) in the
-`/wordbright/` block of `nginx/default.conf`, then
-`docker compose up -d --force-recreate`.
+At launch, follow the launch checklist below.
 
 ## Deploy (waystead-prod)
 
@@ -143,7 +168,31 @@ Wired like the parent site: its own Compose project, nginx on the external
 `web` network, and one block in `waystead-server/infra/caddy/Caddyfile`
 (`game.waystead.co.uk` → `waystead-game-web:80`).
 
-On every release: bump `VERSION` in `site/sw.js`, commit, push, then on the
-server `git pull --ff-only`. The site folder is bind-mounted, so no restart is
-needed for content changes (restart only if `nginx/default.conf` changed:
-`docker compose up -d --force-recreate`).
+On every release: bump `VERSION` in `site/sw.js` (Spellbright) and/or
+`wordbright/site/sw.js` (Wordbright), commit, push, then on the server
+`git pull --ff-only`. The site folders are bind-mounted, so no restart is
+needed for content changes (restart only if `nginx/default.conf` or
+`docker-compose.yml` changed: `docker compose up -d --force-recreate`).
+
+## Launch checklist (Wordbright)
+
+Owner checks first (Ron):
+
+- [ ] UKIPO trade-mark search for "Wordbright" in classes 9, 28 and 41.
+- [ ] xAI's current terms for commercial use of Grok Imagine output; write the
+      date checked and the result at the top of `wordbright-design/assets-raw/ASSETS.md`.
+
+Then the release:
+
+- [ ] `nginx/default.conf`, `/wordbright/` block: delete the two `auth_basic`
+      lines and the `X-Robots-Tag` line.
+- [ ] `hub/site/home-assets/js/config.js`: `WORDBRIGHT_LIVE = true`.
+- [ ] Bump `VERSION` in `wordbright/site/sw.js` and in `site/sw.js`.
+- [ ] Commit, push; on the server: `git pull --ff-only`, then
+      `docker compose up -d --force-recreate` (nginx changed).
+- [ ] Test: `/` shows the Wordbright card as a link; `/wordbright/` opens with
+      no password and no `X-Robots-Tag`; `/spellbright/` and `/hangman/` as before;
+      play a game against a computer player; turn the network off and reload
+      (the saved game comes back).
+- [ ] Later: the htpasswd file on the server can be deleted, with its line in
+      `docker-compose.yml`.

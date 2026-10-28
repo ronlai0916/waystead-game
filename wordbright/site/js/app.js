@@ -66,3 +66,8 @@ wireBrand();
 wireTheme();
 window.addEventListener('hashchange', onNavigate);
 render();
+
+// Offline play (sw.js). Only over HTTPS, so local testing never sticks to an old cache.
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}

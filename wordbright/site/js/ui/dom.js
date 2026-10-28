@@ -63,31 +63,46 @@ export function ask(title, text, yes, no = 'Cancel') {
   }).then((v) => v === true);
 }
 
-// A grown-up check: add two two-digit numbers (a new sum each time).
-// Resolves true when the answer is right, false if cancelled.
-export function grownUpCheck(what) {
-  const a = 11 + Math.floor(Math.random() * 79);
-  const b = 11 + Math.floor(Math.random() * 79);
+// Ask for the grown-up PIN. verify(pin) resolves true or false.
+// Resolves true once the right PIN is entered, false if cancelled.
+export function askPin(what, verify) {
   return modal('dlg--ask', (d, close) => {
     d.setAttribute('aria-labelledby', 'dlg-title');
-    d.innerHTML = '<h2 id="dlg-title">Grown-up check</h2>'
+    d.innerHTML = '<h2 id="dlg-title">Grown-up PIN</h2>'
       + '<p>' + esc(what) + '</p>'
-      + '<form class="stack" data-check novalidate><label for="gu-answer">What is ' + a + ' + ' + b + '?</label>'
-      + '<input id="gu-answer" class="field" type="text" inputmode="numeric" autocomplete="off" maxlength="3" autofocus>'
+      + '<form class="stack" data-check novalidate><label for="gu-pin">Enter the 4-digit PIN</label>'
+      + '<input id="gu-pin" class="field field--pin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="4" autofocus>'
       + '<p class="small gu-wrong" data-wrong role="alert"></p>'
-      + '<div class="btnrow"><button type="submit" class="btn btn--primary">Allow</button>'
-      + '<button type="button" class="btn btn--ghost" data-no>Cancel</button></div></form>';
+      + '<div class="btnrow"><button type="submit" class="btn btn--primary">OK</button>'
+      + '<button type="button" class="btn btn--ghost" data-no>Cancel</button></div>'
+      + '<p class="small"><a href="#/about" data-forgot>Forgot PIN?</a></p></form>';
     const input = d.querySelector('input');
-    d.querySelector('[data-check]').addEventListener('submit', (e) => {
+    d.querySelector('[data-check]').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (Number(input.value.trim()) === a + b) close(true);
+      if (await verify(input.value.trim())) close(true);
       else {
-        d.querySelector('[data-wrong]').textContent = 'That is not right. Try again.';
-        input.select();
+        d.querySelector('[data-wrong]').textContent = 'That PIN is not right. Try again.';
+        input.value = '';
+        input.focus();
       }
     });
     d.querySelector('[data-no]').addEventListener('click', () => close(false));
+    d.querySelector('[data-forgot]').addEventListener('click', () => close(false));
   }).then((v) => v === true);
+}
+
+// No PIN yet: say where to set one. Resolves when closed.
+export function explainPin(what) {
+  return modal('dlg--ask', (d, close) => {
+    d.setAttribute('aria-labelledby', 'dlg-title');
+    d.innerHTML = '<h2 id="dlg-title">A grown-up PIN is needed</h2>'
+      + '<p>' + esc(what) + '</p>'
+      + '<p>Set a 4-digit PIN first, on the For parents page. Then a grown-up can allow words with it.</p>'
+      + '<div class="btnrow"><a class="btn btn--primary" href="#/about" data-go>Go to For parents</a>'
+      + '<button type="button" class="btn btn--ghost" data-no autofocus>Not now</button></div>';
+    d.querySelector('[data-go]').addEventListener('click', () => close(true));
+    d.querySelector('[data-no]').addEventListener('click', () => close(false));
+  });
 }
 
 // Choose the letter a blank tile stands for. Resolves 'a'–'z' or null.

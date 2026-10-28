@@ -1,7 +1,9 @@
-// End of the game: final scores, winner, best word, Star words made.
+// End of the game: final scores, winner, best word, Star words made, and a
+// short video of a computer player (it won, or it cheers for the child who did).
 import { savedGame } from '../store.js';
 import { starWords } from '../data.js';
-import { esc, ICON } from '../ui/dom.js';
+import { esc, ICON, prefersReducedMotion } from '../ui/dom.js';
+import { character } from '../ai/characters.js';
 import { starEntry, starCardHtml } from '../ui/moves.js';
 
 const SPELLBRIGHT_YEARS = ['3-4', '5-6'];
@@ -44,6 +46,7 @@ export function endView(main) {
 
   main.innerHTML = '<section class="wrap page endgame">'
     + '<div class="pagehead"><span class="eyebrow">Game over</span><h1>' + esc(headline) + '</h1><p class="muted">' + reason + '</p></div>'
+    + celebrationHtml(s)
     + '<div class="card final"><h2>Final scores</h2><ol class="final__list">' + rows + '</ol></div>'
     + (best ? '<div class="card bestword"><span class="eyebrow">Best word</span><p class="bestword__word">' + esc(best.word.toUpperCase()) + '</p>'
       + '<p class="muted">' + esc(s.players[best.player].name) + ', ' + best.points + ' points</p></div>' : '')
@@ -51,6 +54,12 @@ export function endView(main) {
     + (made.size ? '<p class="muted small">Loading meanings…</p>' : '<p class="muted">No Star words this time. Look out for them next game: they score 5 extra points.</p>') + '</div>'
     + '<div class="btnrow" data-actions><a class="btn btn--primary" href="#/new">New game' + ICON.arrow + '</a></div>'
     + '</section>';
+
+  const v = main.querySelector('.cheer video');
+  if (v) {
+    v.muted = true; // never any sound
+    v.play().catch(() => {}); // if autoplay is refused, the poster stays
+  }
 
   if (made.size) {
     starWords().then((list) => {
@@ -73,4 +82,29 @@ export function endView(main) {
     }).catch(() => {});
   }
   return null;
+}
+
+// Which computer player celebrates: the first computer among the winners, or
+// else the first computer in the game cheering for the child who won. A game
+// of children only has no video. Returns { player, won } or null.
+export function celebration(state) {
+  const winners = state.result.winners.map((i) => state.players[i]);
+  const winner = winners.find((p) => p.computer);
+  if (winner) return { player: winner, won: true };
+  const fan = state.players.find((p) => p.computer);
+  return fan ? { player: fan, won: false } : null;
+}
+
+function celebrationHtml(state) {
+  const c = celebration(state);
+  if (!c) return '';
+  const ch = character(c.player.strength);
+  const poster = 'assets/characters/' + ch.id + '-happy-256.webp';
+  const text = c.won ? esc(c.player.name) + ' is celebrating!' : esc(c.player.name) + ' is cheering for you!';
+  const alt = ch.name + ' the ' + ch.animal + ', ' + (c.won ? 'celebrating' : 'cheering');
+  const media = prefersReducedMotion()
+    ? '<img class="cheer__media" src="' + poster + '" width="256" height="256" alt="' + esc(alt) + '">'
+    : '<video class="cheer__media" muted playsinline autoplay preload="auto" poster="' + poster + '" width="256" height="256" aria-label="' + esc(alt) + '">'
+      + '<source src="assets/videos/' + ch.id + '-win.webm" type="video/webm"><source src="assets/videos/' + ch.id + '-win.mp4" type="video/mp4"></video>';
+  return '<figure class="card cheer">' + media + '<figcaption>' + text + '</figcaption></figure>';
 }

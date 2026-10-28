@@ -1,7 +1,9 @@
 // Everything stays in this browser (localStorage). Nothing leaves the device.
 // The theme is shared with Spellbright ("sb.theme"); Wordbright's own keys start with "wb.".
 
-const KEYS = { theme: 'sb.theme', game: 'wb.game', setup: 'wb.setup', allowed: 'wb.allowed' };
+import { isStoredPin } from './pin.js';
+
+const KEYS = { theme: 'sb.theme', game: 'wb.game', setup: 'wb.setup', allowed: 'wb.allowed', pin: 'wb.pin' };
 
 function read(key, fallback) {
   try {
@@ -39,6 +41,20 @@ export function allowWords(words) {
 }
 export function disallowWord(word) {
   write(KEYS.allowed, allowedWords().filter((w) => w !== word));
+}
+
+// The grown-up PIN, as { salt, hash } (pin.js), or null.
+export const storedPin = () => {
+  const p = read(KEYS.pin, null);
+  return isStoredPin(p) ? p : null;
+};
+export const savePin = (p) => write(KEYS.pin, p);
+// "Forgot PIN?": the PIN and the words it allowed go together.
+export function forgetPin() {
+  try {
+    localStorage.removeItem(KEYS.pin);
+    localStorage.removeItem(KEYS.allowed);
+  } catch (e) { /* ignore */ }
 }
 
 export function getTheme() {

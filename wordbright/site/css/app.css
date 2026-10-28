@@ -512,3 +512,12 @@ main:focus, main:focus-visible { outline: none; }
 .place--ok .place__mark { background: var(--good); }
 .place--no .place__mark { background: var(--bad); }
 .place__mark svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- End screen: a computer player celebrates ---------------------------- */
+.cheer { margin: 0 0 16px; padding: 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; max-width: 520px; }
+.cheer__media { width: 128px; height: 128px; border-radius: 50%; object-fit: cover; background: var(--paper); }
+@media (min-width: 600px) { .cheer__media { width: 160px; height: 160px; } }
+.cheer figcaption { font-family: var(--f-display); font-weight: 700; font-size: 1.3rem; }
+.field--pin { max-width: 9ch; font-size: 1.3rem; letter-spacing: 0.3em; text-align: center; }
+.pinform { max-width: 420px; }
+.pinform__row { display: grid; gap: 4px; }
