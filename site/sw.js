@@ -2,7 +2,7 @@
 // and audio are cached the first time they're used, and fetched in the
 // background once the new version is active.
 // Bump VERSION on every deploy so phones pick up the new files.
-const VERSION = 'spellbright-2026-10-28e';
+const VERSION = 'spellbright-2026-10-28f';
 
 const SHELL = [
   './',

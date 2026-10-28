@@ -2,7 +2,8 @@
    Spellbright by Waystead
    Brand: Waystead tokens (Ink, Paper, Teal, Amber), Sora + Manrope.
    Rules kept from the parent site: the "Waystead" wordmark is always Ink;
-   chrome stays neutral; Teal is the product accent; Amber is the waypoint.
+   chrome stays neutral; Plum is the Waystead Game accent (Teal belongs to
+   Waystead Learning, used here only on its panel); Amber is the waypoint.
    ========================================================================== */
 
 @font-face {
@@ -27,6 +28,12 @@
   --teal-700: #0C7167;
   --teal-50: #ECF6F4;
   --teal-100: #DBEFEC;
+  /* Waystead Game's own colour (28 Oct 2026), so the games stand apart from
+     Waystead Learning's Teal. Teal is kept only for the Learning panel. */
+  --plum: #6B3FA0;
+  --plum-700: #57318A;
+  --plum-50: #F3EEF9;
+  --plum-100: #E6DCF3;
   --amber: #F2A31D;
   --amber-50: #FDF4E1;
   --amber-700: #B5750B;
@@ -37,9 +44,11 @@
   --line: #E6E1D6;
   --text: var(--ink);
   --muted: #5B5866;
-  --accent: var(--teal);
-  --accent-strong: var(--teal-700);
-  --accent-soft: var(--teal-50);
+  --accent: var(--plum);
+  --accent-strong: var(--plum-700);
+  --accent-soft: var(--plum-50);
+  --learning-soft: var(--teal-50);
+  --learning: var(--teal);
   --warm-soft: var(--amber-50);
   --good: #1F7A4D;
   --good-soft: #E7F3EC;
@@ -70,9 +79,11 @@
   --line: #34323B;
   --text: #F3F1EC;
   --muted: #B4B0BD;
-  --accent: #2DB5A5;
-  --accent-strong: #5CCFC1;
-  --accent-soft: #12302D;
+  --accent: #B08AE6;
+  --accent-strong: #CDB4F2;
+  --accent-soft: #2A2038;
+  --learning-soft: #12302D;
+  --learning: #2DB5A5;
   --warm-soft: #3A2C10;
   --good: #5BC58E;
   --good-soft: #15301F;
@@ -94,16 +105,16 @@
     --line: #34323B;
     --text: #F3F1EC;
     --muted: #B4B0BD;
-    --accent: #2DB5A5;
-    --accent-strong: #5CCFC1;
-    --accent-soft: #12302D;
+    --accent: #B08AE6;
+    --accent-strong: #CDB4F2;
+    --accent-soft: #2A2038;
+    --learning-soft: #12302D;
+    --learning: #2DB5A5;
     --warm-soft: #3A2C10;
     --good: #5BC58E;
     --good-soft: #15301F;
     --petal: #E58BA3;
     --petal-edge: #C9657F;
-  --petal: #E58BA3;
-  --petal-edge: #C9657F;
     --bad: #F08A7E;
     --bad-soft: #3A1A16;
     --stroke: #F3F1EC;
@@ -189,8 +200,8 @@ img { max-width: 100%; display: block; }
   border: 2px solid transparent; transition: transform 100ms ease, background-color 150ms ease;
 }
 .btn:active { transform: scale(0.98); }
-.btn--primary { background: var(--teal); color: #fff; }
-.btn--primary:hover { background: var(--teal-700); }
+.btn--primary { background: var(--plum); color: #fff; }
+.btn--primary:hover { background: var(--plum-700); }
 .btn--ghost { background: transparent; border-color: var(--line); color: var(--text); }
 .btn--ghost:hover { border-color: var(--muted); }
 .btn--quiet { background: var(--surface-2); color: var(--text); }
@@ -210,7 +221,7 @@ img { max-width: 100%; display: block; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); }
 
 /* ---- Chunked word (the signature) --------------------------------------
-   A word shown as its spelling chunks, each chunk resting on a teal rail;
+   A word shown as its spelling chunks, each chunk resting on a plum rail;
    the amber waypoint dot marks where the word starts. */
 .chunked { display: inline-flex; flex-wrap: wrap; align-items: flex-end; gap: 0.18em; font-family: var(--f-display); font-weight: 700; letter-spacing: 0.02em; }
 .chunked__chunk { position: relative; padding: 0 0.04em 0.16em; }
@@ -246,14 +257,18 @@ img { max-width: 100%; display: block; }
 .shortcut strong { font-family: var(--f-display); }
 .shortcut svg { width: 22px; height: 22px; flex: none; fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
-.promo { margin-top: 28px; padding: 22px; display: grid; gap: 20px; align-items: center; background: var(--accent-soft); }
+.promo { margin-top: 28px; padding: 22px; display: grid; gap: 20px; align-items: center; background: var(--learning-soft); }
+/* The Learning panel speaks in Learning's own Teal. */
+.promo .eyebrow { color: var(--learning); }
+.promo .btn--primary { background: var(--teal); }
+.promo .btn--primary:hover { background: var(--teal-700); }
 .promo h2 { font-family: var(--f-display); margin: 0; }
 .promo p { margin: 0; }
 .promo__papers { position: relative; width: 112px; height: 132px; margin: 0 auto; }
 .promo__papers i { position: absolute; inset: 0; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
 .promo__papers i:nth-child(1) { transform: rotate(-8deg) translate(-10px, 4px); }
 .promo__papers i:nth-child(2) { transform: rotate(5deg) translate(8px, 2px); }
-.promo__papers i:nth-child(3) { background: repeating-linear-gradient(var(--surface) 0 18px, var(--line) 18px 19px, var(--surface) 19px 22px) content-box, var(--surface); padding: 26px 14px 14px; border-top: 6px solid var(--accent); }
+.promo__papers i:nth-child(3) { background: repeating-linear-gradient(var(--surface) 0 18px, var(--line) 18px 19px, var(--surface) 19px 22px) content-box, var(--surface); padding: 26px 14px 14px; border-top: 6px solid var(--teal); }
 @media (min-width: 720px) { .promo { grid-template-columns: 150px 1fr; padding: 26px 28px; } }
 .steps { margin-top: 40px; }
 .steps ol { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 12px; counter-reset: s; }
@@ -351,7 +366,7 @@ details.hint .hint__body { padding: 0 16px 14px; display: grid; gap: 6px; }
 }
 .key:hover:not(:disabled) { border-color: var(--accent); }
 .key:active:not(:disabled) { transform: translateY(1px); box-shadow: none; }
-.key.hit { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: none; }
+.key.hit { background: var(--plum); border-color: var(--plum); color: #fff; box-shadow: none; }
 .key.miss { background: var(--surface-2); color: var(--muted); text-decoration: line-through; box-shadow: none; }
 .key:disabled { cursor: default; }
 
@@ -378,7 +393,7 @@ details.hint .hint__body { padding: 0 16px 14px; display: grid; gap: 6px; }
 :root[data-theme="dark"] .tab[aria-selected="true"] { background: var(--text); color: var(--bg); }
 .picker { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); max-height: 52vh; overflow: auto; padding: 4px; }
 .picker label { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); font-weight: 600; cursor: pointer; }
-.picker input { width: 18px; height: 18px; accent-color: var(--teal); }
+.picker input { width: 18px; height: 18px; accent-color: var(--plum); }
 .field { width: 100%; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text); }
 .stickybar { position: sticky; bottom: 0; padding: 12px 0; background: var(--bg); border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 16px; }
 

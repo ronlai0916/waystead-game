@@ -12,7 +12,7 @@ backend, no database, no secrets. Progress is kept in the browser
 waystead-game/
 ├── site/                      # served at /spellbright/
 │   ├── index.html
-│   ├── css/app.css            # Waystead brand tokens (Ink, Paper, Teal, Amber)
+│   ├── css/app.css            # Waystead brand tokens (Ink, Paper, Plum, Amber)
 │   ├── js/                    # app.js (router), views.js, play.js, …
 │   ├── data/curriculum.json   # 213 words: meaning, IPA, chunks, image name
 │   ├── data/assets.json       # which pictures/MP3s exist (built by a tool)

@@ -12,7 +12,8 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - No secrets in this repo, ever. Audio generation uses the gcloud login token, not an API key.
 
 ## Brand (Waystead)
-- Ink `#1B1A20`, Paper `#FAF8F3`, Teal `#0F8B7E` (product accent), Amber `#F2A31D` (the waypoint dot only).
+- Ink `#1B1A20`, Paper `#FAF8F3`, Plum `#6B3FA0` (Waystead Game accent, 28 Oct 2026), Amber `#F2A31D` (the waypoint dot only).
+- Teal `#0F8B7E` belongs to Waystead Learning: use it only on the Learning panel, never as a game accent.
 - Sora (headings, wordmark 600/700), Manrope (body). Self-hosted woff2, same files as waystead-parent.
 - The "Waystead" wordmark is never recoloured. Logo = the waymark (two chevrons as a W, amber dot).
 
