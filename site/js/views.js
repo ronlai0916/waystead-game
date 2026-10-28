@@ -26,6 +26,12 @@ function startHref(yearId) {
   const ch = D.chapters(yearId).find((c) => !S.chapterProgress(c.id).passed && isUnlocked(c));
   return ch ? href(yearId, ch.slug) : href(yearId);
 }
+// Cambridge Dictionary's page for a word: its UK audio, recorded by people.
+// Opens in a new tab so the game keeps its place.
+function cambridgeLink(w, cls) {
+  return '<a class="btn ' + cls + '" href="https://dictionary.cambridge.org/dictionary/english/' + encodeURIComponent(w.word.toLowerCase())
+    + '" target="_blank" rel="noopener noreferrer">' + ICON.external + 'Cambridge Dictionary<span class="sr"> (opens in a new tab)</span></a>';
+}
 function wordEntries(ch) { return ch.words.map((w) => D.entry(w.word)); }
 
 function notFound(main) {
@@ -168,6 +174,7 @@ export function study(main, { yearId, slug }) {
       + '<button type="button" class="btn btn--quiet btn--small" data-hear="' + esc(w.word) + '">' + ICON.play + 'Hear it</button>'
       + '<a class="btn btn--quiet btn--small" href="' + base + '/study/' + encodeURIComponent(w.word) + '">' + ICON.spell + 'Spell it out</a>'
       + '<a class="btn btn--quiet btn--small" href="' + base + '/quick/' + encodeURIComponent(w.word) + '">' + ICON.game + 'Quick game</a>'
+      + cambridgeLink(w, 'btn--quiet btn--small')
       + '</div></div></article>').join('') + '</div>'
     + '<div class="stickybar"><span class="muted small">Studied all ' + ch.words.length + '?</span>'
     + '<button type="button" class="btn btn--primary" data-done>I\'ve studied these' + ICON.arrow + '</button></div>'
@@ -193,7 +200,8 @@ export function spell(main, { yearId, slug, word }) {
     + '<button type="button" class="btn btn--ghost" data-spell>' + ICON.spell + 'Spell it letter by letter</button></div>'
     + '<p>' + esc(w.meaning.definition) + '</p>'
     + '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>'
-    + '<a class="btn btn--quiet btn--small" href="' + href(yearId, slug, 'quick', encodeURIComponent(w.word)) + '">' + ICON.game + 'Quick game with this word</a>'
+    + '<div class="btnrow btnrow--center"><a class="btn btn--quiet btn--small" href="' + href(yearId, slug, 'quick', encodeURIComponent(w.word)) + '">' + ICON.game + 'Quick game with this word</a>'
+    + cambridgeLink(w, 'btn--quiet btn--small') + '</div>'
     + '</div></section>';
   const letters = main.querySelectorAll('.spell__word .chunked__letter');
   main.querySelector('[data-hear]').addEventListener('click', () => {

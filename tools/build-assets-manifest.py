@@ -8,6 +8,7 @@ Run it after adding pictures or audio:
 
     python3 tools/build-assets-manifest.py
 """
+import hashlib
 import json
 from pathlib import Path
 
@@ -35,7 +36,15 @@ def main():
     words = [f[:-4] for f in names("assets/audio/words", ".mp3") if f[:-4] in wanted_words]
     letters = [f[:-4] for f in names("assets/audio/letters", ".mp3") if len(f) == 5]
 
-    out = {"images": images, "audioWords": words, "audioLetters": letters}
+    # A short fingerprint of all the audio: the app adds it to each MP3's
+    # address (?v=…), so remade recordings reach phones past every cache.
+    h = hashlib.sha256()
+    for w in words:
+        h.update((SITE / "assets/audio/words" / (w + ".mp3")).read_bytes())
+    for L in letters:
+        h.update((SITE / "assets/audio/letters" / (L + ".mp3")).read_bytes())
+    out = {"images": images, "audioWords": words, "audioLetters": letters,
+           "audioVersion": h.hexdigest()[:10] if (words or letters) else ""}
     (SITE / "data" / "assets.json").write_text(json.dumps(out, indent=1) + "\n")
     print(f"assets.json: {len(images)} of {len(wanted_images)} pictures, "
           f"{len(words)} of {len(wanted_words)} word audio, {len(letters)} of 26 letter audio")

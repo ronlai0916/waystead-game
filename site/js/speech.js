@@ -1,7 +1,7 @@
 // Audio: the bundled British MP3s when they exist (same voice on every device);
 // otherwise the device's own en-GB voice, so the game still talks before the
 // MP3s are generated.
-import { hasWordAudio, hasLetterAudio } from './data.js';
+import { hasWordAudio, hasLetterAudio, wordAudioUrl, letterAudioUrl } from './data.js';
 
 let current = null;
 let gbVoice = null;
@@ -54,14 +54,14 @@ function sayAloud(text, rate) {
 
 async function wordOnce(word) {
   if (hasWordAudio(word)) {
-    const ok = await playFile('assets/audio/words/' + word.toLowerCase() + '.mp3');
+    const ok = await playFile(wordAudioUrl(word));
     if (ok) return true;
   }
   return sayAloud(word, 0.85);
 }
 async function letterOnce(L) {
   if (hasLetterAudio(L)) {
-    const ok = await playFile('assets/audio/letters/' + L.toUpperCase() + '.mp3');
+    const ok = await playFile(letterAudioUrl(L));
     if (ok) return true;
   }
   return sayAloud(L.toUpperCase(), 0.75);

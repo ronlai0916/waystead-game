@@ -2,7 +2,7 @@
 // and audio are cached the first time they're used (and, if the asset list
 // names them, fetched in the background after install).
 // Bump VERSION on every deploy so phones pick up the new files.
-const VERSION = 'spellbright-2026-10-28b';
+const VERSION = 'spellbright-2026-10-28d';
 
 const SHELL = [
   './',
@@ -36,8 +36,8 @@ self.addEventListener('install', (event) => {
       const res = await cache.match('data/assets.json');
       const a = res ? await res.json() : {};
       const media = [
-        ...(a.audioWords || []).map((w) => 'assets/audio/words/' + w + '.mp3'),
-        ...(a.audioLetters || []).map((L) => 'assets/audio/letters/' + L + '.mp3'),
+        ...(a.audioWords || []).map((w) => 'assets/audio/words/' + w + '.mp3' + (a.audioVersion ? '?v=' + a.audioVersion : '')),
+        ...(a.audioLetters || []).map((L) => 'assets/audio/letters/' + L + '.mp3' + (a.audioVersion ? '?v=' + a.audioVersion : '')),
         ...(a.images || []).map((f) => 'assets/images/' + f),
       ];
       for (const url of media) {

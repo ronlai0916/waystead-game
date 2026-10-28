@@ -9,6 +9,7 @@ let curriculum = null;
 let byWord = new Map();
 let chaptersById = new Map();
 let assets = { images: new Set(), audioWords: new Set(), audioLetters: new Set() };
+let audioVersion = '';
 
 export async function loadData() {
   const [cRes, aRes] = await Promise.all([
@@ -40,6 +41,7 @@ export async function loadData() {
       assets.images = new Set(a.images || []);
       assets.audioWords = new Set(a.audioWords || []);
       assets.audioLetters = new Set(a.audioLetters || []);
+      audioVersion = a.audioVersion || '';
     } catch (e) { /* no manifest yet: placeholders and device voice */ }
   }
 }
@@ -52,6 +54,8 @@ export const chapterById = (id) => chaptersById.get(id) || null;
 export const entry = (word) => byWord.get(word) || null;
 export const allWords = () => [...byWord.values()];
 export const hasImage = (w) => assets.images.has(w.image);
+export const letterAudioUrl = (L) => 'assets/audio/letters/' + L.toUpperCase() + '.mp3' + (audioVersion ? '?v=' + audioVersion : '');
+export const wordAudioUrl = (word) => 'assets/audio/words/' + word.toLowerCase() + '.mp3' + (audioVersion ? '?v=' + audioVersion : '');
 export const hasWordAudio = (word) => assets.audioWords.has(word.toLowerCase());
 export const hasLetterAudio = (L) => assets.audioLetters.has(L.toUpperCase());
 

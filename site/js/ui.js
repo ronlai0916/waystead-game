@@ -8,8 +8,9 @@ export function esc(s) {
 export const ICON = {
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
   spell: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18l4-12 4 12M5.5 14h5"/><path d="M15 9h5M15 13h5M15 17h3"/></svg>',
-  game: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h8M6 20V4h8v3"/><circle cx="14" cy="10" r="2.5"/><path d="M14 12.5V17"/></svg>',
+  game: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="2"/><path d="M12 5.5a2.5 2.5 0 1 0-2.4 3.2M12 5.5a2.5 2.5 0 1 1 2.4 3.2M9.6 8.7a2.5 2.5 0 1 0 2.4 2.8M14.4 8.7a2.5 2.5 0 1 1-2.4 2.8"/><path d="M12 11.5V21M12 17c-2.5 0-4-1.5-4.5-3.5 2.5 0 4 1.5 4.5 3.5z"/></svg>',
   lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  external: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
 };
 
