@@ -64,6 +64,32 @@ Hand-made pictures work too: put `<word>.jpg` (names as in `curriculum.json`)
 in `site/assets/images/`, then run `python3 tools/build-assets-manifest.py`.
 Missing pictures show a lettered tile.
 
+## Wordbright (in progress)
+
+A word-tile board game for 11+ practice, to be served at `/wordbright/`.
+The plan, rules and boards are in `wordbright-design/`. So far only the
+engine and its data exist:
+
+```
+wordbright/
+├── LICENSE-ESDB.txt, LICENSE-LDNOOBW.txt   # word-list licences (keep with the data)
+├── site/data/        # built: words_*.dawg, board_*.json, tiles.json, star_words.json
+├── site/js/engine/   # board, bag, words, rules, score, game, levels (pure ES modules)
+└── tests/            # node --test
+```
+
+Rebuild the word graphs and data after changing the word lists or boards:
+
+```bash
+python3 tools/build-wordgraph.py
+```
+
+Run the tests (Node 26, no npm packages):
+
+```bash
+node --test wordbright/tests/
+```
+
 ## Deploy (waystead-prod)
 
 Wired like the parent site: its own Compose project, nginx on the external

@@ -1,0 +1,44 @@
+{
+ "id": "junior",
+ "title": "Junior",
+ "size": 9,
+ "start": [
+  [
+   4,
+   4
+  ]
+ ],
+ "squares": {
+  "S": {
+   "name": "Spark",
+   "letter": 2,
+   "word": 1
+  },
+  "G": {
+   "name": "Glow",
+   "letter": 3,
+   "word": 1
+  },
+  "H": {
+   "name": "Shine",
+   "letter": 1,
+   "word": 2
+  },
+  "T": {
+   "name": "Star",
+   "letter": 1,
+   "word": 3
+  }
+ },
+ "grid": [
+  "...S.S...",
+  ".T.....T.",
+  "..H.G.H..",
+  "S..S.S..S",
+  "..G.*.G..",
+  "S..S.S..S",
+  "..H.G.H..",
+  ".T.....T.",
+  "...S.S..."
+ ]
+}

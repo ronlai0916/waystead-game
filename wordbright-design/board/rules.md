@@ -15,9 +15,9 @@
    | **Star** (3W) | the whole word × 3 |
 
    Two word-squares in one word multiply together (two Shines = × 4).
-5. **Star words.** If you make a word from the Year 3–6 spelling list, you get **+5** for each one, and you see what it means.
+5. **Star words.** If you make a word from the school spelling list for your level (Year 1–2, 3–4 or 5–6 words; Year 7 and up: all of them; Degree and up: none), you get **+5** for each one, and you see what it means.
 6. **Full-rack bonus.** Use all 7 tiles in one turn: **+30**.
 7. **Blank tiles.** A blank can be any letter. It scores 0.
-8. **Swap or pass.** Instead of playing, you can swap some tiles with the bag (you miss that turn), or pass.
+8. **Swap or pass.** Instead of playing, you can swap some tiles with the bag (only while it has at least 7 tiles; you miss that turn), or pass.
 9. **New tiles.** After your turn, take tiles from the bag until you have 7 again.
-10. **End of the game.** The game ends when the bag is empty and one player has used all their tiles, or when everyone passes three times in a row. Each player takes away the points of the tiles still in their rack. Highest score wins.
+10. **End of the game.** The game ends when the bag is empty and one player has used all their tiles, or after three full rounds in which nobody scores (passes and swaps both count). Each player takes away the points of the tiles still in their rack, but no score goes below 0. Highest score wins.

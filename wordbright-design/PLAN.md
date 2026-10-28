@@ -56,7 +56,7 @@ Phones (screen narrower than 600 px): Junior and Standard only. Standard on a 39
 | Price | Free first release |
 | Look | Waystead brand, light/dark/system theme, British English |
 
-### Computer players
+### Computer players (SUPERSEDED by Rev 4: Easy / Normal / Hard / Crazy)
 Move finder in a Web Worker on a compact word graph (DAWG/GADDAG) built at build time.
 
 | Level | Knows | Picks | Time cap |
@@ -137,3 +137,13 @@ R1 engine must be pure and JSON-based so R3 can run it on the server unchanged.
 Star words: 316 (Y1 43, Y2 61, Y3–4 109, Y5–6 104) in star_words.json, each with "years".
 ## F4 done (28 Oct)
 16 character pictures, home-page picture, 5 videos in assets-raw/ (xAI spend about $1.90). Made with tools/wordbright-art.py; prompts in tools/wordbright-art.json; log in assets-raw/ASSETS.md.
+
+## C1 review decisions (28 Oct)
+- Star words depend on the level (Rev 4); rules.md updated.
+- Game end: three full rounds with no score; passes AND swaps count (stops endless swapping).
+- Final scores never below 0 (children).
+- "busy" is in Year 2 and Year 3–4: one entry, years as a list.
+- Computer only plays words it knows; its list is always inside the player's list (checked for every level).
+- One word graph for all levels: words_xlarge tagged with the smallest list each word belongs to (decide/implement in C3).
+- Compression of .dawg files: fix in the server slice (nginx gzip for /wordbright/data, or Caddy encode match).
+- Saved game holds the bag in draw order; for online play the server never sends the bag.

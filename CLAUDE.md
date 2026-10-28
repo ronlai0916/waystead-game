@@ -23,3 +23,11 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 
 ## Workflow
 Build and STOP before commit. Ron reviews, commits and pushes, then pulls on the server.
+
+## Wordbright (in progress, beside Spellbright)
+A word-tile board game, to be served at /wordbright/. Design files and decisions: `wordbright-design/` (PLAN.md, board/rules.md).
+- `wordbright/site/js/engine/` is pure: no DOM, no fetch, no `Date`/`Math.random`. Game state is plain JSON and every action returns a new state, so the same code can check moves on a server later. Randomness comes only from the seed in the bag.
+- Board size and start squares come from the board file; never hard-code 9, 13 or 20.
+- `wordbright/site/data/` is generated: rebuild with `python3 tools/build-wordgraph.py`, never edit by hand. The licence files in `wordbright/` travel with it.
+- Never use other games' names or terms (see PLAN.md section 2); `wordbright/tests/names.test.js` checks.
+- Tests: `node --test wordbright/tests/` (no npm packages).
