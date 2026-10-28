@@ -4,3 +4,4 @@ __pycache__/
 .env
 .env.*
 tools/audio-samples/
+wordbright-design/assets-raw/options/

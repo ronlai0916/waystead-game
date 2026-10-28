@@ -1,0 +1,181 @@
+{
+ "style": "Children's picture-book illustration, flat shapes with soft gentle grain, thick clean rounded outlines, warm friendly faces, simple plain warm-cream background (#FAF8F3), animals in their natural fur and feather colours; clothes and small details in a soft palette of indigo, teal, warm gold, plum and soft coral. Original characters, not based on any existing character. No text, no letters, no numbers, no logos, no watermark.",
+ "items": [
+  {
+   "id": "pip-portrait",
+   "file": "wb-pip-portrait.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A tiny hazel dormouse called Pip, round and fluffy, warm golden-orange fur with a cream tummy, big dark eyes, a long fluffy tail, a sleepy happy smile, wearing a small green backpack, head and shoulders, centred, facing the viewer."
+  },
+  {
+   "id": "pip-thinking",
+   "file": "wb-pip-thinking.png",
+   "kind": "edit",
+   "source": "wb-pip-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, outfit, colours, drawing style and plain warm-cream background. Change only the expression and pose: one paw (or wing) on the chin, eyes looking up, thinking hard. No text, no letters."
+  },
+  {
+   "id": "pip-happy",
+   "file": "wb-pip-happy.png",
+   "kind": "edit",
+   "source": "wb-pip-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, outfit, colours, drawing style and plain warm-cream background. Change only the expression and pose: eyes closed, a big smile, paws (or wings) raised in joy. No text, no letters."
+  },
+  {
+   "id": "pip-surprised",
+   "file": "wb-pip-surprised.png",
+   "kind": "edit",
+   "source": "wb-pip-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, ear shape, head shape, outfit, colours, drawing style and plain warm-cream background. Do not change the ears or add any crest or new colours. Change only the expression and pose: eyes wide open in surprise and a small round open mouth; ears stay exactly as they are. No text, no letters."
+  },
+  {
+   "id": "ottie-portrait",
+   "file": "wb-ottie-portrait.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A friendly young otter called Ottie, sleek brown fur, swimming goggles pushed up on its head, a teal-and-cream striped scarf, head and shoulders, centred, facing the viewer."
+  },
+  {
+   "id": "ottie-thinking",
+   "file": "wb-ottie-thinking.png",
+   "kind": "edit",
+   "source": "wb-ottie-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, outfit, colours, drawing style and plain warm-cream background. Change only the expression and pose: one paw (or wing) on the chin, eyes looking up, thinking hard. No text, no letters."
+  },
+  {
+   "id": "ottie-happy",
+   "file": "wb-ottie-happy.png",
+   "kind": "edit",
+   "source": "wb-ottie-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, outfit, colours, drawing style and plain warm-cream background. Change only the expression and pose: eyes closed, a big smile, paws (or wings) raised in joy. No text, no letters."
+  },
+  {
+   "id": "ottie-surprised",
+   "file": "wb-ottie-surprised.png",
+   "kind": "edit",
+   "source": "wb-ottie-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, ear shape, head shape, outfit, colours, drawing style and plain warm-cream background. Do not change the ears or add any crest or new colours. Change only the expression and pose: eyes wide open in surprise and a small round open mouth; ears stay exactly as they are. No text, no letters."
+  },
+  {
+   "id": "bramble-portrait",
+   "file": "wb-bramble-portrait.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A wise, kind badger called Bramble, black-and-white striped face, small round glasses, a knitted indigo jumper, head and shoulders, centred, facing the viewer."
+  },
+  {
+   "id": "bramble-thinking",
+   "file": "wb-bramble-thinking.png",
+   "kind": "edit",
+   "source": "wb-bramble-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, outfit, colours, drawing style and plain warm-cream background. Change only the expression and pose: one paw (or wing) on the chin, eyes looking up, thinking hard. No text, no letters."
+  },
+  {
+   "id": "bramble-happy",
+   "file": "wb-bramble-happy.png",
+   "kind": "edit",
+   "source": "wb-bramble-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, outfit, colours, drawing style and plain warm-cream background. Change only the expression and pose: eyes closed, a big smile, paws (or wings) raised in joy. No text, no letters."
+  },
+  {
+   "id": "bramble-surprised",
+   "file": "wb-bramble-surprised.png",
+   "kind": "edit",
+   "source": "wb-bramble-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, ear shape, head shape, outfit, colours, drawing style and plain warm-cream background. Do not change the ears or add any crest or new colours. Change only the expression and pose: eyes wide open in surprise and a small round open mouth; ears stay exactly as they are. No text, no letters."
+  },
+  {
+   "id": "fizz-portrait",
+   "file": "wb-fizz-portrait.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A cheeky, energetic magpie called Fizz, glossy black and white feathers with a blue-green shine, a mischievous grin, holding a shiny blank cream game tile in its beak, head and shoulders, centred."
+  },
+  {
+   "id": "fizz-thinking",
+   "file": "wb-fizz-thinking.png",
+   "kind": "edit",
+   "source": "wb-fizz-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, outfit, colours, drawing style and plain warm-cream background. Change only the expression and pose: one paw (or wing) on the chin, eyes looking up, thinking hard. No text, no letters."
+  },
+  {
+   "id": "fizz-happy",
+   "file": "wb-fizz-happy.png",
+   "kind": "edit",
+   "source": "wb-fizz-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, ear shape, head shape, outfit, colours, drawing style and plain warm-cream background. Do not change the ears or add any crest or new colours. Change only the expression and pose: eyes closed with a big happy smile, wings slightly raised; feathers stay natural glossy black and white with only a faint blue-green sheen, no rainbow colours; keep the blank tile in the beak. No text, no letters."
+  },
+  {
+   "id": "fizz-surprised",
+   "file": "wb-fizz-surprised.png",
+   "kind": "edit",
+   "source": "wb-fizz-portrait.png",
+   "options": 2,
+   "prompt": "Keep exactly the same character, face, ear shape, head shape, outfit, colours, drawing style and plain warm-cream background. Do not change the ears or add any crest or new colours. Change only the expression and pose: eyes wide open in surprise and a small round open mouth; ears stay exactly as they are. No text, no letters."
+  },
+  {
+   "id": "wg-hero",
+   "file": "wg-hero.png",
+   "kind": "generate",
+   "aspect": "16:9",
+   "options": 4,
+   "prompt": "An empty cosy games corner with no animals, no people and no characters at all: a small wooden table with a flower in a pot on one side and a neat stack of blank cream game tiles on the other, a soft plum armchair, warm lamp light, a window with a gentle evening sky, soft plum and cream colours. Leave empty space on the left third for a heading."
+  },
+  {
+   "id": "wg-welcome",
+   "file": "wg-welcome.mp4",
+   "kind": "video",
+   "source": "wg-hero.png",
+   "duration": 5,
+   "prompt": "The flower sways slightly, the lamp glows, the tiles gleam once. Calm, no camera movement."
+  },
+  {
+   "id": "pip-win",
+   "file": "wb-pip-win.mp4",
+   "kind": "video",
+   "source": "wb-pip-happy.png",
+   "duration": 3,
+   "prompt": "Pip bounces happily and cheers, a few soft gold and plum confetti pieces fall, plain background stays the same, no camera movement, no text."
+  },
+  {
+   "id": "ottie-win",
+   "file": "wb-ottie-win.mp4",
+   "kind": "video",
+   "source": "wb-ottie-happy.png",
+   "duration": 3,
+   "prompt": "Ottie bounces happily and cheers, a few soft gold and plum confetti pieces fall, plain background stays the same, no camera movement, no text."
+  },
+  {
+   "id": "bramble-win",
+   "file": "wb-bramble-win.mp4",
+   "kind": "video",
+   "source": "wb-bramble-happy.png",
+   "duration": 3,
+   "prompt": "Bramble bounces happily and cheers, a few soft gold and plum confetti pieces fall, plain background stays the same, no camera movement, no text."
+  },
+  {
+   "id": "fizz-win",
+   "file": "wb-fizz-win.mp4",
+   "kind": "video",
+   "source": "wb-fizz-happy.png",
+   "duration": 3,
+   "prompt": "Fizz bounces happily and cheers, a few soft gold and plum confetti pieces fall, plain background stays the same, no camera movement, no text."
+  }
+ ]
+}

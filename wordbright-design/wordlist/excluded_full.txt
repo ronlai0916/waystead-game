@@ -1,0 +1,749 @@
+aa	2-letter word not in our short list
+ab	2-letter word not in our short list
+ae	2-letter word not in our short list
+ag	2-letter word not in our short list
+ai	2-letter word not in our short list
+anal	open blocklist
+anally	form of "anal"
+anilingus	open blocklist
+antiporn	strong root
+antipornographic	strong root
+antipornography	strong root
+anus	open blocklist
+anuses	form of "anus"
+apeshit	open blocklist
+arse	own list
+arsed	form of "arse"
+arsehole	open blocklist
+arseholes	strong root
+arses	own list
+arsey	form of "arse"
+arsing	form of "arse"
+ass	open blocklist
+autoerotic	open blocklist
+ba	2-letter word not in our short list
+bareback	open blocklist
+barebacked	form of "bareback"
+bastard	open blocklist
+bastardly	form of "bastard"
+bastards	form of "bastard"
+bastardy	form of "bastard"
+bastinado	open blocklist
+bastinadoed	form of "bastinado"
+bastinadoes	form of "bastinado"
+bastinadoing	form of "bastinado"
+bastinados	form of "bastinado"
+bawdyhouse	own list
+bawdyhouses	own list
+beanery	form of "beaner"
+bestial	strong root
+bestialise	strong root
+bestialised	strong root
+bestialises	strong root
+bestialising	strong root
+bestiality	open blocklist
+bestially	strong root
+bi	2-letter word not in our short list
+bimbos	open blocklist
+bitch	open blocklist
+bitched	form of "bitch"
+bitchen	own list
+bitcheries	own list
+bitchery	own list
+bitches	open blocklist
+bitchier	form of "bitch"
+bitchiest	form of "bitch"
+bitchily	form of "bitch"
+bitchin	own list
+bitchiness	form of "bitch"
+bitching	form of "bitch"
+bitchy	own list
+blowjob	open blocklist
+blowjobs	strong root
+bollocking	strong root
+bollockings	strong root
+bollocks	open blocklist
+bollox	own list
+bolloxed	own list
+bolloxes	own list
+bolloxing	own list
+boner	open blocklist
+boners	form of "boner"
+bonk	own list
+bonkbuster	own list
+bonkbusters	own list
+bonked	form of "bonk"
+bonking	form of "bonk"
+bonks	form of "bonk"
+boob	open blocklist
+boobed	form of "boob"
+boobing	form of "boob"
+boobish	form of "boob"
+boobs	open blocklist
+brothel	own list
+brothels	form of "brothel"
+bugger	own list
+buggered	form of "bugger"
+buggering	form of "bugger"
+buggers	form of "bugger"
+buggery	own list
+bulldyke	open blocklist
+bulldykes	form of "bulldyke"
+bullshit	open blocklist
+bullshits	strong root
+bullshitted	strong root
+bullshitter	strong root
+bullshitters	strong root
+bullshitting	strong root
+bunghole	open blocklist
+bungholes	form of "bunghole"
+busty	open blocklist
+butthead	own list
+buttheads	own list
+butthole	open blocklist
+buttholes	form of "butthole"
+cannabis	own list
+cannabises	form of "cannabis"
+cd	2-letter word not in our short list
+chav	own list
+chavs	own list
+chickenshit	strong root
+chickenshits	strong root
+chink	own list
+chinked	form of "chink"
+chinkier	form of "chink"
+chinkiest	form of "chink"
+chinking	form of "chink"
+chinks	form of "chink"
+chinky	form of "chink"
+clit	open blocklist
+clitoris	open blocklist
+clitorises	form of "clitoris"
+clits	form of "clit"
+cm	2-letter word not in our short list
+cocaine	own list
+cock	open blocklist
+cocker	form of "cock"
+cockers	form of "cock"
+cocks	open blocklist
+cockup	own list
+cockups	own list
+condom	own list
+condoms	form of "condom"
+coon	open blocklist
+coonass	own list
+coonasses	own list
+coons	open blocklist
+coprophilia	open blocklist
+coprophilias	form of "coprophilia"
+crackhouse	own list
+crackhouses	own list
+crap	own list
+crapola	own list
+crapped	form of "crap"
+crapper	form of "crap"
+crappers	form of "crap"
+crappier	form of "crap"
+crappiest	form of "crap"
+crapping	form of "crap"
+crappy	own list
+craps	form of "crap"
+crapy	form of "crap"
+cretin	own list
+cretinoid	own list
+cretins	form of "cretin"
+crumbum	own list
+crumbums	own list
+cum	open blocklist
+cumming	open blocklist
+cunnilinctus	strong root
+cunnilinctuses	strong root
+cunnilingual	strong root
+cunnilingus	open blocklist
+cunt	open blocklist
+cunts	strong root
+darkie	open blocklist
+darkies	form of "darkie"
+de	2-letter word not in our short list
+dg	2-letter word not in our short list
+dick	open blocklist
+dicked	form of "dick"
+dicking	form of "dick"
+dicks	form of "dick"
+dildo	open blocklist
+dildoe	strong root
+dildos	strong root
+dingleberries	open blocklist
+dingleberry	open blocklist
+dipshit	strong root
+dipshits	strong root
+dm	2-letter word not in our short list
+dominatrix	open blocklist
+dyke	own list
+dyked	form of "dyke"
+dykes	form of "dyke"
+dykey	form of "dyke"
+dyking	form of "dyke"
+ed	2-letter word not in our short list
+ef	2-letter word not in our short list
+eh	2-letter word not in our short list
+ejaculate	strong root
+ejaculated	strong root
+ejaculates	strong root
+ejaculating	strong root
+ejaculation	open blocklist
+ejaculations	strong root
+ejaculator	strong root
+ejaculators	strong root
+ejaculatory	strong root
+el	2-letter word not in our short list
+em	2-letter word not in our short list
+en	2-letter word not in our short list
+er	2-letter word not in our short list
+erotic	open blocklist
+erotism	open blocklist
+erotisms	form of "erotism"
+ew	2-letter word not in our short list
+ex	2-letter word not in our short list
+fa	2-letter word not in our short list
+fag	open blocklist
+faggier	own list
+faggiest	own list
+faggot	open blocklist
+faggoting	strong root
+faggotries	strong root
+faggotry	strong root
+faggots	strong root
+faggoty	strong root
+faggy	own list
+fellate	strong root
+fellated	strong root
+fellates	strong root
+fellating	strong root
+fellatio	open blocklist
+fellation	strong root
+fellations	strong root
+fellator	strong root
+fellators	strong root
+fellatrix	strong root
+fellatrixes	strong root
+fistfuck	strong root
+fistfucked	strong root
+fistfucking	strong root
+fistfucks	strong root
+fuck	open blocklist
+fucked	strong root
+fucker	strong root
+fuckers	strong root
+fuckface	strong root
+fuckfaces	strong root
+fuckhead	strong root
+fuckheads	strong root
+fucking	open blocklist
+fuckoff	strong root
+fuckoffs	strong root
+fucks	strong root
+fuckup	strong root
+fuckups	strong root
+gangbang	open blocklist
+gangbanged	form of "gangbang"
+gangbanger	form of "gangbang"
+gangbangers	form of "gangbang"
+gangbanging	form of "gangbang"
+gangbangs	form of "gangbang"
+ganjah	own list
+ganjahs	own list
+genitals	open blocklist
+gi	2-letter word not in our short list
+gobshite	strong root
+gobshites	strong root
+golliwogg	own list
+golliwoggs	own list
+gollywog	own list
+gollywogs	own list
+gook	own list
+gooks	form of "gook"
+gyppo	own list
+gyppos	form of "gyppo"
+handjob	open blocklist
+handjobs	form of "handjob"
+harlot	own list
+harlots	form of "harlot"
+heroin	own list
+heroins	form of "heroin"
+hg	2-letter word not in our short list
+hl	2-letter word not in our short list
+ho	2-letter word not in our short list
+homo	own list
+homoerotic	open blocklist
+homos	form of "homo"
+hooker	open blocklist
+hookers	form of "hooker"
+horny	open blocklist
+horseshit	strong root
+humping	open blocklist
+hussy	own list
+id	2-letter word not in our short list
+imbecile	own list
+imbecilely	form of "imbecile"
+imbeciles	form of "imbecile"
+incest	open blocklist
+ja	2-letter word not in our short list
+jailbait	open blocklist
+jigaboo	open blocklist
+jigaboos	form of "jigaboo"
+jism	own list
+jisms	own list
+jo	2-letter word not in our short list
+ka	2-letter word not in our short list
+kb	2-letter word not in our short list
+kc	2-letter word not in our short list
+kg	2-letter word not in our short list
+ki	2-letter word not in our short list
+kike	open blocklist
+kikes	form of "kike"
+kinky	open blocklist
+km	2-letter word not in our short list
+la	2-letter word not in our short list
+lesbo	own list
+lesbos	own list
+lezzes	own list
+lezzie	own list
+lezzies	own list
+lezzy	own list
+li	2-letter word not in our short list
+lm	2-letter word not in our short list
+lo	2-letter word not in our short list
+lovemaking	open blocklist
+lx	2-letter word not in our short list
+marijuana	own list
+masturbate	open blocklist
+masturbated	strong root
+masturbates	strong root
+masturbating	open blocklist
+masturbation	open blocklist
+masturbator	strong root
+masturbators	strong root
+masturbatory	strong root
+methadone	own list
+methaqualone	own list
+methaqualones	own list
+methedrine	own list
+methedrines	own list
+mg	2-letter word not in our short list
+mi	2-letter word not in our short list
+milf	open blocklist
+milfs	form of "milf"
+mindfuck	strong root
+mindfucked	strong root
+mindfucking	strong root
+mindfucks	strong root
+minger	own list
+mingers	own list
+ml	2-letter word not in our short list
+mm	2-letter word not in our short list
+mo	2-letter word not in our short list
+mong	open blocklist
+mongs	form of "mong"
+moron	own list
+moronism	own list
+moronisms	own list
+moronities	own list
+moronity	own list
+morons	form of "moron"
+motherfucker	open blocklist
+motherfuckers	strong root
+motherfucking	strong root
+mu	2-letter word not in our short list
+multiorgasmic	strong root
+na	2-letter word not in our short list
+nazi	own list
+nazis	own list
+ne	2-letter word not in our short list
+negro	open blocklist
+negrophile	own list
+negrophiles	own list
+negrophilism	own list
+negrophilisms	own list
+negrophobe	own list
+negrophobes	own list
+negrophobia	own list
+negrophobias	own list
+nigga	open blocklist
+niggard	strong root
+niggarded	strong root
+niggarding	strong root
+niggardliness	strong root
+niggardly	strong root
+niggards	strong root
+niggas	strong root
+niggaz	strong root
+nigger	open blocklist
+niggerhead	strong root
+niggers	strong root
+niggle	strong root
+niggled	strong root
+niggler	strong root
+nigglers	strong root
+niggles	strong root
+niggling	strong root
+nigglingly	strong root
+niggly	strong root
+nipple	open blocklist
+nipples	open blocklist
+nonorgasmic	strong root
+nu	2-letter word not in our short list
+nude	open blocklist
+nudely	form of "nude"
+nudes	form of "nude"
+nudity	open blocklist
+nympho	open blocklist
+nymphomania	open blocklist
+nymphos	form of "nympho"
+od	2-letter word not in our short list
+oe	2-letter word not in our short list
+oi	2-letter word not in our short list
+om	2-letter word not in our short list
+oo	2-letter word not in our short list
+op	2-letter word not in our short list
+opium	own list
+opiumism	own list
+opiumisms	own list
+orgasm	open blocklist
+orgasmed	strong root
+orgasmic	strong root
+orgasmically	strong root
+orgasming	strong root
+orgasms	strong root
+orgy	open blocklist
+os	2-letter word not in our short list
+ou	2-letter word not in our short list
+outbitch	own list
+outbitched	own list
+outbitches	own list
+outbitching	own list
+oy	2-letter word not in our short list
+paedodontics	strong root
+paedogeneses	strong root
+paedogenesis	strong root
+paedogenetic	strong root
+paedogenetically	strong root
+paedogenic	strong root
+paedological	strong root
+paedologies	strong root
+paedologist	strong root
+paedologists	strong root
+paedology	strong root
+paedomorphic	strong root
+paedomorphism	strong root
+paedomorphisms	strong root
+paedomorphoses	strong root
+paedomorphosis	strong root
+paedophile	open blocklist
+paedophiles	strong root
+paedophilia	strong root
+paedophiliac	strong root
+paedophiliacs	strong root
+paedophilic	strong root
+panties	open blocklist
+pegging	open blocklist
+penis	open blocklist
+penises	form of "penis"
+pikey	open blocklist
+pimp	own list
+pimped	form of "pimp"
+pimping	form of "pimp"
+pimpmobile	own list
+pimpmobiles	own list
+pimps	form of "pimp"
+piss	own list
+pissant	own list
+pissants	own list
+pissed	own list
+pisser	form of "piss"
+pissers	form of "piss"
+pisses	form of "piss"
+pissing	open blocklist
+pisspot	own list
+pisspots	own list
+playboy	open blocklist
+playboys	form of "playboy"
+poof	open blocklist
+poofs	form of "poof"
+pooftah	own list
+pooftahs	own list
+poofy	form of "poof"
+poon	open blocklist
+poons	form of "poon"
+poontang	open blocklist
+poontangs	form of "poontang"
+porn	open blocklist
+pornier	strong root
+porniest	strong root
+porno	open blocklist
+pornocracy	strong root
+pornographer	strong root
+pornographers	strong root
+pornographic	strong root
+pornographically	strong root
+pornography	open blocklist
+porny	strong root
+postorgasmic	strong root
+prostitute	own list
+prostituted	form of "prostitute"
+prostitutes	form of "prostitute"
+prostituting	form of "prostitute"
+prostitution	own list
+pubes	open blocklist
+pussy	open blocklist
+qi	2-letter word not in our short list
+queer	own list
+queered	form of "queer"
+queerer	form of "queer"
+queering	form of "queer"
+queerish	form of "queer"
+queerly	form of "queer"
+queers	form of "queer"
+rape	open blocklist
+raped	form of "rape"
+rapes	form of "rape"
+raping	open blocklist
+rapist	open blocklist
+rapists	form of "rapist"
+ratshit	strong root
+re	2-letter word not in our short list
+rectum	open blocklist
+rectums	form of "rectum"
+reefer	own list
+reefers	form of "reefer"
+retard	own list
+retardate	own list
+retardates	own list
+retarded	own list
+retarder	form of "retard"
+retarders	form of "retard"
+retarding	form of "retard"
+retards	form of "retard"
+rimming	open blocklist
+sadism	open blocklist
+scissoring	open blocklist
+scrote	own list
+semen	open blocklist
+semipornographic	strong root
+semipornographies	strong root
+semipornography	strong root
+sex	open blocklist
+sexploitation	own list
+sexploitations	own list
+sext	own list
+sexting	form of "sext"
+sexts	own list
+sexual	open blocklist
+sexuality	open blocklist
+sexually	open blocklist
+sexy	open blocklist
+sh	2-letter word not in our short list
+shag	own list
+shagged	own list
+shagger	form of "shag"
+shaggers	form of "shag"
+shagging	form of "shag"
+shags	form of "shag"
+shit	open blocklist
+shitake	strong root
+shitakes	strong root
+shite	strong root
+shites	strong root
+shitfaced	strong root
+shithead	strong root
+shitheads	strong root
+shithole	strong root
+shithouse	strong root
+shitkicker	strong root
+shitkickers	strong root
+shitless	strong root
+shitlist	strong root
+shitlists	strong root
+shitload	strong root
+shits	strong root
+shittah	strong root
+shittahs	strong root
+shitted	strong root
+shittier	strong root
+shittiest	strong root
+shittim	strong root
+shittims	strong root
+shittimwood	strong root
+shittimwoods	strong root
+shitting	strong root
+shitty	open blocklist
+shitwork	strong root
+si	2-letter word not in our short list
+skank	own list
+skanked	own list
+skanker	own list
+skankers	own list
+skanking	own list
+skanks	own list
+skanky	own list
+slag	own list
+slaggier	form of "slag"
+slaggiest	form of "slag"
+slagging	form of "slag"
+slaggy	form of "slag"
+slags	own list
+slut	open blocklist
+sluts	strong root
+sluttier	strong root
+sluttiest	strong root
+sluttish	strong root
+sluttishly	strong root
+sluttishness	strong root
+sluttishnesses	strong root
+slutty	strong root
+smut	open blocklist
+smuts	form of "smut"
+smuttier	form of "smut"
+smuttiest	form of "smut"
+smutty	form of "smut"
+snigger	strong root
+sniggered	strong root
+sniggerer	strong root
+sniggerers	strong root
+sniggering	strong root
+sniggeringly	strong root
+sniggers	strong root
+sniggle	strong root
+sniggled	strong root
+sniggler	strong root
+snigglers	strong root
+sniggles	strong root
+sniggling	strong root
+sodom	strong root
+sodomise	strong root
+sodomised	strong root
+sodomises	strong root
+sodomising	strong root
+sodomist	strong root
+sodomists	strong root
+sodomite	strong root
+sodomites	strong root
+sodomitic	strong root
+sodomitical	strong root
+sodoms	strong root
+sodomy	open blocklist
+sonofabitch	own list
+spastic	open blocklist
+spastics	form of "spastic"
+spaz	own list
+spaza	own list
+spazas	own list
+spazz	own list
+spazzed	form of "spaz"
+spazzes	own list
+spazzing	form of "spaz"
+spic	open blocklist
+spics	form of "spic"
+spliff	own list
+spliffs	form of "spliff"
+spunk	open blocklist
+spunkier	form of "spunk"
+spunkiest	form of "spunk"
+spunkily	form of "spunk"
+spunkiness	form of "spunk"
+spunks	form of "spunk"
+spunky	form of "spunk"
+strappado	open blocklist
+strappadoes	form of "strappado"
+strappados	form of "strappado"
+strumpet	own list
+strumpets	form of "strumpet"
+superbitch	own list
+superbitches	own list
+superorgasm	strong root
+superorgasms	strong root
+superpimp	own list
+superpimps	own list
+swastika	open blocklist
+swastikas	form of "swastika"
+threesome	open blocklist
+threesomes	form of "threesome"
+throating	open blocklist
+ti	2-letter word not in our short list
+tit	open blocklist
+tits	open blocklist
+tittie	own list
+titties	open blocklist
+titty	open blocklist
+toker	own list
+tokers	own list
+topless	open blocklist
+tosser	open blocklist
+tossers	form of "tosser"
+tranny	open blocklist
+tribadism	open blocklist
+tribadisms	form of "tribadism"
+trollop	own list
+trollops	form of "trollop"
+trollopy	form of "trollop"
+tushy	open blocklist
+twat	open blocklist
+twats	form of "twat"
+twattle	own list
+twattled	own list
+twattles	own list
+twattling	own list
+twink	open blocklist
+twinked	form of "twink"
+twinkie	open blocklist
+twinkies	form of "twinkie"
+twinking	form of "twink"
+twinks	form of "twink"
+uh	2-letter word not in our short list
+um	2-letter word not in our short list
+ut	2-letter word not in our short list
+vagina	open blocklist
+vibrator	open blocklist
+vibrators	form of "vibrator"
+voyeur	open blocklist
+voyeurs	form of "voyeur"
+vulva	open blocklist
+wank	open blocklist
+wanked	form of "wank"
+wanker	form of "wank"
+wankers	form of "wank"
+wanking	form of "wank"
+wanks	form of "wank"
+wencher	own list
+wenchers	own list
+wetback	open blocklist
+wetbacks	form of "wetback"
+whore	open blocklist
+whoredom	strong root
+whoredoms	strong root
+whorehouse	strong root
+whorehouses	strong root
+whoreish	strong root
+whoremaster	strong root
+whoremasters	strong root
+whoremonger	strong root
+whoremongers	strong root
+whores	strong root
+whoreson	strong root
+whoresons	strong root
+whoring	form of "whore"
+whorishly	own list
+whorishness	own list
+whorishnesses	own list
+wo	2-letter word not in our short list
+wog	own list
+xi	2-letter word not in our short list
+xu	2-letter word not in our short list
+ya	2-letter word not in our short list
+ye	2-letter word not in our short list
+yid	own list
+yo	2-letter word not in our short list
+za	2-letter word not in our short list
+zo	2-letter word not in our short list
+zoophilia	open blocklist
+zoophilias	form of "zoophilia"
