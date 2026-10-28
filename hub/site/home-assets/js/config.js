@@ -4,4 +4,4 @@ export const BRAND = { name: 'Waystead Game', maker: 'Waystead', product: 'Game'
 
 // Set to true at launch (README "Launch checklist"): the Wordbright card
 // then links to /wordbright/ instead of saying "Coming soon".
-export const WORDBRIGHT_LIVE = false;
+export const WORDBRIGHT_LIVE = true;

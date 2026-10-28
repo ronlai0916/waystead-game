@@ -143,12 +143,13 @@ Run the tests (Node 26, no npm packages):
 node --test wordbright/tests/
 ```
 
-## Wordbright preview (password)
+## Preview password (not in use)
 
-Until launch, `/wordbright/` asks for a password and sends
-`X-Robots-Tag: noindex, nofollow`. The game's own nginx checks it (Caddy and
-`waystead-server` are unchanged), using a password file that lives only on
-the server and must never be committed:
+Wordbright launched on 28/29 Oct 2026 and `/wordbright/` is open. The
+password set-up is kept for future previews: add `auth_basic` and
+`auth_basic_user_file /etc/nginx/wordbright.htpasswd;` to a location block in
+`nginx/default.conf`. The password file lives only on the server and must
+never be committed:
 
 ```bash
 mkdir -p /home/ubuntu/waystead-secrets
@@ -156,11 +157,9 @@ printf 'NAME:%s\n' "$(openssl passwd -apr1)" > /home/ubuntu/waystead-secrets/wor
 chmod 644 /home/ubuntu/waystead-secrets/wordbright.htpasswd   # nginx in the container must read it
 ```
 
-Make the file before `docker compose up`: if it is missing, Docker creates
-an empty folder in its place and `/wordbright/` gives an error. To change the
+`docker-compose.yml` still mounts the file: if it is missing, Docker creates
+an empty folder in its place (harmless while no block uses it). To change the
 password, run the `printf` line again (no restart needed).
-
-At launch, follow the launch checklist below.
 
 ## Deploy (waystead-prod)
 
@@ -178,16 +177,16 @@ needed for content changes (restart only if `nginx/default.conf` or
 
 Owner checks first (Ron):
 
-- [ ] UKIPO trade-mark search for "Wordbright" in classes 9, 28 and 41.
-- [ ] xAI's current terms for commercial use of Grok Imagine output; write the
+- [x] UKIPO trade-mark search for "Wordbright" in classes 9, 28 and 41.
+- [x] xAI's current terms for commercial use of Grok Imagine output; write the
       date checked and the result at the top of `wordbright-design/assets-raw/ASSETS.md`.
 
 Then the release:
 
-- [ ] `nginx/default.conf`, `/wordbright/` block: delete the two `auth_basic`
+- [x] `nginx/default.conf`, `/wordbright/` block: delete the two `auth_basic`
       lines and the `X-Robots-Tag` line.
-- [ ] `hub/site/home-assets/js/config.js`: `WORDBRIGHT_LIVE = true`.
-- [ ] Bump `VERSION` in `wordbright/site/sw.js` and in `site/sw.js`.
+- [x] `hub/site/home-assets/js/config.js`: `WORDBRIGHT_LIVE = true`.
+- [x] Bump `VERSION` in `wordbright/site/sw.js` and in `site/sw.js`.
 - [ ] Commit, push; on the server: `git pull --ff-only`, then
       `docker compose up -d --force-recreate` (nginx changed).
 - [ ] Test: `/` shows the Wordbright card as a link; `/wordbright/` opens with

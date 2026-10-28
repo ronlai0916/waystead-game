@@ -2,7 +2,7 @@
 
 A tile-and-board word game for 11+ practice, with computer players. Lives beside Spellbright in the `waystead-game` repo (public, static, no secrets) at `https://game.waystead.co.uk/wordbright/`.
 
-**Name:** Wordbright by Waystead (decided 28 Oct, Ron). Folder/slug `wordbright`. UKIPO check (classes 9, 28, 41) still to do before launch.
+**Name:** Wordbright by Waystead (decided 28 Oct, Ron). Folder/slug `wordbright`. UKIPO check done (see "Launched 28/29 Oct 2026").
 
 Rev 3 (27 Oct): boards 9×9 / 13×13 / 20×20 decided; G3–G5 accepted as proposed.
 
@@ -163,10 +163,20 @@ Star words: 316 (Y1 43, Y2 61, Y3–4 109, Y5–6 104) in star_words.json, each 
 - The five single-list `.dawg` files are gone from the site; only `words_all.dawg` ships.
 
 ## C4 decisions (28 Oct)
-- **Home page** at `/` (`hub/site/`, files under `/home-assets/`): "Waystead Game" in one `BRAND`, Plum accent (dark: #B08AE6, as Spellbright), hero picture with the heading on its empty left side, muted welcome loop only without reduced motion. Game cards wear their own game's colour: Spellbright Plum (not Teal: Teal is Waystead Learning's only), Wordbright Indigo. `WORDBRIGHT_LIVE = false` until launch ("Coming soon", not a link). Indexable.
+- **Home page** at `/` (`hub/site/`, files under `/home-assets/`): "Waystead Game" in one `BRAND`, Terracotta (decided 28 Oct) accent (dark: #E8875E), hero picture with the heading on its empty left side, muted welcome loop only without reduced motion. Game cards wear their own game's colour: Spellbright Plum (not Teal: Teal is Waystead Learning's only), Wordbright Indigo. `WORDBRIGHT_LIVE = false` until launch ("Coming soon", not a link). Indexable.
 - **Win videos** on the Wordbright end screen: the winning computer celebrates, or the first computer cheers for the child who won; children-only games have none. Muted, plays once, the happy picture with reduced motion.
 - **Offline:** Wordbright has its own service worker (`wordbright-*` caches, scope /wordbright/): app shell, word graph, data and character pictures on install; videos the first time they play (byte ranges answered from the cached file).
 - **Grown-up PIN** (4 digits, salted SHA-256 in `wb.pin`) replaces the sum for "allow this word"; "Forgot PIN?" clears the PIN and the allowed words together. It is a gate for children, not a lock.
 - Credits and privacy on the For parents page and the home page, including "Pictures and videos made with xAI Grok Imagine" and "not affiliated with any board-game publisher".
 - Launch steps are the README "Launch checklist".
 
+
+## Decisions 28 Oct (late)
+- Online play (R3) only after the Waystead Account (R2): login first for all online games (Ron).
+- Waystead Game home page accent: Terracotta #B4532A (not Plum = Spellbright, not Teal = Learning, not Indigo = Wordbright).
+- xAI Enterprise (API) Terms, last updated 12 May 2026, checked 28 Oct 2026: customer owns all Output; must not present Output as human-generated (our credit line covers this); no attribution requirement.
+- Trade mark: web search 28 Oct found no "Wordbright" game/app or mark; wordbright.com exists (unrelated site, could not be read). UKIPO register search still to be done by Ron.
+
+## Launched 28/29 Oct 2026
+- Trade mark (UKIPO, Ron): no UK mark "Wordbright". BRIGHTWORK (classes 9/35/41/42) is a different word. Wordbright Ltd is a UK copywriting firm, a different field. Always shown as "Wordbright by Waystead".
+- `/wordbright/` open: no password, no noindex. Home page Wordbright card is a link (`WORDBRIGHT_LIVE = true`); home page accent Terracotta #B4532A (dark #E8875E).

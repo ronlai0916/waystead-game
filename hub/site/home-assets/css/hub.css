@@ -1,7 +1,7 @@
 /* ==========================================================================
    Waystead Game (home page)
-   Brand: Waystead tokens (Ink, Paper, Plum, Amber), Sora + Manrope, as in the
-   games. Plum #6B3FA0 is the Waystead Game accent; each game card wears its
+   Brand: Waystead tokens (Ink, Paper, Amber), Sora + Manrope, as in the
+   games. Terracotta #B4532A is the home page accent; each game card wears its
    own game's colour (Spellbright Plum, Wordbright Indigo); Teal belongs to
    Waystead Learning and is used only on its panel; Amber is the waypoint dot.
    The "Waystead" wordmark is always Ink (Paper-white in dark mode).
@@ -25,8 +25,9 @@
 :root {
   --paper: #FAF8F3;
   --ink: #1B1A20;
-  --plum: #6B3FA0;        /* white on it 7.4:1; on Paper 7.0:1 */
-  --plum-700: #57318A;
+  --plum: #6B3FA0;        /* Spellbright's colour (its card only) */
+  --terracotta: #B4532A;  /* white on it 5.0:1; on Paper 4.7:1 */
+  --terracotta-700: #933F1C; /* white on it 7.1:1; on Paper 6.7:1 */
   --teal: #0F8B7E;
   --teal-700: #0C7167;
   --amber: #F2A31D;
@@ -37,9 +38,9 @@
   --line: #E6E1D6;
   --text: var(--ink);
   --muted: #5B5866;
-  --accent: var(--plum);
-  --accent-strong: var(--plum-700);
-  --accent-soft: #F3EEF9;
+  --accent: var(--terracotta);
+  --accent-strong: var(--terracotta-700);
+  --accent-soft: #FBEEE8;
   --on-accent: #FFFFFF;
   --spellbright: var(--plum);
   --spellbright-soft: #F3EEF9;
@@ -61,7 +62,7 @@
   color-scheme: light;
 }
 
-/* Dark: a light Plum (as Spellbright), 6.7:1 on the page, 6.1:1 on cards; Ink on it 6.3:1. */
+/* Dark: a light Terracotta, 7.1:1 on the page, 6.5:1 on cards; Ink on it 6.6:1. */
 :root[data-theme="dark"] {
   --bg: #141318;
   --surface: #1D1C22;
@@ -69,9 +70,9 @@
   --line: #34323B;
   --text: #F3F1EC;
   --muted: #B4B0BD;
-  --accent: #B08AE6;
-  --accent-strong: #CDB4F2;
-  --accent-soft: #2A2038;
+  --accent: #E8875E;
+  --accent-strong: #F2B091;
+  --accent-soft: #2E1E18;
   --on-accent: #1B1A20;
   --spellbright: #B08AE6;
   --spellbright-soft: #2A2038;
@@ -94,9 +95,9 @@
     --line: #34323B;
     --text: #F3F1EC;
     --muted: #B4B0BD;
-    --accent: #B08AE6;
-    --accent-strong: #CDB4F2;
-    --accent-soft: #2A2038;
+    --accent: #E8875E;
+    --accent-strong: #F2B091;
+    --accent-soft: #2E1E18;
     --on-accent: #1B1A20;
     --spellbright: #B08AE6;
     --spellbright-soft: #2A2038;
@@ -201,7 +202,7 @@ img { max-width: 100%; display: block; }
     align-content: center; padding: 24px 0 24px clamp(20px, 4vw, 48px);
   }
   .hero__text h1, .hero__text .hero__lede { color: #1B1A20; }
-  .hero__text .eyebrow { color: #6B3FA0; }
+  .hero__text .eyebrow { color: #933F1C; } /* Terracotta 700: 6.1:1 on the cream picture */
   .hero__lede { font-size: clamp(0.95rem, 1.5vw, 1.12rem); }
 }
 
