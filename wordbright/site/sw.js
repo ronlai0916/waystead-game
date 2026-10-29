@@ -3,7 +3,7 @@
 // win videos are cached the first time they play.
 // Bump VERSION on every release so devices pick up the new files. Only caches
 // named "wordbright-…" are ever touched (Spellbright keeps "spellbright-…").
-const VERSION = 'wordbright-2026-10-28b';
+const VERSION = 'wordbright-2026-10-29a';
 
 const CHARACTERS = ['pip', 'ottie', 'bramble', 'fizz'].flatMap((name) =>
   ['portrait', 'thinking', 'happy', 'surprised'].flatMap((mood) =>

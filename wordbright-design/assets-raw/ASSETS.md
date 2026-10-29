@@ -1,6 +1,6 @@
 # Asset log — Wordbright and Waystead Game
 
-xAI terms for commercial use checked on: (date) — (result)
+xAI terms for commercial use checked on: 28 Oct 2026 — API (Enterprise) Terms, last updated 12 May 2026: customer owns Output; do not present it as human-made (credited on For parents); no attribution required.
 
 | File | Prompt (style lock + …) | Date | Tool (grok.com Imagine / API model) | Made by | Notes |
 |---|---|---|---|---|---|

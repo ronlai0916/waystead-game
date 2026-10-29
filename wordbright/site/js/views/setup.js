@@ -58,6 +58,9 @@ function savedSetup() {
 export function setup(main) {
   const prev = savedSetup();
   const phone = isPhone();
+  // #/new?board=junior (from the start screen) picks that board.
+  const asked = new URLSearchParams(location.hash.split('?')[1] || '').get('board');
+  if (BOARD_IDS.includes(asked)) prev.board = asked;
   if (phone && prev.board === 'large') prev.board = 'standard';
   let seats = prev.seats;
 

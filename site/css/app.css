@@ -187,6 +187,9 @@ img { max-width: 100%; display: block; }
 .iconbtn:hover { border-color: var(--muted); }
 .iconbtn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .iconbtn svg .fill { fill: currentColor; stroke: none; }
+/* "All games": back to the Waystead Game home page. Icon only on phones. */
+.allgames { display: inline-flex; width: auto; gap: 8px; color: var(--text); padding: 0 12px; text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+@media (max-width: 599.98px) { .allgames { width: 40px; padding: 0; } .allgames__text { display: none; } }
 #theme svg { display: none; }
 [data-theme-mode="system"] #theme .ico-auto,
 [data-theme-mode="light"] #theme .ico-light,
