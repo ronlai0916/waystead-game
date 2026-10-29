@@ -1,9 +1,10 @@
 // Offline support for Wordbright (scope /wordbright/). The app shell, the word
 // graph, the game data and the character pictures are cached on install; the
-// win videos are cached the first time they play.
+// win videos and the word-meaning shards (data/meanings/) are cached the first
+// time they are used.
 // Bump VERSION on every release so devices pick up the new files. Only caches
 // named "wordbright-…" are ever touched (Spellbright keeps "spellbright-…").
-const VERSION = 'wordbright-2026-10-29a';
+const VERSION = 'wordbright-2026-10-29b';
 
 const CHARACTERS = ['pip', 'ottie', 'bramble', 'fizz'].flatMap((name) =>
   ['portrait', 'thinking', 'happy', 'surprised'].flatMap((mood) =>
@@ -22,6 +23,7 @@ const SHELL = [
   'js/app.js',
   'js/brand.js',
   'js/data.js',
+  'js/meanings.js',
   'js/engine/bag.js',
   'js/engine/board.js',
   'js/engine/game.js',
@@ -37,6 +39,8 @@ const SHELL = [
   'js/ui/dom.js',
   'js/ui/drag.js',
   'js/ui/moves.js',
+  'js/ui/results.js',
+  'js/ui/speak.js',
   'js/views/end.js',
   'js/views/home.js',
   'js/views/pages.js',

@@ -87,3 +87,21 @@ test('a word\'s tier is the smallest list it is in', () => {
   assert.equal(isWord('library', all, 0, 6), false);
   assert.equal(isWord('build', all, 0, 6), true);
 });
+
+// Regression (W1b): a pruning step once read a file's header line as words and
+// dropped "is", "every", "sense" from every list.
+test('common words are in every list and in the graph at the smallest tier', () => {
+  for (const w of ['is', 'every', 'sense', 'the', 'and']) {
+    for (const id of LIST_IDS) assert.ok(listWords[id].includes(w), `${w} missing from words_${id}.txt`);
+    assert.equal(wordTier(w, all), 0, w);
+  }
+});
+
+test('blocked words are in no list', () => {
+  const blocked = readFileSync(design + 'wordnet_block.txt', 'utf8').split('\n').filter((l) => l && !l.startsWith('#'));
+  assert.ok(blocked.includes('mongolism') && blocked.includes('negroid'));
+  for (const id of LIST_IDS) {
+    const inList = new Set(listWords[id]);
+    assert.deepEqual(blocked.filter((w) => inList.has(w)), [], id);
+  }
+});

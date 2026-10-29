@@ -32025,8 +32025,6 @@ cooler
 coolers
 coolest
 coolheaded
-coolie
-coolies
 cooling
 coolingly
 coolish
@@ -32035,7 +32033,6 @@ coolness
 cools
 coolth
 coolths
-cooly
 coom
 coomb
 coombe
@@ -36800,11 +36797,8 @@ daggling
 daggy
 daglock
 daglocks
-dago
 dagoba
 dagobas
-dagoes
-dagos
 dags
 daguerreotype
 daguerreotyped
@@ -41819,8 +41813,6 @@ dickering
 dickers
 dickey
 dickeys
-dickhead
-dickheads
 dickybird
 dickybirds
 dickys
@@ -48017,11 +48009,8 @@ effectuating
 effectuation
 effectuations
 effed
-effeminacy
 effeminate
 effeminately
-effeminateness
-effeminatenesses
 effeminise
 effeminised
 effeminises
@@ -61779,12 +61768,10 @@ gamic
 gamier
 gamiest
 gamily
-gamin
 gamine
 gamines
 gaminess
 gaming
-gamins
 gamma
 gammadia
 gammadion
@@ -63445,19 +63432,13 @@ ginny
 ginormous
 gins
 ginseng
-ginzo
 ginzoes
-ginzos
-gip
 gipon
 gipons
-gipped
 gipper
 gippers
-gipping
 gippo
 gippos
-gips
 giraffe
 giraffes
 giraffish
@@ -64420,11 +64401,6 @@ god
 godawful
 godchild
 godchildren
-goddammit
-goddamn
-goddamned
-goddamning
-goddamns
 goddaughter
 goddaughters
 goddess
@@ -65542,13 +65518,9 @@ grazing
 grazings
 grazioso
 grease
-greaseball
-greaseballs
 greased
 greaseless
 greasepaint
-greaser
-greasers
 greases
 greasewood
 greasewoods
@@ -66914,14 +66886,10 @@ gynophores
 gynophoric
 gyoza
 gyozas
-gyp
 gyplure
 gyplures
-gypped
 gypper
 gyppers
-gypping
-gyps
 gypseous
 gypsies
 gypsiferous
@@ -71340,10 +71308,8 @@ honk
 honked
 honker
 honkers
-honkies
 honking
 honks
-honky
 honorand
 honorands
 honorarily
@@ -82402,8 +82368,6 @@ kaffiyah
 kaffiyahs
 kaffiyeh
 kaffiyehs
-kafir
-kafirs
 kafs
 kaftan
 kaftans
@@ -96263,9 +96227,6 @@ mongo
 mongoe
 mongoes
 mongol
-mongolism
-mongoloid
-mongoloids
 mongols
 mongoose
 mongooses
@@ -99047,8 +99008,6 @@ nametags
 nametape
 nametapes
 naming
-nance
-nances
 nancies
 nancy
 nancys
@@ -99767,7 +99726,6 @@ negotiatory
 negress
 negresses
 negritude
-negroid
 negroni
 negronis
 negus
@@ -102853,9 +102811,7 @@ noodles
 noodling
 noogie
 nook
-nookie
 nooks
-nooky
 noon
 noonday
 nooning
@@ -110318,7 +110274,6 @@ papistic
 papistical
 papistries
 papistry
-papists
 papoose
 papooses
 papovavirus
@@ -115196,8 +115151,6 @@ picadillos
 picador
 picadores
 picadors
-picaninnies
-picaninny
 picante
 picara
 picaras
@@ -115212,8 +115165,6 @@ picaros
 picayune
 picayunish
 piccalilli
-piccaninnies
-piccaninny
 piccata
 piccolo
 piccoloist
@@ -115227,8 +115178,6 @@ pichiciego
 pichiciegos
 piciform
 pick
-pickaninnies
-pickaninny
 pickaroon
 pickaroons
 pickaxe
@@ -118302,8 +118251,6 @@ pootle
 pootled
 pootles
 pootling
-poove
-pooves
 pop
 popcorn
 pope
@@ -141108,7 +141055,6 @@ sheeney
 sheeneys
 sheenie
 sheenier
-sheenies
 sheeniest
 sheeny
 sheep
@@ -141166,7 +141112,6 @@ sheetrocked
 sheetrocking
 sheetrocks
 sheets
-shegetz
 sheika
 sheikas
 sheikdom
@@ -141346,12 +141291,8 @@ shikarring
 shikars
 shikker
 shikkers
-shiksa
-shiksas
-shikse
 shikseh
 shiksehs
-shikses
 shilingi
 shill
 shilled
@@ -142995,8 +142936,6 @@ sissier
 sissies
 sissiest
 sissified
-sissiness
-sissinesses
 sissy
 sissyish
 sissyness
@@ -163560,9 +163499,7 @@ turbulencies
 turbulency
 turbulent
 turbulently
-turd
 turdinae
-turds
 turducken
 turduckens
 tureen
@@ -167419,8 +167356,6 @@ unmanaged
 unmanipulated
 unmanlier
 unmanliest
-unmanliness
-unmanlinesses
 unmanly
 unmanned
 unmannered
@@ -174389,8 +174324,6 @@ whitewing
 whitewings
 whitewood
 whitewoods
-whitey
-whiteys
 whither
 whithersoever
 whitherward
@@ -175318,7 +175251,6 @@ woefulness
 woes
 woful
 woggish
-wogs
 wok
 woke
 woks
@@ -175363,8 +175295,6 @@ womanisers
 womanises
 womanish
 womanishly
-womanishness
-womanishnesses
 womanising
 womanism
 womanisms
@@ -175610,8 +175540,6 @@ wooziest
 woozily
 wooziness
 woozy
-wop
-wops
 word
 wordage
 wordbook
@@ -176581,7 +176509,6 @@ yeuks
 yeuky
 yew
 yews
-yids
 yield
 yieldabilities
 yieldability

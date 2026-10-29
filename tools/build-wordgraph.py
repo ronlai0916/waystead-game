@@ -9,7 +9,8 @@ once, tagged with the smallest list it is in (its "tier": 0 starter,
 With --single-lists it also writes one DAWG per list as words_<list>.dawg
 (the older format below; not shipped since C3a).
 Also copies the three boards and tiles.json, writes star_words.json with one
-entry per word ("years" is a list, e.g. busy: ["2", "3-4"]), and puts the two
+entry per word ("years" is a list, e.g. busy: ["2", "3-4"]; Spellbright's words
+also get "ipa", "pos" and "audio": true when its MP3 exists), and puts the two
 licence files in wordbright/ (the licences travel with the data).
 
 Run it by hand after the word lists change:
@@ -56,6 +57,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DESIGN = ROOT / "wordbright-design"
 WORDLIST = DESIGN / "wordlist"
 BOARD = DESIGN / "board"
+SPELLBRIGHT = ROOT / "site"  # read only
 OUT = ROOT / "wordbright" / "site" / "data"
 LISTS = ("starter", "steady", "full", "large", "xlarge")
 
@@ -287,6 +289,22 @@ def merge_stars(entries):
     return list(merged.values())
 
 
+def add_spellbright(stars):
+    """Spellbright's IPA and part of speech for its words, and "audio": true where
+    Spellbright has the word's MP3 (played from ../spellbright/assets/audio/words/)."""
+    cur = json.loads((SPELLBRIGHT / "data" / "curriculum.json").read_text())
+    known = {w["word"].lower(): w for key in ("year_3_4", "year_5_6") for ch in cur[key]["chapters"] for w in ch["words"]}
+    audio = set(json.loads((SPELLBRIGHT / "data" / "assets.json").read_text())["audioWords"])
+    for e in stars:
+        sb = known.get(e["word"])
+        if sb:
+            e["ipa"] = sb["ipa"]
+            e["pos"] = sb["meaning"]["partOfSpeech"]
+        if e["word"] in audio and (SPELLBRIGHT / "assets" / "audio" / "words" / (e["word"] + ".mp3")).exists():
+            e["audio"] = True
+    return stars
+
+
 def kb(n):
     return f"{n / 1024:,.0f} KB"
 
@@ -342,7 +360,7 @@ def main():
     for f in ("board_junior.json", "board_standard.json", "board_large.json"):
         shutil.copyfile(BOARD / f, OUT / f)
     shutil.copyfile(WORDLIST / "tiles.json", OUT / "tiles.json")
-    stars = merge_stars(json.loads((WORDLIST / "star_words.json").read_text()))
+    stars = add_spellbright(merge_stars(json.loads((WORDLIST / "star_words.json").read_text())))
     (OUT / "star_words.json").write_text(json.dumps(stars, indent=1, ensure_ascii=False) + "\n")
     for f in ("LICENSE-ESDB.txt", "LICENSE-LDNOOBW.txt"):
         shutil.copyfile(WORDLIST / f, ROOT / "wordbright" / f)

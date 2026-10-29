@@ -48,6 +48,14 @@ skanky spazz spazzes spaza spazas twattle twattled twattles twattling sext sexts
 whorishly whorishness whorishnesses wencher wenchers tittie retardate retardates cretinoid bawdyhouse bawdyhouses ganjah ganjahs
 methedrine methedrines methaqualone methaqualones opiumism opiumisms'''.split())
 
+# Swearing that slipped through (W1a review).
+OWN_BLOCK |= {'goddamn', 'goddamns', 'goddamned', 'goddamning', 'goddammit'}
+
+# Words whose every WordNet sense is offensive, found by tools/build-meanings.py --prune-lists.
+_WN_BLOCK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'wordnet_block.txt')
+if os.path.exists(_WN_BLOCK):
+    OWN_BLOCK |= {l.strip() for l in open(_WN_BLOCK, encoding='utf-8') if l.strip() and not l.startswith('#')}
+
 # Strong roots: any word containing these is removed.
 ROOTS = ('fuck', 'shit', 'cunt', 'nigg', 'slut', 'whore', 'faggot', 'dildo',
          'porn', 'paedo', 'pedophil', 'bollock', 'arsehole', 'motherf', 'masturb',

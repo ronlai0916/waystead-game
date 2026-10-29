@@ -5,7 +5,10 @@
   "example": "They want to build a tree house in the garden.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/bɪld/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "earth",
@@ -13,7 +16,10 @@
   "example": "The Earth goes around the Sun.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɜːθ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "fruit",
@@ -21,7 +27,10 @@
   "example": "Apples and oranges are my favourite fruit.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/fruːt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "group",
@@ -29,7 +38,10 @@
   "example": "A group of children played in the park.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɡruːp/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "guard",
@@ -37,7 +49,10 @@
   "example": "A guard stood at the palace gate.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɡɑːd/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "heard",
@@ -45,7 +60,10 @@
   "example": "I heard the doorbell ring.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/hɜːd/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "heart",
@@ -53,7 +71,10 @@
   "example": "Your heart beats faster when you run.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/hɑːt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "learn",
@@ -61,7 +82,10 @@
   "example": "We learn maths every morning.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/lɜːn/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "reign",
@@ -69,7 +93,10 @@
   "example": "Queen Victoria had a long reign.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/reɪn/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "breath",
@@ -77,7 +104,10 @@
   "example": "She took a deep breath before diving in.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/breθ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "length",
@@ -85,7 +115,10 @@
   "example": "Measure the length of the table.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/leŋθ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "busy",
@@ -94,7 +127,10 @@
   "years": [
    "2",
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈbɪz.i/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "strength",
@@ -102,7 +138,10 @@
   "example": "It takes strength to lift heavy boxes.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/streŋθ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "early",
@@ -110,7 +149,10 @@
   "example": "We woke up early to catch the bus.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈɜː.li/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "guide",
@@ -118,7 +160,10 @@
   "example": "Our guide showed us round the museum.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɡaɪd/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "often",
@@ -126,7 +171,10 @@
   "example": "I often play football after school.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈɒf.ən/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "woman",
@@ -134,7 +182,10 @@
   "example": "The woman waved at her daughter.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈwʊm.ən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "women",
@@ -142,7 +193,10 @@
   "example": "Several women walked into the shop.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈwɪm.ɪn/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "actual",
@@ -150,7 +204,10 @@
   "example": "The actual answer was different from what we guessed.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈæk.tʃu.əl/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "answer",
@@ -158,7 +215,10 @@
   "example": "Put up your hand if you know the answer.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈɑːn.sə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "centre",
@@ -166,7 +226,10 @@
   "example": "Stand in the centre of the circle.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈsen.tə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "circle",
@@ -174,7 +237,10 @@
   "example": "Draw a circle around the right answer.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈsɜː.kəl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "island",
@@ -182,7 +248,10 @@
   "example": "Britain is an island.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈaɪ.lənd/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "recent",
@@ -190,7 +259,10 @@
   "example": "The recent rain made the garden grow.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈriː.sənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "breathe",
@@ -198,7 +270,10 @@
   "example": "Remember to breathe slowly when you feel nervous.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/briːð/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "certain",
@@ -206,7 +281,10 @@
   "example": "I am certain I locked the door.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈsɜː.tən/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "forward",
@@ -214,7 +292,10 @@
   "example": "Take two steps forward.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈfɔː.wəd/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "quarter",
@@ -222,7 +303,10 @@
   "example": "Cut the pizza into quarters.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈkwɔː.tə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "strange",
@@ -230,7 +314,10 @@
   "example": "A strange noise came from the cupboard.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/streɪndʒ/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "famous",
@@ -238,7 +325,10 @@
   "example": "The Queen lives in a famous castle.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈfeɪ.məs/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "appear",
@@ -246,7 +336,10 @@
   "example": "Stars appear in the sky when it gets dark.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/əˈpɪə/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "forwards",
@@ -254,7 +347,10 @@
   "example": "She leaned forwards to listen.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈfɔː.wədz/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "straight",
@@ -262,7 +358,10 @@
   "example": "Draw a straight line with your ruler.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/streɪt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "various",
@@ -270,7 +369,10 @@
   "example": "We sell sweets in various flavours.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈveə.ri.əs/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "grammar",
@@ -278,7 +380,10 @@
   "example": "Good grammar helps your writing make sense.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈɡræm.ə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "decide",
@@ -286,7 +391,10 @@
   "example": "It was hard to decide which flavour to pick.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/dɪˈsaɪd/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "minute",
@@ -294,7 +402,10 @@
   "example": "Please wait one minute.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈmɪn.ɪt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "notice",
@@ -302,7 +413,10 @@
   "example": "Did you notice the new picture on the wall?",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈnəʊ.tɪs/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "eight",
@@ -310,7 +424,10 @@
   "example": "A spider has eight legs.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/eɪt/",
+  "pos": "number",
+  "audio": true
  },
  {
   "word": "believe",
@@ -318,7 +435,10 @@
   "example": "I believe she is telling the truth.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/bɪˈliːv/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "bicycle",
@@ -326,7 +446,10 @@
   "example": "He rode his red bicycle to school.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈbaɪ.sɪ.kəl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "century",
@@ -334,7 +457,10 @@
   "example": "The castle was built over a century ago.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈsen.tʃə.ri/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "extreme",
@@ -342,7 +468,10 @@
   "example": "Be careful in extreme weather.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɪkˈstriːm/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "history",
@@ -350,7 +479,10 @@
   "example": "We learn about Roman history at school.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈhɪs.tər.i/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "library",
@@ -358,7 +490,10 @@
   "example": "I go to the library to borrow books.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈlaɪ.brər.i/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "mention",
@@ -366,7 +501,10 @@
   "example": "Did she mention the party to you?",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈmen.ʃən/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "natural",
@@ -374,7 +512,10 @@
   "example": "Wood is a natural material.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈnætʃ.ər.əl/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "perhaps",
@@ -382,7 +523,10 @@
   "example": "Perhaps it will snow tomorrow.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/pəˈhæps/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "popular",
@@ -390,7 +534,10 @@
   "example": "Football is a popular sport.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈpɒp.jə.lə/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "promise",
@@ -398,7 +545,10 @@
   "example": "I promise to tidy my room.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈprɒm.ɪs/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "purpose",
@@ -406,7 +556,10 @@
   "example": "The purpose of a hat is to keep your head warm.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈpɜː.pəs/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "regular",
@@ -414,7 +567,10 @@
   "example": "I do regular exercise after school.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈreɡ.jə.lə/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "special",
@@ -422,7 +578,10 @@
   "example": "Today is a special day because it is my birthday.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈspeʃ.əl/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "address",
@@ -430,7 +589,10 @@
   "example": "Please write your address on the envelope.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/əˈdres/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "caught",
@@ -438,7 +600,10 @@
   "example": "She caught the ball with one hand.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/kɔːt/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "eighth",
@@ -446,7 +611,10 @@
   "example": "August is the eighth month of the year.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/eɪtθ/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "height",
@@ -454,7 +622,10 @@
   "example": "What is the height of the tree?",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/haɪt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "possess",
@@ -462,7 +633,10 @@
   "example": "She does not possess a mobile phone.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/pəˈzes/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "though",
@@ -470,7 +644,10 @@
   "example": "I will come, though I might be late.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ðəʊ/",
+  "pos": "conjunction",
+  "audio": true
  },
  {
   "word": "weight",
@@ -478,7 +655,10 @@
   "example": "Weigh the flour to find its weight.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/weɪt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "arrive",
@@ -486,7 +666,10 @@
   "example": "We will arrive at the station at six o'clock.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/əˈraɪv/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "calendar",
@@ -494,7 +677,10 @@
   "example": "I marked my birthday on the calendar.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈkæl.ən.də/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "complete",
@@ -502,7 +688,10 @@
   "example": "My homework is complete.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/kəmˈpliːt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "consider",
@@ -510,7 +699,10 @@
   "example": "Please consider my idea before saying no.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/kənˈsɪd.ə/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "continue",
@@ -518,7 +710,10 @@
   "example": "Continue reading until the end of the page.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/kənˈtɪn.juː/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "describe",
@@ -526,7 +721,10 @@
   "example": "Can you describe the man you saw?",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/dɪˈskraɪb/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "february",
@@ -534,7 +732,10 @@
   "example": "Valentine's Day is in February.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈfeb.ru.ə.ri/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "increase",
@@ -542,7 +743,10 @@
   "example": "The number of pupils will increase next year.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɪnˈkriːs/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "interest",
@@ -550,7 +754,10 @@
   "example": "She has an interest in dinosaurs.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈɪn.trest/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "material",
@@ -558,7 +765,10 @@
   "example": "Wool is a warm material for jumpers.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/məˈtɪə.ri.əl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "peculiar",
@@ -566,7 +776,10 @@
   "example": "The soup had a peculiar smell.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/pɪˈkjuː.li.ə/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "potatoes",
@@ -574,7 +787,10 @@
   "example": "We had roast potatoes for dinner.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/pəˈteɪ.təʊz/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "probably",
@@ -582,7 +798,10 @@
   "example": "It will probably rain later.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈprɒb.ə.bli/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "remember",
@@ -590,7 +809,10 @@
   "example": "Remember to take your packed lunch.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/rɪˈmem.bə/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "sentence",
@@ -598,7 +820,10 @@
   "example": "Begin a sentence with a capital letter.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈsen.təns/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "surprise",
@@ -606,7 +831,10 @@
   "example": "The birthday cake was a lovely surprise.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/səˈpraɪz/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "thought",
@@ -614,7 +842,10 @@
   "example": "A funny thought made her giggle.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/θɔːt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "through",
@@ -622,7 +853,10 @@
   "example": "The train went through the tunnel.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/θruː/",
+  "pos": "preposition",
+  "audio": true
  },
  {
   "word": "important",
@@ -630,7 +864,10 @@
   "example": "It is important to brush your teeth.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɪmˈpɔː.tənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "suppose",
@@ -638,7 +875,10 @@
   "example": "I suppose he might be late.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/səˈpəʊz/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "accident",
@@ -646,7 +886,10 @@
   "example": "She had a small accident and dropped the glass.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈæk.sɪ.dənt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "actually",
@@ -654,7 +897,10 @@
   "example": "I thought it was sunny but actually it was raining.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈæk.tʃu.ə.li/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "business",
@@ -662,7 +908,10 @@
   "example": "Her family runs a small bakery business.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈbɪz.nɪs/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "pressure",
@@ -670,7 +919,10 @@
   "example": "Air pressure can make balloons pop.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈpreʃ.ə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "imagine",
@@ -678,7 +930,10 @@
   "example": "Imagine you could fly anywhere.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɪˈmædʒ.ɪn/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "different",
@@ -686,7 +941,10 @@
   "example": "These two shoes are different colours.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈdɪf.ər.ənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "difficult",
@@ -694,7 +952,10 @@
   "example": "This puzzle is difficult but fun.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈdɪf.ɪ.kəlt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "disappear",
@@ -702,7 +963,10 @@
   "example": "The magician made the rabbit disappear.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˌdɪs.əˈpɪə/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "enough",
@@ -710,7 +974,10 @@
   "example": "We have enough food for everyone.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɪˈnʌf/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "exercise",
@@ -718,7 +985,10 @@
   "example": "Running is good exercise.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈek.sə.saɪz/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "medicine",
@@ -726,7 +996,10 @@
   "example": "The doctor gave me some medicine for my cough.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈmed.ɪ.sən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "ordinary",
@@ -734,7 +1007,10 @@
   "example": "It was just an ordinary Tuesday.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈɔː.dən.ər.i/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "position",
@@ -742,7 +1018,10 @@
   "example": "Stand in your position on the field.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/pəˈzɪʃ.ən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "question",
@@ -750,7 +1029,10 @@
   "example": "Put up your hand if you have a question.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈkwes.tʃən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "separate",
@@ -758,7 +1040,10 @@
   "example": "Put the red socks in a separate pile.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈsep.ər.ət/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "naughty",
@@ -766,7 +1051,10 @@
   "example": "The naughty puppy chewed my slippers.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈnɔː.ti/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "favourite",
@@ -774,7 +1062,10 @@
   "example": "Pizza is my favourite food.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈfeɪ.vər.ɪt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "knowledge",
@@ -782,7 +1073,10 @@
   "example": "Reading books gives you lots of knowledge.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈnɒl.ɪdʒ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "therefore",
@@ -790,7 +1084,10 @@
   "example": "It was raining, therefore we stayed inside.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈðeə.fɔː/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "although",
@@ -798,7 +1095,10 @@
   "example": "Although it was cold, we still played outside.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɔːlˈðəʊ/",
+  "pos": "conjunction",
+  "audio": true
  },
  {
   "word": "experience",
@@ -806,7 +1106,10 @@
   "example": "Going on holiday was a great experience.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɪkˈspɪə.ri.əns/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "experiment",
@@ -814,7 +1117,10 @@
   "example": "We did an experiment with magnets in class.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ɪkˈsper.ɪ.mənt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "occasion",
@@ -822,7 +1128,10 @@
   "example": "A wedding is a happy occasion.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/əˈkeɪ.ʒən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "opposite",
@@ -830,7 +1139,10 @@
   "example": "Hot is the opposite of cold.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈɒp.ə.zɪt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "particular",
@@ -838,7 +1150,10 @@
   "example": "I want this particular pen, not the other one.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/pəˈtɪk.jə.lə/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "possible",
@@ -846,7 +1161,10 @@
   "example": "It is possible to learn anything.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˈpɒs.ə.bəl/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "possession",
@@ -854,7 +1172,10 @@
   "example": "His favourite possession is his old teddy bear.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/pəˈzeʃ.ən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "accidentally",
@@ -862,7 +1183,10 @@
   "example": "He accidentally stepped on the cat's tail.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/ˌæk.sɪˈden.təl.i/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "occasionally",
@@ -870,7 +1194,10 @@
   "example": "We occasionally go to the seaside.",
   "years": [
    "3-4"
-  ]
+  ],
+  "ipa": "/əˈkeɪ.ʒən.ə.li/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "awkward",
@@ -878,7 +1205,10 @@
   "example": "It was an awkward silence at the table.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈɔː.kwəd/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "forty",
@@ -886,7 +1216,10 @@
   "example": "There are forty children in the hall.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈfɔː.ti/",
+  "pos": "number",
+  "audio": true
  },
  {
   "word": "symbol",
@@ -894,7 +1227,10 @@
   "example": "A heart is a symbol of love.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈsɪm.bəl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "system",
@@ -902,7 +1238,10 @@
   "example": "The solar system has eight planets.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈsɪs.təm/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "rhyme",
@@ -910,7 +1249,10 @@
   "example": "Cat and hat are a rhyme.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/raɪm/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "rhythm",
@@ -918,7 +1260,10 @@
   "example": "Clap to the rhythm of the music.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈrɪð.əm/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "yacht",
@@ -926,7 +1271,10 @@
   "example": "We saw a yacht in the harbour.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/jɒt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "queue",
@@ -934,7 +1282,10 @@
   "example": "We joined the queue for ice cream.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/kjuː/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "muscle",
@@ -942,7 +1293,10 @@
   "example": "Lifting weights builds muscle.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈmʌs.əl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "bruise",
@@ -950,7 +1304,10 @@
   "example": "She had a bruise on her knee after falling.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/bruːz/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "conscience",
@@ -958,7 +1315,10 @@
   "example": "His conscience told him to say sorry.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈkɒn.ʃəns/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "conscious",
@@ -966,7 +1326,10 @@
   "example": "She was conscious throughout the journey.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈkɒn.ʃəs/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "soldier",
@@ -974,7 +1337,10 @@
   "example": "The soldier stood at attention.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈsəʊl.dʒə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "stomach",
@@ -982,7 +1348,10 @@
   "example": "My stomach hurts because I ate too much.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈstʌm.ək/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "thorough",
@@ -990,7 +1359,10 @@
   "example": "She did a thorough job of cleaning.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈθʌr.ə/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "twelfth",
@@ -998,7 +1370,10 @@
   "example": "December is the twelfth month.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/twelfθ/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "foreign",
@@ -1006,7 +1381,10 @@
   "example": "I am learning a foreign language.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈfɒr.ən/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "neighbour",
@@ -1014,7 +1392,10 @@
   "example": "Our neighbour brought us some apples.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈneɪ.bə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "lightning",
@@ -1022,7 +1403,10 @@
   "example": "Lightning lit up the dark sky.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈlaɪt.nɪŋ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "leisure",
@@ -1030,7 +1414,10 @@
   "example": "She spends her leisure time painting.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈleʒ.ə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "accommodate",
@@ -1038,7 +1425,10 @@
   "example": "The hotel can accommodate two hundred guests.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈkɒm.ə.deɪt/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "accompany",
@@ -1046,7 +1436,10 @@
   "example": "A teacher will accompany us on the trip.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈkʌm.pə.ni/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "according",
@@ -1054,7 +1447,10 @@
   "example": "According to the map, we go left.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈkɔː.dɪŋ/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "aggressive",
@@ -1062,7 +1458,10 @@
   "example": "The aggressive dog barked at the postman.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈɡres.ɪv/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "embarrass",
@@ -1070,7 +1469,10 @@
   "example": "Tripping in front of class can embarrass you.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪmˈbær.əs/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "harass",
@@ -1078,7 +1480,10 @@
   "example": "Please don't harass your sister.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈhær.əs/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "occupy",
@@ -1086,7 +1491,10 @@
   "example": "Toys can occupy a baby for hours.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈɒk.jə.paɪ/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "occur",
@@ -1094,7 +1502,10 @@
   "example": "Storms occur in autumn.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈkɜː/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "committee",
@@ -1102,7 +1513,10 @@
   "example": "The school committee planned the fair.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/kəˈmɪt.i/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "necessary",
@@ -1110,7 +1524,10 @@
   "example": "It is necessary to wash your hands before meals.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈnes.ə.ser.i/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "appreciate",
@@ -1118,7 +1535,10 @@
   "example": "I really appreciate your help.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈpriː.ʃi.eɪt/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "attached",
@@ -1126,7 +1546,10 @@
   "example": "A label was attached to the suitcase.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈtætʃt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "communicate",
@@ -1134,7 +1557,10 @@
   "example": "We communicate by talking or writing.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/kəˈmjuː.nɪ.keɪt/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "exaggerate",
@@ -1142,7 +1568,10 @@
   "example": "He likes to exaggerate his stories.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪɡˈzædʒ.ə.reɪt/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "equip",
@@ -1150,7 +1579,10 @@
   "example": "We equip the team with new boots.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪˈkwɪp/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "equipped",
@@ -1158,7 +1590,10 @@
   "example": "The climbers were equipped with ropes.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪˈkwɪpt/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "equipment",
@@ -1166,7 +1601,10 @@
   "example": "Sports equipment includes balls and bats.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪˈkwɪp.mənt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "interrupt",
@@ -1174,7 +1612,10 @@
   "example": "Please don't interrupt me while I am reading.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌɪn.təˈrʌpt/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "interfere",
@@ -1182,7 +1623,10 @@
   "example": "Don't interfere with the experiment.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌɪn.təˈfɪə/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "suggest",
@@ -1190,7 +1634,10 @@
   "example": "May I suggest going to the park?",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/səˈdʒest/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "convenience",
@@ -1198,7 +1645,10 @@
   "example": "A microwave is a great convenience.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/kənˈviː.ni.əns/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "existence",
@@ -1206,7 +1656,10 @@
   "example": "The existence of dragons is just a story.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪɡˈzɪs.təns/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "excellent",
@@ -1214,7 +1667,10 @@
   "example": "She did excellent work in art class.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈek.səl.ənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "frequently",
@@ -1222,7 +1678,10 @@
   "example": "We frequently visit Grandma.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈfriː.kwənt.li/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "sufficient",
@@ -1230,7 +1689,10 @@
   "example": "Make sure there is sufficient water.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/səˈfɪʃ.ənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "ancient",
@@ -1238,7 +1700,10 @@
   "example": "We saw ancient ruins in Rome.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈeɪn.ʃənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "apparent",
@@ -1246,7 +1711,10 @@
   "example": "It was apparent that he was tired.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈpær.ənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "relevant",
@@ -1254,7 +1722,10 @@
   "example": "Please give a relevant answer.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈrel.ə.vənt/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "hindrance",
@@ -1262,7 +1733,10 @@
   "example": "The heavy bag was a hindrance on the walk.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈhɪn.drəns/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "nuisance",
@@ -1270,7 +1744,10 @@
   "example": "The buzzing fly was a real nuisance.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈnjuː.səns/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "criticise",
@@ -1278,7 +1755,10 @@
   "example": "Try not to criticise others unkindly.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈkrɪt.ɪ.saɪz/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "recognise",
@@ -1286,7 +1766,10 @@
   "example": "I didn't recognise you with your new hair!",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈrek.əɡ.naɪz/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "sacrifice",
@@ -1294,7 +1777,10 @@
   "example": "Her parents made sacrifices for her education.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈsæk.rɪ.faɪs/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "definite",
@@ -1302,7 +1788,10 @@
   "example": "We have a definite answer at last.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈdef.ɪ.nət/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "desperate",
@@ -1310,7 +1799,10 @@
   "example": "He was desperate to find his lost dog.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈdes.pər.ət/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "immediate",
@@ -1318,7 +1810,10 @@
   "example": "I need an immediate answer please.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪˈmiː.di.ət/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "immediately",
@@ -1326,7 +1821,10 @@
   "example": "Stop immediately when I shout stop.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪˈmiː.di.ət.li/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "competition",
@@ -1334,7 +1832,10 @@
   "example": "She won the spelling competition.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌkɒm.pəˈtɪʃ.ən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "explanation",
@@ -1342,7 +1843,10 @@
   "example": "Please give an explanation for your lateness.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌek.spləˈneɪ.ʃən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "pronunciation",
@@ -1350,7 +1854,10 @@
   "example": "Practise the pronunciation of new words.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/prəˌnʌn.siˈeɪ.ʃən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "amateur",
@@ -1358,7 +1865,10 @@
   "example": "He is an amateur photographer.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈæm.ə.tə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "vehicle",
@@ -1366,7 +1876,10 @@
   "example": "A bus is a large vehicle.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈvɪə.kəl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "language",
@@ -1374,7 +1887,10 @@
   "example": "English is my favourite language.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈlæŋ.ɡwɪdʒ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "restaurant",
@@ -1382,7 +1898,10 @@
   "example": "We went to a restaurant for my birthday.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈres.tər.ɒnt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "category",
@@ -1390,7 +1909,10 @@
   "example": "Apples and pears are in the fruit category.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈkæt.ə.ɡri/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "cemetery",
@@ -1398,7 +1920,10 @@
   "example": "The old cemetery had stone monuments.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈsem.ə.tri/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "dictionary",
@@ -1406,7 +1931,10 @@
   "example": "Look up the word in a dictionary.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈdɪk.ʃən.ər.i/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "controversy",
@@ -1414,7 +1942,10 @@
   "example": "The new rule caused a lot of controversy.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈkɒn.trə.vɜː.si/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "secretary",
@@ -1422,7 +1953,10 @@
   "example": "The secretary booked the meeting.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈsek.rə.tər.i/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "physical",
@@ -1430,7 +1964,10 @@
   "example": "PE means physical education.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈfɪz.ɪ.kəl/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "familiar",
@@ -1438,7 +1975,10 @@
   "example": "Her face looked familiar but I forgot her name.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/fəˈmɪl.i.ə/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "temperature",
@@ -1446,7 +1986,10 @@
   "example": "The doctor took my temperature.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈtem.prə.tʃə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "signature",
@@ -1454,7 +1997,10 @@
   "example": "Please put your signature on the form.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈsɪɡ.nə.tʃə/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "persuade",
@@ -1462,7 +2008,10 @@
   "example": "Can you persuade her to come too?",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/pəˈsweɪd/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "curiosity",
@@ -1470,7 +2019,10 @@
   "example": "Her curiosity led her to read every book.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌkjʊə.riˈɒs.ə.ti/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "average",
@@ -1478,7 +2030,10 @@
   "example": "He is of average height for his age.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈæv.ər.ɪdʒ/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "develop",
@@ -1486,7 +2041,10 @@
   "example": "Plants develop from tiny seeds.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/dɪˈvel.əp/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "environment",
@@ -1494,7 +2052,10 @@
   "example": "We must protect the environment.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪnˈvaɪ.rə.mənt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "shoulder",
@@ -1502,7 +2063,10 @@
   "example": "He carried his bag on his shoulder.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈʃəʊl.də/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "achieve",
@@ -1510,7 +2074,10 @@
   "example": "She worked hard to achieve good marks.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈtʃiːv/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "community",
@@ -1518,7 +2085,10 @@
   "example": "Our community held a summer fair.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/kəˈmjuː.nə.ti/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "government",
@@ -1526,7 +2096,10 @@
   "example": "The government makes the laws.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈɡʌv.ə.mənt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "individual",
@@ -1534,7 +2107,10 @@
   "example": "Every individual matters.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌɪn.dɪˈvɪdʒ.u.əl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "marvellous",
@@ -1542,7 +2118,10 @@
   "example": "The fireworks were marvellous.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈmɑː.vəl.əs/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "mischievous",
@@ -1550,7 +2129,10 @@
   "example": "The mischievous kitten knocked over the vase.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈmɪs.tʃɪ.vəs/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "parliament",
@@ -1558,7 +2140,10 @@
   "example": "Parliament meets in London.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈpɑː.lɪ.mənt/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "profession",
@@ -1566,7 +2151,10 @@
   "example": "Being a doctor is a respected profession.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/prəˈfeʃ.ən/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "opportunity",
@@ -1574,7 +2162,10 @@
   "example": "School trips are a great opportunity to learn.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌɒp.əˈtʃuː.nə.ti/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "programme",
@@ -1582,7 +2173,10 @@
   "example": "My favourite programme is on at six.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈprəʊ.ɡræm/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "guarantee",
@@ -1590,7 +2184,10 @@
   "example": "I guarantee you will enjoy this book.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌɡær.ənˈtiː/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "bargain",
@@ -1598,7 +2195,10 @@
   "example": "These shoes were a real bargain.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈbɑː.ɡɪn/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "correspond",
@@ -1606,7 +2206,10 @@
   "example": "The two children correspond by email.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌkɒr.ɪˈspɒnd/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "determined",
@@ -1614,7 +2217,10 @@
   "example": "She was determined to win the race.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/dɪˈtɜː.mɪnd/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "disastrous",
@@ -1622,7 +2228,10 @@
   "example": "The cake was a disastrous mess.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/dɪˈzɑː.strəs/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "especially",
@@ -1630,7 +2239,10 @@
   "example": "I like fruit, especially apples.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ɪˈspeʃ.ə.li/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "identity",
@@ -1638,7 +2250,10 @@
   "example": "Your name and date of birth show your identity.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/aɪˈden.tə.ti/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "prejudice",
@@ -1646,7 +2261,10 @@
   "example": "We must work against prejudice.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈpredʒ.ə.dɪs/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "privilege",
@@ -1654,7 +2272,10 @@
   "example": "Getting to read first was a privilege.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈprɪv.əl.ɪdʒ/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "recommend",
@@ -1662,7 +2283,10 @@
   "example": "I recommend this book to everyone.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˌrek.əˈmend/",
+  "pos": "verb",
+  "audio": true
  },
  {
   "word": "sincere",
@@ -1670,7 +2294,10 @@
   "example": "She gave a sincere apology.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/sɪnˈsɪə/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "sincerely",
@@ -1678,7 +2305,10 @@
   "example": "Yours sincerely is used at the end of a letter.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/sɪnˈsɪə.li/",
+  "pos": "adverb",
+  "audio": true
  },
  {
   "word": "variety",
@@ -1686,7 +2316,10 @@
   "example": "We have a variety of sandwiches.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/vəˈraɪ.ə.ti/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "available",
@@ -1694,7 +2327,10 @@
   "example": "Tickets are still available for the show.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/əˈveɪ.lə.bəl/",
+  "pos": "adjective",
+  "audio": true
  },
  {
   "word": "vegetable",
@@ -1702,7 +2338,10 @@
   "example": "Carrots are my favourite vegetable.",
   "years": [
    "5-6"
-  ]
+  ],
+  "ipa": "/ˈvedʒ.tə.bəl/",
+  "pos": "noun",
+  "audio": true
  },
  {
   "word": "the",

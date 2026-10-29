@@ -11266,8 +11266,6 @@ cooled
 cooler
 coolers
 coolest
-coolie
-coolies
 cooling
 coolly
 coolness
@@ -16934,7 +16932,6 @@ effectuate
 effectuated
 effectuates
 effectuating
-effeminacy
 effeminate
 effervesce
 effervesced
@@ -22018,11 +22015,9 @@ gamete
 gametes
 gamier
 gamiest
-gamin
 gamine
 gamines
 gaming
-gamins
 gamma
 gammas
 gamut
@@ -22890,8 +22885,6 @@ gobs
 god
 godchild
 godchildren
-goddamn
-goddamned
 goddaughter
 goddaughters
 goddess
@@ -23809,10 +23802,6 @@ gynaecological
 gynaecologist
 gynaecologists
 gynaecology
-gyp
-gypped
-gypping
-gyps
 gypsies
 gypsum
 gypsy
@@ -33724,7 +33713,6 @@ monger
 mongered
 mongering
 mongers
-mongolism
 mongoose
 mongooses
 mongrel
@@ -56040,8 +56028,6 @@ turbots
 turbulence
 turbulent
 turbulently
-turd
-turds
 turducken
 turduckens
 tureen

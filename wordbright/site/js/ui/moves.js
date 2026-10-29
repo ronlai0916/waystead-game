@@ -1,19 +1,10 @@
-// Words made in a move, Star-word meaning cards, and the scores strip.
+// Words made in a move (short form), Star-word lookup, and the scores strip.
+// The full results panel, with meanings, is ui/results.js.
 import { esc } from './dom.js';
 import { pictureHtml } from '../ai/characters.js';
 
 export function starEntry(starWords, word) {
   return starWords.find((s) => s.word === word) || null;
-}
-
-// by: who made it (end screen).
-export function starCardHtml(entry, { pop = false, by = '' } = {}) {
-  return '<div class="starcard">' + (by ? '<span class="small muted">' + esc(by) + '</span>' : '')
-    + '<div class="starcard__head"><span class="starcard__word">' + esc(entry.word) + '</span>'
-    + '<span class="plus5' + (pop ? ' plus5--pop' : '') + '" aria-label="5 extra points">+5</span></div>'
-    + '<p>' + esc(entry.meaning) + '</p>'
-    + (entry.example ? '<p class="example">' + esc(entry.example) + '</p>' : '')
-    + '</div>';
 }
 
 // score: from scoreMove / play().

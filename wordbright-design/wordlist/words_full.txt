@@ -14219,8 +14219,6 @@ cooled
 cooler
 coolers
 coolest
-coolie
-coolies
 cooling
 coolly
 coolness
@@ -16170,9 +16168,6 @@ daftness
 dag
 dagger
 daggers
-dago
-dagoes
-dagos
 dags
 daguerreotype
 daguerreotyped
@@ -18370,8 +18365,6 @@ dickering
 dickers
 dickey
 dickeys
-dickhead
-dickheads
 dickybird
 dickybirds
 dicotyledon
@@ -21303,7 +21296,6 @@ effectuated
 effectuates
 effectuating
 effed
-effeminacy
 effeminate
 effeminately
 effendi
@@ -27513,12 +27505,10 @@ gametes
 gametic
 gamier
 gamiest
-gamin
 gamine
 gamines
 gaminess
 gaming
-gamins
 gamma
 gammas
 gammon
@@ -28605,9 +28595,6 @@ god
 godawful
 godchild
 godchildren
-goddammit
-goddamn
-goddamned
 goddaughter
 goddaughters
 goddess
@@ -29116,8 +29103,6 @@ grazing
 grease
 greased
 greasepaint
-greaser
-greasers
 greases
 greasier
 greasiest
@@ -29800,12 +29785,8 @@ gynaecological
 gynaecologist
 gynaecologists
 gynaecology
-gyp
-gypped
 gypper
 gyppers
-gypping
-gyps
 gypsies
 gypster
 gypsters
@@ -31713,10 +31694,8 @@ honk
 honked
 honker
 honkers
-honkies
 honking
 honks
-honky
 honorarily
 honorarium
 honorariums
@@ -42137,9 +42116,6 @@ mongered
 mongering
 mongers
 mongol
-mongolism
-mongoloid
-mongoloids
 mongols
 mongoose
 mongooses
@@ -43542,7 +43518,6 @@ negotiations
 negotiator
 negotiators
 negritude
-negroid
 neigh
 neighbour
 neighboured
@@ -44379,9 +44354,7 @@ noodled
 noodles
 noodling
 nook
-nookie
 nooks
-nooky
 noon
 noonday
 noontide
@@ -47163,7 +47136,6 @@ papilla
 papillae
 papillary
 papist
-papists
 papoose
 papooses
 pappies
@@ -70487,8 +70459,6 @@ turbots
 turbulence
 turbulent
 turbulently
-turd
-turds
 turducken
 turduckens
 tureen
@@ -75193,8 +75163,6 @@ whitewashed
 whitewashes
 whitewashing
 whitewater
-whitey
-whiteys
 whither
 whiting
 whitings
@@ -75711,7 +75679,6 @@ woefullest
 woefully
 woefulness
 woes
-wogs
 wok
 woke
 woks
@@ -75858,8 +75825,6 @@ wooziest
 woozily
 wooziness
 woozy
-wop
-wops
 word
 wordage
 wordbook
@@ -76307,7 +76272,6 @@ yeti
 yetis
 yew
 yews
-yids
 yield
 yielded
 yielding

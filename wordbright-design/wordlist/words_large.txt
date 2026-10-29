@@ -23411,8 +23411,6 @@ cooler
 coolers
 coolest
 coolheaded
-coolie
-coolies
 cooling
 coolish
 coolly
@@ -26680,11 +26678,8 @@ daggers
 daggy
 daglock
 daglocks
-dago
 dagoba
 dagobas
-dagoes
-dagos
 dags
 daguerreotype
 daguerreotyped
@@ -30261,8 +30256,6 @@ dickering
 dickers
 dickey
 dickeys
-dickhead
-dickheads
 dickybird
 dickybirds
 diclinous
@@ -34798,7 +34791,6 @@ effectuating
 effectuation
 effectuations
 effed
-effeminacy
 effeminate
 effeminately
 effeminise
@@ -44945,12 +44937,10 @@ gametophytes
 gamic
 gamier
 gamiest
-gamin
 gamine
 gamines
 gaminess
 gaming
-gamins
 gamma
 gammadia
 gammadion
@@ -46149,12 +46139,8 @@ ginny
 ginormous
 gins
 ginseng
-gip
 gipon
 gipons
-gipped
-gipping
-gips
 giraffe
 giraffes
 girandole
@@ -46839,9 +46825,6 @@ god
 godawful
 godchild
 godchildren
-goddammit
-goddamn
-goddamned
 goddaughter
 goddaughters
 goddess
@@ -47673,13 +47656,9 @@ graziers
 grazing
 grazings
 grease
-greaseball
-greaseballs
 greased
 greaseless
 greasepaint
-greaser
-greasers
 greases
 greasewood
 greasewoods
@@ -48749,12 +48728,8 @@ gynoecia
 gynoecium
 gynophore
 gynophores
-gyp
-gypped
 gypper
 gyppers
-gypping
-gyps
 gypsies
 gypsophila
 gypsophilas
@@ -51874,10 +51849,8 @@ honk
 honked
 honker
 honkers
-honkies
 honking
 honks
-honky
 honorarily
 honorarium
 honorariums
@@ -59572,8 +59545,6 @@ kaffeeklatsch
 kaffeeklatsches
 kaffiyeh
 kaffiyehs
-kafir
-kafirs
 kaftan
 kaftans
 kagoule
@@ -69315,9 +69286,6 @@ mongers
 mongo
 mongoes
 mongol
-mongolism
-mongoloid
-mongoloids
 mongols
 mongoose
 mongooses
@@ -71132,8 +71100,6 @@ namesakes
 nametape
 nametapes
 naming
-nance
-nances
 nancies
 nancy
 nankeen
@@ -71666,7 +71632,6 @@ negotiations
 negotiator
 negotiators
 negritude
-negroid
 negus
 neguses
 neigh
@@ -73141,9 +73106,7 @@ noodles
 noodling
 noogie
 nook
-nookie
 nooks
-nooky
 noon
 noonday
 noontide
@@ -77886,7 +77849,6 @@ papist
 papistical
 papistries
 papistry
-papists
 papoose
 papooses
 pappi
@@ -81084,8 +81046,6 @@ picarooning
 picaroons
 picayune
 piccalilli
-piccaninnies
-piccaninny
 piccolo
 piccoloist
 piccoloists
@@ -81093,8 +81053,6 @@ piccolos
 pice
 piceous
 pick
-pickaninnies
-pickaninny
 pickaxe
 pickaxed
 pickaxes
@@ -98829,8 +98787,6 @@ shigellas
 shiitake
 shikari
 shikaris
-shiksa
-shiksas
 shill
 shilled
 shillelagh
@@ -114358,9 +114314,7 @@ turbots
 turbulence
 turbulent
 turbulently
-turd
 turdinae
-turds
 turducken
 turduckens
 tureen
@@ -121781,8 +121735,6 @@ whitewing
 whitewings
 whitewood
 whitewoods
-whitey
-whiteys
 whither
 whithersoever
 whitherward
@@ -122479,7 +122431,6 @@ woefully
 woefulness
 woes
 woful
-wogs
 wok
 woke
 woks
@@ -122686,8 +122637,6 @@ wooziest
 woozily
 wooziness
 woozy
-wop
-wops
 word
 wordage
 wordbook
@@ -123331,7 +123280,6 @@ yeti
 yetis
 yew
 yews
-yids
 yield
 yielded
 yielding

@@ -130,6 +130,9 @@ cockup	own list
 cockups	own list
 condom	own list
 condoms	form of "condom"
+coolie	every WordNet sense offensive
+coolies	every WordNet sense offensive
+cooly	every WordNet sense offensive
 coon	open blocklist
 coonass	own list
 coonasses	own list
@@ -162,12 +165,17 @@ cunnilingual	strong root
 cunnilingus	open blocklist
 cunt	open blocklist
 cunts	strong root
+dago	every WordNet sense offensive
+dagoes	every WordNet sense offensive
+dagos	every WordNet sense offensive
 darkie	open blocklist
 darkies	form of "darkie"
 de	2-letter word not in our short list
 dg	2-letter word not in our short list
 dick	open blocklist
 dicked	form of "dick"
+dickhead	every WordNet sense offensive
+dickheads	every WordNet sense offensive
 dicking	form of "dick"
 dicks	form of "dick"
 dildo	open blocklist
@@ -186,6 +194,9 @@ dykey	form of "dyke"
 dyking	form of "dyke"
 ed	2-letter word not in our short list
 ef	2-letter word not in our short list
+effeminacy	every WordNet sense offensive
+effeminateness	every WordNet sense offensive
+effeminatenesses	every WordNet sense offensive
 eh	2-letter word not in our short list
 ejaculate	strong root
 ejaculated	strong root
@@ -245,6 +256,8 @@ fuckoffs	strong root
 fucks	strong root
 fuckup	strong root
 fuckups	strong root
+gamin	every WordNet sense offensive
+gamins	every WordNet sense offensive
 gangbang	open blocklist
 gangbanged	form of "gangbang"
 gangbanger	form of "gangbang"
@@ -255,16 +268,35 @@ ganjah	own list
 ganjahs	own list
 genitals	open blocklist
 gi	2-letter word not in our short list
+ginzo	every WordNet sense offensive
+ginzos	every WordNet sense offensive
+gip	every WordNet sense offensive
+gipped	every WordNet sense offensive
+gipping	every WordNet sense offensive
+gips	every WordNet sense offensive
 gobshite	strong root
 gobshites	strong root
+goddammit	own list
+goddamn	own list
+goddamned	own list
+goddamning	own list
+goddamns	own list
 golliwogg	own list
 golliwoggs	own list
 gollywog	own list
 gollywogs	own list
 gook	own list
 gooks	form of "gook"
+greaseball	every WordNet sense offensive
+greaseballs	every WordNet sense offensive
+greaser	every WordNet sense offensive
+greasers	every WordNet sense offensive
+gyp	every WordNet sense offensive
+gypped	every WordNet sense offensive
+gypping	every WordNet sense offensive
 gyppo	own list
 gyppos	form of "gyppo"
+gyps	every WordNet sense offensive
 handjob	open blocklist
 handjobs	form of "handjob"
 harlot	own list
@@ -277,6 +309,8 @@ ho	2-letter word not in our short list
 homo	own list
 homoerotic	open blocklist
 homos	form of "homo"
+honkies	every WordNet sense offensive
+honky	every WordNet sense offensive
 hooker	open blocklist
 hookers	form of "hooker"
 horny	open blocklist
@@ -296,6 +330,8 @@ jism	own list
 jisms	own list
 jo	2-letter word not in our short list
 ka	2-letter word not in our short list
+kafir	every WordNet sense offensive
+kafirs	every WordNet sense offensive
 kb	2-letter word not in our short list
 kc	2-letter word not in our short list
 kg	2-letter word not in our short list
@@ -344,6 +380,10 @@ ml	2-letter word not in our short list
 mm	2-letter word not in our short list
 mo	2-letter word not in our short list
 mong	open blocklist
+mongolism	every WordNet sense offensive
+mongolisms	every WordNet sense offensive
+mongoloid	every WordNet sense offensive
+mongoloids	every WordNet sense offensive
 mongs	form of "mong"
 moron	own list
 moronism	own list
@@ -357,10 +397,14 @@ motherfucking	strong root
 mu	2-letter word not in our short list
 multiorgasmic	strong root
 na	2-letter word not in our short list
+nance	every WordNet sense offensive
+nances	every WordNet sense offensive
 nazi	own list
 nazis	own list
 ne	2-letter word not in our short list
 negro	open blocklist
+negroid	every WordNet sense offensive
+negroids	every WordNet sense offensive
 negrophile	own list
 negrophiles	own list
 negrophilism	own list
@@ -392,6 +436,8 @@ niggly	strong root
 nipple	open blocklist
 nipples	open blocklist
 nonorgasmic	strong root
+nookie	every WordNet sense offensive
+nooky	every WordNet sense offensive
 nu	2-letter word not in our short list
 nude	open blocklist
 nudely	form of "nude"
@@ -446,9 +492,16 @@ paedophiliac	strong root
 paedophiliacs	strong root
 paedophilic	strong root
 panties	open blocklist
+papists	every WordNet sense offensive
 pegging	open blocklist
 penis	open blocklist
 penises	form of "penis"
+picaninnies	every WordNet sense offensive
+picaninny	every WordNet sense offensive
+piccaninnies	every WordNet sense offensive
+piccaninny	every WordNet sense offensive
+pickaninnies	every WordNet sense offensive
+pickaninny	every WordNet sense offensive
 pikey	open blocklist
 pimp	own list
 pimped	form of "pimp"
@@ -477,6 +530,8 @@ poon	open blocklist
 poons	form of "poon"
 poontang	open blocklist
 poontangs	form of "poontang"
+poove	every WordNet sense offensive
+pooves	every WordNet sense offensive
 porn	open blocklist
 pornier	strong root
 porniest	strong root
@@ -549,6 +604,12 @@ shagger	form of "shag"
 shaggers	form of "shag"
 shagging	form of "shag"
 shags	form of "shag"
+sheenies	every WordNet sense offensive
+shegetz	every WordNet sense offensive
+shiksa	every WordNet sense offensive
+shiksas	every WordNet sense offensive
+shikse	every WordNet sense offensive
+shikses	every WordNet sense offensive
 shit	open blocklist
 shitake	strong root
 shitakes	strong root
@@ -579,6 +640,8 @@ shitting	strong root
 shitty	open blocklist
 shitwork	strong root
 si	2-letter word not in our short list
+sissiness	every WordNet sense offensive
+sissinesses	every WordNet sense offensive
 skank	own list
 skanked	own list
 skanker	own list
@@ -686,6 +749,8 @@ tribadisms	form of "tribadism"
 trollop	own list
 trollops	form of "trollop"
 trollopy	form of "trollop"
+turd	every WordNet sense offensive
+turds	every WordNet sense offensive
 tushy	open blocklist
 twat	open blocklist
 twats	form of "twat"
@@ -701,6 +766,8 @@ twinking	form of "twink"
 twinks	form of "twink"
 uh	2-letter word not in our short list
 um	2-letter word not in our short list
+unmanliness	every WordNet sense offensive
+unmanlinesses	every WordNet sense offensive
 ut	2-letter word not in our short list
 vagina	open blocklist
 vibrator	open blocklist
@@ -718,6 +785,8 @@ wencher	own list
 wenchers	own list
 wetback	open blocklist
 wetbacks	form of "wetback"
+whitey	every WordNet sense offensive
+whiteys	every WordNet sense offensive
 whore	open blocklist
 whoredom	strong root
 whoredoms	strong root
@@ -737,11 +806,17 @@ whorishness	own list
 whorishnesses	own list
 wo	2-letter word not in our short list
 wog	own list
+wogs	every WordNet sense offensive
+womanishness	every WordNet sense offensive
+womanishnesses	every WordNet sense offensive
+wop	every WordNet sense offensive
+wops	every WordNet sense offensive
 xi	2-letter word not in our short list
 xu	2-letter word not in our short list
 ya	2-letter word not in our short list
 ye	2-letter word not in our short list
 yid	own list
+yids	every WordNet sense offensive
 yo	2-letter word not in our short list
 za	2-letter word not in our short list
 zo	2-letter word not in our short list

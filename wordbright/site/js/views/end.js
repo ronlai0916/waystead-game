@@ -1,10 +1,12 @@
 // End of the game: final scores, winner, best word, Star words made, and a
 // short video of a computer player (it won, or it cheers for the child who did).
 import { savedGame } from '../store.js';
-import { starWords } from '../data.js';
+import { starWords, meanings } from '../data.js';
 import { esc, ICON, prefersReducedMotion } from '../ui/dom.js';
 import { character } from '../ai/characters.js';
-import { starEntry, starCardHtml } from '../ui/moves.js';
+import { starEntry } from '../ui/moves.js';
+import { wordRowsHtml, wireRows } from '../ui/results.js';
+import { canSpeak } from '../ui/speak.js';
 
 const SPELLBRIGHT_YEARS = ['3-4', '5-6'];
 
@@ -48,7 +50,7 @@ export function endView(main) {
     + '<div class="pagehead"><span class="eyebrow">Game over</span><h1>' + esc(headline) + '</h1><p class="muted">' + reason + '</p></div>'
     + celebrationHtml(s)
     + '<div class="card final"><h2>Final scores</h2><ol class="final__list">' + rows + '</ol></div>'
-    + (best ? '<div class="card bestword"><span class="eyebrow">Best word</span><p class="bestword__word">' + esc(best.word.toUpperCase()) + '</p>'
+    + (best ? '<div class="card bestword" data-best><span class="eyebrow">Best word</span><p class="bestword__word">' + esc(best.word.toUpperCase()) + '</p>'
       + '<p class="muted">' + esc(s.players[best.player].name) + ', ' + best.points + ' points</p></div>' : '')
     + '<div class="card stars" data-stars><h2>Star words made</h2>'
     + (made.size ? '<p class="muted small">Loading meanings…</p>' : '<p class="muted">No Star words this time. Look out for them next game: they score 5 extra points.</p>') + '</div>'
@@ -61,15 +63,24 @@ export function endView(main) {
     v.play().catch(() => {}); // if autoplay is refused, the poster stays
   }
 
-  if (made.size) {
-    starWords().then((list) => {
+  // The best word and the Star words get the same rows as the results panel.
+  const stops = [];
+  const wanted = [...made.keys()].concat(best ? [best.word] : []);
+  if (wanted.length) {
+    Promise.all([starWords(), meanings.lookup(wanted).catch(() => new Map())]).then(([list, entries]) => {
       const box = main.querySelector('[data-stars]');
       if (!box) return;
-      box.innerHTML = '<h2>Star words made</h2><div class="starcards">'
-        + [...made].map(([word, who]) => {
-          const e = starEntry(list, word);
-          return e ? starCardHtml(e, { by: s.players[who].name }) : '';
-        }).join('') + '</div>';
+      const speak = canSpeak();
+      if (best) {
+        const bestBox = main.querySelector('[data-best]');
+        bestBox.innerHTML = '<span class="eyebrow">Best word</span>'
+          + wordRowsHtml([{ ...best, by: s.players[best.player].name }], entries, list, { speak });
+        stops.push(wireRows(bestBox));
+      }
+      if (!made.size) return;
+      box.innerHTML = '<h2>Star words made</h2>'
+        + wordRowsHtml([...made].map(([word, who]) => ({ word, star: true, points: null, by: s.players[who].name })), entries, list, { speak });
+      stops.push(wireRows(box));
       // Spellbright covers the Year 3–6 lists, so only offer it for those words.
       const inSpellbright = [...made.keys()].some((word) => {
         const e = starEntry(list, word);
@@ -81,7 +92,7 @@ export function endView(main) {
       }
     }).catch(() => {});
   }
-  return null;
+  return () => stops.forEach((stop) => stop());
 }
 
 // Which computer player celebrates: the first computer among the winners, or

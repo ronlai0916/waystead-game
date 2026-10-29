@@ -2,6 +2,7 @@
 // holds every word list, so every level and every player share it.
 import { loadBoard } from './engine/board.js';
 import { loadWordGraph } from './engine/words.js';
+import { createMeanings } from './meanings.js';
 
 export const BOARD_IDS = ['junior', 'standard', 'large'];
 
@@ -27,6 +28,8 @@ export const boardJson = (id) => json('data/board_' + id + '.json');
 export const board = (id) => once('board:' + id, () => boardJson(id).then(loadBoard));
 export const tiles = () => json('data/tiles.json');
 export const starWords = () => json('data/star_words.json');
+// Word meanings: fetched a shard at a time, only when needed (not part of gameEnv).
+export const meanings = createMeanings((path) => fetchOk(path).then((r) => r.json()));
 export const wordGraph = () => once('graph', () => fetchOk('data/words_all.dawg').then((r) => r.arrayBuffer()).then(loadWordGraph));
 
 // Everything the engine needs for one game: the board, tiles, Star words and

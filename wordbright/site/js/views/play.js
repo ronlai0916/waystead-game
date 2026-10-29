@@ -5,13 +5,14 @@ import { play, swap, pass, act, checkPlay, starCheck, useHint, hintsLeft, allowa
 import { scoreMove, RACK_SIZE } from '../engine/score.js';
 import { checkMove } from '../engine/rules.js';
 import { tilesLeft, BLANK } from '../engine/bag.js';
-import { gameEnv } from '../data.js';
+import { gameEnv, meanings } from '../data.js';
 import { savedGame, saveGame, allowedWords, allowWords, storedPin } from '../store.js';
 import { esc, ICON, toast, ask, pickLetter, isPhone, askPin, explainPin } from '../ui/dom.js';
 import { checkPin } from '../pin.js';
 import { boardHtml, legendHtml, squareInner, squareLabel, squareClass, tileHtml } from '../ui/board.js';
 import { enableDrag } from '../ui/drag.js';
-import { starEntry, starCardHtml, wordsHtml, scoresHtml } from '../ui/moves.js';
+import { wordsHtml, scoresHtml } from '../ui/moves.js';
+import { resultsHtml, wireRows } from '../ui/results.js';
 import { askComputer, askHint } from '../ai/client.js';
 import { character, pictureHtml } from '../ai/characters.js';
 
@@ -21,6 +22,7 @@ const anyWord = () => true; // word helper off: check where the tiles are, not t
 const HAPPY_AT = 15; // a computer looks happy after scoring this many
 const WOW_AT = 20; // and surprised when a child scores this many (or makes a Star word)
 const SURPRISE_MS = 1200;
+const MEANING_WAIT_MS = 2500; // after this, the panel shows whatever meanings have arrived
 
 export function playView(main) {
   const saved = savedGame();
@@ -67,15 +69,34 @@ export function playView(main) {
   function moveCardHtml(last) {
     let body = '';
     if (last.type === 'play') {
-      const stars = last.score.words.filter((w) => w.star).map((w) => starEntry(env.starWords, w.word)).filter(Boolean);
-      body = '<h2>' + esc(last.name) + ' scored ' + last.score.total + '</h2>' + wordsHtml(last.score)
-        + stars.map((s) => starCardHtml(s, { pop: true })).join('');
+      body = '<h2>' + esc(last.name) + ' scored ' + last.score.total + '</h2>' + wordsHtml(last.score);
     } else if (last.type === 'swap') {
       body = '<h2>' + esc(last.name) + ' swapped ' + last.count + (last.count === 1 ? ' tile' : ' tiles') + '</h2>';
     } else {
       body = '<h2>' + esc(last.name) + ' passed</h2>';
     }
     return '<div class="card movecard" aria-live="polite">' + body + '</div>';
+  }
+
+  // Meanings for a move's words: whatever has arrived after a short wait.
+  function entriesFor(score) {
+    const late = new Promise((resolve) => setTimeout(() => resolve(null), MEANING_WAIT_MS));
+    return Promise.race([meanings.lookup(score.words.map((w) => w.word)), late])
+      .catch(() => null).then((m) => m || new Map());
+  }
+
+  // The results panel for a play, then the button on. The heading takes focus,
+  // so a screen reader reads the words and Tab goes Hear … Look it up … the button.
+  async function showResults(box, done, label, onNext) {
+    const entries = await entriesFor(done.score);
+    if (!alive || !box.isConnected) return;
+    box.innerHTML = resultsHtml(done.name, done.score, entries, env.starWords)
+      + '<button type="button" class="btn btn--primary" data-next>' + label + ICON.arrow + '</button>';
+    stops.push(wireRows(box));
+    box.querySelector('[data-next]').addEventListener('click', onNext);
+    const h = box.querySelector('#results-title');
+    h.tabIndex = -1;
+    h.focus(); // and on a phone, where the panel is under the board, it scrolls into view
   }
 
   // Square size decides whether the names fit.
@@ -117,7 +138,7 @@ export function playView(main) {
       + '<div class="game__side">'
       + '<div class="card botcard"><div data-face></div><div class="botcard__text"><span class="eyebrow">' + esc(ch.label) + '</span>'
       + '<p class="botcard__status" data-status role="status" aria-live="polite"></p></div></div>'
-      + (last ? moveCardHtml(last) : '')
+      + (last && last.type !== 'play' ? moveCardHtml(last) : '') // a play was shown in its own panel
       + '<div data-after></div></div></section>';
     const boardEl = main.querySelector('[data-board]');
     sizeBoard(boardEl);
@@ -145,11 +166,12 @@ export function playView(main) {
       console.error(err);
       res = { action: { type: 'pass' } };
     }
+    let out = act(state, res.action, env);
+    if (!out.ok) { console.error(out.message); out = pass(state, env); }
+    if (out.score) meanings.prefetch(out.score.words.map((w) => w.word)); // while it still "thinks"
     await wait(Math.max(0, pause - (performance.now() - started)));
     if (!alive) return;
 
-    let out = act(state, res.action, env);
-    if (!out.ok) { console.error(out.message); out = pass(state, env); }
     state = out.state;
     saveGame(state);
 
@@ -169,16 +191,41 @@ export function playView(main) {
     }
     const soloChild = children === 1 && !state.over && !player().computer;
     const label = state.over ? 'See the final scores' : soloChild ? 'Your turn' : 'Continue';
-    main.querySelector('[data-after]').innerHTML = (done.type === 'play' ? moveCardHtml(done) : '')
-      + '<button type="button" class="btn btn--primary" data-next>' + label + ICON.arrow + '</button>';
     const card = main.querySelector('.movecard');
     if (card && last) card.remove(); // the earlier move's card makes way for this one
-    const btn = main.querySelector('[data-next]');
-    btn.addEventListener('click', () => {
+    const after = main.querySelector('[data-after]');
+    const onNext = () => {
       if (state.over) location.hash = '#/end';
       else next(null);
-    });
+    };
+    if (done.type === 'play') {
+      await showResults(after, done, label, onNext);
+      return;
+    }
+    after.innerHTML = '<button type="button" class="btn btn--primary" data-next>' + label + ICON.arrow + '</button>';
+    const btn = after.querySelector('[data-next]');
+    btn.addEventListener('click', onNext);
     btn.focus({ preventScroll: true });
+  }
+
+  // ---- After a child's play: the board and the words made ---------------
+  async function playedView(last, fresh) {
+    stopAll();
+    const n = env.board.size;
+    main.innerHTML = '<section class="wrap wrap--game page game game--watch" data-game>'
+      + '<h1 class="sr">' + esc(last.name) + ' played</h1>'
+      + '<div class="game__scores">' + scoresHtml(state, { bag: tilesLeft(state.bag) }) + '</div>'
+      + '<div class="game__board">' + boardHtml(env.board, env.board.title + ' board, ' + n + ' by ' + n) + '</div>'
+      + '<div class="game__legend">' + legendHtml(env.board) + '</div>'
+      + '<div class="game__side"><div data-after><p class="muted">Finding the meanings…</p></div></div></section>';
+    const boardEl = main.querySelector('[data-board]');
+    sizeBoard(boardEl);
+    drawWatch(boardEl, fresh);
+    const label = state.over ? 'See the final scores' : 'Continue';
+    await showResults(main.querySelector('[data-after]'), last, label, () => {
+      if (state.over) location.hash = '#/end';
+      else next(last);
+    });
   }
 
   // ---- Between turns: what just happened, then "pass the device" -------
@@ -372,6 +419,7 @@ export function playView(main) {
         const res = checkMove(board, state.cells, tiles, anyWord);
         if (!res.ok) { previewEl.textContent = res.message; return; }
         const sc = scoreMove(board, values, res.words, tiles.length);
+        meanings.prefetch(sc.words.map((w) => w.word));
         const words = sc.words.map((w) => w.word.toUpperCase() + ' (?) ' + w.points).join(', ');
         previewEl.innerHTML = esc(words) + (sc.fullRack ? ', full-rack bonus +30' : '') + ' — <b>' + sc.total + (sc.total === 1 ? ' point' : ' points') + '</b> if allowed';
         return;
@@ -379,6 +427,7 @@ export function playView(main) {
       const res = checkPlay(state, tiles, env);
       if (!res.ok) { previewEl.textContent = res.message; return; }
       const sc = scoreMove(board, values, res.words, tiles.length, starCheck(player(), env));
+      meanings.prefetch(sc.words.map((w) => w.word)); // ready for the panel after Play
       const words = sc.words.map((w) => w.word.toUpperCase() + ' ' + w.points + (w.star ? ' (Star word +5)' : '')).join(', ');
       previewEl.innerHTML = esc(words) + (sc.fullRack ? ', full-rack bonus +30' : '') + ' — <b>' + sc.total + (sc.total === 1 ? ' point' : ' points') + '</b>';
     }
@@ -664,7 +713,7 @@ export function playView(main) {
         toast(res.message);
         return;
       }
-      finish(res, { type: 'play', score: res.score });
+      finish(res, { type: 'play', score: res.score }, new Set(ui.pending.map((p) => p.i)));
     }
 
     allowEl.addEventListener('click', () => allowAndPlay());
@@ -686,11 +735,13 @@ export function playView(main) {
       submit();
     }
 
-    function finish(res, last) {
+    // fresh: the squares just played (a play shows its results panel first).
+    function finish(res, last, fresh = null) {
       last.name = player().name;
       state = res.state;
       saveGame(state);
-      next(last);
+      if (last.type === 'play') playedView(last, fresh);
+      else next(last);
       window.scrollTo(0, 0);
     }
 
