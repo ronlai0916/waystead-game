@@ -1,6 +1,6 @@
 // Spellbright theme model (same as Wordbright's): theme-boot.js sets
 // data-theme and data-style before the first paint, from the shared mode
-// ("sb.theme"), this device's day style ("sb.dayStyle") and the device's
+// ("sb.theme") and day style ("sb.dayStyle"), both shared with Wordbright, and the device's
 // light/dark setting; the Day style picker saves "sb.dayStyle" and changes
 // the look at once. Run: node --test tests/
 import { test } from 'node:test';
@@ -71,13 +71,6 @@ test('Match device follows the device live; a chosen Day or Night does not', () 
   day.setDark(true);
   assert.equal(day.attrs.get('data-theme'), 'light');
   assert.equal(day.attrs.get('data-style'), 'garden');
-});
-
-test('Wordbright\'s day style does not change Spellbright (each game keeps its own)', () => {
-  const b = browser({ mode: 'light' });
-  b.store.set('wb.dayStyle', 'paint');
-  b.win.sbTheme.apply();
-  assert.equal(b.attrs.get('data-style'), 'garden');
 });
 
 test('no localStorage (private mode) still gives a look', () => {

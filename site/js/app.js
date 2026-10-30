@@ -1,6 +1,6 @@
 // Entry point: load data, route by the URL hash, wire the header.
 import { loadData } from './data.js';
-import { getTheme, setTheme } from './store.js';
+import { wireThemeMenu } from './thememenu.js';
 import { stop } from './speech.js';
 import * as V from './views.js';
 
@@ -76,26 +76,9 @@ function onNavigate() {
   main.focus({ preventScroll: true });
 }
 
-// The one theme button: Match device → Day → Night → Match device.
-// Day shows the chosen day style (Sunny garden or Paint box); Night is Night sky.
-export const THEME_NAMES = { system: 'Match device', light: 'Day', dark: 'Night' };
-
+// The look menu: Day · Sunny garden, Day · Paint box, Night, Match device.
 function wireTheme() {
-  const btn = document.getElementById('theme');
-  const label = () => {
-    const name = THEME_NAMES[getTheme()];
-    btn.setAttribute('aria-label', 'Day / Night / Match device. Now: ' + name + '. Change');
-    btn.title = 'Now: ' + name;
-    btn.querySelector('[data-theme-name]').textContent = name;
-  };
-  label();
-  btn.addEventListener('click', () => {
-    setTheme({ system: 'light', light: 'dark', dark: 'system' }[getTheme()]);
-    label();
-    const h = location.hash;
-    if (h.startsWith('#/progress') || h.startsWith('#/about') || h === '' || h === '#/' || h === '#') render();
-  });
-  document.addEventListener('themechange', label);
+  wireThemeMenu(document.getElementById('theme'), document.getElementById('theme-menu'), document);
 }
 
 async function start() {

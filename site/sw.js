@@ -4,7 +4,7 @@
 // Bump VERSION on every deploy so phones pick up the new files.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-10-30a';
+const VERSION = 'spellbright-2026-10-30b';
 
 const SHELL = [
   './',
@@ -18,6 +18,7 @@ const SHELL = [
   'js/data.js',
   'js/store.js',
   'js/daystyle.js',
+  'js/thememenu.js',
   'js/celebrate.js',
   'js/speech.js',
   'js/ui.js',

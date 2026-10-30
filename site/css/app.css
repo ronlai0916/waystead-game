@@ -153,10 +153,13 @@ img { max-width: 100%; display: block; }
 /* "All games": back to the Waystead Game home page. Icon only on phones. */
 .allgames { display: inline-flex; width: auto; gap: 8px; color: var(--text); padding: 0 12px; text-decoration: none; font-weight: 600; font-size: 0.92rem; }
 @media (max-width: 599.98px) { .allgames { width: 40px; padding: 0; } .allgames__text { display: none; } }
-#theme svg { display: none; }
-[data-theme-mode="system"] #theme .ico-auto,
-[data-theme-mode="light"] #theme .ico-light,
-[data-theme-mode="dark"] #theme .ico-dark { display: block; }
+/* The look button shows the current choice: sun, sun with a paint dot, moon, half circle. */
+#theme > svg { display: none; }
+#theme[data-choice="garden"] .ico-garden,
+#theme[data-choice="paint"] .ico-paint,
+#theme[data-choice="night"] .ico-night,
+#theme[data-choice="system"] .ico-system { display: block; }
+.ico-paint .dot { fill: #E5432D; stroke: var(--surface); stroke-width: 1.5; } /* Paint box tomato, in every style */
 
 /* ---- Buttons ------------------------------------------------------------ */
 .btn {
@@ -391,11 +394,30 @@ details.hint .hint__body { padding: 0 16px 14px; display: grid; gap: 6px; }
 @media (max-width: 899.98px) { .themebtn { padding: 0; width: 40px; } .themebtn__text { display: none; } }
 :root[data-theme="dark"] .toast { background: var(--paper); color: var(--ink); }
 
-/* ---- Day style picker (home page, For parents) --------------------------- */
-.home__look { margin-top: 28px; }
+/* ---- Look menu (top bar) ------------------------------------------------- */
+.thememenu { position: relative; flex: none; }
+.themebtn[aria-expanded="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.thememenu__list {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: max-content; min-width: 236px; max-width: calc(100vw - 32px); margin: 0; padding: 6px; list-style: none;
+  background: var(--surface); color: var(--text); border: var(--card-border); border-radius: var(--r); box-shadow: var(--shadow), 0 12px 32px -12px rgba(0, 0, 0, 0.35);
+}
+.thememenu__item {
+  display: grid; grid-template-columns: 18px 22px minmax(0, 1fr); align-items: center; gap: 8px;
+  min-height: 44px; padding: 6px 12px 6px 8px; border-radius: 10px; cursor: pointer; font-weight: 600; white-space: nowrap;
+}
+.thememenu__item:hover { background: var(--surface-2); }
+.thememenu__item:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; background: var(--surface-2); }
+.thememenu__item:focus:not(:focus-visible) { outline: none; }
+.thememenu__tick { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; visibility: hidden; }
+.thememenu__item[aria-checked="true"] { color: var(--text); font-weight: 800; }
+.thememenu__item[aria-checked="true"] .thememenu__tick { visibility: visible; color: var(--link); }
+.thememenu__ico svg { display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.thememenu__ico svg .fill { fill: currentColor; stroke: none; }
+.thememenu__item:nth-child(3) { margin-top: 4px; position: relative; }
+.thememenu__item:nth-child(3)::before { content: ""; position: absolute; left: 8px; right: 8px; top: -3px; border-top: 1px solid var(--line); }
+
+/* ---- Day style picker (For parents) ---------------------------------------- */
 .daystyle { display: grid; gap: 10px; }
-.daystyle--card { padding: 18px; }
-.daystyle--card h2 { font-size: 1.15rem; }
 .daystyle__opts { display: grid; grid-template-columns: repeat(2, minmax(0, 170px)); gap: 12px; }
 .dsopt { position: relative; display: grid; gap: 8px; justify-items: center; padding: 10px 10px 12px; border: 2px solid var(--line); border-radius: var(--r); cursor: pointer; background: var(--surface); font-weight: 700; }
 .dsopt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }

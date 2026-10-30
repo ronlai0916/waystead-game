@@ -1,6 +1,6 @@
 // Runs before the stylesheet paints, so the saved look never flashes.
 // Mode (shared with Wordbright, "sb.theme"): light = Day, dark = Night, none = match device.
-// Day style (this device, "sb.dayStyle"): garden (default) or paint. Night is always "night".
+// Day style ("sb.dayStyle", shared with Wordbright): garden (default) or paint. Night is always "night".
 // Sets <html data-theme="light|dark" data-style="garden|paint|night" data-theme-mode="…">,
 // and follows the device when the mode is "match device". store.js calls sbTheme.apply().
 // Same model as wordbright/site/js/theme-boot.js (copied, not imported: each game stands alone).
@@ -18,6 +18,15 @@
     var day = DAY_STYLES.indexOf(dayStyle) >= 0 ? dayStyle : 'garden';
     return { mode: m, theme: theme, style: theme === 'dark' ? 'night' : day };
   }
+
+  // One-time move: Wordbright kept the day style in "wb.dayStyle" before it was shared.
+  try {
+    var old = localStorage.getItem('wb.dayStyle');
+    if (old !== null) {
+      if (localStorage.getItem('sb.dayStyle') === null) localStorage.setItem('sb.dayStyle', old);
+      localStorage.removeItem('wb.dayStyle');
+    }
+  } catch (e) {}
 
   var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 

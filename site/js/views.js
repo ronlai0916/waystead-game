@@ -92,17 +92,14 @@ export function home(main) {
     + '<li><strong>Quick game</strong>Guess the letters before the flower loses its 6 petals. The picture gets clearer as you miss.</li>'
     + '<li><strong>Practice</strong>The full game, with 10 petals. The picture stays hidden until the end.</li>'
     + '<li><strong>Test</strong>Hear each word and type it. Get every word right to open the next chapter.</li>'
-    + '</ol></div>'
-    + '<div class="home__look">' + dayStyleHtml({ id: 'home-daystyle' }) + '</div>'
-    + '</section>';
+    + '</ol></div></section>';
   applyMeters(main);
-  const unwireLook = wireDayStyle(main);
   const lettersEl = () => main.querySelectorAll('.today__word .chunked__letter');
   main.querySelector('[data-hear]').addEventListener('click', () => speak(w.word));
   main.querySelector('[data-spell]').addEventListener('click', () => spellOut(w.word, (i) => {
     lettersEl().forEach((el) => el.classList.toggle('is-on', Number(el.dataset.i) === i));
   }));
-  return () => { stop(); unwireLook(); };
+  return stop;
 }
 
 /* ---------------------------------------------------------------- Year --- */
@@ -493,7 +490,6 @@ export function tricky(main) {
 
 /* ------------------------------------------------------------ Progress --- */
 export function progress(main) {
-  const theme = S.getTheme();
   const yearBlockHtml = (yid) => {
     const s = yearStats(yid);
     return '<div class="card setting"><h2>' + esc(D.years()[yid].label) + '</h2>' + meter(s.passed, s.total)
@@ -509,17 +505,12 @@ export function progress(main) {
     + '<div class="pagehead"><span class="eyebrow">Progress</span><h1>How it\'s going</h1>'
     + '<p class="muted">Progress is saved in this browser on this device only.</p></div>'
     + '<div class="settings">' + yearBlockHtml('y34') + yearBlockHtml('y56')
-    + '<div class="card setting"><h2>Day / Night</h2><div class="radios" role="radiogroup" aria-label="Day / Night / Match device">'
-    + ['system', 'light', 'dark'].map((v) => '<label><input type="radio" name="theme" value="' + v + '"' + (theme === v ? ' checked' : '') + '> '
-      + ({ system: 'Match device', light: 'Day', dark: 'Night' })[v] + '</label>').join('') + '</div>'
-    + '<p class="muted small">The day style (Sunny garden or Paint box) is on the home page and the For parents page.</p></div>'
     + '<div class="card setting"><h2>Open every chapter</h2><p class="muted small">Normally a chapter opens when the one before it is passed. Turn this on to jump ahead.</p>'
     + '<label class="radios"><input type="checkbox" data-unlock' + (S.unlockAll() ? ' checked' : '') + '> Open all chapters</label></div>'
     + '<div class="card setting"><h2>Start again</h2><p class="muted small">Clears chapter progress and tricky words in this browser.</p>'
     + '<div class="btnrow"><button type="button" class="btn btn--ghost" data-reset>Clear my progress</button></div></div>'
     + '</div></section>';
   applyMeters(main);
-  main.querySelectorAll('input[name="theme"]').forEach((r) => r.addEventListener('change', () => { S.setTheme(r.value); document.dispatchEvent(new Event('themechange')); }));
   main.querySelector('[data-unlock]').addEventListener('change', (e) => { S.setUnlockAll(e.target.checked); toast(e.target.checked ? 'All chapters open' : 'Chapters open one by one'); });
   const reset = main.querySelector('[data-reset]');
   let armed = false;
@@ -540,7 +531,7 @@ export function about(main) {
     + '<h2>Little and often</h2>'
     + '<p>Ten to fifteen minutes, three or four times a week, works better than one long session. Start each session with a few tricky words before moving on.</p>'
     + '<h2>How it looks</h2>'
-    + '<p>By day Spellbright uses the day style chosen below; at night (the Day / Night button at the top, or the device\'s dark mode) it uses Night sky. Wordbright, our word-tile game, uses the same three styles.</p>'
+    + '<p>The look menu at the top (the sun or moon button) switches between Day · Sunny garden, Day · Paint box, Night and Match device (which follows this device\'s light or dark setting). The choice is shared with Wordbright, our word-tile game, which uses the same three styles. You can also pick the day style here:</p>'
     + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
     + '<h2>Privacy</h2>'
     + '<p>There is no account and no sign-in. Progress is kept in this browser on this device and is never sent to us. There are no adverts, no tracking and no analytics. Clearing the browser\'s site data, or using another device, starts afresh.</p>'
