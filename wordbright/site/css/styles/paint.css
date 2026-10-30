@@ -1,0 +1,153 @@
+/* ==========================================================================
+   Paint box (Day). Bold bright colours on cream; chunky rounded tiles with an
+   Ink outline; playful but tidy. Baloo 2 (headings, tiles) + Nunito (body).
+   From wordbright-design/style-options/b-paint-box.
+   ========================================================================== */
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../../assets/fonts/baloo2-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("../../assets/fonts/nunito-latin-var.woff2") format("woff2");
+}
+
+:root[data-style="paint"] {
+  --f-display: "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --f-body: "Nunito", ui-rounded, system-ui, sans-serif;
+  --display-weight: 800;
+
+  --cobalt: #2250D0;
+  --tomato: #E5432D;
+  --tomato-text: #C4321F;
+  --sunshine: #FFC21A;
+  --grass: #3DBA5C;
+
+  --bg: #FFFAF0;
+  --topbar: #FFFAF0;
+  --surface: #FFFFFF;
+  --surface-2: #FFF1D6;
+  --line: #D9CCB2;
+  --outline: #1B1A20;
+  --text: #1B1A20;
+  --muted: #5A5249;
+  --accent: var(--cobalt);
+  --accent-strong: #1A3FA8;
+  --accent-soft: #E3EAFF;
+  --on-accent: #FFFFFF;
+  --link: var(--cobalt);
+  --eyebrow: var(--tomato-text);
+  --product: var(--tomato-text);
+  --wordmark: var(--ink);
+  --focus: var(--tomato-text);
+
+  --btn-r: 16px;
+  --btn-border: 2.5px;
+  --btn-shadow: 0 4px 0 var(--outline);
+  --btn-ghost-edge: var(--outline);
+  --btn-ghost-shadow: 0 4px 0 var(--outline);
+  --card-border: 2.5px solid var(--outline);
+  --shadow: 0 5px 0 var(--outline);
+  --pill-bg: var(--sunshine);
+  --pill-fg: #1B1A20;
+  --why-bg: var(--sunshine);
+  --why-fg: #1B1A20;
+  --r: 16px;
+  --r-lg: 20px;
+
+  /* Board: a paint tray. Ink gaps, bright pans, Ink names and icons. */
+  --board-edge: #1B1A20;
+  --board-r: 16px;
+  --board-pad: 4px;
+  --sq-r: 22%;
+  --sq-plain: #F3E8CF;
+  --sq-ink: #1B1A20;
+  --spark: #FFE9A3;
+  --glow: var(--sunshine);
+  --shine: #FFCABD;
+  --star: #FF7A5E;
+
+  --tile-r: 20%;
+  --tile-bg: #FFFDF6;
+  --tile-fg: #1B1A20;
+  --tile-blank: #1A3FA8;
+  --tile-shadow: inset 0 0 0 2px #1B1A20, inset 0 -4px 0 #E8DCC2;
+  --tile-pending-bg: var(--cobalt);
+  --tile-pending-fg: #FFFFFF;
+  --tile-pending-shadow: inset 0 0 0 2px #1B1A20, inset 0 -4px 0 #1A3FA8;
+  --new-ring: var(--tomato);
+  --rack-bg: var(--surface-2);
+
+  --row-bg: #FFF7E4;
+  --row-star-bg: #FFF0B8;
+  --row-star-edge: inset 0 0 0 2.5px #1B1A20;
+  --example-edge: var(--sunshine);
+  --plus5-bg: #D63A24;
+  --plus5-fg: #FFFFFF;
+  --plus5-shadow: inset 0 0 0 2px #1B1A20;
+  --plus5-ring: var(--cobalt);
+  --winner-bg: var(--sunshine);
+  --winner-fg: #1B1A20;
+  color-scheme: light;
+}
+
+/* Top bar: an Ink rule with four paint dabs on it. */
+[data-style="paint"] .topbar { border-bottom: 3px solid var(--outline); backdrop-filter: none; -webkit-backdrop-filter: none; }
+[data-style="paint"] .topbar::after {
+  content: ""; position: absolute; right: 24px; bottom: -9px; width: 92px; height: 15px; pointer-events: none;
+  background:
+    radial-gradient(circle at 7px 7px, var(--tomato) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 31px 7px, var(--sunshine) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 55px 7px, var(--cobalt) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 79px 7px, var(--grass) 6.5px, transparent 7.5px);
+}
+[data-style="paint"] .iconbtn { border: 2px solid var(--outline); }
+[data-style="paint"] .topbar__nav a:hover, [data-style="paint"] .topbar__nav a[aria-current="page"] { background: var(--sunshine); color: #1B1A20; }
+[data-style="paint"] .btn { font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; padding-top: 8px; }
+[data-style="paint"] .btn--quiet { border: 2px solid var(--outline); background: var(--surface); box-shadow: 0 3px 0 var(--outline); }
+[data-style="paint"] .tile { font-weight: 800; }
+[data-style="paint"] .tile__l { transform: translateY(5%); }
+[data-style="paint"] .results { border-top-width: 10px; border-top-color: var(--sunshine); }
+[data-style="paint"] .wordrow__word { font-weight: 800; letter-spacing: 0.06em; }
+[data-style="paint"] .scores__p, [data-style="paint"] .rack, [data-style="paint"] .final__row, [data-style="paint"] .dsopt { border: 2px solid var(--outline); }
+[data-style="paint"] .field, [data-style="paint"] .seg, [data-style="paint"] .boardopt, [data-style="paint"] .seat { border-color: var(--outline); }
+[data-style="paint"] .boardopt { border-width: 2px; }
+[data-style="paint"] .sq__start { background: var(--tomato); box-shadow: 0 0 0 2px #1B1A20; }
+[data-style="paint"] .mini .mini--start { background: radial-gradient(circle, var(--tomato) 0 36%, var(--sq-plain) 40%); }
+[data-style="paint"] .why__icon { border: 2.5px solid var(--outline); border-radius: 14px; }
+[data-style="paint"] .why__item:nth-child(2) .why__icon { background: var(--cobalt); color: #FFFFFF; }
+[data-style="paint"] .why__item:nth-child(3) .why__icon { background: var(--tomato); color: #FFFFFF; }
+
+/* Start: sticker frames round a palette of tiles. */
+[data-style="paint"] .hero__tiles { padding: 16px 20px; border-radius: 48% 52% 46% 54% / 60% 55% 45% 40%; background: var(--surface-2); border: 2.5px solid var(--outline); transform: rotate(-3deg); }
+[data-style="paint"] .hero__deco { display: block; position: absolute; inset: 0; pointer-events: none; }
+[data-style="paint"] .hero__art { position: relative; }
+[data-style="paint"] .hero__deco::before, [data-style="paint"] .hero__deco::after { content: ""; position: absolute; border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%; }
+[data-style="paint"] .hero__deco::before { width: 120px; height: 100px; left: -4%; top: 34%; background: var(--sunshine); opacity: 0.35; }
+[data-style="paint"] .hero__deco::after { width: 90px; height: 80px; right: -2%; top: 28%; background: var(--cobalt); opacity: 0.18; }
+[data-style="paint"] .hero__face, [data-style="paint"] .hero__tiles { position: relative; z-index: 1; }
+
+/* Players as stickers: a coloured frame, an Ink outline, a hard shadow. */
+[data-style="paint"] .hero__face .avatar,
+[data-style="paint"] .player__pic,
+[data-style="paint"] .avatar--big,
+[data-style="paint"] .cheer__media {
+  border-radius: 26%; border: 3px solid var(--outline); background: var(--pot, var(--sunshine)); padding: 5px; box-shadow: 0 5px 0 var(--outline);
+}
+[data-style="paint"] .avatar--seat { border-radius: 26%; border: 2px solid var(--outline); background: var(--pot, var(--sunshine)); padding: 2px; }
+[data-style="paint"] .avatar--pip { --pot: var(--sunshine); }
+[data-style="paint"] .avatar--ottie { --pot: var(--cobalt); }
+[data-style="paint"] .avatar--bramble { --pot: var(--tomato); }
+[data-style="paint"] .avatar--fizz { --pot: var(--grass); }
+
+/* Celebration: paint splats. */
+[data-style="paint"] .burst i { width: 14px; height: 13px; border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%; background: var(--tomato); }
+[data-style="paint"] .burst i:nth-child(4n + 2) { background: var(--sunshine); width: 17px; height: 15px; }
+[data-style="paint"] .burst i:nth-child(4n + 3) { background: var(--cobalt); width: 11px; height: 11px; }
+[data-style="paint"] .burst i:nth-child(4n) { background: var(--grass); width: 15px; height: 12px; }

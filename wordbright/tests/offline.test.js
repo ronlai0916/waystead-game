@@ -22,15 +22,16 @@ function shell() {
   return new Function(body + '; return SHELL;')();
 }
 
-test('the shell lists every script, data file, font, icon and character picture', () => {
+test('the shell lists every script, style sheet, data file, icon and character picture', () => {
   const list = new Set(shell());
-  const needed = [...files('js'), ...files('data').filter((f) => !f.startsWith('data/meanings/')), ...files('assets/fonts'), ...files('assets/icons'), ...files('assets/characters'),
-    'index.html', 'css/app.css', 'manifest.webmanifest'];
+  const needed = [...files('js'), ...files('css'), ...files('data').filter((f) => !f.startsWith('data/meanings/')), ...files('assets/icons'), ...files('assets/characters'),
+    'index.html', 'manifest.webmanifest'];
   assert.deepEqual(needed.filter((f) => !list.has(f)), []);
   for (const f of list) if (f !== './') assert.ok(existsSync(SITE + f), `${f} is in the shell but not on disk`);
 });
 
-test('videos and word meanings are not in the shell (cached on first use)', () => {
+test('fonts, videos and word meanings are not in the shell (cached on first use)', () => {
+  assert.ok(shell().every((f) => !f.startsWith('assets/fonts/')));
   assert.ok(shell().every((f) => !/\.(webm|mp4)$/.test(f)));
   assert.ok(shell().every((f) => !f.startsWith('data/meanings/')));
 });

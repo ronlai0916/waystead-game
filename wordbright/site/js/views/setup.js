@@ -7,6 +7,7 @@ import { BOARD_IDS, BOARD_MINUTES, boardJson, gameEnv } from '../data.js';
 import { savedGame, saveGame, lastSetup, saveSetup } from '../store.js';
 import { esc, ICON, ask, isPhone, toast } from '../ui/dom.js';
 import { CHARACTERS, STRENGTH_ORDER, character, pictureHtml } from '../ai/characters.js';
+import { dayStyleHtml, wireDayStyle } from '../ui/daystyle.js';
 
 const MAX_NAME = 16;
 const DEFAULT_LEVEL = 'year-5';
@@ -78,7 +79,10 @@ export function setup(main) {
     + '<span class="switch__track" aria-hidden="true"></span><span class="switch__label">Check words before Play</span></label>'
     + '<p class="muted small" id="helper-text" data-helper-text aria-live="polite"></p></fieldset>'
     + '<div class="btnrow"><button type="submit" class="btn btn--primary" data-start>Start game' + ICON.arrow + '</button></div>'
-    + '</form></section>';
+    + '</form>'
+    + '<div class="setup__look">' + dayStyleHtml() + '</div>'
+    + '</section>';
+  wireDayStyle(main);
 
   const form = main.querySelector('[data-form]');
   const seatsEl = main.querySelector('[data-seats]');

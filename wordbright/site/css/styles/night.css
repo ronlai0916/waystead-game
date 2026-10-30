@@ -1,0 +1,169 @@
+/* ==========================================================================
+   Night sky (always used at Night). Deep indigo with bright stars; tiles glow
+   like the moon; gold buttons. Lexend (headings, tiles) + Atkinson
+   Hyperlegible (body). From wordbright-design/style-options/c-night-sky.
+   ========================================================================== */
+@font-face {
+  font-family: "Lexend";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../../assets/fonts/lexend-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../assets/fonts/atkinson-latin-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../assets/fonts/atkinson-latin-700.woff2") format("woff2");
+}
+
+:root[data-style="night"] {
+  --f-display: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --display-weight: 600;
+
+  --gold: #FFD45C;
+  --moon: #FFF4D2;
+  --nebula: #FF9ACB;
+
+  --bg: #11133A;
+  --topbar: color-mix(in srgb, #11133A 82%, transparent);
+  --surface: #1B1E52;
+  --surface-2: #262A66;
+  --line: #353A7A;
+  --text: #F3F1FF;
+  --muted: #BAB9E2;
+  --accent: var(--gold);
+  --accent-strong: #FFE08A;
+  --accent-soft: #2B2F6E;
+  --on-accent: #1B1A20;
+  --link: var(--gold);
+  --eyebrow: var(--nebula);
+  --product: var(--gold);
+  --wordmark: #F3F1EC;
+  --focus: var(--gold);
+  --star-dot: rgba(255, 255, 255, 0.7);
+
+  /* Night versions of the other Waystead colours */
+  --good: #5BC58E;
+  --good-soft: #15301F;
+  --bad: #FF8E80;
+  --bad-soft: #3A1A2A;
+  --learning: #2DB5A5;
+  --learning-soft: #12302D;
+  --spellbright: #C9A6F2;
+  --spellbright-soft: #2A2050;
+  --petal-sb: #E58BA3;
+  --petal-sb-edge: #C9657F;
+
+  --btn-r: 999px;
+  --btn-shadow: 0 0 22px -4px rgba(255, 212, 92, 0.7);
+  --btn-ghost-edge: var(--line);
+  --card-border: 1.5px solid var(--line);
+  --shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.9);
+  --pill-bg: #262A66;
+  --pill-fg: #F3F1FF;
+  --why-bg: #262A66;
+  --why-fg: var(--gold);
+  --r: 16px;
+  --r-lg: 22px;
+
+  /* Squares: cool letter squares, warm word squares; the Star square is gold. */
+  --board-edge: #0B0D2A;
+  --board-r: 18px;
+  --sq-r: 24%;
+  --sq-plain: #1E2258;
+  --sq-ink: #F3F1FF;
+  --spark: #2D3A8E;  --spark-ink: #F3F1FF;
+  --glow: #4A55C8;   --glow-ink: #FFFFFF;
+  --shine: #8A3E78;  --shine-ink: #FFFFFF;
+  --star: #FFC94A;   --star-ink: #1B1A20;
+
+  --tile-r: 22%;
+  --tile-bg: var(--moon);
+  --tile-fg: #1B1A20;
+  --tile-blank: #3A3FB0;
+  --tile-shadow: inset 0 -3px 0 rgba(160, 120, 40, 0.35), 0 0 12px rgba(255, 228, 150, 0.35);
+  --tile-pending-bg: var(--gold);
+  --tile-pending-fg: #1B1A20;
+  --tile-pending-shadow: inset 0 -3px 0 rgba(150, 110, 0, 0.35), 0 0 14px rgba(255, 212, 92, 0.6);
+  --new-ring: var(--nebula);
+  --rack-bg: #0F1238;
+
+  --row-bg: #232763;
+  --row-star-bg: #2E2A5E;
+  --row-star-edge: inset 0 0 0 1.5px var(--gold), 0 0 18px -6px rgba(255, 212, 92, 0.6);
+  --example-edge: #6C77E0;
+  --plus5-bg: var(--gold);
+  --plus5-fg: #1B1A20;
+  --plus5-shadow: 0 0 14px rgba(255, 212, 92, 0.55);
+  --plus5-ring: var(--nebula);
+  --winner-bg: var(--gold);
+  --winner-fg: #1B1A20;
+  --frame-ring: #262A66;
+  color-scheme: dark;
+}
+
+/* The sky: soft glows and three layers of small stars, fixed behind the page. */
+[data-style="night"] body {
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 120px 80px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(2px 2px at 200px 150px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 70px 190px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(600px 380px at 85% -5%, rgba(255, 120, 190, 0.16), transparent 70%),
+    radial-gradient(700px 500px at 5% 20%, rgba(110, 120, 255, 0.22), transparent 70%);
+  background-size: 240px 240px, 240px 240px, 240px 240px, 240px 240px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+[data-style="night"] .iconbtn { background: transparent; }
+[data-style="night"] .btn--ghost { background: transparent; }
+[data-style="night"] .tile { font-weight: 600; }
+[data-style="night"] .wordrow__word { font-weight: 600; letter-spacing: 0.08em; }
+[data-style="night"] .board { box-shadow: 0 0 0 1px #2A2F70, 0 30px 60px -30px rgba(0, 0, 0, 0.8); }
+[data-style="night"] .sq__start { background: var(--gold); box-shadow: 0 0 10px 2px rgba(255, 212, 92, 0.6); }
+[data-style="night"] .scores__p.is-turn { box-shadow: 0 0 18px -4px rgba(255, 212, 92, 0.7); }
+[data-style="night"] .final__row.is-winner { box-shadow: 0 0 22px -6px rgba(255, 212, 92, 0.8); }
+[data-style="night"] .toast { background: var(--moon); color: #1B1A20; }
+
+/* Start: the players as a constellation round the glowing tiles. */
+[data-style="night"] .hero__art { position: relative; }
+[data-style="night"] .hero__face { transform: none; position: relative; z-index: 1; }
+[data-style="night"] .hero__tiles { position: relative; z-index: 1; transform: none; }
+[data-style="night"] .hero__deco {
+  display: block; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M30 16 L74 22 L72 82 L26 78 Z' fill='none' stroke='%23FFD45C' stroke-opacity='.55' stroke-width='1.4' stroke-dasharray='2 5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+}
+[data-style="night"] .hero__deco::before, [data-style="night"] .hero__deco::after {
+  content: ""; position: absolute; width: 14px; height: 14px; background: var(--gold);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+[data-style="night"] .hero__deco::before { left: 48%; top: 2%; }
+[data-style="night"] .hero__deco::after { left: 8%; bottom: 40%; width: 10px; height: 10px; animation-delay: 1.4s; }
+@keyframes twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.7); } }
+
+/* Players in round moon frames with a soft halo. */
+[data-style="night"] .hero__face .avatar,
+[data-style="night"] .player__pic,
+[data-style="night"] .avatar--big,
+[data-style="night"] .cheer__media {
+  border: 0; box-shadow: 0 0 0 4px var(--frame-ring), 0 0 0 6px rgba(255, 212, 92, 0.55), 0 0 28px 4px rgba(255, 212, 92, 0.3);
+}
+
+/* Celebration: a shower of twinkling stars. */
+[data-style="night"] .burst i {
+  width: 16px; height: 16px; border-radius: 0; background: var(--gold);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+[data-style="night"] .burst i:nth-child(3n) { background: #FFFFFF; width: 10px; height: 10px; }
+[data-style="night"] .burst i:nth-child(3n + 1) { background: var(--nebula); width: 12px; height: 12px; }

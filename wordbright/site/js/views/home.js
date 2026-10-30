@@ -14,7 +14,7 @@ const TITLES = { junior: 'Junior', standard: 'Standard', large: 'Large' };
 function face(strength, cls, alt) {
   const ch = CHARACTERS[strength];
   const src = 'assets/characters/' + ch.id + '-portrait-';
-  return '<img class="' + cls + '" src="' + src + '128.webp" srcset="' + src + '128.webp 1x, ' + src + '256.webp 2x"'
+  return '<img class="' + cls + ' avatar--' + ch.id + '" src="' + src + '128.webp" srcset="' + src + '128.webp 1x, ' + src + '256.webp 2x"'
     + ' width="128" height="128" alt="' + (alt ? esc(ch.name + ' the ' + ch.animal) : '') + '">';
 }
 
@@ -63,7 +63,7 @@ export function home(main) {
   const faces = STRENGTH_ORDER.map((k, i) => '<span class="hero__face hero__face--' + (i + 1) + '">' + face(k, 'avatar', true) + '</span>').join('');
   const players = STRENGTH_ORDER.map((k) => {
     const ch = CHARACTERS[k];
-    return '<li class="card player">' + face(k, 'avatar player__pic', false)
+    return '<li class="card player player--' + ch.id + '">' + face(k, 'avatar player__pic', false)
       + '<div class="player__text"><h3>' + esc(ch.name) + '</h3><span class="pill">' + esc(ch.label) + '</span>'
       + '<p class="small muted">' + esc(ch.about) + '</p></div></li>';
   }).join('');
@@ -84,7 +84,7 @@ export function home(main) {
     + '<p class="hero__lede">A word-tile game for 11+ practice. Play against Pip, Ottie, Bramble and Fizz, or with up to 4 people on one device. Find the bonus squares, and score extra for the school spelling words.</p>'
     + '<div class="btnrow"><a class="btn btn--primary" href="#/new">New game' + ICON.arrow + '</a>'
     + '<a class="btn btn--ghost" href="#/rules">How to play</a></div></div>'
-    + '<div class="hero__art">' + faces + '<div class="hero__tiles" aria-hidden="true">' + word + '</div></div>'
+    + '<div class="hero__art"><span class="hero__deco" aria-hidden="true"></span>' + faces + '<div class="hero__tiles" aria-hidden="true">' + word + '</div></div>'
     + '</div>'
 
     + '<section class="hsec" aria-labelledby="h-players"><h2 id="h-players">Meet the players</h2>'

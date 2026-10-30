@@ -1,10 +1,12 @@
 // Offline support for Wordbright (scope /wordbright/). The app shell, the word
-// graph, the game data and the character pictures are cached on install; the
-// win videos and the word-meaning shards (data/meanings/) are cached the first
-// time they are used.
+// graph, the game data, the character pictures and the style sheets of all
+// three styles (garden, paint, night) are cached on install. Fonts, the win
+// videos and the word-meaning shards (data/meanings/) are cached the first
+// time they are used, so a device only keeps the fonts of the styles it shows.
+// Without a font the game still works offline, in the device's own font.
 // Bump VERSION on every release so devices pick up the new files. Only caches
 // named "wordbright-…" are ever touched (Spellbright keeps "spellbright-…").
-const VERSION = 'wordbright-2026-10-29b';
+const VERSION = 'wordbright-2026-10-30a';
 
 const CHARACTERS = ['pip', 'ottie', 'bramble', 'fizz'].flatMap((name) =>
   ['portrait', 'thinking', 'happy', 'surprised'].flatMap((mood) =>
@@ -15,6 +17,9 @@ const SHELL = [
   'index.html',
   'manifest.webmanifest',
   'css/app.css',
+  'css/styles/garden.css',
+  'css/styles/paint.css',
+  'css/styles/night.css',
   'js/ai/characters.js',
   'js/ai/client.js',
   'js/ai/computer.js',
@@ -36,6 +41,8 @@ const SHELL = [
   'js/store.js',
   'js/theme-boot.js',
   'js/ui/board.js',
+  'js/ui/celebrate.js',
+  'js/ui/daystyle.js',
   'js/ui/dom.js',
   'js/ui/drag.js',
   'js/ui/moves.js',
@@ -52,8 +59,6 @@ const SHELL = [
   'data/board_large.json',
   'data/tiles.json',
   'data/star_words.json',
-  'assets/fonts/sora-latin-var.woff2',
-  'assets/fonts/manrope-latin-var.woff2',
   'assets/icons/favicon.svg',
   'assets/icons/apple-touch-icon.png',
   ...CHARACTERS,

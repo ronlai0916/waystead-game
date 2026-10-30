@@ -1,0 +1,199 @@
+/* ==========================================================================
+   Option A: Sunny garden. Warm yellows, leafy greens, flower pinks; soft,
+   round shapes. Fredoka (headings, tiles) + Andika (body). Contrast ratios
+   are in ../README.md.
+   ========================================================================== */
+@font-face { font-family: "Fredoka"; font-weight: 400 700; font-stretch: 75% 125%; font-display: swap; src: url("../fonts/fredoka-latin-var.woff2") format("woff2"); }
+@font-face { font-family: "Andika"; font-weight: 700; font-display: swap; src: url("../fonts/andika-bold.woff2") format("woff2"); }
+
+:root {
+  --f-display: "Fredoka", ui-rounded, system-ui, sans-serif;
+  --f-body: "Andika", ui-sans-serif, system-ui, sans-serif;
+  --display-weight: 600;
+
+  /* Garden colours */
+  --sun: #FFC93C;
+  --honey: #FFD95E;
+  --leaf: #2E7D32;        /* white on it 5.1:1 */
+  --leaf-700: #256B29;
+  --leaf-light: #93CF6E;
+  --petal: #F48FB6;
+  --rose: #C2346E;        /* white on it 5.2:1 */
+  --rose-text: #B02D63;   /* on the page 5.8:1 */
+  --marigold: #FBB437;
+
+  --bg: #FFF8E6;
+  --topbar: #FFF8E6;
+  --surface: #FFFFFF;
+  --surface-2: #FFF0C9;
+  --line: #EEDFB4;
+  --text: var(--ink);
+  --muted: #5C5444;       /* 7.1:1 on the page */
+  --accent: var(--leaf);
+  --accent-strong: var(--leaf-700);
+  --accent-soft: #E2F2CB;
+  --on-accent: #FFFFFF;
+  --link: var(--leaf-700);
+  --eyebrow: var(--rose-text);
+  --product: var(--leaf-700);
+  --wordmark: var(--ink);
+  --focus: var(--ink);
+  --hedge: var(--leaf-light);
+
+  --btn-r: 999px;
+  --btn-shadow: 0 4px 0 #1F5A22;
+  --btn-ghost-edge: #E3D2A0;
+  --shadow: 0 10px 26px -18px rgba(120, 90, 20, 0.45);
+  --card-border: 2px solid var(--line);
+  --pill-bg: #E2F2CB;
+  --pill-fg: #1F4D22;
+
+  /* Board: a garden bed. Squares keep Ink names/icons (9:1 or more). */
+  --board-edge: #B9DC97;
+  --board-r: 26px;
+  --board-pad: 8px;
+  --sq-r: 32%;
+  --sq-plain: #FFFDF6;
+  --sq-ink: var(--ink);
+  --spark: #E2F2CB;
+  --glow: #93CF6E;
+  --shine: #FDD3E1;
+  --star: var(--marigold);
+
+  --tile-r: 26%;
+  --tile-bg: var(--honey);
+  --tile-fg: var(--ink);
+  --tile-shadow: inset 0 -3px 0 rgba(160, 100, 0, 0.35), 0 1px 0 1px rgba(160, 100, 0, 0.35);
+  --tile-pending-bg: var(--rose);
+  --tile-pending-fg: #FFFFFF;
+  --new-ring: var(--rose);
+  --rack-bg: #E9F4D9;
+
+  --row-bg: #FFF8E6;
+  --row-star-bg: #FFF1C2;
+  --row-star-edge: inset 0 0 0 2px var(--marigold);
+  --example-edge: var(--leaf-light);
+  --plus5-bg: var(--sun);
+  --plus5-fg: var(--ink);
+  --plus5-ring: var(--rose);
+  --winner-bg: var(--leaf);
+  --winner-fg: #FFFFFF;
+  --why-bg: #FFF0C9;
+  --why-fg: #8A5A00;
+  color-scheme: light;
+}
+
+/* Dusk in the garden: the squares and tiles stay bright, the page goes deep green. */
+:root[data-theme="dark"] {
+  --bg: #14201A;
+  --topbar: #14201A;
+  --surface: #1C2B22;
+  --surface-2: #24362B;
+  --line: #34503F;
+  --text: #F6F1E3;        /* 14.9:1 */
+  --muted: #BDC7B4;       /* 9.6:1 */
+  --accent: #8FD175;      /* Ink on it 9.2:1 */
+  --accent-strong: #A6DD8F;
+  --accent-soft: #24362B;
+  --on-accent: #14201A;
+  --link: #A6DD8F;
+  --eyebrow: #F49CBF;
+  --product: #A6DD8F;
+  --wordmark: #F3F1EC;
+  --focus: #F6F1E3;
+  --hedge: #2F5A33;
+  --btn-shadow: 0 4px 0 #0B120E;
+  --btn-ghost-edge: #34503F;
+  --shadow: 0 10px 26px -16px rgba(0, 0, 0, 0.7);
+  --pill-bg: #2F5A33;
+  --pill-fg: #E7F5DB;
+  --board-edge: #2F4D36;
+  --sq-plain: #22322A;
+  --tile-pending-bg: var(--petal);
+  --tile-pending-fg: var(--ink);
+  --rack-bg: #24362B;
+  --row-bg: #24362B;
+  --row-star-bg: #3A3A1E;
+  --example-edge: #4F7E3E;
+  --winner-bg: #8FD175;
+  --winner-fg: #14201A;
+  --why-bg: #3A3A1E;
+  --why-fg: var(--sun);
+  color-scheme: dark;
+}
+
+/* A low hedge under the top bar (round leaves, not a band of sky). */
+.topbar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -10px; height: 12px;
+  background: radial-gradient(circle at 12px 0, var(--hedge) 11px, transparent 12px) repeat-x;
+  background-size: 24px 12px;
+}
+.brand__product { font-weight: 600; letter-spacing: 0.16em; }
+h1, h2, h3 { letter-spacing: 0; }
+.btn { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.btn--ghost { box-shadow: 0 4px 0 var(--btn-ghost-edge); }
+.btn--quiet { border-radius: 999px; }
+.tile { font-weight: 600; }
+.card { border-radius: 28px; }
+
+/* ---- Start: the players sit on a little hill under the sun ---------------- */
+.hero__art {
+  display: grid; justify-items: center; align-content: end; gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-areas: "t t t t" "f1 f2 f3 f4";
+  padding: 40px 6px 22px;
+}
+.hero__tiles { grid-area: t; margin-bottom: 18px; transform: rotate(-3deg); }
+.hero__t:nth-child(even) { transform: translateY(8px) rotate(4deg); }
+.face--1 { grid-area: f1; transform: translateY(18px); }
+.face--2 { grid-area: f2; }
+.face--3 { grid-area: f3; }
+.face--4 { grid-area: f4; transform: translateY(18px); }
+.deco::before { /* the sun */
+  content: ""; position: absolute; right: 2%; top: -6px; width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(circle, var(--sun) 0 36%, transparent 37%),
+    repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--sun) 70%, transparent) 0 8deg, transparent 8deg 22.5deg);
+  mask: radial-gradient(circle, #000 0 70%, transparent 71%);
+}
+.deco::after { /* the hill */
+  content: ""; position: absolute; left: -4%; right: -4%; bottom: 0; height: 46%;
+  border-radius: 50% 50% 18px 18px / 70% 70% 18px 18px;
+  background: linear-gradient(#CDE8B0, #B9DC97);
+}
+:root[data-theme="dark"] .deco::after { background: linear-gradient(#2A4A31, #223D29); }
+/* Each player in a flower: a white face, a ring of petal colour. */
+.face__frame, .player__frame {
+  border-radius: 50%; overflow: hidden; border: 5px solid #FFFFFF;
+  box-shadow: 0 0 0 6px var(--ring, var(--sun)), 0 6px 14px -6px rgba(80, 60, 10, 0.5);
+}
+.face--pip, .player--pip { --ring: var(--sun); }
+.face--ottie, .player--ottie { --ring: var(--petal); }
+.face--bramble, .player--bramble { --ring: var(--leaf-light); }
+.face--fizz, .player--fizz { --ring: #FF9F7A; }
+.face__name { margin-top: 8px; background: var(--surface); padding: 0 10px; border-radius: 999px; }
+.player { border-top: 8px solid var(--ring); }
+.why__icon { border-radius: 40% 60% 55% 45% / 50% 45% 55% 50%; }
+@media (max-width: 599.98px) {
+  .hero__art { padding: 26px 0 16px; }
+  .deco::before { width: 76px; height: 76px; right: 0; top: -14px; }
+  .face__frame { border-width: 3px; box-shadow: 0 0 0 4px var(--ring, var(--sun)); }
+  .face__name { font-size: 0.85rem; }
+}
+
+/* ---- Play ------------------------------------------------------------------ */
+.sq--start .sq__start { background: var(--rose); box-shadow: 0 0 0 8cqw color-mix(in srgb, var(--rose) 25%, transparent); }
+.scores__p.is-turn .scores__me { background: #FFFFFF; color: var(--leaf-700); }
+.rack { border-radius: 999px; padding: 12px 18px; }
+.results { border-top: 8px solid var(--sun); }
+
+/* ---- Celebration: petals float out of the +5 -------------------------------- */
+.burst i {
+  width: 12px; height: 17px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: var(--petal);
+}
+.burst i:nth-child(3n + 2) { background: var(--sun); }
+.burst i:nth-child(3n) { background: #FFFFFF; box-shadow: inset 0 0 0 1px #F4B6CC; }
+.burst i:nth-child(4n) { width: 10px; height: 10px; border-radius: 50%; background: var(--leaf-light); }
+
+/* ---- End --------------------------------------------------------------------- */
+.cheer__btn { border: 6px solid #FFFFFF; box-shadow: 0 0 0 7px var(--petal); }
+.final__row.is-winner .final__crown { color: var(--sun); }

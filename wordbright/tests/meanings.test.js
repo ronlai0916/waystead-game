@@ -140,7 +140,7 @@ test('panel after a computer\'s move, with cross words; Star words keep their +5
   // A made-up move with a Star word: the badge, and our meaning.
   const star = { words: [{ word: 'build', points: 9, main: true, star: true }], starBonus: 5, fullRack: 0, total: 14 };
   const starHtml = resultsHtml('Pip', star, new Map([['build', entry('build')]]), starWords);
-  assert.match(starHtml, /class="plus5[^"]*" aria-label="Star word, 5 extra points">\+5/);
+  assert.match(starHtml, /class="plus5[^"]*" aria-label="Star word, 5 extra points">(<svg[^>]*aria-hidden="true">.*?<\/svg>)?\+5<\/span>/);
   assert.ok(starHtml.includes(starEntry(starWords, 'build').meaning));
   assert.ok(starHtml.includes('data-audio="../spellbright/assets/audio/words/build.mp3"'));
 });

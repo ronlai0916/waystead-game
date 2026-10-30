@@ -4,6 +4,7 @@ import { esc, ICON, ask, askPin, toast } from '../ui/dom.js';
 import { allowedWords, disallowWord, storedPin, savePin, forgetPin } from '../store.js';
 import { makePin, checkPin, PIN_RE } from '../pin.js';
 import { SQUARE_ICON, SQUARE_TEXT, KINDS } from '../ui/board.js';
+import { dayStyleHtml, wireDayStyle } from '../ui/daystyle.js';
 
 const WORD_COUNT = 'We accept about 177,000 British words; no names, places, abbreviations or American spellings.';
 
@@ -72,6 +73,9 @@ export function about(main) {
     + '<h2>Words you have allowed</h2>'
     + '<p>Allowed words count for children on this device only; computer players and hints never use them.</p>'
     + '<div data-allowed></div>'
+    + '<h2 id="look">Day style</h2>'
+    + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
+    + '<p class="small muted">The theme button at the top switches Day, Night and Match device (which follows this device’s light or dark setting). It is shared with Spellbright.</p>'
     + '<h2>Privacy</h2>'
     + '<p>There are no accounts and no sign-in, no adverts, no tracking and no analytics. Progress and the saved game stay in this browser on this device and are never sent to us.</p>'
     + '<h2>Credits</h2>'
@@ -97,6 +101,7 @@ export function about(main) {
   const allowedBox = main.querySelector('[data-allowed]');
   drawAllowed(allowedBox);
   drawPin(main.querySelector('[data-pin]'), () => drawAllowed(allowedBox));
+  wireDayStyle(main);
 }
 
 // Set, change or forget the grown-up PIN.

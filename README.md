@@ -102,8 +102,12 @@ get 3 hints per game.
 ```
 wordbright/
 ├── LICENSE-ESDB.txt, LICENSE-LDNOOBW.txt   # word-list licences (keep with the data)
-├── site/index.html, css/app.css
+├── site/index.html, css/app.css   # shared structure
+├── site/css/styles/  # the three looks: garden (Sunny garden), paint (Paint box), night (Night sky)
+├── site/assets/fonts/  # OFL fonts, licences in licences/; each style's fonts load only when it is shown
 ├── site/data/        # built: words_all.dawg (every list, tagged), board_*.json, tiles.json, star_words.json
+├── site/data/meanings/  # built by tools/build-meanings.py (WordNet + Britfone): meanings and IPA, one shard per first 2–3 letters, fetched on demand
+├── LICENSE-WORDNET.txt, LICENSE-BRITFONE.txt  # licences for the meanings data
 ├── site/assets/characters/  # built: the four computer players, WebP 256/128 px
 ├── site/js/engine/   # board, bag, words, rules, score, game, levels, movegen (pure ES modules)
 ├── site/js/ai/       # computer players and hints (pure), worker.js + client.js (Web Worker)
@@ -121,6 +125,16 @@ python3 -m http.server 8000 --directory wordbright/site
 Open http://localhost:8000. The saved game lives in `wb.game`, the last
 new-game choices in `wb.setup`, and words a grown-up allowed in `wb.allowed`;
 the theme is shared with Spellbright (`sb.theme`).
+
+Looks (W2b): the theme button switches Day / Night / Match device
+(`sb.theme` = `light` / `dark` / unset). By day the game uses the day style
+chosen on this device, `wb.dayStyle` = `garden` (Sunny garden, the default) or
+`paint` (Paint box), picked on the new-game screen or For parents; at night it
+is always Night sky. `js/theme-boot.js` sets `<html data-theme data-style>`
+before the first paint and follows the device live. Fonts: Fredoka + Andika
+(garden), Baloo 2 + Nunito (paint), Lexend + Atkinson Hyperlegible (night),
+Andika for pronunciations, Sora for the wordmark; all SIL OFL 1.1.
+`tests/contrast.test.js` checks every text colour pair in all three styles.
 
 Rebuild the word graphs and data after changing the word lists or boards,
 and the character pictures after changing them in `wordbright-design/assets-raw/`:

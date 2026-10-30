@@ -25,6 +25,6 @@ export function character(strength) {
 // mood: portrait, thinking, happy or surprised. size: 128 or 256.
 export function pictureHtml(strength, mood = 'portrait', size = 128, cls = 'avatar') {
   const ch = character(strength);
-  return '<img class="' + cls + '" src="assets/characters/' + ch.id + '-' + mood + '-' + size + '.webp" width="' + size + '" height="' + size
+  return '<img class="' + cls + ' avatar--' + ch.id + '" src="assets/characters/' + ch.id + '-' + mood + '-' + size + '.webp" width="' + size + '" height="' + size
     + '" alt="' + ch.name + ' the ' + ch.animal + MOOD_TEXT[mood] + '">';
 }

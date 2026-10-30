@@ -5,6 +5,7 @@ import { esc, ICON } from './dom.js';
 import { wordInfo } from '../meanings.js';
 import { starEntry } from './moves.js';
 import { canSpeak, hear, onVoices } from './speak.js';
+import { burstHtml, placeBursts, STAR_SVG } from './celebrate.js';
 
 export const LOOK_UP = 'https://dictionary.cambridge.org/dictionary/english/';
 
@@ -22,7 +23,9 @@ export function wordRowHtml(w, info, { by = '', speak = false, pop = false } = {
   const pos = info.pos ? esc(info.pos) + (info.lemma ? ', a form of “' + esc(info.lemma) + '”' : '') : '';
   return '<li class="wordrow' + (w.star ? ' wordrow--star' : '') + '">'
     + '<div class="wordrow__head"><span class="wordrow__word" lang="en-GB">' + esc(w.word.toUpperCase()) + '</span>'
-    + (w.star ? '<span class="plus5' + (pop ? ' plus5--pop' : '') + '" aria-label="Star word, 5 extra points">+5</span>' : '')
+    + (w.star ? (pop ? '<span class="celebrate">' : '')
+      + '<span class="plus5' + (pop ? ' plus5--pop' : '') + '" aria-label="Star word, 5 extra points">' + STAR_SVG + '+5</span>'
+      + (pop ? burstHtml() + '</span>' : '') : '')
     + (w.points == null ? '' : '<span class="wordrow__pts">' + w.points + '<span class="sr">' + (w.points === 1 ? ' point' : ' points') + '</span></span>')
     + '</div>'
     + (by ? '<p class="small muted">' + esc(by) + '</p>' : '')
@@ -77,6 +80,7 @@ export function wireRows(root) {
     }
   };
   root.addEventListener('click', onClick);
+  placeBursts(root);
   // "More" only where the meaning is cut short.
   const measure = () => root.querySelectorAll('[data-more]').forEach((b) => {
     const p = root.querySelector('#' + b.getAttribute('aria-controls'));

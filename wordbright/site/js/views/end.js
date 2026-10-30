@@ -7,6 +7,7 @@ import { character } from '../ai/characters.js';
 import { starEntry } from '../ui/moves.js';
 import { wordRowsHtml, wireRows } from '../ui/results.js';
 import { canSpeak } from '../ui/speak.js';
+import { burstHtml, placeBursts } from '../ui/celebrate.js';
 
 const SPELLBRIGHT_YEARS = ['3-4', '5-6'];
 
@@ -57,6 +58,7 @@ export function endView(main) {
     + '<div class="btnrow" data-actions><a class="btn btn--primary" href="#/new">New game' + ICON.arrow + '</a></div>'
     + '</section>';
 
+  placeBursts(main);
   const v = main.querySelector('.cheer video');
   if (v) {
     v.muted = true; // never any sound
@@ -111,11 +113,12 @@ function celebrationHtml(state) {
   if (!c) return '';
   const ch = character(c.player.strength);
   const poster = 'assets/characters/' + ch.id + '-happy-256.webp';
+  const cls = 'cheer__media avatar--' + ch.id;
   const text = c.won ? esc(c.player.name) + ' is celebrating!' : esc(c.player.name) + ' is cheering for you!';
   const alt = ch.name + ' the ' + ch.animal + ', ' + (c.won ? 'celebrating' : 'cheering');
   const media = prefersReducedMotion()
-    ? '<img class="cheer__media" src="' + poster + '" width="256" height="256" alt="' + esc(alt) + '">'
-    : '<video class="cheer__media" muted playsinline autoplay preload="auto" poster="' + poster + '" width="256" height="256" aria-label="' + esc(alt) + '">'
+    ? '<img class="' + cls + '" src="' + poster + '" width="256" height="256" alt="' + esc(alt) + '">'
+    : '<video class="' + cls + '" muted playsinline autoplay preload="auto" poster="' + poster + '" width="256" height="256" aria-label="' + esc(alt) + '">'
       + '<source src="assets/videos/' + ch.id + '-win.webm" type="video/webm"><source src="assets/videos/' + ch.id + '-win.mp4" type="video/mp4"></video>';
-  return '<figure class="card cheer">' + media + '<figcaption>' + text + '</figcaption></figure>';
+  return '<figure class="card cheer"><span class="celebrate">' + media + burstHtml(18, 2.4) + '</span><figcaption>' + text + '</figcaption></figure>';
 }

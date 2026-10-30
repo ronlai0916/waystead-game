@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Option B: Paint box. Bold bright colours on cream; chunky, rounded tiles
+   with an Ink outline; playful but tidy. Baloo 2 (headings, tiles) + Nunito
+   (body). Contrast ratios are in ../README.md.
+   ========================================================================== */
+@font-face { font-family: "Baloo 2"; font-weight: 400 800; font-display: swap; src: url("../fonts/baloo2-latin-var.woff2") format("woff2"); }
+@font-face { font-family: "Nunito"; font-weight: 200 1000; font-display: swap; src: url("../fonts/nunito-latin-var.woff2") format("woff2"); }
+
+:root {
+  --f-display: "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --f-body: "Nunito", ui-rounded, system-ui, sans-serif;
+  --display-weight: 800;
+
+  /* The paint pots */
+  --cobalt: #2250D0;      /* white on it 6.7:1 */
+  --tomato: #E5432D;
+  --tomato-text: #C4321F; /* on the page 5.3:1 */
+  --sunshine: #FFC21A;
+  --grass: #3DBA5C;
+  --orange: #FF8A1F;
+
+  --bg: #FFFAF0;
+  --topbar: #FFFAF0;
+  --surface: #FFFFFF;
+  --surface-2: #FFF1D6;
+  --line: #1B1A20;        /* the Ink outline is part of the look */
+  --text: var(--ink);
+  --muted: #5A5249;       /* 7.4:1 */
+  --accent: var(--cobalt);
+  --accent-strong: #1A3FA8;
+  --accent-soft: #E3EAFF;
+  --on-accent: #FFFFFF;
+  --link: var(--cobalt);
+  --eyebrow: var(--tomato-text);
+  --product: var(--tomato-text);
+  --wordmark: var(--ink);
+  --focus: var(--tomato-text);
+  --outline: var(--ink);
+
+  --btn-r: 16px;
+  --btn-border: 2.5px;
+  --btn-shadow: 0 4px 0 var(--outline);
+  --btn-ghost-edge: var(--outline);
+  --btn-ghost-shadow: 0 4px 0 var(--outline);
+  --card-border: 2.5px solid var(--outline);
+  --shadow: 0 5px 0 var(--outline);
+  --pill-bg: var(--sunshine);
+  --pill-fg: var(--ink);
+
+  /* Board: a paint tray. Ink gaps, bright pans; names and icons in Ink (6.7:1 or more). */
+  --board-edge: var(--ink);
+  --board-r: 18px;
+  --board-pad: 5px;
+  --sq-r: 22%;
+  --sq-plain: #F3E8CF;
+  --sq-ink: var(--ink);
+  --spark: #FFE9A3;
+  --glow: var(--sunshine);
+  --shine: #FFCABD;
+  --star: #FF7A5E;
+
+  --tile-r: 20%;
+  --tile-bg: #FFFDF6;
+  --tile-fg: var(--ink);
+  --tile-shadow: inset 0 0 0 2px var(--ink), inset 0 -4px 0 #E8DCC2;
+  --tile-pending-bg: var(--cobalt);
+  --tile-pending-fg: #FFFFFF;
+  --tile-pending-shadow: inset 0 0 0 2px var(--ink), inset 0 -4px 0 #1A3FA8;
+  --new-ring: var(--tomato);
+  --rack-bg: var(--surface-2);
+
+  --row-bg: #FFF7E4;
+  --row-star-bg: #FFF0B8;
+  --row-star-edge: inset 0 0 0 2.5px var(--ink);
+  --example-edge: var(--sunshine);
+  --plus5-bg: var(--tomato);
+  --plus5-fg: #FFFFFF;    /* 4.7:1 on #D63A24 */
+  --plus5-shadow: inset 0 0 0 2px var(--ink);
+  --plus5-ring: var(--cobalt);
+  --winner-bg: var(--sunshine);
+  --winner-fg: var(--ink);
+  --why-r: 14px;
+  color-scheme: light;
+}
+:root:not([data-theme="dark"]) .plus5 { background: #D63A24; }
+
+/* Dark: warm charcoal, the pans and tiles stay bright, outlines turn soft cream. */
+:root[data-theme="dark"] {
+  --bg: #191613;
+  --topbar: #191613;
+  --surface: #24201B;
+  --surface-2: #2E2923;
+  --line: #4A4239;
+  --outline: #000000;
+  --text: #F7F2E8;        /* 16.2:1 */
+  --muted: #C2B8AA;       /* 9.2:1 */
+  --accent: #8DAAFF;      /* Ink on it 7.7:1 */
+  --accent-strong: #B0C4FF;
+  --accent-soft: #1F2848;
+  --on-accent: var(--ink);
+  --link: #9DB6FF;
+  --eyebrow: #FF8E7A;
+  --product: #FF8E7A;
+  --wordmark: #F3F1EC;
+  --focus: #FFC21A;
+  --card-border: 2.5px solid #4A4239;
+  --btn-ghost-edge: #6A6054;
+  --board-edge: #0E0C0A;
+  --sq-plain: #2E2923;
+  --tile-pending-bg: #8DAAFF;
+  --tile-pending-fg: var(--ink);
+  --tile-pending-shadow: inset 0 0 0 2px var(--ink), inset 0 -4px 0 #6C8BE6;
+  --rack-bg: #2E2923;
+  --row-bg: #2E2923;
+  --row-star-bg: #3B3218;
+  --row-star-edge: inset 0 0 0 2.5px var(--sunshine);
+  --plus5-bg: #FF8E7A;
+  --plus5-fg: var(--ink);
+  --plus5-shadow: none;
+  color-scheme: dark;
+}
+
+/* Top bar: cream with an Ink rule, and four paint dabs in the corner of the rule. */
+.topbar { border-bottom: 3px solid var(--text); }
+.topbar::after {
+  content: ""; position: absolute; right: 24px; bottom: -9px; width: 92px; height: 15px;
+  background:
+    radial-gradient(circle at 7px 7px, var(--tomato) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 31px 7px, var(--sunshine) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 55px 7px, var(--cobalt) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 79px 7px, var(--grass) 6.5px, transparent 7.5px);
+}
+.iconbtn { border-color: var(--text); }
+.topbar__nav a:hover, .topbar__nav a[aria-current="page"] { background: var(--sunshine); color: var(--ink); }
+.btn { font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; padding-top: 8px; }
+.btn--quiet { border: 2px solid var(--outline); background: var(--surface); box-shadow: 0 3px 0 var(--outline); }
+:root[data-theme="dark"] .btn--quiet { border-color: #6A6054; }
+.tile { font-weight: 800; }
+.tile__l { transform: translateY(4%); }
+h1, h2, h3 { letter-spacing: -0.01em; }
+.hero h1 { line-height: 1.02; }
+
+/* ---- Start: stickers round a paint palette --------------------------------- */
+.hero__art {
+  display: grid; place-items: center; gap: 10px 18px;
+  grid-template-columns: 1fr 1fr; grid-template-areas: "f1 f2" "t t" "f3 f4";
+  padding: 10px 0;
+}
+.hero__tiles { grid-area: t; padding: 18px 22px; border-radius: 48% 52% 46% 54% / 60% 55% 45% 40%; background: var(--surface-2); border: 2.5px solid var(--outline); }
+.hero__t:nth-child(odd) { transform: rotate(-5deg); }
+.hero__t:nth-child(even) { transform: rotate(4deg) translateY(-4px); }
+.face--1 { grid-area: f1; justify-self: end; transform: rotate(-5deg); }
+.face--2 { grid-area: f2; justify-self: start; transform: rotate(4deg); }
+.face--3 { grid-area: f3; justify-self: end; transform: rotate(3deg); }
+.face--4 { grid-area: f4; justify-self: start; transform: rotate(-4deg); }
+.face__frame, .player__frame {
+  border-radius: 26%; overflow: hidden; border: 3px solid var(--outline);
+  background: var(--pot); padding: 6px; box-shadow: 0 5px 0 var(--outline);
+}
+.face__img, .player__pic { border-radius: 20%; }
+.face--pip, .player--pip { --pot: var(--sunshine); }
+.face--ottie, .player--ottie { --pot: var(--cobalt); }
+.face--bramble, .player--bramble { --pot: var(--tomato); }
+.face--fizz, .player--fizz { --pot: var(--grass); }
+.face__name { font-size: 1.05rem; }
+.deco::before, .deco::after { content: ""; position: absolute; border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%; opacity: 0.9; }
+.deco::before { width: 120px; height: 100px; left: 4%; top: 38%; background: var(--sunshine); opacity: 0.35; }
+.deco::after { width: 90px; height: 80px; right: 6%; top: 30%; background: var(--cobalt); opacity: 0.18; }
+.player { box-shadow: 0 5px 0 var(--outline); }
+.player .pill { border: 2px solid var(--outline); }
+.why__icon { border: 2.5px solid var(--outline); }
+.why__item:nth-child(1) .why__icon { background: var(--sunshine); color: var(--ink); }
+.why__item:nth-child(2) .why__icon { background: var(--cobalt); color: #FFFFFF; }
+.why__item:nth-child(3) .why__icon { background: var(--tomato); color: #FFFFFF; }
+@media (max-width: 599.98px) {
+  .hero__art { gap: 8px 12px; }
+  .hero__tiles { padding: 12px 14px; gap: 7px; }
+  .face__frame { padding: 4px; border-width: 2.5px; }
+}
+
+/* ---- Play ------------------------------------------------------------------ */
+.sq--start .sq__start { background: var(--tomato); box-shadow: 0 0 0 2px var(--ink); }
+.scores__p { border: 2.5px solid var(--outline); }
+:root[data-theme="dark"] .scores__p { border-color: #6A6054; }
+.scores__me { border: 2px solid var(--ink); }
+.rack { border: 2.5px solid var(--outline); }
+.results { border-top-width: 10px; border-top-color: var(--sunshine); }
+.wordrow__word { font-weight: 800; font-size: 1.6rem; letter-spacing: 0.06em; }
+.sq.is-new > .tile { box-shadow: inset 0 0 0 2px var(--ink), inset 0 -4px 0 #E8DCC2, 0 0 0 3px var(--new-ring); }
+
+/* ---- Celebration: paint splats ------------------------------------------- */
+.burst i { width: 14px; height: 13px; border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%; background: var(--tomato); }
+.burst i:nth-child(4n + 2) { background: var(--sunshine); width: 17px; height: 15px; }
+.burst i:nth-child(4n + 3) { background: var(--cobalt); width: 11px; height: 11px; }
+.burst i:nth-child(4n) { background: var(--grass); width: 15px; height: 12px; }
+
+/* ---- End -------------------------------------------------------------------- */
+.cheer__btn { --cheer-r: 26%; border: 3px solid var(--outline); background: var(--cobalt); padding: 6px; box-shadow: 0 5px 0 var(--outline); }
+.cheer__media { border-radius: 20%; }
+.final__row { border: 2px solid var(--outline); }
+:root[data-theme="dark"] .final__row { border-color: #6A6054; }

@@ -51,10 +51,18 @@ function wireBrand() {
   document.getElementById('brand').setAttribute('aria-label', BRAND.product + ' home');
 }
 
+// The one theme button: Match device → Day → Night → Match device.
+// Day shows the chosen day style (Sunny garden or Paint box); Night is Night sky.
+export const THEME_NAMES = { system: 'Match device', light: 'Day', dark: 'Night' };
+
 function wireTheme() {
   const btn = document.getElementById('theme');
-  const names = { system: 'match device', light: 'light', dark: 'dark' };
-  const label = () => btn.setAttribute('aria-label', 'Theme: ' + names[getTheme()] + '. Change theme');
+  const label = () => {
+    const name = THEME_NAMES[getTheme()];
+    btn.setAttribute('aria-label', 'Day / Night / Match device. Now: ' + name + '. Change');
+    btn.title = 'Now: ' + name;
+    btn.querySelector('[data-theme-name]').textContent = name;
+  };
   label();
   btn.addEventListener('click', () => {
     setTheme({ system: 'light', light: 'dark', dark: 'system' }[getTheme()]);

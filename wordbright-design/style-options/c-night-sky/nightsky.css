@@ -1,0 +1,209 @@
+/* ==========================================================================
+   Option C: Night sky. Deep indigo with bright stars; tiles glow like the
+   moon. Calm but magical; dark first, with a light "daytime" version.
+   Lexend (headings, tiles) + Atkinson Hyperlegible (body). Contrast ratios
+   are in ../README.md.
+   ========================================================================== */
+@font-face { font-family: "Lexend"; font-weight: 100 900; font-display: swap; src: url("../fonts/lexend-latin-var.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap; src: url("../fonts/atkinson-latin-400.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap; src: url("../fonts/atkinson-latin-700.woff2") format("woff2"); }
+
+:root {
+  --f-display: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --display-weight: 600;
+
+  --gold: #FFD45C;        /* Ink on it 12.2:1 */
+  --moon: #FFF4D2;
+  --nebula: #FF9ACB;
+
+  /* Daytime (light) */
+  --bg: #F4F2FF;
+  --topbar: transparent;
+  --surface: #FFFFFF;
+  --surface-2: #E9E6FF;
+  --line: #D6D2F5;
+  --text: var(--ink);
+  --muted: #55537A;       /* 6.5:1 */
+  --accent: #3A3FB0;      /* white on it 8.3:1 */
+  --accent-strong: #2B2F86;
+  --accent-soft: #E3E4FF;
+  --on-accent: #FFFFFF;
+  --link: #3A3FB0;
+  --eyebrow: #A83273;
+  --product: #3A3FB0;
+  --wordmark: var(--ink);
+  --focus: var(--ink);
+  --star-dot: rgba(58, 63, 176, 0.18);
+  --glow-a: rgba(255, 154, 203, 0.18);
+  --glow-b: rgba(120, 130, 255, 0.16);
+
+  --btn-r: 999px;
+  --shadow: 0 12px 30px -20px rgba(43, 47, 134, 0.5);
+  --card-border: 1.5px solid var(--line);
+  --pill-bg: var(--surface-2);
+  --pill-fg: var(--text);
+
+  --board-edge: #CFCBF2;
+  --board-r: 20px;
+  --sq-r: 26%;
+  --sq-plain: #FFFFFF;
+  --sq-ink: var(--ink);
+  --spark: #D9DEFF;
+  --glow: #9DA8F5;
+  --shine: #F2C9E6;
+  --star: #FFC94A;
+
+  --tile-r: 22%;
+  --tile-bg: #2B2F86;     /* white on it 11.3:1 */
+  --tile-fg: #FFFFFF;
+  --tile-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.3);
+  --tile-pending-bg: var(--gold);
+  --tile-pending-fg: var(--ink);
+  --tile-pending-shadow: inset 0 -3px 0 rgba(150, 110, 0, 0.35), 0 0 14px rgba(255, 212, 92, 0.6);
+  --new-ring: #A83273;
+  --rack-bg: var(--surface-2);
+
+  --row-bg: #F4F2FF;
+  --row-star-bg: #FFF6D9;
+  --row-star-edge: inset 0 0 0 1.5px #E8B830;
+  --example-edge: var(--glow);
+  --plus5-bg: var(--gold);
+  --plus5-fg: var(--ink);
+  --plus5-ring: #A83273;
+  --winner-bg: #3A3FB0;
+  --winner-fg: #FFFFFF;
+  --why-bg: #E3E4FF;
+  --why-fg: #3A3FB0;
+  color-scheme: light;
+}
+
+/* Night (the main look) */
+:root[data-theme="dark"] {
+  --bg: #11133A;
+  --surface: rgba(30, 34, 88, 0.86);   /* about #1B1E52 over the sky */
+  --surface-2: #262A66;
+  --line: #353A7A;
+  --text: #F3F1FF;        /* 16.0:1 */
+  --muted: #BAB9E2;       /* 9.4:1; 8.2:1 on a card */
+  --accent: var(--gold);
+  --accent-strong: #FFE08A;
+  --accent-soft: #262A66;
+  --on-accent: var(--ink);
+  --link: var(--gold);
+  --eyebrow: var(--nebula);
+  --product: var(--gold);
+  --wordmark: #F3F1EC;
+  --focus: var(--gold);
+  --star-dot: rgba(255, 255, 255, 0.7);
+  --glow-a: rgba(255, 120, 190, 0.16);
+  --glow-b: rgba(110, 120, 255, 0.22);
+  --shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 18px 40px -24px rgba(0, 0, 0, 0.9);
+  --pill-bg: #262A66;
+
+  /* Squares: cool letter squares, warm word squares; the Star square is a gold star. */
+  --board-edge: #0B0D2A;
+  --sq-plain: #1E2258;
+  --spark: #2D3A8E;  --spark-ink: #F3F1FF;   /* 8.9:1 */
+  --glow: #4A55C8;   --glow-ink: #FFFFFF;    /* 6.1:1 */
+  --shine: #8A3E78;  --shine-ink: #FFFFFF;   /* 6.9:1 */
+  --star: #FFC94A;   --star-ink: var(--ink); /* 11.3:1 */
+
+  --tile-bg: var(--moon); /* Ink on it 15.7:1 */
+  --tile-fg: var(--ink);
+  --tile-shadow: inset 0 -3px 0 rgba(160, 120, 40, 0.35), 0 0 12px rgba(255, 228, 150, 0.35);
+  --new-ring: var(--nebula);
+  --rack-bg: #0F1238;
+
+  --row-bg: #232763;
+  --row-star-bg: #2E2A5E;
+  --row-star-edge: inset 0 0 0 1.5px var(--gold), 0 0 18px -6px rgba(255, 212, 92, 0.6);
+  --example-edge: #6C77E0;
+  --plus5-shadow: 0 0 14px rgba(255, 212, 92, 0.55);
+  --plus5-ring: var(--nebula);
+  --winner-bg: var(--gold);
+  --winner-fg: var(--ink);
+  --why-bg: #262A66;
+  --why-fg: var(--gold);
+  color-scheme: dark;
+}
+
+/* The sky: two soft glows and three layers of small stars, fixed behind the page. */
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 120px 80px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(2px 2px at 200px 150px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 70px 190px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(600px 380px at 85% -5%, var(--glow-a), transparent 70%),
+    radial-gradient(700px 500px at 5% 20%, var(--glow-b), transparent 70%);
+  background-size: 240px 240px, 240px 240px, 240px 240px, 240px 240px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+.topbar { border-bottom: 1px solid var(--line); }
+.iconbtn { background: transparent; border-width: 1.5px; }
+.card { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.btn--primary { box-shadow: 0 0 22px -4px color-mix(in srgb, var(--accent) 70%, transparent); }
+.btn--ghost { background: transparent; }
+.btn--quiet { border-radius: 999px; }
+.tile { font-weight: 600; }
+.hero h1 { font-weight: 600; letter-spacing: -0.02em; }
+.wordrow__word { font-weight: 600; letter-spacing: 0.08em; }
+
+/* ---- Start: the players as a constellation round the glowing tiles -------- */
+.hero__art { min-height: 400px; }
+.hero__tiles { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.face { position: absolute; }
+.face--1 { left: 4%; top: 2%; }
+.face--2 { right: 6%; top: -2%; }
+.face--3 { left: 12%; bottom: 0; }
+.face--4 { right: 2%; bottom: 4%; }
+.deco { /* dotted lines between the four, drawn in % so they stretch with the box */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23FFD45C' stroke-opacity='.55' stroke-width='1.4' stroke-dasharray='2 5' vector-effect='non-scaling-stroke'%3E%3Cpath d='M18 18 L82 14 L84 80 L28 84 Z' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 100% 100%;
+}
+:root[data-theme="light"] .deco { opacity: 0.8; filter: hue-rotate(200deg) saturate(2) brightness(0.6); }
+.face__frame, .player__frame {
+  border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 4px var(--surface-2), 0 0 0 6px color-mix(in srgb, var(--gold) 55%, transparent), 0 0 28px 4px rgba(255, 212, 92, 0.3);
+}
+:root[data-theme="light"] .face__frame, :root[data-theme="light"] .player__frame { box-shadow: 0 0 0 4px #FFFFFF, 0 0 0 6px #C9C4F2; }
+.face__name { color: var(--text); }
+/* four small twinkling stars in the hero */
+.hero__art::before, .hero__art::after {
+  content: ""; position: absolute; width: 14px; height: 14px; background: var(--gold);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+.hero__art::before { left: 46%; top: 6%; }
+.hero__art::after { left: 52%; bottom: 8%; width: 10px; height: 10px; animation-delay: 1.4s; }
+@keyframes twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.7); } }
+.player { background: var(--surface); }
+@media (max-width: 599.98px) {
+  .hero__art { min-height: 300px; }
+  .face--1 { left: 0; } .face--4 { right: 0; }
+}
+
+/* ---- Play ------------------------------------------------------------------- */
+.board { box-shadow: 0 0 0 1px #2A2F70, 0 30px 60px -30px rgba(0, 0, 0, 0.8); }
+:root[data-theme="light"] .board { box-shadow: none; }
+.sq--star .sq__icon svg { opacity: 0.85; }
+.sq--start .sq__start { background: var(--gold); box-shadow: 0 0 10px 2px rgba(255, 212, 92, 0.6); }
+.scores__p.is-turn { box-shadow: 0 0 18px -4px rgba(255, 212, 92, 0.7); }
+.rack { border: 1px solid var(--line); }
+
+/* ---- Celebration: a shower of twinkling stars -------------------------------- */
+.burst i {
+  width: 16px; height: 16px; background: var(--gold);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.burst i:nth-child(3n) { background: #FFFFFF; width: 10px; height: 10px; }
+.burst i:nth-child(3n + 1) { background: var(--nebula); width: 12px; height: 12px; }
+:root[data-theme="light"] .burst i:nth-child(3n) { background: #6C77E0; }
+
+/* ---- End ------------------------------------------------------------------- */
+.cheer__btn { box-shadow: 0 0 0 5px var(--surface-2), 0 0 0 7px var(--gold), 0 0 40px 6px rgba(255, 212, 92, 0.35); overflow: visible; }
+.cheer__media { border-radius: 50%; }
+.final__row.is-winner { box-shadow: 0 0 22px -6px rgba(255, 212, 92, 0.8); }
+@media (prefers-reduced-motion: reduce) { .hero__art::before, .hero__art::after { animation: none; } }
