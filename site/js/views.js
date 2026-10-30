@@ -9,6 +9,13 @@ import { dayStyleHtml, wireDayStyle } from './daystyle.js';
 import { burstHtml, placeBursts } from './celebrate.js';
 
 const MAX_PICK = 30;
+
+// Wordbright's sign for the card that links to it: three letter tiles.
+const TILES = '<svg viewBox="0 0 100 100" class="tiles" aria-hidden="true">'
+  + [['W', 8, 30, -6], ['O', 37, 22, 3], ['R', 66, 32, 8]].map(([l, x, y, r]) => '<g transform="rotate(' + r + ' ' + (x + 13) + ' ' + (y + 13) + ')">'
+    + '<rect x="' + x + '" y="' + y + '" width="26" height="26" rx="6" class="tiles__tile"/>'
+    + '<text x="' + (x + 13) + '" y="' + (y + 19) + '" class="tiles__letter">' + l + '</text></g>').join('')
+  + '<rect x="14" y="66" width="72" height="8" rx="4" class="tiles__rack"/></svg>';
 const href = (...parts) => '#/' + parts.join('/');
 
 function isUnlocked(ch) {
@@ -87,6 +94,11 @@ export function home(main) {
     + '<div class="btnrow"><a class="btn btn--primary" href="https://learning.waystead.co.uk/packs">See the papers' + ICON.arrow + '</a>'
     + '<a class="btn btn--ghost" href="https://learning.waystead.co.uk/">Visit Waystead Learning</a></div></div>'
     + '</aside>'
+    + '<a class="card sister" href="../wordbright/">' + TILES
+    + '<span class="sister__text"><span class="eyebrow">Also from Waystead</span>'
+    + '<b class="sister__name">Play Wordbright, the word-tile game</b>'
+    + '<span class="muted small">Make words on a board, find the bonus squares and play against friendly computer players. Great practice for 11+ vocabulary.</span></span>'
+    + ICON.arrow + '</a>'
     + '<div class="steps"><span class="eyebrow">How a chapter works</span><ol>'
     + '<li><strong>Study</strong>Read the meaning, hear the word and see its spelling parts.</li>'
     + '<li><strong>Quick game</strong>Guess the letters before the flower loses its 6 petals. The picture gets clearer as you miss.</li>'

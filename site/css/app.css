@@ -58,6 +58,10 @@
   --sb: var(--plum);
   --sb-soft: #F3EEF9;
 
+  /* Wordbright's Indigo: only on the card that links to it. */
+  --wb: #3B5BDB;
+  --wb-soft: #EEF1FD;
+
   --good: #1F7A4D;
   --good-soft: #E7F3EC;
   --bad: #B3362B;
@@ -239,6 +243,19 @@ img { max-width: 100%; display: block; }
 .promo__papers i:nth-child(2) { transform: rotate(5deg) translate(8px, 2px); }
 .promo__papers i:nth-child(3) { background: repeating-linear-gradient(var(--surface) 0 18px, var(--line) 18px 19px, var(--surface) 19px 22px) content-box, var(--surface); padding: 26px 14px 14px; border-top: 6px solid var(--learning-btn); }
 @media (min-width: 720px) { .promo { grid-template-columns: 150px 1fr; padding: 26px 28px; } }
+
+/* Wordbright (its own Indigo, only on this card), as Wordbright shows Spellbright. */
+.sister { margin-top: 16px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 16px 18px; color: inherit; text-decoration: none; border-top: 6px solid var(--wb); transition: border-color 120ms ease; }
+.sister:hover { border-color: var(--wb); }
+.sister .eyebrow { color: var(--wb); }
+.sister > svg:last-child { width: 22px; height: 22px; fill: none; stroke: var(--wb); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.sister__text { display: grid; gap: 4px; }
+.sister__name { font-family: var(--f-display); font-size: 1.15rem; }
+.tiles { width: 60px; height: 60px; padding: 4px; border-radius: 50%; background: var(--wb-soft); flex: none; }
+.tiles__tile { fill: #FFD95E; stroke: #1B1A20; stroke-width: 2; }
+.tiles__letter { font: 700 17px "Sora", ui-sans-serif, sans-serif; fill: #1B1A20; text-anchor: middle; }
+.tiles__rack { fill: var(--wb); }
+@media (prefers-reduced-motion: reduce) { .sister { transition: none; } }
 .steps { margin-top: 40px; }
 .steps ol { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 12px; counter-reset: s; }
 @media (min-width: 720px) { .steps ol { grid-template-columns: repeat(4, 1fr); } }

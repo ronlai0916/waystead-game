@@ -64,6 +64,8 @@ const TEXT = [
   ['--good', '--good-soft'], ['--good', '--surface'], ['--bad', '--surface'], ['--bad', '--bg'],
   ['--badge-fg', '--good'], ['--badge-fg', '--bad'], ['--pass-fg', '--pass-bg'],
   ['--sb', '--sb-soft'],
+  // The Wordbright card
+  ['--wb', '--surface'], ['--wb', '--bg'],
   // The Waystead Learning panel (its heading, text and Teal button)
   ['--learning', '--learning-soft'], ['--text', '--learning-soft'], ['#FFFFFF', '--learning-btn'],
 ];
