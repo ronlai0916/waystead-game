@@ -2,16 +2,23 @@
 // and audio are cached the first time they're used, and fetched in the
 // background once the new version is active.
 // Bump VERSION on every deploy so phones pick up the new files.
-const VERSION = 'spellbright-2026-10-29a';
+// Fonts are not in the shell: each style's fonts are cached the first time
+// that style is used (cache-first below).
+const VERSION = 'spellbright-2026-10-30a';
 
 const SHELL = [
   './',
   'index.html',
   'css/app.css',
+  'css/styles/garden.css',
+  'css/styles/paint.css',
+  'css/styles/night.css',
   'js/theme-boot.js',
   'js/app.js',
   'js/data.js',
   'js/store.js',
+  'js/daystyle.js',
+  'js/celebrate.js',
   'js/speech.js',
   'js/ui.js',
   'js/flower.js',
@@ -20,8 +27,6 @@ const SHELL = [
   'data/curriculum.json',
   'data/assets.json',
   'manifest.webmanifest',
-  'assets/fonts/sora-latin-var.woff2',
-  'assets/fonts/manrope-latin-var.woff2',
   'assets/icons/favicon.svg',
   'assets/icons/apple-touch-icon.png',
 ];

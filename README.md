@@ -14,7 +14,7 @@ backend, no database, no secrets. Progress is kept in the browser
 waystead-game/
 ├── site/                      # served at /spellbright/
 │   ├── index.html
-│   ├── css/app.css            # Waystead brand tokens (Ink, Paper, Plum, Amber)
+│   ├── css/app.css            # shared structure; looks in css/styles/ (garden, paint, night)
 │   ├── js/                    # app.js (router), views.js, play.js, …
 │   ├── data/curriculum.json   # 213 words: meaning, IPA, chunks, image name
 │   ├── data/assets.json       # which pictures/MP3s exist (built by a tool)
@@ -126,11 +126,11 @@ Open http://localhost:8000. The saved game lives in `wb.game`, the last
 new-game choices in `wb.setup`, and words a grown-up allowed in `wb.allowed`;
 the theme is shared with Spellbright (`sb.theme`).
 
-Looks (W2b): the theme button switches Day / Night / Match device
-(`sb.theme` = `light` / `dark` / unset). By day the game uses the day style
-chosen on this device, `wb.dayStyle` = `garden` (Sunny garden, the default) or
-`paint` (Paint box), picked on the new-game screen or For parents; at night it
-is always Night sky. `js/theme-boot.js` sets `<html data-theme data-style>`
+Looks (W2b, W2c): the look menu in the top bar offers Day · Sunny garden,
+Day · Paint box, Night and Match device. It sets `sb.theme` (`light` / `dark`
+/ unset, shared with Spellbright and the home page) and, by day, this device's
+`wb.dayStyle` (`garden`, the default, or `paint`); the For parents page has
+the same day style picker. At night it is always Night sky. `js/theme-boot.js` sets `<html data-theme data-style>`
 before the first paint and follows the device live. Fonts: Fredoka + Andika
 (garden), Baloo 2 + Nunito (paint), Lexend + Atkinson Hyperlegible (night),
 Andika for pronunciations, Sora for the wordmark; all SIL OFL 1.1.

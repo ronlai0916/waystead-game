@@ -5,6 +5,7 @@
 // and "Pick words".
 import { Round, flower, drawFlower } from './flower.js';
 import { speak, stop } from './speech.js';
+import { burstHtml, placeBursts } from './celebrate.js';
 import { esc, picture, setBlur, revealPicture, chunked, redact, keyboard, ICON } from './ui.js';
 
 const MAX_BLUR = 20;
@@ -85,12 +86,14 @@ export function runSession(main, opts) {
     main.querySelectorAll('.key').forEach((k) => { k.disabled = true; });
     const last = index === words.length - 1;
     main.querySelector('[data-slot]').innerHTML = '<div class="card result ' + (won ? 'result--good' : 'result--bad') + '">'
-      + '<div class="result__head"><span class="result__badge">' + (won ? '✓' : '×') + '</span><h2>' + (won ? 'You got it' : 'The word was') + '</h2></div>'
+      + '<div class="result__head">' + (won ? '<span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(12, 1.3) + '</span>' : '<span class="result__badge">×</span>')
+      + '<h2>' + (won ? 'You got it' : 'The word was') + '</h2></div>'
       + '<div class="stack"><div class="result__word">' + chunked(w) + '</div>'
       + '<p class="ipa">' + esc(w.ipa) + '</p>'
       + '<p>' + esc(w.meaning.definition) + '</p></div>'
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-next>' + (last ? 'See how you did' : 'Next word') + ICON.arrow + '</button>'
       + '<button type="button" class="btn btn--ghost" data-hear2>' + ICON.play + 'Hear it</button></div></div>';
+    placeBursts(main);
     main.querySelector('[data-hear2]').addEventListener('click', () => speak(w.word));
     main.querySelector('[data-next]').addEventListener('click', () => {
       stop();

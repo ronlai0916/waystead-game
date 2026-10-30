@@ -39,7 +39,9 @@ export function flower(petals) {
   let p = '';
   for (let i = 0; i < petals; i += 1) {
     const a = (360 / petals) * i;
-    p += '<g class="petal" data-petal="' + order.indexOf(i) + '">'
+    // petal--1…4: each style colours them (one colour in Sunny garden and Night
+    // sky with a lighter alternate; four paint colours in Paint box).
+    p += '<g class="petal petal--' + ((i % 4) + 1) + '" data-petal="' + order.indexOf(i) + '">'
       + '<ellipse cx="' + CX + '" cy="' + (CY - 30) + '" rx="' + (petals > 6 ? 11 : 14) + '" ry="22" transform="rotate(' + a + ' ' + CX + ' ' + CY + ')"/></g>';
   }
   return '<svg class="flower" viewBox="0 0 180 200" role="img" aria-label="A flower with ' + petals + ' petals">'

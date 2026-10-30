@@ -1,0 +1,134 @@
+/* ==========================================================================
+   Night sky (always used at Night). Deep indigo with small stars; keys glow
+   like the moon; gold buttons. Lexend (headings, keys) + Atkinson
+   Hyperlegible (body). The same style as Wordbright's
+   (wordbright/site/css/styles/night.css), adapted to Spellbright: a glowing
+   pink-and-lilac flower, light Plum spelling rails.
+   ========================================================================== */
+@font-face {
+  font-family: "Lexend";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../../assets/fonts/lexend-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../assets/fonts/atkinson-latin-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../assets/fonts/atkinson-latin-700.woff2") format("woff2");
+}
+
+:root[data-style="night"] {
+  --f-display: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --display-weight: 600;
+
+  --gold: #FFD45C;
+  --moon: #FFF4D2;
+  --nebula: #FF9ACB;
+
+  --bg: #11133A;
+  --topbar: color-mix(in srgb, #11133A 82%, transparent);
+  --surface: #1B1E52;
+  --surface-2: #262A66;
+  --line: #353A7A;
+  --text: #F3F1FF;
+  --muted: #BAB9E2;
+  --accent: var(--gold);
+  --accent-strong: #FFE08A;
+  --accent-soft: #2B2F6E;
+  --on-accent: #1B1A20;
+  --link: var(--gold);
+  --eyebrow: var(--nebula);
+  --product: var(--sb);
+  --wordmark: #F3F1EC;
+  --focus: var(--gold);
+  --star-dot: rgba(255, 255, 255, 0.7);
+  --badge-fg: #1B1A20;
+
+  /* Night versions of the other Waystead colours */
+  --sb: #C9A6F2;
+  --sb-soft: #2A2050;
+  --good: #5BC58E;
+  --good-soft: #15301F;
+  --bad: #FF8E80;
+  --bad-soft: #3A1A2A;
+  --warm-soft: #3A2C10;
+  --learning: #2DB5A5;
+  --learning-soft: #12302D;
+
+  --btn-r: 999px;
+  --btn-shadow: 0 0 22px -4px rgba(255, 212, 92, 0.7);
+  --btn-ghost-edge: var(--line);
+  --btn-ghost-shadow: none;
+  --card-border: 1.5px solid var(--line);
+  --shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.9);
+  --r: 16px;
+  --r-lg: 22px;
+
+  /* Keys glow like the moon; a right letter turns gold. */
+  --key-r: 12px;
+  --key-border: 1px solid transparent;
+  --key-bg: var(--moon);
+  --key-fg: #1B1A20;
+  --key-shadow: inset 0 -3px 0 rgba(160, 120, 40, 0.35), 0 0 12px rgba(255, 228, 150, 0.3);
+  --key-hit-bg: var(--gold);
+  --key-hit-fg: #1B1A20;
+  --key-hit-shadow: inset 0 -3px 0 rgba(150, 110, 0, 0.35), 0 0 14px rgba(255, 212, 92, 0.6);
+  --key-miss-bg: #262A66;
+  --key-miss-fg: #BAB9E2;
+
+  /* The flower glows: pink and lilac petals, a gold middle. */
+  --petal: var(--nebula);
+  --petal-2: #C9A6F2;
+  --petal-edge: #FFD1E6;
+  --petal-edge-w: 1.5;
+  --petal-glow: drop-shadow(0 0 5px rgba(255, 154, 203, 0.65));
+  --stem: #5BC58E;
+  --leaf-fill: #3E9E6E;
+  --flower-centre: var(--gold);
+  --flower-face: #1B1A20;
+  --flower-ground: var(--line);
+
+  --pass-bg: var(--gold);
+  --pass-fg: #1B1A20;
+  --pass-shadow: 0 0 18px rgba(255, 212, 92, 0.6);
+  --ring-still: var(--nebula);
+  color-scheme: dark;
+}
+
+/* The sky: soft glows and small stars, fixed behind the page. */
+[data-style="night"] body {
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 120px 80px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(2px 2px at 200px 150px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 70px 190px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(600px 380px at 85% -5%, rgba(255, 120, 190, 0.16), transparent 70%),
+    radial-gradient(700px 500px at 5% 20%, rgba(110, 120, 255, 0.22), transparent 70%);
+  background-size: 240px 240px, 240px 240px, 240px 240px, 240px 240px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+[data-style="night"] .iconbtn { background: transparent; }
+[data-style="night"] .btn--ghost { background: transparent; }
+[data-style="night"] .key { font-weight: 600; }
+[data-style="night"] .chunked__letter.is-on { color: var(--gold); }
+[data-style="night"] .stickybar { background: var(--bg); }
+[data-style="night"] .result--good { box-shadow: 0 0 22px -6px rgba(91, 197, 142, 0.6); }
+
+/* Celebration: a shower of twinkling stars. */
+[data-style="night"] .burst i {
+  width: 16px; height: 16px; border-radius: 0; background: var(--gold);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+[data-style="night"] .burst i:nth-child(3n) { background: #FFFFFF; width: 10px; height: 10px; }
+[data-style="night"] .burst i:nth-child(3n + 1) { background: var(--nebula); width: 12px; height: 12px; }

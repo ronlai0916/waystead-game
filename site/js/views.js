@@ -5,6 +5,8 @@ import * as S from './store.js';
 import { speak, spellOut, stop } from './speech.js';
 import { runSession, summaryHtml } from './play.js';
 import { esc, ICON, picture, chunked, chunkText, boldWord, redact, shuffle, toast, meter, applyMeters } from './ui.js';
+import { dayStyleHtml, wireDayStyle } from './daystyle.js';
+import { burstHtml, placeBursts } from './celebrate.js';
 
 const MAX_PICK = 30;
 const href = (...parts) => '#/' + parts.join('/');
@@ -90,14 +92,17 @@ export function home(main) {
     + '<li><strong>Quick game</strong>Guess the letters before the flower loses its 6 petals. The picture gets clearer as you miss.</li>'
     + '<li><strong>Practice</strong>The full game, with 10 petals. The picture stays hidden until the end.</li>'
     + '<li><strong>Test</strong>Hear each word and type it. Get every word right to open the next chapter.</li>'
-    + '</ol></div></section>';
+    + '</ol></div>'
+    + '<div class="home__look">' + dayStyleHtml({ id: 'home-daystyle' }) + '</div>'
+    + '</section>';
   applyMeters(main);
+  const unwireLook = wireDayStyle(main);
   const lettersEl = () => main.querySelectorAll('.today__word .chunked__letter');
   main.querySelector('[data-hear]').addEventListener('click', () => speak(w.word));
   main.querySelector('[data-spell]').addEventListener('click', () => spellOut(w.word, (i) => {
     lettersEl().forEach((el) => el.classList.toggle('is-on', Number(el.dataset.i) === i));
   }));
-  return stop;
+  return () => { stop(); unwireLook(); };
 }
 
 /* ---------------------------------------------------------------- Year --- */
@@ -303,12 +308,14 @@ export function test(main, { yearId, slug }) {
     if (right) S.noteCorrect(w.word); else S.noteMissed(w.word, ch.id);
     const last = i === words.length - 1;
     main.querySelector('form').outerHTML = '<div class="card result ' + (right ? 'result--good' : 'result--bad') + '">'
-      + '<div class="result__head"><span class="result__badge">' + (right ? '✓' : '×') + '</span><h2>' + (right ? 'Correct' : 'Not quite') + '</h2></div>'
+      + '<div class="result__head">' + (right ? '<span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(10, 1.2) + '</span>' : '<span class="result__badge">×</span>')
+      + '<h2>' + (right ? 'Correct' : 'Not quite') + '</h2></div>'
       + '<div class="result__grid">' + picture(w) + '<div class="stack">'
       + '<div class="result__word">' + chunked(w) + '</div>'
       + (right ? '' : '<p>You typed <b>' + esc(typed) + '</b>. It\'s been added to your tricky words.</p>')
       + '<p class="ipa">' + esc(w.ipa) + '</p></div></div>'
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-next>' + (last ? 'See your score' : 'Next word') + ICON.arrow + '</button></div></div>';
+    placeBursts(main);
     const next = main.querySelector('[data-next]');
     next.focus();
     next.addEventListener('click', () => {
@@ -325,7 +332,8 @@ export function test(main, { yearId, slug }) {
     const chs = D.chapters(yearId);
     const nextCh = chs[ch.index + 1];
     main.innerHTML = '<section class="wrap page">'
-      + '<div class="pagehead"><span class="eyebrow">Chapter ' + t.n + ' · Test</span>'
+      + '<div class="pagehead' + (passed ? ' pagehead--pass' : '') + '"><span class="eyebrow">Chapter ' + t.n + ' · Test</span>'
+      + (passed ? '<span class="celebrate passmark" aria-hidden="true"><span class="passmark__badge">' + ICON.star + '</span>' + burstHtml(16, 2) + '</span>' : '')
       + '<h1>' + (passed ? 'Passed — every word right' : score + ' of ' + words.length + ' right') + '</h1>'
       + '<p class="muted">' + (passed
         ? (nextCh && !before ? 'Chapter ' + (t.n + 1) + ' is now open.' : 'Well done.')
@@ -337,6 +345,7 @@ export function test(main, { yearId, slug }) {
       + (passed && nextCh ? '<a class="btn btn--primary" href="' + href(yearId, nextCh.slug) + '">Next chapter' + ICON.arrow + '</a>' : '')
       + (!passed ? '<a class="btn btn--primary" href="' + base + '/practice">Practise again</a><a class="btn btn--ghost" href="' + base + '/test" data-retry>Try the test again</a>' : '')
       + '<a class="btn btn--ghost" href="' + href(yearId) + '">All chapters</a></div></section>';
+    placeBursts(main);
     const retry = main.querySelector('[data-retry]');
     if (retry) retry.addEventListener('click', (e) => { e.preventDefault(); window.dispatchEvent(new HashChangeEvent('hashchange')); });
   }
@@ -500,9 +509,10 @@ export function progress(main) {
     + '<div class="pagehead"><span class="eyebrow">Progress</span><h1>How it\'s going</h1>'
     + '<p class="muted">Progress is saved in this browser on this device only.</p></div>'
     + '<div class="settings">' + yearBlockHtml('y34') + yearBlockHtml('y56')
-    + '<div class="card setting"><h2>Appearance</h2><div class="radios" role="radiogroup" aria-label="Theme">'
+    + '<div class="card setting"><h2>Day / Night</h2><div class="radios" role="radiogroup" aria-label="Day / Night / Match device">'
     + ['system', 'light', 'dark'].map((v) => '<label><input type="radio" name="theme" value="' + v + '"' + (theme === v ? ' checked' : '') + '> '
-      + ({ system: 'Match my device', light: 'Light', dark: 'Dark' })[v] + '</label>').join('') + '</div></div>'
+      + ({ system: 'Match device', light: 'Day', dark: 'Night' })[v] + '</label>').join('') + '</div>'
+    + '<p class="muted small">The day style (Sunny garden or Paint box) is on the home page and the For parents page.</p></div>'
     + '<div class="card setting"><h2>Open every chapter</h2><p class="muted small">Normally a chapter opens when the one before it is passed. Turn this on to jump ahead.</p>'
     + '<label class="radios"><input type="checkbox" data-unlock' + (S.unlockAll() ? ' checked' : '') + '> Open all chapters</label></div>'
     + '<div class="card setting"><h2>Start again</h2><p class="muted small">Clears chapter progress and tricky words in this browser.</p>'
@@ -529,11 +539,17 @@ export function about(main) {
     + '<p>Year 3–4 chapters go from easier to harder. Year 5–6 chapters group words by spelling pattern, such as silent letters or double consonants.</p>'
     + '<h2>Little and often</h2>'
     + '<p>Ten to fifteen minutes, three or four times a week, works better than one long session. Start each session with a few tricky words before moving on.</p>'
+    + '<h2>How it looks</h2>'
+    + '<p>By day Spellbright uses the day style chosen below; at night (the Day / Night button at the top, or the device\'s dark mode) it uses Night sky. Wordbright, our word-tile game, uses the same three styles.</p>'
+    + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
     + '<h2>Privacy</h2>'
     + '<p>There is no account and no sign-in. Progress is kept in this browser on this device and is never sent to us. There are no adverts, no tracking and no analytics. Clearing the browser\'s site data, or using another device, starts afresh.</p>'
     + '<h2>Who makes it</h2>'
     + '<p>Spellbright is made by <a href="https://waystead.co.uk">Waystead</a>. It is an independent project and is not affiliated with the Department for Education or any exam board.</p>'
+    + '<h2>Fonts</h2>'
+    + '<p class="small">Fredoka, Andika, Baloo 2, Nunito, Lexend and Atkinson Hyperlegible, under the SIL Open Font License 1.1 (copies in assets/fonts/licences/). The Waystead name uses Sora.</p>'
     + '</section>';
+  return wireDayStyle(main);
 }
 
 export { notFound };

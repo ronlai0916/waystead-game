@@ -15,7 +15,7 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Ink `#1B1A20`, Paper `#FAF8F3`, Amber `#F2A31D` (the waypoint dot only).
 - Waystead Game home page accent: Terracotta `#B4532A` (dark `#E8875E`). Game colours: Spellbright Plum `#6B3FA0`, Wordbright Indigo; Learning panel Teal.
 - Teal `#0F8B7E` belongs to Waystead Learning: use it only on the Learning panel, never as a game accent.
-- Sora (headings, wordmark 600/700), Manrope (body). Self-hosted woff2, same files as waystead-parent.
+- Sora is the wordmark font only. Spellbright's other fonts come with its three styles (below); Manrope is no longer used.
 - The "Waystead" wordmark is never recoloured. Logo = the waymark (two chevrons as a W, amber dot).
 
 ## Rules that bit before
@@ -23,6 +23,14 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Every word's `chunks` must join to the word exactly (checked at load).
 - Bump `VERSION` in `site/sw.js` on every Spellbright release, and in `wordbright/site/sw.js` on every Wordbright release. Each worker deletes only its own caches (`spellbright-*`, `wordbright-*`).
 - The home page (`hub/site/`, served at `/`) keeps every file under `/home-assets/` so it never clashes with a game path. Its name is only in `BRAND` (`hub/site/home-assets/js/config.js`); `WORDBRIGHT_LIVE` there turns the Wordbright card into a link at launch (README "Launch checklist").
+
+## Spellbright looks (S-W2, 30 Oct 2026)
+- Three styles, the same family as Wordbright: `site/css/styles/garden.css` (Sunny garden, Day default), `paint.css` (Paint box, Day), `night.css` (Night sky, always at Night). `site/js/theme-boot.js` sets `<html data-style>` from `sb.theme` (shared with Wordbright) and `sb.dayStyle` (Spellbright's own; Wordbright's is `wb.dayStyle`).
+- The Day style picker is on the home page and the For parents page (`site/js/daystyle.js`).
+- Colours are tokens in each style's first block; `tests/contrast.test.js` reads them, so a new text/background pair goes in its list. Spellbright's own colour is `--sb` (Plum by day, light Plum at night): spelling-part rails, product label, progress bars. Buttons follow each style (leaf, cobalt, gold).
+- Fonts: garden Fredoka + Andika, paint Baloo 2 + Nunito, night Lexend + Atkinson Hyperlegible; Andika for IPA in every style. Never preload a font, and keep fonts out of the service-worker shell. Licences: `site/assets/fonts/licences/`.
+- Celebrations (`site/js/celebrate.js`): a word spelled and a chapter test passed. None with reduced motion (a still ring instead).
+- Tests: `node --test tests/*.test.js` (no npm packages).
 
 ## Workflow
 Build and STOP before commit. Ron reviews, commits and pushes, then pulls on the server.

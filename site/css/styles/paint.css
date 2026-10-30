@@ -1,0 +1,128 @@
+/* ==========================================================================
+   Paint box (Day). Bold bright colours on cream; chunky keys with an Ink
+   outline; playful but tidy. Baloo 2 (headings, keys) + Nunito (body).
+   The same style as Wordbright's (wordbright/site/css/styles/paint.css),
+   adapted to Spellbright: cream keys, a flower in four paint colours with an
+   Ink outline, Plum spelling rails.
+   ========================================================================== */
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../../assets/fonts/baloo2-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("../../assets/fonts/nunito-latin-var.woff2") format("woff2");
+}
+
+:root[data-style="paint"] {
+  --f-display: "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --f-body: "Nunito", ui-rounded, system-ui, sans-serif;
+  --display-weight: 800;
+
+  --cobalt: #2250D0;
+  --tomato: #E5432D;
+  --tomato-text: #C4321F;
+  --sunshine: #FFC21A;
+  --grass: #3DBA5C;
+
+  --bg: #FFFAF0;
+  --topbar: #FFFAF0;
+  --surface: #FFFFFF;
+  --surface-2: #FFF1D6;
+  --line: #D9CCB2;
+  --outline: #1B1A20;
+  --text: #1B1A20;
+  --muted: #5A5249;
+  --accent: var(--cobalt);
+  --accent-strong: #1A3FA8;
+  --accent-soft: #E3EAFF;
+  --on-accent: #FFFFFF;
+  --link: var(--plum);
+  --eyebrow: var(--tomato-text);
+  --product: var(--plum);
+  --wordmark: var(--ink);
+  --focus: var(--tomato-text);
+  --badge-fg: #FFFFFF;
+
+  --btn-r: 16px;
+  --btn-border: 2.5px;
+  --btn-shadow: 0 4px 0 var(--outline);
+  --btn-ghost-edge: var(--outline);
+  --btn-ghost-shadow: 0 4px 0 var(--outline);
+  --card-border: 2.5px solid var(--outline);
+  --shadow: 0 5px 0 var(--outline);
+  --r: 16px;
+  --r-lg: 20px;
+
+  /* Keys: cream tiles with an Ink outline; a right letter turns cobalt. */
+  --key-r: 10px;
+  --key-border: 2px solid var(--outline);
+  --key-bg: #FFFDF6;
+  --key-fg: #1B1A20;
+  --key-shadow: 0 3px 0 var(--outline), inset 0 -3px 0 #E8DCC2;
+  --key-hit-bg: var(--cobalt);
+  --key-hit-fg: #FFFFFF;
+  --key-hit-shadow: 0 3px 0 var(--outline);
+  --key-miss-bg: #EFE4CC;
+  --key-miss-fg: #5A5249;
+
+  /* The flower: four paint colours, every shape outlined in Ink. */
+  --petal: var(--tomato);
+  --petal-2: var(--sunshine);
+  --petal-3: var(--cobalt);
+  --petal-4: var(--grass);
+  --petal-edge: var(--outline);
+  --petal-edge-w: 3;
+  --stem: #2E9E4B;
+  --leaf-fill: var(--grass);
+  --leaf-edge: var(--outline);
+  --flower-centre: var(--sunshine);
+  --centre-edge: var(--outline);
+  --flower-ground: var(--outline);
+
+  --pass-bg: var(--sunshine);
+  --pass-fg: #1B1A20;
+  --pass-shadow: inset 0 0 0 2.5px #1B1A20, 0 4px 0 #1B1A20;
+  --ring-still: var(--cobalt);
+  color-scheme: light;
+}
+
+/* Top bar: an Ink rule with four paint dabs on it. */
+[data-style="paint"] .topbar { border-bottom: 3px solid var(--outline); backdrop-filter: none; -webkit-backdrop-filter: none; }
+[data-style="paint"] .topbar::after {
+  content: ""; position: absolute; right: 24px; bottom: -9px; width: 92px; height: 15px; pointer-events: none;
+  background:
+    radial-gradient(circle at 7px 7px, var(--tomato) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 31px 7px, var(--sunshine) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 55px 7px, var(--cobalt) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 79px 7px, var(--grass) 6.5px, transparent 7.5px);
+}
+[data-style="paint"] .iconbtn { border: 2px solid var(--outline); }
+[data-style="paint"] .topbar__nav a:hover, [data-style="paint"] .topbar__nav a[aria-current="page"] { background: var(--sunshine); color: #1B1A20; }
+[data-style="paint"] .btn { font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; padding-top: 8px; }
+[data-style="paint"] .btn--quiet { border: 2px solid var(--outline); background: var(--surface); box-shadow: 0 3px 0 var(--outline); }
+[data-style="paint"] .key { font-weight: 800; }
+[data-style="paint"] .key.miss { box-shadow: none; }
+[data-style="paint"] .result { border-top-width: 10px; border-top-color: var(--sunshine); }
+[data-style="paint"] .result--bad { border-top-color: var(--tomato); }
+[data-style="paint"] .chapter__num { border: 2.5px solid var(--outline); background: var(--sunshine); color: #1B1A20; }
+[data-style="paint"] .chapter--locked .chapter__num { background: var(--surface-2); color: var(--muted); }
+[data-style="paint"] .steps li { border: 2px solid var(--outline); }
+[data-style="paint"] .steps li::before { border-color: var(--outline); background: var(--sunshine); }
+[data-style="paint"] .field, [data-style="paint"] .answer, [data-style="paint"] .tab, [data-style="paint"] .picker label,
+[data-style="paint"] details.hint, [data-style="paint"] .dsopt, [data-style="paint"] .wordchips span { border: 2px solid var(--outline); }
+[data-style="paint"] .tab[aria-selected="true"] { background: var(--cobalt); border-color: var(--outline); color: #FFFFFF; }
+[data-style="paint"] .meter { border: 2px solid var(--outline); height: 12px; }
+[data-style="paint"] .result__badge { box-shadow: inset 0 0 0 2.5px #1B1A20; }
+
+/* Celebration: paint splats. */
+[data-style="paint"] .burst i { width: 14px; height: 13px; border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%; background: var(--tomato); }
+[data-style="paint"] .burst i:nth-child(4n + 2) { background: var(--sunshine); width: 17px; height: 15px; }
+[data-style="paint"] .burst i:nth-child(4n + 3) { background: var(--cobalt); width: 11px; height: 11px; }
+[data-style="paint"] .burst i:nth-child(4n) { background: var(--grass); width: 15px; height: 12px; }
