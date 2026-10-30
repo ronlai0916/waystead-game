@@ -1,6 +1,6 @@
-// Entry point: brand, theme button, and routing by the URL hash.
+// Entry point: brand, look menu, and routing by the URL hash.
 import { BRAND } from './brand.js';
-import { getTheme, setTheme } from './store.js';
+import { wireThemeMenu } from './ui/thememenu.js';
 import { home } from './views/home.js';
 import { setup } from './views/setup.js';
 import { playView } from './views/play.js';
@@ -51,23 +51,9 @@ function wireBrand() {
   document.getElementById('brand').setAttribute('aria-label', BRAND.product + ' home');
 }
 
-// The one theme button: Match device → Day → Night → Match device.
-// Day shows the chosen day style (Sunny garden or Paint box); Night is Night sky.
-export const THEME_NAMES = { system: 'Match device', light: 'Day', dark: 'Night' };
-
+// The look menu: Day · Sunny garden, Day · Paint box, Night, Match device.
 function wireTheme() {
-  const btn = document.getElementById('theme');
-  const label = () => {
-    const name = THEME_NAMES[getTheme()];
-    btn.setAttribute('aria-label', 'Day / Night / Match device. Now: ' + name + '. Change');
-    btn.title = 'Now: ' + name;
-    btn.querySelector('[data-theme-name]').textContent = name;
-  };
-  label();
-  btn.addEventListener('click', () => {
-    setTheme({ system: 'light', light: 'dark', dark: 'system' }[getTheme()]);
-    label();
-  });
+  wireThemeMenu(document.getElementById('theme'), document.getElementById('theme-menu'), document);
 }
 
 wireBrand();

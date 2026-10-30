@@ -25,8 +25,8 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - The home page (`hub/site/`, served at `/`) keeps every file under `/home-assets/` so it never clashes with a game path. Its name is only in `BRAND` (`hub/site/home-assets/js/config.js`); `WORDBRIGHT_LIVE` there turns the Wordbright card into a link at launch (README "Launch checklist").
 
 ## Spellbright looks (S-W2, 30 Oct 2026)
-- Three styles, the same family as Wordbright: `site/css/styles/garden.css` (Sunny garden, Day default), `paint.css` (Paint box, Day), `night.css` (Night sky, always at Night). `site/js/theme-boot.js` sets `<html data-style>` from `sb.theme` (shared with Wordbright) and `sb.dayStyle` (Spellbright's own; Wordbright's is `wb.dayStyle`).
-- The Day style picker is on the home page and the For parents page (`site/js/daystyle.js`).
+- Three styles, the same family as Wordbright: `site/css/styles/garden.css` (Sunny garden, Day default), `paint.css` (Paint box, Day), `night.css` (Night sky, always at Night). `site/js/theme-boot.js` sets `<html data-style>` from `sb.theme` (shared with Wordbright) and `sb.dayStyle` (shared with Wordbright).
+- The look menu in the top bar (`site/js/thememenu.js`, same as Wordbright's) offers Day · Sunny garden, Day · Paint box, Night and Match device. `sb.dayStyle` is shared with Wordbright. The For parents page also has the day-style picker (`site/js/daystyle.js`); the two stay in step via the `sb:look` event.
 - Colours are tokens in each style's first block; `tests/contrast.test.js` reads them, so a new text/background pair goes in its list. Spellbright's own colour is `--sb` (Plum by day, light Plum at night): spelling-part rails, product label, progress bars. Buttons follow each style (leaf, cobalt, gold).
 - Fonts: garden Fredoka + Andika, paint Baloo 2 + Nunito, night Lexend + Atkinson Hyperlegible; Andika for IPA in every style. Never preload a font, and keep fonts out of the service-worker shell. Licences: `site/assets/fonts/licences/`.
 - Celebrations (`site/js/celebrate.js`): a word spelled and a chapter test passed. None with reduced motion (a still ring instead).
@@ -42,12 +42,12 @@ A word-tile board game, to be served at /wordbright/. Design files and decisions
 - `wordbright/site/data/` is generated: rebuild with `python3 tools/build-wordgraph.py`, never edit by hand. The licence files in `wordbright/` travel with it.
 - Never use other games' names or terms (see PLAN.md section 2); `wordbright/tests/names.test.js` checks.
 - The product name is only in `BRAND` (`wordbright/site/js/brand.js`); the HTML `<title>` is the one static copy, for link previews.
-- localStorage: theme is `sb.theme` (shared with Spellbright); everything else starts with `wb.`.
+- localStorage: `sb.theme` and `sb.dayStyle` are shared with Spellbright; everything else starts with `wb.`.
 - Squares: never show codes like DL/TW/2L/3W; use the names (Spark, Glow, Shine, Star) and our icons.
 - The game loads one word graph, `words_all.dawg`: each word tagged with its tier (smallest list: 0 starter … 4 xlarge). Check words with `isWord(word, graph, maxTier, maxLength)`; a level's list is `listTier(list)`. Children play the whole list (xlarge) at every level; computer and hint lists go by level.
 - Words a grown-up allowed (`wb.allowed`) reach the engine as `env.allowed` and count for children only, never for computers or hints.
 - Computer players and hints: `site/js/engine/movegen.js` (pure move finder; the caller passes `now` for the time cap) and `site/js/ai/` (also pure, apart from `worker.js` and `client.js`). Their choices use a seed from the game state, never `Math.random`, so a position always gives the same move.
 - Character pictures are built: `python3 tools/wordbright-characters.py` (from `wordbright-design/assets-raw/`).
 - Bot-vs-bot check: `node tools/wordbright-bots.mjs` (`--games 20` for a quick run). Crashes and illegal moves must be 0.
-- Looks: three styles in `wordbright/site/css/styles/` (garden, paint = Day; night = Night), chosen by `data-style` on `<html>` (set by `js/theme-boot.js` from `sb.theme` and `wb.dayStyle`). Colours are tokens in each style's first block; `wordbright/tests/contrast.test.js` reads them, so a new text/background pair goes in its list. Never preload a font, and keep fonts out of the service-worker shell: each style's fonts load only when used.
+- Looks: three styles in `wordbright/site/css/styles/` (garden, paint = Day; night = Night), chosen by `data-style` on `<html>` (set by `js/theme-boot.js` from `sb.theme` and `sb.dayStyle`, both shared with Spellbright). Colours are tokens in each style's first block; `wordbright/tests/contrast.test.js` reads them, so a new text/background pair goes in its list. Never preload a font, and keep fonts out of the service-worker shell: each style's fonts load only when used.
 - Tests: `node --test wordbright/tests/` (no npm packages).

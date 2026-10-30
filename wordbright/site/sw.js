@@ -6,7 +6,7 @@
 // Without a font the game still works offline, in the device's own font.
 // Bump VERSION on every release so devices pick up the new files. Only caches
 // named "wordbright-…" are ever touched (Spellbright keeps "spellbright-…").
-const VERSION = 'wordbright-2026-10-30a';
+const VERSION = 'wordbright-2026-10-30c';
 
 const CHARACTERS = ['pip', 'ottie', 'bramble', 'fizz'].flatMap((name) =>
   ['portrait', 'thinking', 'happy', 'surprised'].flatMap((mood) =>
@@ -48,6 +48,7 @@ const SHELL = [
   'js/ui/moves.js',
   'js/ui/results.js',
   'js/ui/speak.js',
+  'js/ui/thememenu.js',
   'js/views/end.js',
   'js/views/home.js',
   'js/views/pages.js',

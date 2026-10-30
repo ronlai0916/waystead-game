@@ -129,7 +129,7 @@ the theme is shared with Spellbright (`sb.theme`).
 Looks (W2b, W2c): the look menu in the top bar offers Day · Sunny garden,
 Day · Paint box, Night and Match device. It sets `sb.theme` (`light` / `dark`
 / unset, shared with Spellbright and the home page) and, by day, this device's
-`wb.dayStyle` (`garden`, the default, or `paint`); the For parents page has
+`sb.dayStyle` (`garden`, the default, or `paint`; shared with Spellbright); the For parents page has
 the same day style picker. At night it is always Night sky. `js/theme-boot.js` sets `<html data-theme data-style>`
 before the first paint and follows the device live. Fonts: Fredoka + Andika
 (garden), Baloo 2 + Nunito (paint), Lexend + Atkinson Hyperlegible (night),

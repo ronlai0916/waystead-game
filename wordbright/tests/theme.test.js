@@ -1,7 +1,7 @@
 // Theme model (W2b): theme-boot.js sets data-theme and data-style before the
 // first paint, from the shared mode ("sb.theme"), this device's day style
-// ("wb.dayStyle") and the device's light/dark setting; the Day style picker
-// saves "wb.dayStyle" and changes the look at once.
+// ("sb.dayStyle") and the device's light/dark setting; the Day style picker
+// saves "sb.dayStyle" and changes the look at once.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -13,7 +13,7 @@ const BOOT = readFileSync(ROOT + 'site/js/theme-boot.js', 'utf8');
 function browser({ mode = null, dayStyle = null, dark = false } = {}) {
   const store = new Map();
   if (mode != null) store.set('sb.theme', mode);
-  if (dayStyle != null) store.set('wb.dayStyle', dayStyle);
+  if (dayStyle != null) store.set('sb.dayStyle', dayStyle);
   const attrs = new Map();
   const listeners = [];
   const mq = { matches: dark, addEventListener: (type, fn) => listeners.push(fn) };
@@ -81,7 +81,7 @@ test('no localStorage (private mode) still gives a look', () => {
   assert.equal(win.document.documentElement.attrs['data-style'], 'garden');
 });
 
-test('the Day style picker saves wb.dayStyle and changes the look at once', async () => {
+test('the Day style picker saves sb.dayStyle and changes the look at once', async () => {
   const b = browser({ mode: 'light' });
   globalThis.window = b.win;
   globalThis.localStorage = b.win.localStorage;
@@ -99,15 +99,15 @@ test('the Day style picker saves wb.dayStyle and changes the look at once', asyn
     assert.equal(note.textContent, '', 'no Night note by day');
 
     onChange({ target: { name: 'daystyle', value: 'paint' } });
-    assert.equal(b.store.get('wb.dayStyle'), 'paint');
+    assert.equal(b.store.get('sb.dayStyle'), 'paint');
     assert.equal(getDayStyle(), 'paint');
     assert.equal(b.attrs.get('data-style'), 'paint');
     assert.match(dayStyleHtml(), /value="paint" checked/);
 
     onChange({ target: { name: 'daystyle', value: 'bogus' } });
-    assert.equal(b.store.get('wb.dayStyle'), 'paint', 'unknown styles are ignored');
+    assert.equal(b.store.get('sb.dayStyle'), 'paint', 'unknown styles are ignored');
     onChange({ target: { name: 'board', value: 'garden' } });
-    assert.equal(b.store.get('wb.dayStyle'), 'paint', 'other inputs are ignored');
+    assert.equal(b.store.get('sb.dayStyle'), 'paint', 'other inputs are ignored');
 
     onChange({ target: { name: 'daystyle', value: 'garden' } });
     assert.equal(b.attrs.get('data-style'), 'garden');
@@ -116,7 +116,7 @@ test('the Day style picker saves wb.dayStyle and changes the look at once', asyn
     b.store.set('sb.theme', 'dark');
     b.win.wbTheme.apply();
     onChange({ target: { name: 'daystyle', value: 'paint' } });
-    assert.equal(b.store.get('wb.dayStyle'), 'paint');
+    assert.equal(b.store.get('sb.dayStyle'), 'paint');
     assert.equal(b.attrs.get('data-style'), 'night');
     assert.match(note.textContent, /Night is on/);
   } finally {
@@ -124,4 +124,27 @@ test('the Day style picker saves wb.dayStyle and changes the look at once', asyn
     delete globalThis.localStorage;
     delete globalThis.document;
   }
+});
+
+test('one-time move: wb.dayStyle goes to sb.dayStyle unless that is already set, then is removed', () => {
+  const run = (seed) => {
+    const b = browser({ mode: 'light' });
+    b.store.clear();
+    b.store.set('sb.theme', 'light');
+    for (const [k, v] of Object.entries(seed)) b.store.set(k, v);
+    new Function('window', 'localStorage', 'document', BOOT)(b.win, b.win.localStorage, b.win.document);
+    return b;
+  };
+  const moved = run({ 'wb.dayStyle': 'paint' });
+  assert.equal(moved.store.get('sb.dayStyle'), 'paint');
+  assert.equal(moved.store.has('wb.dayStyle'), false);
+  assert.equal(moved.attrs.get('data-style'), 'paint', 'the moved style shows straight away');
+
+  const kept = run({ 'wb.dayStyle': 'paint', 'sb.dayStyle': 'garden' });
+  assert.equal(kept.store.get('sb.dayStyle'), 'garden', 'a style Spellbright already saved wins');
+  assert.equal(kept.store.has('wb.dayStyle'), false);
+  assert.equal(kept.attrs.get('data-style'), 'garden');
+
+  const none = run({});
+  assert.equal(none.store.has('sb.dayStyle'), false, 'nothing is written when there is nothing to move');
 });

@@ -1,5 +1,5 @@
-// The Day style picker (new-game screen and For parents): Sunny garden or
-// Paint box, saved on this device as "wb.dayStyle". It changes the look at
+// The Day style picker (For parents; the look menu in the top bar does the same): Sunny garden or
+// Paint box, saved on this device as "sb.dayStyle" (shared with Spellbright). It changes the look at
 // once; at Night the page keeps the Night sky style.
 import { BRAND } from '../brand.js';
 import { getDayStyle, setDayStyle, getTheme } from '../store.js';
@@ -28,7 +28,7 @@ export function dayStyleHtml({ tag = 'fieldset', id = 'daystyle' } = {}) {
 export function nightNote(theme = document.documentElement.getAttribute('data-theme')) {
   if (theme !== 'dark') return '';
   return getTheme() === 'dark'
-    ? 'Night is on (the theme button at the top), so you see Night sky now. Your day style shows in Day.'
+    ? 'Night is on (the look menu at the top), so you see Night sky now. Your day style shows in Day.'
     : 'This device is in dark mode, so you see Night sky now. Your day style shows in the daytime.';
 }
 
@@ -38,13 +38,28 @@ export function wireDayStyle(root) {
   if (!box) return () => {};
   const note = box.querySelector('[data-daystyle-note]');
   const show = () => { if (note) note.textContent = nightNote(); };
+  // The look menu changed something: tick the saved style here too.
+  const sync = () => {
+    box.querySelectorAll('input[name="daystyle"]').forEach((r) => { r.checked = r.value === getDayStyle(); });
+    show();
+  };
   const onChange = (e) => {
     const t = e.target;
     if (!t || t.name !== 'daystyle') return;
     setDayStyle(t.value);
     show();
+    announce();
   };
   box.addEventListener('change', onChange);
+  if (typeof document.addEventListener === 'function') document.addEventListener('wb:look', sync);
   show();
-  return () => box.removeEventListener('change', onChange);
+  return () => {
+    box.removeEventListener('change', onChange);
+    if (typeof document.removeEventListener === 'function') document.removeEventListener('wb:look', sync);
+  };
+}
+
+// Tell the look menu and the picker that the look changed.
+export function announce() {
+  if (typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') document.dispatchEvent(new CustomEvent('wb:look'));
 }

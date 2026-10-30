@@ -1,10 +1,10 @@
 // Everything stays in this browser (localStorage). Nothing leaves the device.
-// The theme mode is shared with Spellbright ("sb.theme"); Wordbright's own keys start with "wb.".
+// The theme mode ("sb.theme") and the day style ("sb.dayStyle") are shared with Spellbright; Wordbright's own keys start with "wb.".
 // The look itself is set on <html> by theme-boot.js (window.wbTheme).
 
 import { isStoredPin } from './pin.js';
 
-const KEYS = { theme: 'sb.theme', dayStyle: 'wb.dayStyle', game: 'wb.game', setup: 'wb.setup', allowed: 'wb.allowed', pin: 'wb.pin' };
+const KEYS = { theme: 'sb.theme', dayStyle: 'sb.dayStyle', game: 'wb.game', setup: 'wb.setup', allowed: 'wb.allowed', pin: 'wb.pin' };
 
 function read(key, fallback) {
   try {
@@ -72,7 +72,7 @@ export function setTheme(t) {
   applyTheme();
 }
 
-// Day style for this device: "garden" (Sunny garden, the default) or "paint" (Paint box).
+// Day style for this device, shared with Spellbright: "garden" (Sunny garden, the default) or "paint" (Paint box).
 // Night always uses the Night sky style.
 export const DAY_STYLES = ['garden', 'paint'];
 export function getDayStyle() {

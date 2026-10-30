@@ -75,7 +75,7 @@ export function about(main) {
     + '<div data-allowed></div>'
     + '<h2 id="look">Day style</h2>'
     + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
-    + '<p class="small muted">The theme button at the top switches Day, Night and Match device (which follows this device’s light or dark setting). It is shared with Spellbright.</p>'
+    + '<p class="small muted">The look menu at the top switches Day (Sunny garden or Paint box), Night and Match device (which follows this device’s light or dark setting). Day, Night and Match device are shared with Spellbright and the Waystead Game home page.</p>'
     + '<h2>Privacy</h2>'
     + '<p>There are no accounts and no sign-in, no adverts, no tracking and no analytics. Progress and the saved game stay in this browser on this device and are never sent to us.</p>'
     + '<h2>Credits</h2>'
@@ -101,7 +101,7 @@ export function about(main) {
   const allowedBox = main.querySelector('[data-allowed]');
   drawAllowed(allowedBox);
   drawPin(main.querySelector('[data-pin]'), () => drawAllowed(allowedBox));
-  wireDayStyle(main);
+  return wireDayStyle(main);
 }
 
 // Set, change or forget the grown-up PIN.
