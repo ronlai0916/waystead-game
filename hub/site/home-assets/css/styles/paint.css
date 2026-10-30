@@ -1,0 +1,93 @@
+/* ==========================================================================
+   Paint box (Day). Bold bright colours on cream; chunky cards with an Ink
+   outline; playful but tidy. Baloo 2 (headings) + Nunito (body).
+   The same style as the games' (site/css/styles/paint.css), adapted to the
+   home page: Terracotta stays the accent; the Spellbright flower in four
+   paint colours with an Ink outline.
+   ========================================================================== */
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../../fonts/baloo2-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("../../fonts/nunito-latin-var.woff2") format("woff2");
+}
+
+:root[data-style="paint"] {
+  --f-display: "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --f-body: "Nunito", ui-rounded, system-ui, sans-serif;
+  --display-weight: 800;
+
+  --cobalt: #2250D0;
+  --tomato: #E5432D;
+  --sunshine: #FFC21A;
+  --grass: #3DBA5C;
+
+  --bg: #FFFAF0;
+  --topbar: #FFFAF0;
+  --surface: #FFFFFF;
+  --surface-2: #FFF1D6;
+  --line: #D9CCB2;
+  --outline: #1B1A20;
+  --text: #1B1A20;
+  --muted: #5A5249;
+  --accent: var(--terracotta);
+  --accent-strong: var(--terracotta-700);
+  --accent-soft: #FCE6DA;
+  --on-accent: #FFFFFF;
+  --link: var(--terracotta-700);
+  --eyebrow: var(--terracotta);
+  --product: var(--terracotta);
+  --wordmark: var(--ink);
+  --focus: var(--terracotta-700);
+
+  --btn-r: 16px;
+  --btn-border: 2.5px;
+  --btn-ghost-edge: var(--outline);
+  --btn-ghost-shadow: 0 4px 0 var(--outline);
+  --card-border: 2.5px solid var(--outline);
+  --shadow: 0 5px 0 var(--outline);
+  --r: 16px;
+  --r-lg: 20px;
+
+  /* The flower: four paint colours, every shape outlined in Ink. */
+  --petal: var(--tomato);
+  --petal-2: var(--sunshine);
+  --petal-edge: var(--outline);
+  --petal-edge-w: 3;
+  --stem: #2E9E4B;
+  --flower-centre: var(--sunshine);
+  --centre-edge: var(--outline);
+  color-scheme: light;
+}
+
+/* Top bar: an Ink rule with four paint dabs on it. */
+[data-style="paint"] .topbar { border-bottom: 3px solid var(--outline); backdrop-filter: none; -webkit-backdrop-filter: none; }
+[data-style="paint"] .topbar::after {
+  content: ""; position: absolute; right: 24px; bottom: -9px; width: 92px; height: 15px; pointer-events: none;
+  background:
+    radial-gradient(circle at 7px 7px, var(--tomato) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 31px 7px, var(--sunshine) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 55px 7px, var(--cobalt) 6.5px, transparent 7.5px),
+    radial-gradient(circle at 79px 7px, var(--grass) 6.5px, transparent 7.5px);
+}
+[data-style="paint"] .iconbtn { border: 2px solid var(--outline); }
+[data-style="paint"] .topbar__nav a:hover { background: var(--sunshine); color: #1B1A20; }
+[data-style="paint"] .btn { font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; padding-top: 8px; }
+[data-style="paint"] .promo .btn--primary { box-shadow: 0 4px 0 var(--outline); border-color: var(--outline); }
+[data-style="paint"] .game { border-top-width: 10px; }
+[data-style="paint"] a.game:hover { border-color: var(--outline); border-top-color: var(--tone); }
+[data-style="paint"] .game__pic { border: 2.5px solid var(--outline); }
+[data-style="paint"] .game__pic--crew img { box-shadow: 0 0 0 2px var(--outline); }
+[data-style="paint"] .game__soon { border: 2px solid var(--outline); }
+[data-style="paint"] .flower__petals ellipse:nth-child(3) { fill: var(--cobalt); }
+[data-style="paint"] .flower__petals ellipse:nth-child(5) { fill: var(--grass); }
+[data-style="paint"] .promo__papers i { border: 2px solid var(--outline); box-shadow: 0 3px 0 var(--outline); }
+[data-style="paint"] .foot { border-top: 3px solid var(--outline); }

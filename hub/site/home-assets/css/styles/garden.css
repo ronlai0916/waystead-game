@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Sunny garden (Day, the default). Warm yellows, leafy greens, flower pinks;
+   soft round shapes. Fredoka (headings) + Andika (body).
+   The same style as the games' (site/css/styles/garden.css), adapted to the
+   home page: Terracotta stays the accent, a pink flower on the Spellbright
+   card. The tokens are on plain :root so the page still has a look before
+   data-style is set; the other styles override them with [data-style].
+   ========================================================================== */
+@font-face {
+  font-family: "Fredoka";
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 75% 125%;
+  font-display: swap;
+  src: url("../../fonts/fredoka-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Andika";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../fonts/andika-regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Andika";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../fonts/andika-bold.woff2") format("woff2");
+}
+
+:root {
+  --f-display: "Fredoka", ui-rounded, system-ui, sans-serif;
+  --f-body: "Andika", ui-sans-serif, system-ui, sans-serif;
+  --display-weight: 600;
+
+  --sun: #FFC93C;
+  --leaf: #2E7D32;
+  --leaf-light: #93CF6E;
+  --rose: #C2346E;
+
+  --bg: #FFF8E6;
+  --topbar: #FFF8E6;
+  --surface: #FFFFFF;
+  --surface-2: #FFF0C9;
+  --line: #EEDFB4;
+  --text: #1B1A20;
+  --muted: #5C5444;
+  --accent: var(--terracotta);
+  --accent-strong: var(--terracotta-700);
+  --accent-soft: #FBE7DC;
+  --on-accent: #FFFFFF;
+  --link: var(--terracotta-700);
+  --eyebrow: var(--terracotta);
+  --product: var(--terracotta);
+  --wordmark: var(--ink);
+  --focus: var(--ink);
+  --hedge: var(--leaf-light);
+
+  --btn-r: 999px;
+  --btn-ghost-edge: #E3D2A0;
+  --btn-ghost-shadow: 0 4px 0 #E3D2A0;
+  --card-border: 2px solid var(--line);
+  --shadow: 0 10px 26px -18px rgba(120, 90, 20, 0.45);
+  --r: 16px;
+  --r-lg: 26px;
+
+  /* The flower: pink petals, a sunny middle, a green stem. */
+  --petal: #F48FB6;
+  --petal-2: #F9B4CE;
+  --petal-edge: var(--rose);
+  --stem: var(--leaf);
+  --flower-centre: var(--sun);
+  color-scheme: light;
+}
+
+/* A low hedge of round leaves under the top bar. */
+[data-style="garden"] .topbar { border-bottom: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+[data-style="garden"] .topbar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -10px; height: 12px; pointer-events: none;
+  background: radial-gradient(circle at 12px 0, var(--hedge) 11px, transparent 12px) repeat-x;
+  background-size: 24px 12px;
+}
+[data-style="garden"] main { padding-top: 6px; }
+[data-style="garden"] .btn { font-family: var(--f-display); font-weight: 600; font-size: 1.06rem; }
+[data-style="garden"] .iconbtn { border-radius: 999px; }
+[data-style="garden"] .game__pic--crew { border-radius: 40% 60% 55% 45% / 50% 45% 55% 50%; }
+[data-style="garden"] .promo__papers i:nth-child(3) { border-radius: 14px; }
+[data-style="garden"] .foot { border-top: 2px dashed var(--line); }

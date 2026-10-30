@@ -1,0 +1,99 @@
+/* ==========================================================================
+   Night sky (always used at Night). Deep indigo with small stars; cards
+   glow softly. Lexend (headings) + Atkinson Hyperlegible (body).
+   The same style as the games' (site/css/styles/night.css), adapted to the
+   home page: a light Terracotta accent, light Plum and light Indigo on the
+   game cards, a glowing pink-and-lilac flower.
+   ========================================================================== */
+@font-face {
+  font-family: "Lexend";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../../fonts/lexend-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../fonts/atkinson-latin-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../fonts/atkinson-latin-700.woff2") format("woff2");
+}
+
+:root[data-style="night"] {
+  --f-display: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --display-weight: 600;
+
+  --gold: #FFD45C;
+  --nebula: #FF9ACB;
+
+  --bg: #11133A;
+  --topbar: color-mix(in srgb, #11133A 82%, transparent);
+  --surface: #1B1E52;
+  --surface-2: #262A66;
+  --line: #353A7A;
+  --text: #F3F1FF;
+  --muted: #BAB9E2;
+  --accent: #E8875E;          /* light Terracotta */
+  --accent-strong: #F2B091;
+  --accent-soft: #3A2440;
+  --on-accent: #1B1A20;
+  --link: #F2B091;
+  --eyebrow: #E8875E;
+  --product: #E8875E;
+  --wordmark: #F3F1EC;
+  --focus: var(--gold);
+  --star-dot: rgba(255, 255, 255, 0.7);
+
+  /* Night versions of the other Waystead colours */
+  --spellbright: #C9A6F2;
+  --spellbright-soft: #2A2050;
+  --wordbright: #91A7FF;
+  --wordbright-soft: #1E2458;
+  --learning: #2DB5A5;
+  --learning-soft: #12302D;
+
+  --btn-r: 999px;
+  --btn-ghost-edge: var(--line);
+  --btn-ghost-shadow: none;
+  --card-border: 1.5px solid var(--line);
+  --shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.9);
+  --r: 16px;
+  --r-lg: 22px;
+
+  /* The flower glows: pink and lilac petals, a gold middle. */
+  --petal: var(--nebula);
+  --petal-2: #C9A6F2;
+  --petal-edge: #FFD1E6;
+  --petal-edge-w: 1.5;
+  --petal-glow: drop-shadow(0 0 5px rgba(255, 154, 203, 0.65));
+  --stem: #5BC58E;
+  --flower-centre: var(--gold);
+  color-scheme: dark;
+}
+
+/* The sky: soft glows and small stars, fixed behind the page. */
+[data-style="night"] body {
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 120px 80px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(2px 2px at 200px 150px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(1px 1px at 70px 190px, var(--star-dot) 50%, transparent 51%),
+    radial-gradient(600px 380px at 85% -5%, rgba(255, 120, 190, 0.16), transparent 70%),
+    radial-gradient(700px 500px at 5% 20%, rgba(110, 120, 255, 0.22), transparent 70%);
+  background-size: 240px 240px, 240px 240px, 240px 240px, 240px 240px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+[data-style="night"] .iconbtn { background: transparent; }
+[data-style="night"] .btn--ghost { background: transparent; }
+[data-style="night"] .hero__art { box-shadow: 0 0 40px -14px rgba(255, 212, 92, 0.45); }
+[data-style="night"] a.game:hover { box-shadow: 0 0 26px -8px var(--tone); }
+[data-style="night"] .game__pic--crew img { background: #FFF4D2; }

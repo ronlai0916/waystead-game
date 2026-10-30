@@ -44,8 +44,18 @@ waystead-game/
 Waystead Learning panel, and privacy and credits. The name is only in `BRAND`
 (`hub/site/home-assets/js/config.js`; the `<title>` is the one static copy).
 `WORDBRIGHT_LIVE` there is `false` until launch: the Wordbright card says
-"Coming soon" and is not a link. The theme is shared with the games (`sb.theme`).
-The welcome loop plays muted, and never with reduced motion.
+"Coming soon" and is not a link. The welcome loop plays muted, and never with
+reduced motion.
+
+The look is the games' own: the same top-bar menu (Day · Sunny garden,
+Day · Paint box, Night, Match device) and the same keys, `sb.theme` and
+`sb.dayStyle`, so a choice on the home page shows in both games and back.
+`home-assets/js/theme-boot.js` sets `data-theme` and `data-style` before the
+first paint; the three styles are in `home-assets/css/styles/` with their OFL
+fonts (`home-assets/fonts/`, licences beside them), loaded only for the style in
+use. Terracotta stays the home page accent (light Terracotta at Night); the
+game cards keep Plum and Indigo, the Learning panel its darker Teal.
+Tests: `node --test hub/tests/` (contrast in all three styles, theme-boot, menu).
 
 Remake the hero pictures and videos from `wordbright-design/assets-raw/`
 (needs `brew install ffmpeg`):
