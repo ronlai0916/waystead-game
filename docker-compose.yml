@@ -7,7 +7,7 @@
 # the same way as the parent site (waystead-parent-web).
 services:
   web:
-    image: nginx:1.27-alpine
+    build: ./docker/nginx-patched
     container_name: waystead-game-web
     restart: unless-stopped
     read_only: true
