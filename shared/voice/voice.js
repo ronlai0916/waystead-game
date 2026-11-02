@@ -67,6 +67,21 @@ export function voiceTip(voices, nav = {}) {
   return 'For a British voice, add an English (UK) voice in this device’s speech settings.';
 }
 
+// G9: steps for adding British voices, for this kind of device (shown under
+// the Voice menu when the device has only one British voice).
+export function deviceKind(nav = {}) {
+  const ua = String(nav.userAgent || '');
+  if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && Number(nav.maxTouchPoints) > 1)) return 'ios';
+  if (/Macintosh/.test(ua)) return 'mac';
+  return 'other';
+}
+export const MORE_VOICE_STEPS = {
+  ios: 'Settings → Accessibility → Spoken Content → Voices → English → English (UK), then download Serena (Premium) or Kate (Enhanced).',
+  mac: 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom).',
+  other: 'Open this device’s speech or language settings and add another English (UK) voice.',
+};
+export const britishCount = (voices) => rankVoices(voices).filter(isBritish).length;
+
 export function savedVoice(storage) {
   try { const v = storage.getItem(VOICE_KEY); return typeof v === 'string' && v.length <= 100 ? v : ''; } catch (e) { return ''; }
 }

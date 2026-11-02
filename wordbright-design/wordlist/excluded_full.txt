@@ -2,18 +2,40 @@ aa	2-letter word not in our short list
 ab	2-letter word not in our short list
 abo	own list
 abos	own list
+adulterer	own list
+adulterers	own list
+adulteress	own list
+adulteresses	own list
+adulteries	own list
+adulterine	own list
+adulterous	own list
+adulterously	own list
+adultery	own list
 ae	2-letter word not in our short list
 ag	2-letter word not in our short list
 ai	2-letter word not in our short list
+algolagnia	own list
+algolagnias	own list
 anal	open blocklist
 anally	form of "anal"
+anaphrodisia	own list
+anaphrodisiac	own list
+anaphrodisias	own list
 anilingus	open blocklist
 antiporn	strong root
 antipornographic	strong root
 antipornography	strong root
+antisex	own list
+antisexual	own list
+antisexualities	own list
+antisexuality	own list
 anus	open blocklist
 anuses	form of "anus"
 apeshit	open blocklist
+aphrodisia	own list
+aphrodisiac	own list
+aphrodisiacal	own list
+aphrodisiacs	own list
 arse	own list
 arsed	form of "arse"
 arsehole	open blocklist
@@ -25,6 +47,8 @@ ass	open blocklist
 assed	own list
 autoerotic	open blocklist
 ba	2-letter word not in our short list
+bagnio	own list
+bagnios	own list
 bareback	open blocklist
 barebacked	form of "bareback"
 bastard	open blocklist
@@ -36,9 +60,20 @@ bastinadoed	form of "bastinado"
 bastinadoes	form of "bastinado"
 bastinadoing	form of "bastinado"
 bastinados	form of "bastinado"
+bawd	own list
+bawdier	own list
+bawdies	own list
+bawdiest	own list
+bawdily	own list
+bawdiness	own list
+bawdries	own list
+bawdry	own list
+bawds	own list
+bawdy	own list
 bawdyhouse	own list
 bawdyhouses	own list
 beanery	form of "beaner"
+bennies	own list
 berk	own list
 berks	own list
 bestial	strong root
@@ -66,6 +101,8 @@ bitchin	own list
 bitchiness	form of "bitch"
 bitching	form of "bitch"
 bitchy	own list
+blackamoor	own list
+blackamoors	own list
 blowjob	open blocklist
 blowjobs	strong root
 boche	every WordNet sense offensive
@@ -96,6 +133,8 @@ boobish	form of "boob"
 boobs	open blocklist
 boong	own list
 boongs	own list
+bordello	own list
+bordellos	own list
 brothel	own list
 brothels	form of "brothel"
 bugger	own list
@@ -123,6 +162,12 @@ butthole	open blocklist
 buttholes	form of "butthole"
 cannabis	own list
 cannabises	form of "cannabis"
+carnality	own list
+carnally	own list
+catamite	own list
+catamites	own list
+cathouse	own list
+cathouses	own list
 cd	2-letter word not in our short list
 chav	own list
 chavs	own list
@@ -140,6 +185,12 @@ cholas	own list
 cholo	own list
 cholos	own list
 clit	open blocklist
+clitoral	own list
+clitorectomies	own list
+clitorectomy	own list
+clitoric	own list
+clitoridectomies	own list
+clitoridectomy	own list
 clitoris	open blocklist
 clitorises	form of "clitoris"
 clits	form of "clit"
@@ -153,6 +204,21 @@ cocksucker	own list
 cocksuckers	own list
 cockup	own list
 cockups	own list
+cocotte	own list
+cocottes	own list
+coital	own list
+coition	own list
+coitions	own list
+coitus	own list
+colpitis	own list
+colpitises	own list
+colposcope	own list
+colposcopes	own list
+concubinage	own list
+concubinary	own list
+concubine	own list
+concubines	own list
+concupiscence	own list
 condom	own list
 condoms	form of "condom"
 coolie	every WordNet sense offensive
@@ -164,6 +230,16 @@ coonasses	own list
 coons	open blocklist
 coprophilia	open blocklist
 coprophilias	form of "coprophilia"
+copulate	own list
+copulated	own list
+copulates	own list
+copulating	own list
+copulation	own list
+copulatory	own list
+courtesan	own list
+courtesans	own list
+crackhead	own list
+crackheads	own list
 crackhouse	own list
 crackhouses	own list
 crap	own list
@@ -182,16 +258,24 @@ cretinoid	own list
 cretins	form of "cretin"
 crip	own list
 crips	own list
+crotchless	own list
 crumbum	own list
 crumbums	own list
+cuckold	own list
+cuckolded	own list
+cuckolding	own list
+cuckoldry	own list
+cuckolds	own list
 cum	open blocklist
 cumming	open blocklist
+cums	own list
 cunnilinctus	strong root
 cunnilinctuses	strong root
 cunnilingual	strong root
 cunnilingus	open blocklist
 cunt	open blocklist
 cunts	strong root
+cybersex	own list
 dago	every WordNet sense offensive
 dagoes	every WordNet sense offensive
 dagos	every WordNet sense offensive
@@ -199,6 +283,15 @@ darkie	open blocklist
 darkies	form of "darkie"
 darky	own list
 de	2-letter word not in our short list
+demimondaine	own list
+demimondaines	own list
+demimonde	own list
+desexualisation	own list
+desexualisations	own list
+desexualise	own list
+desexualised	own list
+desexualises	own list
+desexualising	own list
 dg	2-letter word not in our short list
 dick	open blocklist
 dicked	form of "dick"
@@ -217,16 +310,30 @@ dipshit	strong root
 dipshits	strong root
 dm	2-letter word not in our short list
 dominatrix	open blocklist
+dopehead	own list
+dopeheads	own list
+douche	own list
+douches	own list
+druggie	own list
+druggier	own list
+druggies	own list
+druggiest	own list
 dyke	own list
 dyked	form of "dyke"
 dykes	form of "dyke"
 dykey	form of "dyke"
 dyking	form of "dyke"
+ecdysiast	own list
+ecdysiasts	own list
 ed	2-letter word not in our short list
 ef	2-letter word not in our short list
+eff	own list
+effed	own list
 effeminacy	every WordNet sense offensive
 effeminateness	every WordNet sense offensive
 effeminatenesses	every WordNet sense offensive
+effing	own list
+effs	own list
 eh	2-letter word not in our short list
 ejaculate	strong root
 ejaculated	strong root
@@ -240,12 +347,38 @@ ejaculatory	strong root
 el	2-letter word not in our short list
 em	2-letter word not in our short list
 en	2-letter word not in our short list
+episiotomies	own list
+episiotomy	own list
 er	2-letter word not in our short list
+erogenous	own list
 erotic	open blocklist
+erotica	own list
+erotical	own list
+erotically	own list
+eroticisation	own list
+eroticise	own list
+eroticised	own list
+eroticises	own list
+eroticising	own list
+eroticism	own list
+eroticist	own list
+eroticists	own list
 erotism	open blocklist
 erotisms	form of "erotism"
+erotization	own list
+erotizations	own list
+erotize	own list
+erotized	own list
+erotizes	own list
+erotizing	own list
+erotogenic	own list
+erotomania	own list
+erotomaniac	own list
+erotomaniacs	own list
+erotomanias	own list
 ew	2-letter word not in our short list
 ex	2-letter word not in our short list
+extramarital	own list
 fa	2-letter word not in our short list
 fag	open blocklist
 fagged	own list
@@ -276,12 +409,33 @@ fellator	strong root
 fellators	strong root
 fellatrix	strong root
 fellatrixes	strong root
+fetish	own list
+fetishes	own list
+fetishise	own list
+fetishised	own list
+fetishises	own list
+fetishising	own list
+fetishism	own list
+fetishist	own list
+fetishistic	own list
+fetishistically	own list
+fetishists	own list
 fistfuck	strong root
 fistfucked	strong root
 fistfucking	strong root
 fistfucks	strong root
 floozies	own list
 floozy	own list
+foreplay	own list
+fornicate	own list
+fornicated	own list
+fornicates	own list
+fornicating	own list
+fornication	own list
+fornicator	own list
+fornicators	own list
+frotteur	own list
+frotteurs	own list
 fuck	open blocklist
 fucked	strong root
 fucker	strong root
@@ -304,10 +458,17 @@ gangbanger	form of "gangbang"
 gangbangers	form of "gangbang"
 gangbanging	form of "gangbang"
 gangbangs	form of "gangbang"
+ganja	own list
 ganjah	own list
 ganjahs	own list
+genital	own list
+genitalia	own list
+genitalic	own list
+genitally	own list
 genitals	open blocklist
 gi	2-letter word not in our short list
+gigolo	own list
+gigolos	own list
 gimp	own list
 gimped	own list
 gimping	own list
@@ -367,9 +528,12 @@ handjobs	form of "handjob"
 harlot	own list
 harlotry	own list
 harlots	form of "harlot"
+hashish	own list
 headcase	own list
 headcases	own list
 heroin	own list
+heroinism	own list
+heroinisms	own list
 heroins	form of "heroin"
 hg	2-letter word not in our short list
 hl	2-letter word not in our short list
@@ -381,6 +545,10 @@ honkies	every WordNet sense offensive
 honky	every WordNet sense offensive
 hooker	open blocklist
 hookers	form of "hooker"
+hornier	own list
+horniest	own list
+horniness	own list
+horninesses	own list
 horny	open blocklist
 horseshit	strong root
 hos	own list
@@ -390,11 +558,17 @@ hunnish	own list
 huns	own list
 hussies	own list
 hussy	own list
+hypersexual	own list
+hypersexualities	own list
+hypersexuality	own list
 id	2-letter word not in our short list
 imbecile	own list
 imbecilely	form of "imbecile"
 imbeciles	form of "imbecile"
 incest	open blocklist
+incestuous	own list
+incestuously	own list
+incestuousness	own list
 ja	2-letter word not in our short list
 jailbait	open blocklist
 jerries	every WordNet sense offensive
@@ -410,6 +584,9 @@ jigaboos	form of "jigaboo"
 jism	own list
 jisms	own list
 jo	2-letter word not in our short list
+junkie	own list
+junkies	own list
+junky	own list
 ka	2-letter word not in our short list
 kaffir	own list
 kaffirs	own list
@@ -419,32 +596,78 @@ kb	2-letter word not in our short list
 kc	2-letter word not in our short list
 kg	2-letter word not in our short list
 ki	2-letter word not in our short list
+kief	own list
+kiefs	own list
 kike	open blocklist
 kikes	form of "kike"
+kinkier	own list
+kinkiest	own list
 kinky	open blocklist
 km	2-letter word not in our short list
 kraut	every WordNet sense offensive
 krauts	every WordNet sense offensive
 la	2-letter word not in our short list
 ladyboy	own list
+lapdance	own list
+lapdancer	own list
+lapdancers	own list
+lapdances	own list
+lapdancing	own list
+lascivious	own list
+lasciviously	own list
+lasciviousness	own list
+lech	own list
+lecher	own list
+lecherous	own list
+lecherously	own list
+lecherousness	own list
+lechers	own list
+lechery	own list
+leches	own list
 lesbo	own list
 lesbos	own list
+letch	own list
+letches	own list
+lewd	own list
+lewder	own list
+lewdest	own list
+lewdly	own list
+lewdness	own list
 lez	own list
 lezzes	own list
 lezzie	own list
 lezzies	own list
 lezzy	own list
 li	2-letter word not in our short list
+libidinal	own list
+libidinally	own list
+libidinous	own list
+libidinously	own list
+libidinousness	own list
+libidinousnesses	own list
+libido	own list
+libidos	own list
+licentious	own list
+licentiously	own list
+licentiousness	own list
 limey	own list
 limeys	own list
 lm	2-letter word not in our short list
 lo	2-letter word not in our short list
+lothario	own list
+lotharios	own list
 lovemaking	open blocklist
 lowlife	own list
 lowlifes	own list
 lubra	own list
 lubras	own list
+lustful	own list
+lustfully	own list
+lustfulness	own list
+lustfulnesses	own list
 lx	2-letter word not in our short list
+magdalen	own list
+magdalens	own list
 mammies	own list
 mammy	own list
 marijuana	own list
@@ -458,7 +681,9 @@ masturbation	open blocklist
 masturbator	strong root
 masturbators	strong root
 masturbatory	strong root
+meth	own list
 methadone	own list
+methamphetamine	own list
 methaqualone	own list
 methaqualones	own list
 methedrine	own list
@@ -484,6 +709,13 @@ minging	own list
 ml	2-letter word not in our short list
 mm	2-letter word not in our short list
 mo	2-letter word not in our short list
+molest	own list
+molestation	own list
+molested	own list
+molester	own list
+molesters	own list
+molesting	own list
+molests	own list
 mong	open blocklist
 mongol	own list
 mongolism	every WordNet sense offensive
@@ -515,6 +747,15 @@ nancys	own list
 nazi	own list
 nazis	own list
 ne	2-letter word not in our short list
+necrophile	own list
+necrophiles	own list
+necrophilia	own list
+necrophiliac	own list
+necrophiliacs	own list
+necrophilic	own list
+necrophilism	own list
+necrophilisms	own list
+necrophilist	own list
 negress	own list
 negresses	own list
 negro	open blocklist
@@ -565,8 +806,13 @@ nutcase	own list
 nutcases	own list
 nutter	own list
 nutters	own list
+nymphet	own list
+nymphets	own list
 nympho	open blocklist
 nymphomania	open blocklist
+nymphomaniac	own list
+nymphomaniacal	own list
+nymphomaniacs	own list
 nymphos	form of "nympho"
 octoroon	own list
 octoroons	own list
@@ -574,17 +820,32 @@ od	2-letter word not in our short list
 oe	2-letter word not in our short list
 oi	2-letter word not in our short list
 om	2-letter word not in our short list
+onanism	own list
+onanisms	own list
+onanist	own list
+onanists	own list
 oo	2-letter word not in our short list
 op	2-letter word not in our short list
 opium	own list
 opiumism	own list
 opiumisms	own list
+orchidectomies	own list
+orchidectomy	own list
+orchiectomies	own list
+orchiectomy	own list
 orgasm	open blocklist
 orgasmed	strong root
 orgasmic	strong root
 orgasmically	strong root
 orgasming	strong root
 orgasms	strong root
+orgastic	own list
+orgastically	own list
+orgiast	own list
+orgiastic	own list
+orgiastically	own list
+orgiasts	own list
+orgies	own list
 orgy	open blocklist
 os	2-letter word not in our short list
 ou	2-letter word not in our short list
@@ -592,7 +853,10 @@ outbitch	own list
 outbitched	own list
 outbitches	own list
 outbitching	own list
+outercourse	own list
+oversexed	own list
 oy	2-letter word not in our short list
+paederasty	own list
 paedodontics	strong root
 paedogeneses	strong root
 paedogenesis	strong root
@@ -615,6 +879,8 @@ paedophilia	strong root
 paedophiliac	strong root
 paedophiliacs	strong root
 paedophilic	strong root
+paleface	own list
+palefaces	own list
 panties	open blocklist
 papism	own list
 papisms	own list
@@ -622,13 +888,40 @@ papist	own list
 papistries	own list
 papistry	own list
 papists	every WordNet sense offensive
+paramour	own list
+paramours	own list
+paraphilia	own list
+paraphilias	own list
 pecker	own list
 peckers	own list
 peckerwood	own list
 peckerwoods	own list
+pederast	own list
+pederasts	own list
+pederasty	own list
 pegging	open blocklist
 penis	open blocklist
 penises	form of "penis"
+phalli	own list
+phallic	own list
+phallically	own list
+phallicism	own list
+phallicisms	own list
+phallicist	own list
+phallicists	own list
+phallism	own list
+phallisms	own list
+phallist	own list
+phallists	own list
+phallocentric	own list
+phallocentrism	own list
+phallus	own list
+philander	own list
+philandered	own list
+philanderer	own list
+philanderers	own list
+philandering	own list
+philanders	own list
 picaninnies	every WordNet sense offensive
 picaninny	every WordNet sense offensive
 piccaninnies	every WordNet sense offensive
@@ -690,19 +983,33 @@ pornographically	strong root
 pornography	open blocklist
 porny	strong root
 postorgasmic	strong root
+pothead	own list
+potheads	own list
 pouf	own list
 poufed	own list
 pouffed	own list
 pouffy	own list
 poufs	own list
+priapic	own list
 prostitute	own list
 prostituted	form of "prostitute"
 prostitutes	form of "prostitute"
 prostituting	form of "prostitute"
 prostitution	own list
+prostitutor	own list
+prostitutors	own list
+prurience	own list
+pruriencies	own list
+pruriency	own list
+prurient	own list
 psycho	own list
 psychos	own list
+psychosexual	own list
+psychosexualities	own list
+psychosexuality	own list
+psychosexually	own list
 pubes	open blocklist
+pussies	own list
 pussy	open blocklist
 putz	own list
 putzed	own list
@@ -719,13 +1026,26 @@ queerish	form of "queer"
 queerly	form of "queer"
 queerness	own list
 queers	form of "queer"
+randier	own list
+randiest	own list
 rape	open blocklist
 raped	form of "rape"
+raper	own list
+rapers	own list
 rapes	form of "rape"
 raping	open blocklist
 rapist	open blocklist
 rapists	form of "rapist"
 ratshit	strong root
+raunch	own list
+raunches	own list
+raunchier	own list
+raunchiest	own list
+raunchily	own list
+raunchiness	own list
+raunchy	own list
+ravisher	own list
+ravishers	own list
 re	2-letter word not in our short list
 rectum	open blocklist
 rectums	form of "rectum"
@@ -746,25 +1066,62 @@ retarding	form of "retard"
 retards	form of "retard"
 rimming	open blocklist
 sadism	open blocklist
+sadomasochism	own list
+sadomasochist	own list
+sadomasochistic	own list
+sadomasochists	own list
+salacious	own list
+salaciously	own list
+salaciousness	own list
+salacity	own list
 sambo	own list
 sambos	own list
+satyriasis	own list
 sawney	own list
 sawneys	own list
+scag	own list
+scags	own list
 schizo	own list
 schizos	own list
 scissoring	open blocklist
+scrota	own list
+scrotal	own list
 scrote	own list
+scrotum	own list
+seducement	own list
+seducements	own list
+seducer	own list
+seducers	own list
+seducible	own list
+seductress	own list
+seductresses	own list
 semen	open blocklist
 semipornographic	strong root
 semipornographies	strong root
 semipornography	strong root
 sex	open blocklist
+sexier	own list
+sexiest	own list
+sexily	own list
+sexiness	own list
+sexological	own list
+sexologist	own list
+sexologists	own list
+sexology	own list
 sexploitation	own list
 sexploitations	own list
+sexpot	own list
+sexpots	own list
 sext	own list
 sexting	form of "sext"
 sexts	own list
 sexual	open blocklist
+sexualisation	own list
+sexualisations	own list
+sexualise	own list
+sexualised	own list
+sexualises	own list
+sexualising	own list
 sexuality	open blocklist
 sexually	open blocklist
 sexy	open blocklist
@@ -811,6 +1168,7 @@ shittimwoods	strong root
 shitting	strong root
 shitty	open blocklist
 shitwork	strong root
+shroom	own list
 shylock	own list
 shylocks	own list
 si	2-letter word not in our short list
@@ -850,6 +1208,8 @@ smut	open blocklist
 smuts	form of "smut"
 smuttier	form of "smut"
 smuttiest	form of "smut"
+smuttily	own list
+smuttiness	own list
 smutty	form of "smut"
 snigger	strong root
 sniggered	strong root
@@ -864,6 +1224,7 @@ sniggler	strong root
 snigglers	strong root
 sniggles	strong root
 sniggling	strong root
+sociosexual	own list
 sodding	own list
 sodom	strong root
 sodomise	strong root
@@ -904,17 +1265,41 @@ squaws	own list
 strappado	open blocklist
 strappadoes	form of "strappado"
 strappados	form of "strappado"
+streetwalker	own list
+streetwalkers	own list
+striptease	own list
+stripteased	own list
+stripteaser	own list
+stripteasers	own list
+stripteases	own list
 strumpet	own list
 strumpets	form of "strumpet"
+succuba	own list
+succubas	own list
+succubi	own list
+succubus	own list
+suicidal	own list
+suicidally	own list
+suicide	own list
+suicided	own list
+suicides	own list
+suiciding	own list
+suicidologies	own list
+suicidology	own list
 superbitch	own list
 superbitches	own list
 superorgasm	strong root
 superorgasms	strong root
 superpimp	own list
 superpimps	own list
+supersexualities	own list
+supersexuality	own list
 swastika	open blocklist
 swastikas	form of "swastika"
 tarty	own list
+testicle	own list
+testicles	own list
+testicular	own list
 threesome	open blocklist
 threesomes	form of "threesome"
 throating	open blocklist
@@ -924,8 +1309,10 @@ tits	open blocklist
 tittie	own list
 titties	open blocklist
 titty	open blocklist
+toke	own list
 toker	own list
 tokers	own list
+tokes	own list
 topless	open blocklist
 tosser	open blocklist
 tossers	form of "tosser"
@@ -954,15 +1341,39 @@ twinking	form of "twink"
 twinks	form of "twink"
 uh	2-letter word not in our short list
 um	2-letter word not in our short list
+undersexed	own list
 unmanliness	every WordNet sense offensive
 unmanlinesses	every WordNet sense offensive
+unsexy	own list
 ut	2-letter word not in our short list
 vagina	open blocklist
+vaginae	own list
+vaginal	own list
+vaginally	own list
+vaginate	own list
+vaginated	own list
+vaginectomies	own list
+vaginectomy	own list
+vaginismus	own list
+vaginismuses	own list
+vaginitis	own list
 vibrator	open blocklist
 vibrators	form of "vibrator"
 voyeur	open blocklist
+voyeurism	own list
+voyeuristic	own list
+voyeuristically	own list
 voyeurs	form of "voyeur"
 vulva	open blocklist
+vulvae	own list
+vulval	own list
+vulvar	own list
+vulvate	own list
+vulviform	own list
+vulvitis	own list
+vulvitises	own list
+vulvovaginitides	own list
+vulvovaginitis	own list
 wank	open blocklist
 wanked	form of "wank"
 wanker	form of "wank"
@@ -1004,8 +1415,14 @@ wo	2-letter word not in our short list
 wog	own list
 woggish	own list
 wogs	every WordNet sense offensive
+womanise	own list
+womanised	own list
+womaniser	own list
+womanisers	own list
+womanises	own list
 womanishness	every WordNet sense offensive
 womanishnesses	every WordNet sense offensive
+womanising	own list
 wop	every WordNet sense offensive
 wops	every WordNet sense offensive
 xi	2-letter word not in our short list
@@ -1019,3 +1436,5 @@ za	2-letter word not in our short list
 zo	2-letter word not in our short list
 zoophilia	open blocklist
 zoophilias	form of "zoophilia"
+zoophilism	own list
+zoophilisms	own list

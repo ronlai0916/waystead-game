@@ -820,13 +820,6 @@ adulterated
 adulterates
 adulterating
 adulteration
-adulterer
-adulterers
-adulteress
-adulteresses
-adulteries
-adulterous
-adultery
 adulthood
 adults
 adumbrate
@@ -2139,8 +2132,6 @@ aphids
 aphorism
 aphorisms
 aphoristic
-aphrodisiac
-aphrodisiacs
 apiaries
 apiary
 apiece
@@ -4082,11 +4073,6 @@ baulked
 baulking
 baulks
 bauxite
-bawdier
-bawdiest
-bawdily
-bawdiness
-bawdy
 bawl
 bawled
 bawling
@@ -5727,8 +5713,6 @@ bopped
 bopping
 bops
 borax
-bordello
-bordellos
 border
 bordered
 bordering
@@ -7533,7 +7517,6 @@ carmine
 carmines
 carnage
 carnal
-carnally
 carnation
 carnations
 carnelian
@@ -9272,7 +9255,6 @@ clips
 clique
 cliques
 cliquish
-clitoral
 cloak
 cloaked
 cloaking
@@ -9676,8 +9658,6 @@ coinciding
 coined
 coining
 coins
-coital
-coitus
 coke
 coked
 cokes
@@ -10413,8 +10393,6 @@ concreted
 concretely
 concretes
 concreting
-concubine
-concubines
 concur
 concurred
 concurrence
@@ -11321,11 +11299,6 @@ copter
 copters
 copula
 copulas
-copulate
-copulated
-copulates
-copulating
-copulation
 copy
 copycat
 copycats
@@ -11757,8 +11730,6 @@ courted
 courteous
 courteously
 courteousness
-courtesan
-courtesans
 courtesies
 courtesy
 courthouse
@@ -12450,10 +12421,6 @@ cubists
 cubit
 cubits
 cubs
-cuckold
-cuckolded
-cuckolding
-cuckolds
 cuckoo
 cuckoos
 cucumber
@@ -12720,7 +12687,6 @@ cybernetic
 cybernetics
 cyberpunk
 cyberpunks
-cybersex
 cyberspace
 cyclamen
 cyclamens
@@ -16025,9 +15991,7 @@ doubting
 doubtless
 doubtlessly
 doubts
-douche
 douched
-douches
 douching
 dough
 doughier
@@ -18154,12 +18118,8 @@ erode
 eroded
 erodes
 eroding
-erogenous
 erosion
 erosive
-erotica
-erotically
-eroticism
 err
 errand
 errands
@@ -19074,7 +19034,6 @@ extradites
 extraditing
 extradition
 extraditions
-extramarital
 extraneous
 extraneously
 extraordinarily
@@ -19784,12 +19743,6 @@ feted
 fetes
 fetid
 feting
-fetish
-fetishes
-fetishism
-fetishist
-fetishistic
-fetishists
 fetlock
 fetlocks
 fetter
@@ -20996,7 +20949,6 @@ foreordain
 foreordained
 foreordaining
 foreordains
-foreplay
 forerunner
 forerunners
 fores
@@ -21134,11 +21086,6 @@ formulates
 formulating
 formulation
 formulations
-fornicate
-fornicated
-fornicates
-fornicating
-fornication
 forsake
 forsaken
 forsakes
@@ -22318,8 +22265,6 @@ genially
 genie
 genies
 genii
-genital
-genitalia
 genitive
 genitives
 genius
@@ -22529,8 +22474,6 @@ gigglier
 giggliest
 giggling
 giggly
-gigolo
-gigolos
 gigs
 gild
 gilded
@@ -24277,7 +24220,6 @@ hash
 hashed
 hashes
 hashing
-hashish
 hashtag
 hashtags
 hasp
@@ -25392,8 +25334,6 @@ horn
 horned
 hornet
 hornets
-hornier
-horniest
 hornless
 hornpipe
 hornpipes
@@ -26734,7 +26674,6 @@ inception
 inceptions
 incessant
 incessantly
-incestuous
 inch
 inched
 inches
@@ -29051,9 +28990,7 @@ junket
 junketed
 junketing
 junkets
-junkie
 junkier
-junkies
 junkiest
 junking
 junks
@@ -29335,8 +29272,6 @@ kings
 kingship
 kink
 kinked
-kinkier
-kinkiest
 kinking
 kinks
 kinship
@@ -29804,9 +29739,6 @@ laryngitis
 larynx
 lasagne
 lasagnes
-lascivious
-lasciviously
-lasciviousness
 laser
 lasers
 lash
@@ -30080,11 +30012,6 @@ leavens
 leaves
 leaving
 leavings
-lecher
-lecherous
-lecherously
-lechers
-lechery
 lecithin
 lectern
 lecterns
@@ -30328,11 +30255,6 @@ levitation
 levity
 levy
 levying
-lewd
-lewder
-lewdest
-lewdly
-lewdness
 lexical
 lexicographer
 lexicographers
@@ -30384,9 +30306,6 @@ liberties
 libertine
 libertines
 liberty
-libidinous
-libido
-libidos
 librarian
 librarians
 libraries
@@ -30406,9 +30325,6 @@ licenses
 licensing
 licentiate
 licentiates
-licentious
-licentiously
-licentiousness
 lichen
 lichens
 licit
@@ -31316,8 +31232,6 @@ lushest
 lushness
 lust
 lusted
-lustful
-lustfully
 lustier
 lustiest
 lustily
@@ -33628,13 +33542,6 @@ molehills
 moles
 moleskin
 moleskins
-molest
-molestation
-molested
-molester
-molesters
-molesting
-molests
 moll
 mollification
 mollified
@@ -34727,7 +34634,6 @@ neckties
 necromancer
 necromancers
 necromancy
-necrophilia
 necrosis
 nectar
 nectarine
@@ -35563,8 +35469,6 @@ nuzzling
 nylon
 nylons
 nymph
-nymphomaniac
-nymphomaniacs
 nymphs
 oaf
 oafish
@@ -36276,8 +36180,6 @@ organisms
 organist
 organists
 organs
-orgiastic
-orgies
 orient
 oriental
 orientals
@@ -36889,7 +36791,6 @@ oversell
 overselling
 oversells
 oversensitive
-oversexed
 overshadow
 overshadowed
 overshadowing
@@ -37199,8 +37100,6 @@ palazzi
 palazzo
 pale
 paled
-paleface
-palefaces
 paleness
 paler
 pales
@@ -37458,8 +37357,6 @@ parameters
 paramilitaries
 paramilitary
 paramount
-paramour
-paramours
 paranoia
 paranoid
 paranoids
@@ -38010,9 +37907,6 @@ peddle
 peddled
 peddles
 peddling
-pederast
-pederasts
-pederasty
 pedestal
 pedestals
 pedestrian
@@ -38621,9 +38515,6 @@ peyote
 phalanges
 phalanx
 phalanxes
-phalli
-phallic
-phallus
 phantasm
 phantasmagoria
 phantasmagorias
@@ -38663,12 +38554,6 @@ pheromone
 pheromones
 phial
 phials
-philander
-philandered
-philanderer
-philanderers
-philandering
-philanders
 philanthropic
 philanthropically
 philanthropies
@@ -41506,8 +41391,6 @@ prune
 pruned
 prunes
 pruning
-prurience
-prurient
 pry
 prying
 psalm
@@ -41892,7 +41775,6 @@ pusillanimous
 puss
 pusses
 pussier
-pussies
 pussiest
 pussycat
 pussycats
@@ -42498,8 +42380,6 @@ rancidity
 rancorous
 rancorously
 rancour
-randier
-randiest
 random
 randomise
 randomised
@@ -42671,10 +42551,6 @@ ratty
 raucous
 raucously
 raucousness
-raunchier
-raunchiest
-raunchiness
-raunchy
 ravage
 ravaged
 ravages
@@ -46007,9 +45883,6 @@ salaam
 salaamed
 salaaming
 salaams
-salacious
-salaciously
-salaciousness
 salad
 salads
 salamander
@@ -46875,8 +46748,6 @@ scrolling
 scrolls
 scrooge
 scrooges
-scrota
-scrotum
 scrounge
 scrounged
 scrounger
@@ -47164,8 +47035,6 @@ sedition
 seditious
 seduce
 seduced
-seducer
-seducers
 seduces
 seducing
 seduction
@@ -47609,17 +47478,11 @@ sexagenarian
 sexagenarians
 sexed
 sexes
-sexier
-sexiest
-sexily
-sexiness
 sexing
 sexism
 sexist
 sexists
 sexless
-sexpot
-sexpots
 sextant
 sextants
 sextet
@@ -51678,8 +51541,6 @@ streetcars
 streetlight
 streetlights
 streets
-streetwalker
-streetwalkers
 streetwise
 strength
 strengthen
@@ -51762,9 +51623,6 @@ stripper
 strippers
 stripping
 strips
-striptease
-stripteased
-stripteases
 stripteasing
 strive
 striven
@@ -52322,9 +52180,6 @@ suggestions
 suggestive
 suggestively
 suggests
-suicidal
-suicide
-suicides
 suing
 suit
 suitability
@@ -53997,8 +53852,6 @@ tested
 tester
 testers
 testes
-testicle
-testicles
 testier
 testiest
 testified
@@ -54759,12 +54612,10 @@ toilette
 toiling
 toils
 toilsome
-toke
 toked
 token
 tokenism
 tokens
-tokes
 toking
 told
 tolerable
@@ -57804,8 +57655,6 @@ vagabond
 vagabonds
 vagaries
 vagary
-vaginae
-vaginal
 vagrancy
 vagrant
 vagrants
@@ -58647,8 +58496,6 @@ voyager
 voyagers
 voyages
 voyaging
-voyeurism
-voyeuristic
 vulcanisation
 vulcanise
 vulcanised
@@ -58673,7 +58520,6 @@ vulnerable
 vulnerably
 vulture
 vultures
-vulvae
 vuvuzela
 vuvuzelas
 vying
@@ -59971,13 +59817,7 @@ wolverines
 wolves
 woman
 womanhood
-womanise
-womanised
-womaniser
-womanisers
-womanises
 womanish
-womanising
 womankind
 womanlier
 womanliest

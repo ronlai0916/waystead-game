@@ -50,6 +50,7 @@ Shard format: {"word": entry, ...}; entry fields, each only when known:
   e  example
   l  lemma, when it is not the word itself ("running": l "run")
   i  British IPA, e.g. "/ˈrʌnɪŋ/"
+  d  (G9) the base word, when the meaning was made from it ("frothier": d "frothy")
 Words with nothing known are left out.
 """
 import argparse
@@ -603,6 +604,61 @@ def prune_lists(wn):
         print(f"{len(review)} from the starter/steady lists, kept for a person to decide: " + " ".join(review))
 
 
+# ---- G9: meanings from a base word -------------------------------------------------
+# Each rule: (ending, how to build the base, the base's part of speech, the sentence).
+def _bases(stem):
+    """The stem, and the stem with a doubled final consonant undone ("chatt" -> "chat")
+    or a dropped e put back ("mak" -> "make")."""
+    out = [stem]
+    if len(stem) > 2 and stem[-1] == stem[-2] and stem[-1] not in "aeiousz":
+        out.append(stem[:-1])
+    out.append(stem + "e")
+    return out
+
+DERIVE_RULES = [
+    # (ending, base candidates from the stem, base part of speech, template)
+    ("iest", lambda s: [s + "y"], {"adjective"}, "Most {b}."),
+    ("ier", lambda s: [s + "y"], {"adjective"}, "More {b}."),
+    ("ily", lambda s: [s + "y"], {"adjective"}, "In {a} {b} way."),
+    ("inesses", lambda s: [s + "y"], {"adjective"}, "The quality of being {b}."),
+    ("iness", lambda s: [s + "y"], {"adjective"}, "The quality of being {b}."),
+    ("nesses", lambda s: [s], {"adjective"}, "The quality of being {b}."),
+    ("ness", lambda s: [s], {"adjective"}, "The quality of being {b}."),
+    ("ly", lambda s: [s, s + "le"], {"adjective"}, "In {a} {b} way."),
+    ("est", _bases, {"adjective"}, "Most {b}."),
+    ("er", _bases, {"adjective"}, "More {b}."),
+    ("ied", lambda s: [s + "y"], {"verb"}, "Past tense of {b}."),
+    ("ed", lambda s: _bases(s) + [s + "e"], {"verb"}, "Past tense of {b}."),
+    ("ing", _bases, {"verb"}, "The -ing form of {b}."),
+    ("ies", lambda s: [s + "y"], {"noun", "verb"}, None),
+    ("es", lambda s: [s], {"noun", "verb"}, None),
+    ("s", lambda s: [s], {"noun", "verb"}, None),
+]
+
+
+def derive(w, meaning_of):
+    """(base, meaning) for a word from its base word, or None. meaning_of(b)
+    gives the base's entry only when it may be used (a safe meaning of its own)."""
+    for end, bases, kinds, template in DERIVE_RULES:
+        if not w.endswith(end) or len(w) - len(end) < 2:
+            continue
+        stem = w[: -len(end)]
+        for b in dict.fromkeys(bases(stem)):
+            if b == w or len(b) < 2:
+                continue
+            e = meaning_of(b)
+            if not e or e.get("p") not in kinds:
+                continue
+            if template is None:  # -s: a plural or a verb form
+                template = "More than one {b}." if e["p"] == "noun" else "A form of {b}, as in \u201cshe " + w + "\u201d."
+            m = e["m"].rstrip()
+            if m[:1].isupper() and not re.match(r"I\b|[A-Z]{2}", m):  # "A load" -> "a load"; not "I" or "DNA"
+                m = m[0].lower() + m[1:]
+            art = "an" if b[0] in "aeiou" and not b.startswith(("uni", "use", "usu", "uti", "eu", "one")) else "a"
+            return b, template.format(b=b, a=art) + " " + b + ": " + m
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[1])
     ap.add_argument("--sources", type=Path, default=Path.home() / ".cache" / "wordbright-meanings")
@@ -726,6 +782,26 @@ def main():
         else:
             from_oewn.discard(w)
 
+    # G9: a word with no meaning of its own gets one from its base word, when
+    # the base has a safe meaning of its own (not derived) and is in our lists
+    # (so not blocked): "frothier" -> "More frothy. frothy: full of froth."
+    # Derived entries carry "d" (the base word); the panel shows them like any other.
+    stars = {s["word"] for s in json.load(open(ROOT / "wordbright" / "site" / "data" / "star_words.json", encoding="utf-8"))}
+    before = {n: sum(1 for w in lst if "m" not in out.get(w, {}) and w not in stars) for n, lst in lists.items()}
+    derived = {}
+    for w in words:
+        if w in stars or "m" in out.get(w, {}):
+            continue
+        d = derive(w, lambda b: out.get(b) if b in british and "m" in out.get(b, {}) and "d" not in out.get(b, {}) else None)
+        if d and not unsafe(d[1]) and not BANNED_TERMS.search(d[1]):  # the base word is in the sentence too
+            base, meaning = d
+            e = out.setdefault(w, {})
+            e.update({"p": out[base].get("p", ""), "m": meaning, "d": base})
+            if not e["p"]:
+                del e["p"]
+            derived[w] = base
+    after = {n: sum(1 for w in lst if "m" not in out.get(w, {}) and w not in stars) for n, lst in lists.items()}
+
     # Spellbright's IPA for its own words (the game prefers it for Star words anyway).
     cur = json.load(open(CURRICULUM, encoding="utf-8"))
     for key in ("year_3_4", "year_5_6"):
@@ -774,6 +850,7 @@ def main():
         m = sum(1 for w in lst if "m" in out.get(w, {}))
         i = sum(1 for w in lst if "i" in out.get(w, {}))
         o = sum(1 for w in lst if w in from_oewn)
+        print(f"  words_{n}: no meaning {before[n]:,} before deriving, {after[n]:,} after ({before[n] - after[n]:,} from a base word)")
         print(f"words_{n}: {len(lst):,} words, meaning {m / len(lst):.1%} ({o:,} from OEWN), IPA {i / len(lst):.1%}")
 
 

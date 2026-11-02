@@ -72,6 +72,78 @@ welsh welshed welshes welshing fags fagged fagging butch butches queerness sissy
 bimbo hos fanny fannies sodding psycho psychos gimpy midget midgets redneck rednecks gypsy gypsies'''.split())
 OWN_BLOCK |= RON_APPROVED_STARTER_STEADY
 
+# G9 adult-theme review (2 Nov 2026): sexual and adult words, and harsh drug
+# slang, in every list; see wordlist/review-2026-11-02-adult.md. Star words
+# are never blocked.
+G9_ADULT = set('''adulterer adulterers adulteress adulteresses adulteries adulterine adulterous adulterously adultery algolagnia
+algolagnias anaphrodisia anaphrodisiac anaphrodisias antisex antisexual antisexualities antisexuality
+aphrodisia aphrodisiac aphrodisiacal aphrodisiacs bagnio bagnios bawd bawdier bawdies bawdiest bawdily
+bawdiness bawdries bawdry bawds bawdy bennies bordello bordellos carnality carnally catamite catamites
+cathouse cathouses cocotte cocottes coital coition coitions coitus concubinage concubinary concubine
+concubines concupiscence copulate copulated copulates copulating copulation copulatory courtesan courtesans
+crackhead crackheads crotchless cuckold cuckolded cuckolding cuckoldry cuckolds cums cybersex demimondaine
+demimondaines demimonde desexualisation desexualisations desexualise desexualised desexualises desexualising
+dopehead dopeheads druggie druggier druggies druggiest ecdysiast ecdysiasts eff effed effing effs erogenous
+erotica erotical erotically eroticisation eroticise eroticised eroticises eroticising eroticism eroticist
+eroticists erotization erotizations erotize erotized erotizes erotizing erotogenic erotomania erotomaniac
+erotomaniacs erotomanias extramarital fetishise fetishised fetishises fetishising fetishism fetishist
+fetishistic fetishistically fetishists foreplay fornicate fornicated fornicates fornicating fornication
+fornicator fornicators frotteur frotteurs ganja gigolo gigolos hashish heroinism heroinisms hornier horniest
+horniness horninesses hypersexual hypersexualities hypersexuality incestuous incestuously incestuousness
+junkie junkies junky kief kiefs kinkier kinkiest lapdance lapdancer lapdancers lapdances lapdancing lascivious
+lasciviously lasciviousness lech lecher lecherous lecherously lecherousness lechers lechery leches letch
+letches lewd lewder lewdest lewdly lewdness libidinal libidinally libidinous libidinously libidinousness
+libidinousnesses libido libidos licentious licentiously licentiousness lothario lotharios lustful lustfully
+lustfulness lustfulnesses magdalen magdalens meth methamphetamine molest molestation molested molester
+molesters molesting molests necrophile necrophiles necrophilia necrophiliac necrophiliacs necrophilic
+necrophilism necrophilisms necrophilist nymphet nymphets nymphomaniac nymphomaniacal nymphomaniacs onanism
+onanisms onanist onanists orgastic orgastically orgiast orgiastic orgiastically orgiasts orgies outercourse
+oversexed paederasty paramour paramours paraphilia paraphilias pederast pederasts pederasty phalli phallic
+phallically phallicism phallicisms phallicist phallicists phallism phallisms phallist phallists phallocentric
+phallocentrism phallus philander philandered philanderer philanderers philandering philanders pothead potheads
+priapic prostitutor prostitutors prurience pruriencies pruriency prurient psychosexual psychosexualities
+psychosexuality psychosexually pussies randier randiest raper rapers raunch raunches raunchier raunchiest
+raunchily raunchiness raunchy ravisher ravishers sadomasochism sadomasochist sadomasochistic sadomasochists
+salacious salaciously salaciousness salacity satyriasis scag scags sexier sexiest sexily sexiness sexological
+sexologist sexologists sexology sexpot sexpots sexualisation sexualisations sexualise sexualised sexualises
+sexualising shroom smuttily smuttiness sociosexual streetwalker streetwalkers striptease stripteased
+stripteaser stripteasers stripteases supersexualities supersexuality toke tokes undersexed unsexy voyeurism
+voyeuristic voyeuristically womanise womanised womaniser womanisers womanises womanising zoophilism
+zoophilisms'''.split())
+OWN_BLOCK |= G9_ADULT
+# G9, 2 Nov: those of them in the starter and steady lists, removed there too
+# by tools/build-meanings.py --prune-lists.
+RON_APPROVED_STARTER_STEADY |= set('''adulterer adulterers adulteress adulteresses adulteries adulterous adultery aphrodisiac aphrodisiacs bawdier
+bawdiest bawdily bawdiness bawdy bordello bordellos carnally coital coitus concubine concubines copulate
+copulated copulates copulating copulation courtesan courtesans cuckold cuckolded cuckolding cuckolds cybersex
+erogenous erotica erotically eroticism extramarital fetishism fetishist fetishistic fetishists foreplay
+fornicate fornicated fornicates fornicating fornication gigolo gigolos hashish hornier horniest incestuous
+junkie junkies kinkier kinkiest lascivious lasciviously lasciviousness lecher lecherous lecherously lechers
+lechery lewd lewder lewdest lewdly lewdness libidinous libido libidos licentious licentiously licentiousness
+lustful lustfully molest molestation molested molester molesters molesting molests necrophilia nymphomaniac
+nymphomaniacs orgiastic orgies oversexed paramour paramours pederast pederasts pederasty phalli phallic
+phallus philander philandered philanderer philanderers philandering philanders prurience prurient pussies
+randier randiest raunchier raunchiest raunchiness raunchy salacious salaciously salaciousness sexier sexiest
+sexily sexiness sexpot sexpots streetwalker streetwalkers striptease stripteased stripteases toke tokes
+voyeurism voyeuristic womanise womanised womaniser womanisers womanises womanising'''.split())
+OWN_BLOCK |= RON_APPROVED_STARTER_STEADY
+
+# G9, Ron 2 Nov: Ron's decisions on the G9 "Ron decides" list (groups 1, 2, 5,
+# 7, 13, 14, 18, 20 in review-2026-11-02-adult.md): blocked too.
+G9_RON_BLOCK = set('''blackamoor blackamoors clitoral clitorectomies clitorectomy clitoric clitoridectomies clitoridectomy colpitis
+colpitises colposcope colposcopes douche douches episiotomies episiotomy fetish fetishes genital genitalia
+genitalic genitally orchidectomies orchidectomy orchiectomies orchiectomy paleface palefaces scrota scrotal
+scrotum seducement seducements seducer seducers seducible seductress seductresses succuba succubas succubi
+succubus suicidal suicidally suicide suicided suicides suiciding suicidologies suicidology testicle testicles
+testicular vaginae vaginal vaginally vaginate vaginated vaginectomies vaginectomy vaginismus vaginismuses
+vaginitis vulvae vulval vulvar vulvate vulviform vulvitis vulvitises vulvovaginitides vulvovaginitis'''.split())
+G9_ADULT |= G9_RON_BLOCK
+OWN_BLOCK |= G9_RON_BLOCK
+# G9, Ron 2 Nov: those of them in the starter and steady lists.
+RON_APPROVED_STARTER_STEADY |= set('''clitoral douche douches fetish fetishes genital genitalia paleface palefaces scrota scrotum seducer seducers
+suicidal suicide suicides testicle testicles vaginae vaginal vulvae'''.split())
+OWN_BLOCK |= RON_APPROVED_STARTER_STEADY
+
 # Words whose every WordNet sense is offensive, found by tools/build-meanings.py --prune-lists.
 _WN_BLOCK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'wordnet_block.txt')
 if os.path.exists(_WN_BLOCK):

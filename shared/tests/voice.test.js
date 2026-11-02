@@ -3,8 +3,8 @@
 // and what speak() hands to speechSynthesis.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { rankVoices, pickVoice, voiceChoices, voiceTip, isNovelty, createSpeaker, saveVoice, savedVoice, VOICE_KEY, RATE } from '../voice/voice.js';
-import { voiceItemsHtml, tickedVoice, wireVoiceMenu, SAMPLE } from '../voice/menu.js';
+import { rankVoices, pickVoice, voiceChoices, voiceTip, isNovelty, createSpeaker, saveVoice, savedVoice, VOICE_KEY, RATE, britishCount, deviceKind, MORE_VOICE_STEPS } from '../voice/voice.js';
+import { voiceItemsHtml, tickedVoice, wireVoiceMenu, SAMPLE, MORE } from '../voice/menu.js';
 import { memoryStorage } from './fake-account.js';
 
 const v = (name, lang, extra = {}) => ({ name, lang, localService: true, default: false, voiceURI: name, ...extra });
@@ -154,4 +154,53 @@ test('wireVoiceMenu: hidden on a device that cannot speak; picking a voice saves
   assert.deepEqual(f.log.at(-1), { text: SAMPLE, voice: 'Daniel', lang: 'en-GB', rate: 0.9 });
   f.synth.setVoices(US_ONLY);
   assert.equal(tip.hidden, false, 'no British voice: the tip shows');
+});
+
+// ---- G9: "Add more British voices" -------------------------------------------------
+function voiceMenuFor(voices, nav) {
+  const f = fakeSynth(voices);
+  const storage = memoryStorage();
+  const sp = createSpeaker({ synth: f.synth, Utterance: f.Utterance, storage });
+  const items = [];
+  const list = {
+    html: '',
+    set innerHTML(h) { this.html = h; items.length = 0; for (const m of h.matchAll(/data-voice="([^"]*)"/g)) items.push({ dataset: { voice: m[1] }, attrs: {}, setAttribute(k, x) { this.attrs[k] = x; } }); },
+    querySelectorAll: () => items,
+    querySelector: (sel) => items.find((i) => sel.includes('"' + i.dataset.voice + '"')) || null,
+  };
+  const tip = { hidden: true, textContent: '' };
+  const menu = { querySelector: (s) => (s === '[data-voice-list]' ? list : s === '[data-voice-tip]' ? tip : null), querySelectorAll: () => [] };
+  return { vm: wireVoiceMenu(menu, sp, { storage, nav }), list, tip, storage, f };
+}
+const IPHONE = { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)' };
+const MAC = { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', maxTouchPoints: 0 };
+
+test('G9: one British voice: "Add more British voices" opens the steps for this device; two or more: never shown', () => {
+  const ONE = [v('Daniel', 'en-GB'), v('Samantha', 'en-US'), v('Bubbles', 'en-US')];
+  assert.equal(britishCount(ONE), 1);
+  const { vm, list, tip, storage } = voiceMenuFor(ONE, IPHONE);
+  assert.match(list.html, /data-voice="\+more"[^>]*aria-expanded="false"[^>]*>.*Add more British voices<\/li>/);
+  assert.equal(tip.hidden, true, 'closed at first');
+  vm.pick(MORE);
+  assert.equal(tip.hidden, false);
+  assert.equal(tip.textContent, 'Settings → Accessibility → Spoken Content → Voices → English → English (UK), then download Serena (Premium) or Kate (Enhanced).');
+  assert.match(list.html, /aria-expanded="true"/);
+  assert.equal(storage.getItem('sb.voice'), null, 'not a voice: nothing saved');
+  vm.pick(MORE);
+  assert.equal(tip.hidden, true, 'closes again');
+  const mac = voiceMenuFor(ONE, MAC);
+  mac.vm.pick(MORE);
+  assert.equal(mac.tip.textContent, 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom).');
+  const other = voiceMenuFor(ONE, { userAgent: 'Mozilla/5.0 (Windows NT 10.0)' });
+  other.vm.pick(MORE);
+  assert.equal(other.tip.textContent, MORE_VOICE_STEPS.other);
+  assert.equal(deviceKind({ userAgent: 'Mozilla/5.0 (Macintosh)', maxTouchPoints: 5 }), 'ios', 'an iPad says it is a Mac');
+  for (const two of [[v('Daniel', 'en-GB'), v('Kate', 'en-GB')], APPLE, CHROME_WIN]) {
+    const t = voiceMenuFor(two, IPHONE);
+    assert.doesNotMatch(t.list.html, /Add more British voices/);
+    assert.equal(t.tip.hidden, true);
+  }
+  const none = voiceMenuFor(US_ONLY, IPHONE);
+  assert.doesNotMatch(none.list.html, /Add more British voices/, 'none: the old one-line tip instead');
+  assert.equal(none.tip.hidden, false);
 });

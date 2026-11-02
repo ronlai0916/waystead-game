@@ -63,5 +63,6 @@ export function wordInfo(word, entry, star) {
       audio: star.audio ? SPELLBRIGHT_AUDIO + word + '.mp3' : '',
     };
   }
-  return { word, ipa: e.i || '', pos: e.p || '', meaning: e.m || '', example: e.e || '', lemma: e.l || '', audio: '' };
+  // derived (G9): the base word when the meaning was made from it ("frothier" -> "frothy").
+  return { word, ipa: e.i || '', pos: e.p || '', meaning: e.m || '', example: e.e || '', lemma: e.l || '', audio: '', derived: e.d || '' };
 }

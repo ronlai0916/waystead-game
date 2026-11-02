@@ -96,3 +96,48 @@ test('a saved game with a now-blocked word on the board still loads and plays', 
   assert.equal(res.action.type, 'play');
   assert.ok(act(next.state, res.action, e).ok);
 });
+
+// ---- G9: the adult-theme review (review-2026-11-02-adult.md) ------------------------
+const BUILD_LISTS = readFileSync(WORDLIST + 'tools/build_lists.py', 'utf8');
+const setOf = (name) => new RegExp(name + " = set\\('''([^']+)'''").exec(BUILD_LISTS)[1].trim().split(/\s+/);
+// The 347 of the review, then Ron's decisions (2 Nov): 72 more.
+const G9_REVIEW = setOf('G9_ADULT');
+const G9_RON = setOf('G9_RON_BLOCK');
+const G9 = [...G9_REVIEW, ...G9_RON];
+
+test('G9: the 419 adult-theme words (347, then 72 by Ron, 2 Nov) are in no tier, no list and no meaning shard', () => {
+  assert.equal(G9_REVIEW.length, 347);
+  assert.equal(G9_RON.length, 72);
+  assert.equal(new Set(G9).size, 419);
+  // Ron, 2 Nov: groups 1, 2, 5, 7, 13, 14, 18, 20.
+  for (const w of ['testicles', 'scrotum', 'genitalia', 'vaginal', 'vulvae', 'clitoral', 'vaginitis', 'episiotomy', 'seducer', 'seductress',
+    'fetish', 'fetishes', 'douche', 'succubus', 'suicide', 'suicidal', 'blackamoor', 'paleface']) assert.ok(G9_RON.includes(w), w);
+  for (const w of ['lecherously', 'cuckold', 'cuckolds', 'lewd', 'erotica', 'fornication', 'molested', 'junkie', 'crackhead', 'pussies', 'kinkier']) assert.ok(G9.includes(w), w);
+  assert.deepEqual(G9.filter((w) => isWord(w, words, 4)), []);
+  for (const name of LIST_IDS) {
+    const list = listWords(name);
+    assert.deepEqual(G9.filter((w) => list.has(w)), [], name);
+  }
+  const keys = new Set(JSON.parse(readFileSync(DATA + 'meanings/index.json', 'utf8')));
+  const shards = new Map();
+  assert.deepEqual(G9.filter((w) => {
+    const k = shardKey(w, keys);
+    if (!k) return false;
+    if (!shards.has(k)) shards.set(k, JSON.parse(readFileSync(DATA + `meanings/${k}.json`, 'utf8')));
+    return w in shards.get(k);
+  }), []);
+});
+
+test('G9: Star words are never blocked; the groups Ron kept (2 Nov) and kept words are still playable', () => {
+  const stars = JSON.parse(readFileSync(DATA + 'star_words.json', 'utf8')).map((s) => s.word);
+  assert.deepEqual(stars.filter((w) => G9.includes(w)), []);
+  assert.deepEqual(stars.filter((w) => !isWord(w, words, 4)), []);
+  // Ron decides (not applied) and kept words with an ordinary meaning first.
+  for (const w of ['contraception', 'seduce', 'seductive', 'lust', 'masochist', 'sadistic', 'transvestite', 'nudist', 'stripper', 'snog', 'frottage', 'amour', 'disembowel', 'mutilate', 'sozzled',
+    'bowel', 'testosterone', 'puberty', 'pregnant', 'adulterate', 'consummate', 'erection', 'mistress', 'tart', 'behead', 'crucifixion', 'morphine', 'gay']) {
+    assert.ok(isWord(w, words, 4), w);
+  }
+  assert.ok(existsSync(WORDLIST + 'review-2026-11-02-adult.md'));
+  const review = readFileSync(WORDLIST + 'review-2026-11-02-adult.md', 'utf8');
+  for (const h of ['## Blocked (419 words', '## Ron decides — decided by Ron, 2 Nov', '## Kept (with reasons)']) assert.ok(review.includes(h), h);
+});

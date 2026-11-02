@@ -196,3 +196,30 @@ test('G6b: a rare word with no meaning says so, kindly', async () => {
   assert.ok(html.includes('A rare word — it’s in our word list, but we don’t have its meaning yet.'));
   assert.doesNotMatch(html, /No meaning yet/);
 });
+
+// ---- G9: meanings from a base word ---------------------------------------------------
+test('G9: a word with no meaning of its own gets one from its base word, marked, and shown like any other', () => {
+  const e = entry('frothier');
+  assert.equal(e.d, 'frothy');
+  assert.match(e.m, /^More frothy\. frothy: /);
+  assert.match(entry('carefullest').m, /^Most careful\. careful: /);
+  assert.match(entry('unweariedly').m, /^In an unwearied way\./);
+  const info = wordInfo('frothier', e, null);
+  assert.equal(info.derived, 'frothy');
+  const html = resultsHtml('Pip', { words: [{ word: 'frothier', points: 12, main: true }], starBonus: 0, fullRack: 0, total: 12 }, new Map([['frothier', e]]), starWords);
+  assert.match(html, /<p class="wordrow__meaning" id="[^"]+" data-derived="frothy">More frothy\./);
+});
+
+test('G9: a derived meaning only ever comes from a base word in our lists with a meaning of its own', () => {
+  const list = new Set(readFileSync(ROOT + '../wordbright-design/wordlist/words_xlarge.txt', 'utf8').split('\n').filter(Boolean));
+  const bad = [];
+  let n = 0;
+  for (const [w, e] of allEntries()) {
+    if (!e.d) continue;
+    n++;
+    const base = allEntries().get(e.d);
+    if (!list.has(e.d) || !base || !base.m || base.d || !e.m.includes(e.d + ': ')) bad.push(w);
+  }
+  assert.ok(n > 5000, n + ' derived');
+  assert.deepEqual(bad, []);
+});

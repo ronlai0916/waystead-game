@@ -39,7 +39,7 @@ export function wordRowHtml(w, info, { by = '', speak = false, pop = false } = {
     + ICON.speaker + 'Hear<span class="sr"> ' + esc(w.word) + '</span></button></div>'
     + (info.meaning
       ? (pos ? '<p class="wordrow__pos small muted">' + pos + '</p>' : '')
-        + '<p class="wordrow__meaning" id="' + id + '">' + esc(info.meaning) + '</p>'
+        + '<p class="wordrow__meaning" id="' + id + '"' + (info.derived ? ' data-derived="' + esc(info.derived) + '"' : '') + '>' + esc(info.meaning) + '</p>'
         + '<button type="button" class="linkbtn wordrow__more" data-more aria-controls="' + id + '" aria-expanded="false" hidden>More</button>'
         + (info.example ? '<p class="example">' + esc(info.example) + '</p>' : '')
       : '<p class="wordrow__meaning muted">' + NO_MEANING + '</p>')
