@@ -191,7 +191,7 @@ test('G9: one British voice: "Add more British voices" opens the steps for this 
   const mac = voiceMenuFor(ONE, MAC);
   mac.vm.pick(MORE);
   assert.equal(mac.tip.textContent, 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom).');
-  const other = voiceMenuFor(ONE, { userAgent: 'Mozilla/5.0 (Windows NT 10.0)' });
+  const other = voiceMenuFor(ONE, { userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0' });
   other.vm.pick(MORE);
   assert.equal(other.tip.textContent, MORE_VOICE_STEPS.other);
   assert.equal(deviceKind({ userAgent: 'Mozilla/5.0 (Macintosh)', maxTouchPoints: 5 }), 'ios', 'an iPad says it is a Mac');
@@ -203,4 +203,31 @@ test('G9: one British voice: "Add more British voices" opens the steps for this 
   const none = voiceMenuFor(US_ONLY, IPHONE);
   assert.doesNotMatch(none.list.html, /Add more British voices/, 'none: the old one-line tip instead');
   assert.equal(none.tip.hidden, false);
+});
+
+test('G9: "Add more British voices" steps for each kind of device', () => {
+  const UA = {
+    ios: { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)' },
+    ipad: { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15', maxTouchPoints: 5 },
+    mac: { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', maxTouchPoints: 0 },
+    android: { userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/128.0 Mobile Safari/537.36' },
+    samsung: { userAgent: 'Mozilla/5.0 (Linux; Android 14; SM-S921B) AppleWebKit/537.36 SamsungBrowser/25.0 Chrome/121.0 Mobile Safari/537.36' },
+    windows: { userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0 Safari/537.36 Edg/128.0' },
+    chromeos: { userAgent: 'Mozilla/5.0 (X11; CrOS x86_64 15917.71.0) AppleWebKit/537.36 Chrome/128.0 Safari/537.36' },
+    linux: { userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0' },
+  };
+  const want = { ios: 'ios', ipad: 'ios', mac: 'mac', android: 'android', samsung: 'android', windows: 'windows', chromeos: 'chromeos', linux: 'other' };
+  for (const [k, nav] of Object.entries(UA)) assert.equal(deviceKind(nav), want[k], k);
+  assert.match(MORE_VOICE_STEPS.android, /^Settings → System → Languages & input → Text-to-speech output → Speech Services by Google → ⚙ → Install voice data → English \(United Kingdom\)\. On Samsung: Settings → General management → Text-to-speech\. Menu names differ between phone makers\.$/);
+  assert.match(MORE_VOICE_STEPS.windows, /Manage voices → Add voices → English \(United Kingdom\)\. Then restart the browser\. In Microsoft Edge, the UK Natural voices \(e\.g\. Sonia, Ryan\) are already available\.$/);
+  assert.equal(MORE_VOICE_STEPS.chromeos, 'Settings → Accessibility → Text-to-Speech → Speech engine → add English (UK).');
+  assert.match(MORE_VOICE_STEPS.ios, /Serena \(Premium\) or Kate \(Enhanced\)/);
+  assert.match(MORE_VOICE_STEPS.mac, /Manage Voices → English \(United Kingdom\)/);
+  // In the menu: one British voice, each device gets its own steps.
+  const ONE = [v('Google UK English Female', 'en-GB', { localService: false }), v('Google US English', 'en-US', { localService: false })];
+  for (const [k, nav] of Object.entries(UA)) {
+    const m = voiceMenuFor(ONE, nav);
+    m.vm.pick(MORE);
+    assert.equal(m.tip.textContent, MORE_VOICE_STEPS[want[k]], k);
+  }
 });

@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
-import { createMeanings, shardKey, wordInfo, SPELLBRIGHT_AUDIO } from '../site/js/meanings.js';
+import { createMeanings, shardKey, wordInfo, readIndex, SPELLBRIGHT_AUDIO } from '../site/js/meanings.js';
 import { resultsHtml, movedWords, LOOK_UP } from '../site/js/ui/results.js';
 import { starEntry } from '../site/js/ui/moves.js';
 import { newGame, play, act } from '../site/js/engine/game.js';
@@ -11,7 +11,8 @@ import { computerTurn } from '../site/js/ai/computer.js';
 import { DATA, ROOT, env, starWords, cellsWith, anchor } from './helpers.js';
 
 const MEANINGS = DATA + 'meanings/';
-const KEYS = new Set(JSON.parse(readFileSync(MEANINGS + 'index.json', 'utf8')));
+const INDEX = JSON.parse(readFileSync(MEANINGS + 'index.json', 'utf8'));
+const KEYS = readIndex(INDEX).keys;
 const shardOf = (w) => JSON.parse(readFileSync(MEANINGS + shardKey(w, KEYS) + '.json', 'utf8'));
 const entry = (w) => shardOf(w)[w] || null;
 
@@ -22,7 +23,7 @@ function allEntries() {
     all = new Map();
     for (const f of readdirSync(MEANINGS)) {
       if (f === 'index.json' || !f.endsWith('.json')) continue;
-      for (const [w, e] of Object.entries(JSON.parse(readFileSync(MEANINGS + f, 'utf8')))) all.set(w, e);
+      for (const [w, e] of Object.entries(JSON.parse(readFileSync(MEANINGS + f, 'utf8')))) if (w !== '~') all.set(w, e);
     }
   }
   return all;
@@ -163,7 +164,9 @@ test('meanings load on demand: nothing at first, then only the shards for the wo
   // The game's start-up data and the offline download never include meanings.
   const data = readFileSync(ROOT + 'site/js/data.js', 'utf8');
   assert.doesNotMatch(data.slice(data.indexOf('export async function gameEnv')), /meanings/);
-  assert.doesNotMatch(readFileSync(ROOT + 'site/sw.js', 'utf8'), /data\/meanings\/[a-z]/);
+  const sw = readFileSync(ROOT + 'site/sw.js', 'utf8');
+  assert.doesNotMatch(sw.replace("'data/meanings/index.json'", ''), /data\/meanings\/[a-z]/, 'no shard in the shell');
+  assert.match(sw, /'data\/meanings\/index\.json'/, 'G9: the index is cached with each version');
 });
 
 test('shards: small, sorted by first letters, and index.json lists every one', () => {
@@ -171,7 +174,8 @@ test('shards: small, sorted by first letters, and index.json lists every one', (
   assert.deepEqual(files.sort(), [...KEYS].sort());
   for (const k of KEYS) {
     const d = JSON.parse(readFileSync(MEANINGS + k + '.json', 'utf8'));
-    for (const w of Object.keys(d)) assert.equal(shardKey(w, KEYS), k, w);
+    for (const w of Object.keys(d)) if (w !== '~') assert.equal(shardKey(w, KEYS), k, w);
+    assert.equal(d['~'], INDEX.shards[k], 'each shard carries the stamp the index lists: ' + k);
   }
   assert.ok(existsSync(MEANINGS + 'LICENSE.txt'), 'the WordNet and Britfone notices travel with the data');
 });
@@ -215,11 +219,70 @@ test('G9: a derived meaning only ever comes from a base word in our lists with a
   const bad = [];
   let n = 0;
   for (const [w, e] of allEntries()) {
-    if (!e.d) continue;
+    if (!e.d || e.d.includes(' ')) continue; // "eke out": a phrase, tested below
     n++;
     const base = allEntries().get(e.d);
     if (!list.has(e.d) || !base || !base.m || base.d || !e.m.includes(e.d + ': ')) bad.push(w);
   }
   assert.ok(n > 5000, n + ' derived');
   assert.deepEqual(bad, []);
+});
+
+// ---- G9: a stale cache never hides a meaning ------------------------------------------
+// The server has today's files; the "cache" (service worker or browser) may hold
+// an older index or older shards. fresh: true goes past it to the server.
+function cachedMeanings({ index, shard = (k) => JSON.parse(readFileSync(MEANINGS + k + '.json', 'utf8')), online = true }) {
+  const calls = [];
+  const server = (path) => {
+    if (!online) throw new Error('offline');
+    const file = ROOT + 'site/' + path;
+    if (!existsSync(file)) throw new Error('404 ' + path);
+    return JSON.parse(readFileSync(file, 'utf8'));
+  };
+  const m = createMeanings(async (path, { fresh = false } = {}) => {
+    calls.push((fresh ? 'fresh ' : '') + path);
+    if (fresh) return server(path);
+    if (path.endsWith('index.json')) return index;
+    const k = path.slice('data/meanings/'.length, -'.json'.length);
+    const d = shard(k);
+    if (!d) throw new Error('404 ' + path);
+    return d;
+  });
+  return { m, calls };
+}
+const OLD_INDEX = [...KEYS].filter((k) => k !== 'ek' && !/^s[ac]./.test(k)).concat(['sa', 'sc']).sort(); // before G6b/G9 split sa and sc, and before "ek" existed
+const WANT = ['eke', 'roved', 'frothier', 'scale', 'sadly'];
+
+test('G9: an old cached index with new shards still finds EKE, ROVED and FROTHIER (fresh from the server when needed)', async () => {
+  for (const w of WANT) assert.ok(entry(w) && entry(w).m, w + ' has a meaning in the shards');
+  assert.equal(entry('eke').m.slice(0, 9), 'eke out: ', 'the phrase: eke -> eke out');
+  const { m, calls } = cachedMeanings({ index: OLD_INDEX, shard: (k) => (existsSync(MEANINGS + k + '.json') ? JSON.parse(readFileSync(MEANINGS + k + '.json', 'utf8')) : null) });
+  const got = await m.lookup(WANT);
+  assert.deepEqual(WANT.filter((w) => !got.get(w)), [], 'every word found');
+  assert.equal(got.get('frothier').d, 'frothy');
+  assert.equal(calls.filter((c) => c === 'fresh data/meanings/index.json').length, 1, 'the fresh index is fetched once');
+});
+
+test('G9: a new index with old cached shards (no stamp, or another stamp) fetches those shards afresh', async () => {
+  const stale = (k) => {
+    const d = JSON.parse(readFileSync(MEANINGS + k + '.json', 'utf8'));
+    delete d['~'];
+    for (const w of WANT) delete d[w]; // an old copy, before these meanings existed
+    return d;
+  };
+  const { m, calls } = cachedMeanings({ index: INDEX, shard: stale });
+  const got = await m.lookup(WANT);
+  assert.deepEqual(WANT.filter((w) => !got.get(w)), []);
+  assert.ok(calls.some((c) => c.startsWith('fresh data/meanings/fr')));
+  // A cached shard with the right stamp is used as it is: nothing fetched afresh.
+  const ok = cachedMeanings({ index: INDEX });
+  assert.ok((await ok.m.lookup(['roved'])).get('roved'));
+  assert.deepEqual(ok.calls.filter((c) => c.startsWith('fresh')), []);
+});
+
+test('G9: stale and offline: no meaning, but no error either', async () => {
+  const { m } = cachedMeanings({ index: OLD_INDEX, shard: () => null, online: false });
+  const got = await m.lookup(['eke', 'roved']);
+  assert.equal(got.size, 0);
+  assert.equal(wordInfo('constructor', null, null).meaning, '', 'and a word like "constructor" is never read from Object');
 });

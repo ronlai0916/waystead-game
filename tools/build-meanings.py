@@ -50,7 +50,10 @@ Shard format: {"word": entry, ...}; entry fields, each only when known:
   e  example
   l  lemma, when it is not the word itself ("running": l "run")
   i  British IPA, e.g. "/ˈrʌnɪŋ/"
-  d  (G9) the base word, when the meaning was made from it ("frothier": d "frothy")
+  d  (G9) the base word, when the meaning was made from it ("frothier": d "frothy",
+     "eke": d "eke out")
+Each shard also has "~": a stamp of its contents, listed again in index.json
+({"v": 2, "shards": {"ab": stamp, ...}}), so a shard and the index can be matched.
 Words with nothing known are left out.
 """
 import argparse
@@ -757,15 +760,49 @@ def main():
             break
         return entry
 
+    # G9: a word that both wordnets know only in a phrasal verb ("eke out").
+    PARTICLES = ("out", "up", "off", "on", "in", "away", "down", "over", "back", "through", "along", "about", "into")
+
+    def phrase_meaning(w):
+        stems = [w]
+        for end, adds in (("ied", ("y",)), ("ies", ("y",)), ("ed", ("", "e")), ("ing", ("", "e")), ("es", ("",)), ("s", ("",))):
+            if w.endswith(end) and len(w) - len(end) >= 2:
+                stems += [w[: -len(end)] + a for a in adds]
+                if end in ("ed", "ing") and len(w) - len(end) > 2 and w[-len(end) - 1] == w[-len(end) - 2]:
+                    stems.append(w[: -len(end) - 1])  # "eked" -> "eke"; "topped" -> "top"
+        for stem in dict.fromkeys(stems):
+            for net in nets:
+                for part in PARTICLES:
+                    key = stem + "_" + part
+                    if (key, "v") not in net[0].index:
+                        continue
+                    sense = first_safe_sense(net, key, "v", w)
+                    if not sense:
+                        continue
+                    phrase = stem + " " + part
+                    meaning = tidy(sense[1], british)
+                    meaning = meaning[0].lower() + meaning[1:] if meaning[:1].isupper() and not re.match(r"I\b|[A-Z]{2}", meaning) else meaning
+                    text = (phrase + ": " + meaning) if stem == w else ("A form of " + stem + ", as in \u201c" + phrase + "\u201d. " + phrase + ": " + meaning)
+                    if unsafe(text) or BANNED_TERMS.search(text):
+                        continue
+                    return {"p": "verb", "m": text, "d": phrase}
+        return None
+
     out = {}
     dropped = 0
     from_oewn = set()
+    from_phrase = set()
     for w in words:
         entry = meaning_from(nets[0], w)
         if "m" not in entry:  # G6b: Open English WordNet for the gaps
             entry = meaning_from(nets[1], w)
             if "m" in entry:
                 from_oewn.add(w)
+        if "m" not in entry:  # G9: only a phrase has it ("eke" -> "eke out")
+            ph = phrase_meaning(w)
+            if ph:
+                entry = ph
+                from_phrase.add(w)
         if w in unsafe_seen and "m" not in entry:
             dropped += 1
         if w in OWN_MEANINGS:
@@ -827,12 +864,18 @@ def main():
                 shards.setdefault(w[:3], {})[w] = shards[k].pop(w)
             if not shards[k]:
                 del shards[k]
+    # G9: each shard carries a stamp of its own contents ("~"), and index.json
+    # lists every shard with its stamp: {"v": 2, "shards": {"ab": stamp, ...}}.
+    # The game checks a shard against the index, so an old cached index never
+    # pairs silently with new shards (or the reverse): it fetches both afresh.
     sizes = {}
+    stamps = {}
     for k, d in sorted(shards.items()):
-        text = dump(d)
+        stamps[k] = hashlib.sha256(dump(d).encode()).hexdigest()[:10]
+        text = dump({**d, "~": stamps[k]})
         (OUT / f"{k}.json").write_text(text, encoding="utf-8")
         sizes[k] = len(text.encode())
-    (OUT / "index.json").write_text(json.dumps(sorted(shards)), encoding="utf-8")
+    (OUT / "index.json").write_text(json.dumps({"v": 2, "shards": stamps}, sort_keys=True), encoding="utf-8")
     # The notices go with every copy of the data, including the one on the web.
     (OUT / "LICENSE.txt").write_text("\n\n".join((ROOT / "wordbright" / f).read_text(encoding="utf-8")
                                               for f in ("LICENSE-WORDNET.txt", "LICENSE-OEWN.txt", "LICENSE-BRITFONE.txt")), encoding="utf-8")
@@ -841,7 +884,7 @@ def main():
     total = sum(sizes.values())
     big = sorted(sizes.items(), key=lambda kv: -kv[1])[:5]
     gz = sum(len(gzip.compress((OUT / f"{k}.json").read_bytes())) for k in sizes)
-    print(f"gzipped {gz / 1e6:.1f} MB; index.json {len(json.dumps(sorted(shards)))} bytes")
+    print(f"gzipped {gz / 1e6:.1f} MB; index.json {(OUT / 'index.json').stat().st_size} bytes; {len(from_phrase)} meanings from a phrase (eke -> eke out)")
     print(f"{len(out):,} words with something; {len(shards)} shards, {total / 1e6:.1f} MB "
           f"(median {sorted(sizes.values())[len(sizes) // 2] / 1e3:.1f} kB; largest "
           + ", ".join(f"{k} {v / 1e3:.0f} kB" for k, v in big) + ")")

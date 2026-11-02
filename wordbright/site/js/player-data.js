@@ -13,9 +13,12 @@
 //
 // MERGE (two devices, or a 409 from the account):
 //   · game, setup: the newest savedAt wins (a tie keeps this device's);
-//   · stats: finished games are merged by id (board + the game's seed), so a
-//     result is never lost and never counted twice; games, wins and best
-//     score are counted from the results, never added from two copies.
+//   · stats: finished games are merged by id, so a result is never lost and
+//     never counted twice; games, wins and best score are counted from the
+//     results, never added from two copies. G9: the id is the board and the
+//     game's own random id, made when it starts (config.gameId), so two
+//     different games can never share one; a game from before G9 keeps its
+//     old id (board + seed), as already saved.
 // SIZE: past 48 KB the oldest results are folded into one total (games,
 // wins, best score) until the value is under 40 KB. A saved game too big for
 // the account's 64 KB stays on this device only (account/sync.js).
@@ -60,7 +63,20 @@ export function mySeat(players, name) {
   return kids.length === 1 ? kids[0][1] : null;
 }
 
-export const resultId = (state) => state.board + '-' + num(state.config && state.config.seed);
+export const resultId = (state) => {
+  const c = state.config || {};
+  return typeof c.gameId === 'string' && /^[0-9a-f]{16,32}$/.test(c.gameId) ? state.board + '-g' + c.gameId : state.board + '-' + num(c.seed);
+};
+
+// G9: how a new game starts: a fresh random seed (never the last game's) and a
+// random game id. random(n) gives n random 32-bit numbers (crypto by default).
+export function freshStart(prev, random = (n) => globalThis.crypto.getRandomValues(new Uint32Array(n))) {
+  const last = prev && prev.config ? prev.config.seed : null;
+  let seed = random(1)[0];
+  for (let i = 0; seed === last && i < 8; i++) seed = random(1)[0];
+  const gameId = [...random(4)].map((x) => (x >>> 0).toString(16).padStart(8, '0')).join('');
+  return { seed, gameId };
+}
 
 export function resultOf(state, at, name) {
   const players = state.players.map((p) => ({

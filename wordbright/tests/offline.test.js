@@ -30,10 +30,19 @@ test('the shell lists every script, style sheet, data file, icon and character p
   for (const f of list) if (f !== './') assert.ok(existsSync(SITE + f), `${f} is in the shell but not on disk`);
 });
 
-test('fonts, videos and word meanings are not in the shell (cached on first use)', () => {
+test('fonts, videos and the meaning shards are not in the shell (cached on first use); the meanings index is (G9)', () => {
   assert.ok(shell().every((f) => !f.startsWith('assets/fonts/')));
   assert.ok(shell().every((f) => !/\.(webm|mp4)$/.test(f)));
-  assert.ok(shell().every((f) => !f.startsWith('data/meanings/')));
+  assert.deepEqual(shell().filter((f) => f.startsWith('data/meanings/')), ['data/meanings/index.json']);
+});
+
+test('G9: a ?fresh= request goes past the service worker; a new worker takes over at once and the page reloads', () => {
+  assert.match(sw, /if \(url\.searchParams\.has\('fresh'\)\) return;/);
+  assert.match(sw, /self\.skipWaiting\(\)/);
+  assert.match(sw, /self\.clients\.claim\(\)/);
+  const app = readFileSync(ROOT + 'site/js/app.js', 'utf8');
+  assert.match(app, /addEventListener\('controllerchange'/);
+  assert.match(app, /if \(!hadWorker\) return;/);
 });
 
 test('cache names: a VERSION starting "wordbright-", and only "wordbright-" caches are deleted', () => {

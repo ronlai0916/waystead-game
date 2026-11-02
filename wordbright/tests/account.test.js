@@ -12,6 +12,8 @@ import { memoryStorage, fakeAccount, manualTimers, CHILD_A, KID_A, KID_B } from 
 globalThis.localStorage = memoryStorage();
 const S = await import('../site/js/store.js');
 const D = await import('../site/js/player-data.js');
+// A new game as set-up saves it (G9: replace, the only way to put a different game in place).
+const startGame = (st) => S.saveGame(st, { replace: true });
 const { needsSignIn, isLocked } = await import('../site/js/gate.js');
 const { createApi } = await import('../site/js/account/api.js');
 const { createSync } = await import('../site/js/account/sync.js');
@@ -34,7 +36,7 @@ const SETUP = { board: 'junior', helper: true, level: 'year-4', seats: [{ type: 
 
 test('signed out: exactly today\'s keys and shapes (wb.game, wb.setup); no results are kept', () => {
   S.saveSetup(SETUP);
-  S.saveGame(game(7));
+  startGame(game(7));
   assert.deepEqual(localStorage.keys().sort(), ['wb.game', 'wb.setup']);
   assert.deepEqual(JSON.parse(localStorage.getItem('wb.setup')), SETUP);
   assert.equal(S.savedGame().state.config.seed, 7);
@@ -42,15 +44,15 @@ test('signed out: exactly today\'s keys and shapes (wb.game, wb.setup); no resul
 });
 
 test('signed in: the player\'s own keys; a finished game is one result, however often it is saved', () => {
-  S.saveGame(game(1, { over: false }));
+  startGame(game(1, { over: false }));
   const device = localStorage.getItem('wb.game');
   const sent = [];
   S.usePlayer(A, (k) => sent.push(k), 'Sam');
   assert.equal(S.savedGame(), null, 'a new player has no saved game');
   S.saveSetup(SETUP);
-  S.saveGame(game(5, { over: false }));
-  S.saveGame(game(5));
-  S.saveGame(game(5)); // the end screen saving again
+  startGame(game(5, { over: false }));
+  startGame(game(5));
+  startGame(game(5)); // the end screen saving again
   assert.equal(localStorage.getItem('wb.game'), device, 'the device\'s own game is untouched');
   assert.deepEqual(S.lastSetup(), SETUP);
   assert.deepEqual(sent, ['setup', 'game', 'game', 'stats', 'game']);
@@ -63,13 +65,13 @@ test('signed in: the player\'s own keys; a finished game is one result, however 
 
 test('two players on one device: their saved games, choices and results never mix', () => {
   S.usePlayer(A, null, 'Sam');
-  S.saveGame(game(10));
+  startGame(game(10));
   S.saveSetup(SETUP);
   S.usePlayer(B, null, 'Robin');
   assert.equal(S.savedGame(), null);
   assert.equal(S.lastSetup(), null);
   assert.deepEqual(S.playerStats(), { games: 0, wins: 0, best: 0 });
-  S.saveGame(game(11, { names: ['Robin', 'Pip'], winners: [1] }));
+  startGame(game(11, { names: ['Robin', 'Pip'], winners: [1] }));
   S.usePlayer(A, null, 'Sam');
   assert.equal(S.savedGame().state.config.seed, 10);
   assert.deepEqual(S.playerStats(), { games: 1, wins: 1, best: 120 });
@@ -145,7 +147,7 @@ test('a finished Wordbright game saves to the account (fake API), with the resul
   S.usePlayer(A, (k) => sync.changed(k), 'Sam');
   // Another device finished a game meanwhile.
   acct.put(A, 'wordbright', 'stats', D.recordResult(D.emptyStats(), game(100, { scores: [200, 10] }), 500, 'Sam'));
-  S.saveGame(game(101));
+  startGame(game(101));
   await timers.run();
   const stats = acct.get(A, 'wordbright', 'stats');
   assert.deepEqual(stats.results.map((r) => r.id).sort(), ['junior-100', 'junior-101']);
@@ -173,4 +175,17 @@ test('G6b: the router shows the gate card for every locked page, returning to it
   const app = readFileSync(fileURLToPath(new URL('../site/js/app.js', import.meta.url)), 'utf8');
   assert.match(app, /account\.gate\(path, isLocked\(path\)\)/);
   assert.match(app, /gateHtml\(gateCard\(answer, navigator\.onLine\), account\.signInHref\(\), \{ href: '#\/rules', label: 'How to play' \}\)/);
+});
+
+test('G9: a late save from the previous game (another tab, a slow computer move) never replaces the new game', () => {
+  S.usePlayer(A, null, 'Sam');
+  const g1 = game(31, { over: false });
+  const g2 = game(32, { over: false });
+  startGame(g1);
+  startGame(g2); // New game
+  assert.equal(S.saveGame(g1), false, 'the old game is refused');
+  assert.equal(S.savedGame().state.config.seed, 32);
+  S.saveGame({ ...g2, turn: 1 }); // the new game's own moves are saved as usual
+  assert.equal(S.savedGame().state.turn, 1);
+  S.usePlayer(null);
 });

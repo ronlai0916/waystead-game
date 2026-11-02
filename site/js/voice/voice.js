@@ -71,13 +71,19 @@ export function voiceTip(voices, nav = {}) {
 // the Voice menu when the device has only one British voice).
 export function deviceKind(nav = {}) {
   const ua = String(nav.userAgent || '');
-  if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && Number(nav.maxTouchPoints) > 1)) return 'ios';
+  if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && Number(nav.maxTouchPoints) > 1)) return 'ios'; // an iPad that says it is a Mac
+  if (/Android/.test(ua)) return 'android'; // before Linux: Android says Linux too
+  if (/CrOS/.test(ua)) return 'chromeos';
+  if (/Windows/.test(ua)) return 'windows';
   if (/Macintosh/.test(ua)) return 'mac';
   return 'other';
 }
 export const MORE_VOICE_STEPS = {
   ios: 'Settings → Accessibility → Spoken Content → Voices → English → English (UK), then download Serena (Premium) or Kate (Enhanced).',
   mac: 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom).',
+  android: 'Settings → System → Languages & input → Text-to-speech output → Speech Services by Google → ⚙ → Install voice data → English (United Kingdom). On Samsung: Settings → General management → Text-to-speech. Menu names differ between phone makers.',
+  windows: 'Settings → Time & language → Speech → Manage voices → Add voices → English (United Kingdom). Then restart the browser. In Microsoft Edge, the UK Natural voices (e.g. Sonia, Ryan) are already available.',
+  chromeos: 'Settings → Accessibility → Text-to-Speech → Speech engine → add English (UK).',
   other: 'Open this device’s speech or language settings and add another English (UK) voice.',
 };
 export const britishCount = (voices) => rankVoices(voices).filter(isBritish).length;

@@ -51,7 +51,17 @@ export function savedGame() {
   const g = read(player ? own(KEYS.game) : KEYS.game, null);
   return g && g.state && g.state.version === 1 && Array.isArray(g.state.players) ? g : null;
 }
-export function saveGame(state) {
+// G9: which game a saved state belongs to (its random id; before G9, its seed).
+const gameOf = (st) => (st && st.config ? st.config.gameId || 'seed:' + st.config.seed : null);
+
+// replace: true only when a new game starts (set-up). Otherwise a save never
+// overwrites a different game: a second tab, or a computer move that finishes
+// after the player has started a new game, cannot bring the old game back.
+export function saveGame(state, { replace = false } = {}) {
+  if (!replace) {
+    const cur = savedGame();
+    if (cur && state && gameOf(cur.state) && gameOf(cur.state) !== gameOf(state)) return false;
+  }
   const savedAt = new Date().toISOString();
   if (!player) { write(KEYS.game, { state, savedAt }); return; }
   writeValue(D.GAME, { state, savedAt });

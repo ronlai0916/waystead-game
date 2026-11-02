@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { isWord } from '../site/js/engine/words.js';
 import { newGame, act, play } from '../site/js/engine/game.js';
 import { computerTurn } from '../site/js/ai/computer.js';
-import { shardKey } from '../site/js/meanings.js';
+import { shardKey, readIndex } from '../site/js/meanings.js';
 import { env, words, boards, cellsWith, DATA, LIST_IDS } from './helpers.js';
 
 const WORDLIST = fileURLToPath(new URL('../../wordbright-design/wordlist/', import.meta.url));
@@ -52,7 +52,7 @@ test('known slurs are in none of the five word lists', () => {
 });
 
 test('known slurs have no meaning or pronunciation shard entry', () => {
-  const keys = new Set(JSON.parse(readFileSync(DATA + 'meanings/index.json', 'utf8')));
+  const keys = readIndex(JSON.parse(readFileSync(DATA + 'meanings/index.json', 'utf8'))).keys;
   const shards = new Map();
   const found = SLURS.filter((w) => {
     const k = shardKey(w, keys);
@@ -118,7 +118,7 @@ test('G9: the 419 adult-theme words (347, then 72 by Ron, 2 Nov) are in no tier,
     const list = listWords(name);
     assert.deepEqual(G9.filter((w) => list.has(w)), [], name);
   }
-  const keys = new Set(JSON.parse(readFileSync(DATA + 'meanings/index.json', 'utf8')));
+  const keys = readIndex(JSON.parse(readFileSync(DATA + 'meanings/index.json', 'utf8'))).keys;
   const shards = new Map();
   assert.deepEqual(G9.filter((w) => {
     const k = shardKey(w, keys);

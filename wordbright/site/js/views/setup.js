@@ -1,6 +1,7 @@
 // New-game screen: board, word helper, and 2–4 seats. Each seat is a child
 // (with a name) or a computer player (a character, which sets its strength),
 // and each seat has its own word level.
+import { freshStart } from '../player-data.js';
 import { LEVELS, level, STAR_YEARS } from '../engine/levels.js';
 import { MIN_PLAYERS, MAX_PLAYERS, newGame } from '../engine/game.js';
 import { BOARD_IDS, BOARD_MINUTES, boardJson, gameEnv } from '../data.js';
@@ -216,8 +217,10 @@ export function setup(main) {
     start.disabled = true;
     try {
       const env = await gameEnv(choice.board);
-      const seed = crypto.getRandomValues(new Uint32Array(1))[0];
-      saveGame(newGame({ board: choice.board, seed, level: seats[0].level, helper: choice.helper, players: players() }, env));
+      // G9: a fresh random seed and game id every time (never copied from the
+      // set-up choices or the last game): player-data.js freshStart().
+      const { seed, gameId } = freshStart(current && current.state);
+      saveGame(newGame({ board: choice.board, seed, gameId, level: seats[0].level, helper: choice.helper, players: players() }, env), { replace: true });
       location.hash = '#/play';
     } catch (err) {
       console.error(err);

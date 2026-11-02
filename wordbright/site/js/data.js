@@ -32,7 +32,8 @@ export const starWords = () => json('data/star_words.json');
 // plays (with its simpler leave) if the file cannot be read.
 const leaves = () => json('data/leaves.json').catch(() => ({}));
 // Word meanings: fetched a shard at a time, only when needed (not part of gameEnv).
-export const meanings = createMeanings((path) => fetchOk(path).then((r) => r.json()));
+// fresh: straight from the server (sw.js lets a ?fresh= request through; see meanings.js).
+export const meanings = createMeanings((path, { fresh = false } = {}) => fetchOk(fresh ? path + '?fresh=' + Date.now() : path).then((r) => r.json()));
 export const wordGraph = () => once('graph', () => fetchOk('data/words_all.dawg').then((r) => r.arrayBuffer()).then(loadWordGraph));
 
 // Everything the engine needs for one game: the board, tiles, Star words,

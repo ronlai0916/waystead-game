@@ -141,5 +141,13 @@ render();
 
 // Offline play (sw.js). Only over HTTPS, so local testing never sticks to an old cache.
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  // A new release's worker takes over at once (sw.js); this page still runs
+  // the old files, so load it again: now, or after the game in progress.
+  const hadWorker = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadWorker) return; // the first install: this page is already current
+    if (!(currentPath() === 'play')) location.reload();
+    else window.addEventListener('hashchange', () => location.reload(), { once: true });
+  });
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
