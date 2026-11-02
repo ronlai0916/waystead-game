@@ -3,10 +3,19 @@ import { loadData } from './data.js';
 import { wireThemeMenu } from './thememenu.js';
 import { stop } from './speech.js';
 import * as V from './views.js';
+import * as S from './store.js';
+import * as P from './progress-doc.js';
+import { startAccount } from './account/boot.js';
+import { signInUrl } from './account/config.js';
+import { isPlayPath, needsSignIn } from './gate.js';
 
 const main = document.getElementById('main');
 const backBtn = document.getElementById('back');
 let cleanup = null;
+let account = null;
+let drawn = false; // the word list is in and the first view is drawn
+
+const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?')[0];
 
 // Hash routes. :params are captured by name.
 const ROUTES = [
@@ -56,7 +65,11 @@ function render() {
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
   stop();
-  const path = decodeURI(location.hash.replace(/^#\/?/, '')).split('?')[0];
+  const path = currentPath();
+  if (account && needsSignIn(path, account.session.player)) {
+    location.assign(signInUrl(account.origin, location.href));
+    return;
+  }
   const found = match(path);
   backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = parentOf(path); };
@@ -81,8 +94,42 @@ function wireTheme() {
   wireThemeMenu(document.getElementById('theme'), document.getElementById('theme-menu'), document);
 }
 
+// The Waystead account: the player chip, and (signed in) this player's
+// progress and look, saved to their account. Signed out, nothing changes.
+function wireAccount() {
+  account = startAccount({
+    slot: document.getElementById('player-slot'),
+    game: 'spellbright',
+    usePlayer: (p, onChange) => S.usePlayer(p ? p.id : null, onChange),
+    docs: (id) => ({
+      [P.DOC_KEY]: {
+        read: () => (S.hasDoc(id) ? S.readDoc(id) : undefined),
+        write: (v) => S.writeDoc(P.normalise(v), id),
+        merge: P.merge,
+        prepare: (v) => P.trim(P.normalise(v), Date.now()),
+      },
+    }),
+    redraw: () => { if (drawn) render(); },
+    busy: () => isPlayPath(currentPath()),
+    applyLook: () => {
+      if (window.sbTheme) window.sbTheme.apply();
+      document.dispatchEvent(new Event('sb:look'));
+    },
+    importer: {
+      gameName: 'Spellbright',
+      has: S.hasDeviceProgress,
+      run: (id, device) => {
+        const here = S.deviceProgress();
+        S.writeDoc(P.merge(S.readDoc(id), P.fromDevice(here.progress, here.tricky, device, Date.now())), id);
+        return [P.DOC_KEY];
+      },
+    },
+  });
+}
+
 async function start() {
   wireTheme();
+  wireAccount();
   try {
     await loadData();
   } catch (e) {
@@ -92,6 +139,7 @@ async function start() {
     return;
   }
   window.addEventListener('hashchange', onNavigate);
+  drawn = true;
   render();
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     navigator.serviceWorker.register('sw.js').catch(() => {});

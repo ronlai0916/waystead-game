@@ -1,7 +1,8 @@
 // The look, saved on this device and shared with both games: the mode
 // ("sb.theme": "light" = Day, "dark" = Night, no key = Match device) and the
 // day style ("sb.dayStyle": "garden" or "paint"). The same functions as in
-// Spellbright's store.js; the home page keeps nothing else.
+// Spellbright's store.js; the home page keeps nothing else. A signed-in
+// player's look is also saved to their account (account/prefs.js hears "wa:look").
 const KEYS = { theme: 'sb.theme', dayStyle: 'sb.dayStyle' };
 
 export function getTheme() {
@@ -36,4 +37,5 @@ export function setDayStyle(s) {
 // theme-boot.js has already run (it is loaded before the page script).
 function applyTheme() {
   if (typeof window !== 'undefined' && window.sbTheme) window.sbTheme.apply();
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') window.dispatchEvent(new CustomEvent('wa:look'));
 }

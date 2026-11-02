@@ -237,3 +237,18 @@ a.game:hover { transform: translateY(-2px); border-color: var(--tone); }
 .foot { border-top: 1px solid var(--line); padding: 20px 0 28px; margin-top: 40px; }
 .foot__inner { display: grid; gap: 6px; font-size: 0.92rem; }
 .foot__small { color: var(--muted); font-size: 0.8rem; }
+
+/* ---- Player chip (Waystead account, B4b). Only existing tokens: the top
+   bar's own colours and fonts. The same block is in all three sites' CSS. -- */
+.playermenu { display: flex; align-items: center; }
+.playermenu:empty { display: none; }
+.playerchip--out { display: inline-flex; align-items: center; width: auto; gap: 8px; padding: 0 12px; color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.92rem; white-space: nowrap; }
+.playerchip--in { gap: 8px; padding: 0 12px 0 6px; }
+.playerchip__face { flex: none; display: block; width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.playerchip__initial { display: grid; place-items: center; background: var(--surface-2); color: var(--text); font-weight: 800; font-size: 0.9rem; }
+.playerchip__name { max-width: 12em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.playermenu .thememenu__item { color: var(--text); text-decoration: none; }
+@media (max-width: 899.98px) { .playerchip--in { padding: 0; justify-content: center; } .playerchip__name { display: none; } }
+@media (max-width: 599.98px) { .playerchip--out { width: 40px; padding: 0; justify-content: center; } .playerchip__text { display: none; } }
+.importq__who { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.playerchip__face--big { width: 56px; height: 56px; font-size: 1.4rem; }

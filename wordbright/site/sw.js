@@ -6,7 +6,7 @@
 // Without a font the game still works offline, in the device's own font.
 // Bump VERSION on every release so devices pick up the new files. Only caches
 // named "wordbright-…" are ever touched (Spellbright keeps "spellbright-…").
-const VERSION = 'wordbright-2026-11-02b';
+const VERSION = 'wordbright-2026-11-02d';
 
 const CHARACTERS = ['pip', 'ottie', 'bramble', 'fizz'].flatMap((name) =>
   ['portrait', 'thinking', 'happy', 'surprised'].flatMap((mood) =>
@@ -26,6 +26,17 @@ const SHELL = [
   'js/ai/hint.js',
   'js/ai/leave.js',
   'js/ai/worker.js',
+  'js/account/api.js',
+  'js/account/boot.js',
+  'js/account/chip.js',
+  'js/account/config.js',
+  'js/account/forget.js',
+  'js/account/importer.js',
+  'js/account/merge.js',
+  'js/account/player.js',
+  'js/account/prefs.js',
+  'js/account/session.js',
+  'js/account/sync.js',
   'js/app.js',
   'js/brand.js',
   'js/data.js',
@@ -38,7 +49,9 @@ const SHELL = [
   'js/engine/rules.js',
   'js/engine/score.js',
   'js/engine/words.js',
+  'js/gate.js',
   'js/pin.js',
+  'js/player-data.js',
   'js/store.js',
   'js/theme-boot.js',
   'js/ui/board.js',
@@ -87,7 +100,9 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== location.origin || !url.pathname.startsWith(new URL('./', location).pathname)) return;
+  // Never the Waystead account (its API, its avatars): those go to the network,
+  // and only the browser's own cache may keep a picture. Nor any /api path here.
+  if (url.origin !== location.origin || url.pathname.startsWith('/api/') || !url.pathname.startsWith(new URL('./', location).pathname)) return;
 
   // Pages: network first so a new release shows straight away; cache when offline.
   if (req.mode === 'navigate') {

@@ -5,8 +5,8 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 
 ## Hard constraints
 - Static only: HTML5, plain CSS (custom properties), vanilla ES modules. No framework, no build step, no npm runtime deps.
-- No backend, no accounts, no analytics, no third-party requests. Progress stays in localStorage (`sb.*` keys).
-- Content Security Policy is strict (`nginx/default.conf`): no inline `<script>`, no inline `style=""` attributes, no external hosts. Set styles from JS via `el.style` or classes.
+- No backend of our own, no analytics. The one other host is the Waystead account (B4b): `https://account.waystead.co.uk`, for sign-in and a signed-in player's progress (README "Waystead account"). Signed out, the games work exactly as before, with progress in localStorage under today's keys.
+- Content Security Policy is strict: no inline `<script>`, no inline `style=""` attributes, and no external host except the account (connect-src, img-src for avatars). It is in `nginx/default.conf` AND in `<meta>` tags in `hub/site/index.html` and `wordbright/site/index.html`: change both, or the browser blocks it. Set styles from JS via `el.style` or classes.
 - All paths are relative (the site is served under `/spellbright/`; the old `/hangman/` redirects).
 - British English in all copy.
 - No secrets in this repo, ever. Audio generation uses the gcloud login token, not an API key.
@@ -31,6 +31,15 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Fonts: garden Fredoka + Andika, paint Baloo 2 + Nunito, night Lexend + Atkinson Hyperlegible; Andika for IPA in every style. Never preload a font, and keep fonts out of the service-worker shell. Licences: `site/assets/fonts/licences/`.
 - Celebrations (`site/js/celebrate.js`): a word spelled and a chapter test passed. None with reduced motion (a still ring instead).
 - Tests: `node --test tests/*.test.js` (no npm packages).
+
+## Waystead account (B4b)
+- The client is `shared/account/` (API, player, session, sync, prefs, merge, chip, import question, boot). Each site serves a COPY (`site/js/account/`, `wordbright/site/js/account/`, `hub/site/home-assets/js/account/`): edit `shared/account/`, then `node tools/sync-shared.mjs`. `shared/tests/copies.test.js` fails on a stale copy.
+- Fetch with `credentials: 'include'` only. Never store, log or read a token, email or session id; the device keeps only `wa.player` = {id, name, avatar URL}.
+- Signed out: today's keys unchanged. Signed in: `<key>:<player id>` (Spellbright `sb.progress:<id>`; Wordbright `wb.game:`, `wb.setup:`, `wb.stats:`). Merge rules: `site/js/progress-doc.js`, `wordbright/site/js/player-data.js`, `shared/account/merge.js`. Results merge by id and counters are counted from them, never added.
+- Sign out goes through the account's `/signout`; back with `?signedout=1`, the device forgets that player (`forget.js`), keeping only unsent queued changes. A plain 401 keeps everything.
+- The service workers never handle cross-origin requests or `/api/` (account answers are never cached).
+- `REQUIRE_SIGN_IN` (G6) in `shared/account/config.js` stays `false` until Ron says otherwise.
+- Tests: `node --test shared/tests/` too.
 
 ## Workflow
 Build and STOP before commit. Ron reviews, commits and pushes, then pulls on the server.

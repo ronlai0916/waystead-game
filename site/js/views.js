@@ -515,11 +515,11 @@ export function progress(main) {
   };
   main.innerHTML = '<section class="wrap page">'
     + '<div class="pagehead"><span class="eyebrow">Progress</span><h1>How it\'s going</h1>'
-    + '<p class="muted">Progress is saved in this browser on this device only.</p></div>'
+    + '<p class="muted">' + (S.currentPlayer() ? 'Progress is saved to the player signed in, on every device they sign in on.' : 'Progress is saved in this browser on this device only.') + '</p></div>'
     + '<div class="settings">' + yearBlockHtml('y34') + yearBlockHtml('y56')
     + '<div class="card setting"><h2>Open every chapter</h2><p class="muted small">Normally a chapter opens when the one before it is passed. Turn this on to jump ahead.</p>'
     + '<label class="radios"><input type="checkbox" data-unlock' + (S.unlockAll() ? ' checked' : '') + '> Open all chapters</label></div>'
-    + '<div class="card setting"><h2>Start again</h2><p class="muted small">Clears chapter progress and tricky words in this browser.</p>'
+    + '<div class="card setting"><h2>Start again</h2><p class="muted small">' + (S.currentPlayer() ? 'Clears chapter progress and tricky words for the player signed in, on every device.' : 'Clears chapter progress and tricky words in this browser.') + '</p>'
     + '<div class="btnrow"><button type="button" class="btn btn--ghost" data-reset>Clear my progress</button></div></div>'
     + '</div></section>';
   applyMeters(main);
@@ -546,7 +546,7 @@ export function about(main) {
     + '<p>The look menu at the top (the sun or moon button) switches between Day · Sunny garden, Day · Paint box, Night and Match device (which follows this device\'s light or dark setting). The choice is shared with Wordbright, our word-tile game, which uses the same three styles. You can also pick the day style here:</p>'
     + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
     + '<h2>Privacy</h2>'
-    + '<p>There is no account and no sign-in. Progress is kept in this browser on this device and is never sent to us. There are no adverts, no tracking and no analytics. Clearing the browser\'s site data, or using another device, starts afresh.</p>'
+    + '<p>There are no adverts, no tracking and no analytics. You can play without an account: then progress and saved games stay in the browser on this device and are never sent to us. Signed in with a Waystead account, the player\'s progress, saved games and look are saved to that account too, so they follow the player to other devices. Each page asks account.waystead.co.uk whether someone is signed in; signed out, nothing else is sent. Signed out, clearing the browser\'s site data, or using another device, starts afresh.</p>'
     + '<h2>Who makes it</h2>'
     + '<p>Spellbright is made by <a href="https://waystead.co.uk">Waystead</a>. It is an independent project and is not affiliated with the Department for Education or any exam board.</p>'
     + '<h2>Fonts</h2>'

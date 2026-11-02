@@ -8,7 +8,8 @@ word list (213 words, English Appendix 1), at
 
 Static site: HTML + CSS + vanilla JS modules. No framework, no build step, no
 backend, no database, no secrets. Progress is kept in the browser
-(localStorage) on the child's device.
+(localStorage) on the child's device, and, for a player signed in with a
+Waystead account, in that account too (below).
 
 ```
 waystead-game/
@@ -193,6 +194,50 @@ chmod 644 /home/ubuntu/waystead-secrets/wordbright.htpasswd   # nginx in the con
 `docker-compose.yml` still mounts the file: if it is missing, Docker creates
 an empty folder in its place (harmless while no block uses it). To change the
 password, run the `printf` line again (no restart needed).
+
+## Waystead account (sign-in, B4b)
+
+Progress and the look can belong to the PLAYER rather than the device. Signed
+out, every game works exactly as before. The top bar of all three pages has a
+player chip: "Sign in to save progress" (to account.waystead.co.uk, and back
+here), or the player's picture and name with Switch player (an adult's
+session: `/play`), My account and Sign out.
+
+- **Who is playing** comes from `GET /api/me`: a child (slip or device code),
+  an adult playing as one of their children, or the adult themselves. The
+  device keeps only `wa.player` = { id, name, avatar URL }, so the chip and the
+  player's progress show at once, even offline.
+- **Keys.** Signed out: `sb.progress`, `sb.tricky`, `wb.game`, `wb.setup` as
+  before. Signed in: `sb.progress:<id>`, `wb.game:<id>`, `wb.setup:<id>`,
+  `wb.stats:<id>` (finished games), plus `wa.sync:<id>:<game>` (versions and
+  the queue) and `wa.prefs:<id>` (a look not yet sent). The look stays in
+  `sb.theme` / `sb.dayStyle` (no flash on load) and follows the player
+  through `/api/prefs`. `sb.unlockAll`, `wb.allowed` and `wb.pin` stay the
+  device's.
+- **Saving.** Each change is sent after a short pause; offline it waits and is
+  sent on `online`, when the page is hidden, or on the next visit. A 409 (a
+  newer copy elsewhere) is merged and sent again: test and game results merge
+  by id, so none is lost or counted twice; the saved Wordbright game and the
+  new-game choices go by the newest. Past 48 KB the oldest results are folded
+  into totals. A 401 drops to signed out without losing anything on the device.
+- **Signing out.** The chip's Sign out opens the account's `/signout` ("Sign out of
+  Waystead?"), which comes back with `?signedout=1`. If `/api/me` then says
+  nobody is signed in, this device forgets that player (`shared/account/forget.js`):
+  `sb.progress:<id>`, `wb.game:<id>`, `wb.setup:<id>`, `wb.stats:<id>`,
+  `wa.prefs:<id>`, `wa.import:<id>:*`, `wa.sync:<id>:*` and `wa.player` go, except
+  a game whose queue still has unsent changes (its `wa.sync` key and the values
+  it names stay, and are sent at the next sign-in). The parameter is then
+  removed from the URL. An expired session (a 401) keeps everything.
+- **Import.** The first time a player signs in on a device that has signed-out
+  progress: "Save this device's progress to <name>?" (Yes / Not now / Never on
+  this device), with their name and picture.
+- **G6.** `REQUIRE_SIGN_IN` in `shared/account/config.js` (off): on, Play sends
+  a signed-out player to sign in first.
+
+The client is `shared/account/`, copied into each site by
+`node tools/sync-shared.mjs` (the sites are separate roots and must work
+offline). Tests: `node --test shared/tests/` (a fake account API).
+On localhost the games look for the account at `http://localhost:3000`.
 
 ## Deploy (waystead-prod)
 

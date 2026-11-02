@@ -2,9 +2,10 @@
 // and audio are cached the first time they're used, and fetched in the
 // background once the new version is active.
 // Bump VERSION on every deploy so phones pick up the new files.
+// Account calls (account.waystead.co.uk) are never cached: see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-10-30c';
+const VERSION = 'spellbright-2026-11-02b';
 
 const SHELL = [
   './',
@@ -25,6 +26,19 @@ const SHELL = [
   'js/flower.js',
   'js/play.js',
   'js/views.js',
+  'js/progress-doc.js',
+  'js/gate.js',
+  'js/account/api.js',
+  'js/account/boot.js',
+  'js/account/chip.js',
+  'js/account/config.js',
+  'js/account/forget.js',
+  'js/account/importer.js',
+  'js/account/merge.js',
+  'js/account/player.js',
+  'js/account/prefs.js',
+  'js/account/session.js',
+  'js/account/sync.js',
   'data/curriculum.json',
   'data/assets.json',
   'manifest.webmanifest',
@@ -75,7 +89,9 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== location.origin) return;
+  // Never the Waystead account (its API, its avatars): those go to the network,
+  // and only the browser's own cache may keep a picture. Nor any /api path here.
+  if (url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
 
   // Pages: network first so a new deploy shows straight away; cache when offline.
   if (req.mode === 'navigate') {
