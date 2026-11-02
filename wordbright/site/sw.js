@@ -11,7 +11,7 @@
 // Without a font the game still works offline, in the device's own font.
 // Bump VERSION on every release so devices pick up the new files. Only caches
 // named "wordbright-…" are ever touched (Spellbright keeps "spellbright-…").
-const VERSION = 'wordbright-2026-11-02g';
+const VERSION = 'wordbright-2026-11-02h';
 
 const CHARACTERS = ['pip', 'ottie', 'bramble', 'fizz'].flatMap((name) =>
   ['portrait', 'thinking', 'happy', 'surprised'].flatMap((mood) =>
@@ -116,6 +116,8 @@ self.addEventListener('fetch', (event) => {
   // A ?fresh= request (meanings.js, when a cached index and shard do not
   // match) goes straight to the server and is never kept.
   if (url.searchParams.has('fresh')) return;
+  // The voice server's allow-list (G9b) is for the account service, not the game: never kept.
+  if (url.pathname.endsWith('/data/voice-allow.txt')) return;
 
   // Pages: network first so a new release shows straight away; cache when offline.
   if (req.mode === 'navigate') {

@@ -19,12 +19,16 @@ export function movedWords(score) {
 // One row. w: { word, points, star }; info: from wordInfo(); by: who made it (end screen).
 // A word in our list with no meaning in WordNet or Open English WordNet (G6b).
 export const NO_MEANING = 'A rare word — it’s in our word list, but we don’t have its meaning yet.';
+// G9b: never "rare" before the look-up has finished: a slow connection shows
+// this, and the meaning fills in when it arrives (fillRows).
+export const PENDING_MEANING = 'Finding the meaning…';
+export const FAILED_MEANING = 'The meaning didn’t load — check the connection, or use “Look it up”.';
 
-export function wordRowHtml(w, info, { by = '', speak = false, pop = false } = {}) {
+export function wordRowHtml(w, info, { by = '', speak = false, pop = false, pending = false, failed = false } = {}) {
   const id = 'wm' + (++ids);
   const hearable = !!info.audio || speak;
   const pos = info.pos ? esc(info.pos) + (info.lemma ? ', a form of “' + esc(info.lemma) + '”' : '') : '';
-  return '<li class="wordrow' + (w.star ? ' wordrow--star' : '') + '">'
+  return '<li class="wordrow' + (w.star ? ' wordrow--star' : '') + '" data-word="' + esc(w.word) + '"' + (pending && !info.meaning ? ' data-pending' : '') + '>'
     + '<div class="wordrow__head"><span class="wordrow__word" lang="en-GB">' + esc(w.word.toUpperCase()) + '</span>'
     + (w.star ? (pop ? '<span class="celebrate">' : '')
       + '<span class="plus5' + (pop ? ' plus5--pop' : '') + '" aria-label="Star word, 5 extra points">' + STAR_SVG + '+5</span>'
@@ -42,7 +46,7 @@ export function wordRowHtml(w, info, { by = '', speak = false, pop = false } = {
         + '<p class="wordrow__meaning" id="' + id + '"' + (info.derived ? ' data-derived="' + esc(info.derived) + '"' : '') + '>' + esc(info.meaning) + '</p>'
         + '<button type="button" class="linkbtn wordrow__more" data-more aria-controls="' + id + '" aria-expanded="false" hidden>More</button>'
         + (info.example ? '<p class="example">' + esc(info.example) + '</p>' : '')
-      : '<p class="wordrow__meaning muted">' + NO_MEANING + '</p>')
+      : '<p class="wordrow__meaning muted">' + (pending ? PENDING_MEANING : failed ? FAILED_MEANING : NO_MEANING) + '</p>')
     + '<a class="small wordrow__look" href="' + LOOK_UP + encodeURIComponent(w.word) + '" target="_blank" rel="noopener">Look it up'
     + '<span class="sr"> in the Cambridge Dictionary (opens in a new tab)</span>' + ICON.external + '</a>'
     + '</li>';
@@ -56,17 +60,30 @@ export function wordRowsHtml(words, entries, starWords, opts = {}) {
   }).join('') + '</ul>';
 }
 
-// The whole panel for one play.
-export function resultsHtml(name, score, entries, starWords) {
+// The whole panel for one play. pending: the look-up has not finished yet.
+export function resultsHtml(name, score, entries, starWords, { pending = false } = {}) {
   const extra = [];
   if (score.starBonus) extra.push(['Star words', '+' + score.starBonus]);
   if (score.fullRack) extra.push(['Full-rack bonus', '+' + score.fullRack]);
   return '<div class="card movecard results" aria-labelledby="results-title">'
     + '<h2 id="results-title">' + esc(name) + ' scored ' + score.total + '</h2>'
-    + wordRowsHtml(movedWords(score), entries, starWords, { speak: canSpeak(), pop: true })
+    + wordRowsHtml(movedWords(score), entries, starWords, { speak: canSpeak(), pop: true, pending })
     + '<ul class="wordlines">' + extra.map(([k, v]) => '<li class="wordline--bonus"><span class="wordline__word">' + k + '</span><span class="wordline__pts">' + v + '</span></li>').join('')
     + '<li class="wordline--total"><span class="wordline__word">Total</span><span class="wordline__pts">' + score.total + '</span></li></ul>'
     + '</div>';
+}
+
+// G9b: the meanings arrived after the panel was drawn: redraw the rows still
+// waiting (entries null: the look-up failed). The panel's focus stays put.
+export function fillRows(root, entries, starWords) {
+  root.querySelectorAll('[data-pending]').forEach((li) => {
+    const w = { word: li.dataset.word, points: null, star: false };
+    const pts = li.querySelector('.wordrow__pts');
+    if (pts) w.points = Number(pts.firstChild.textContent);
+    const html = wordRowHtml(w, wordInfo(w.word, entries ? entries.get(w.word) || null : null, null), { speak: canSpeak(), failed: !entries });
+    li.insertAdjacentHTML('afterend', html);
+    li.remove();
+  });
 }
 
 // Hear and More buttons. Returns a function that stops listening.

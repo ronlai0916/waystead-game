@@ -69,19 +69,22 @@ export function endView(main) {
   const stops = [];
   const wanted = [...made.keys()].concat(best ? [best.word] : []);
   if (wanted.length) {
-    Promise.all([starWords(), meanings.lookup(wanted).catch(() => new Map())]).then(([list, entries]) => {
+    // G9b: a failed look-up says so, not "a rare word".
+    Promise.all([starWords(), meanings.lookup(wanted).catch(() => null)]).then(([list, found]) => {
+      const entries = found || new Map();
+      const failed = !found;
       const box = main.querySelector('[data-stars]');
       if (!box) return;
       const speak = canSpeak();
       if (best) {
         const bestBox = main.querySelector('[data-best]');
         bestBox.innerHTML = '<span class="eyebrow">Best word</span>'
-          + wordRowsHtml([{ ...best, by: s.players[best.player].name }], entries, list, { speak });
+          + wordRowsHtml([{ ...best, by: s.players[best.player].name }], entries, list, { speak, failed });
         stops.push(wireRows(bestBox));
       }
       if (!made.size) return;
       box.innerHTML = '<h2>Star words made</h2>'
-        + wordRowsHtml([...made].map(([word, who]) => ({ word, star: true, points: null, by: s.players[who].name })), entries, list, { speak });
+        + wordRowsHtml([...made].map(([word, who]) => ({ word, star: true, points: null, by: s.players[who].name })), entries, list, { speak, failed });
       stops.push(wireRows(box));
       // Spellbright covers the Year 3–6 lists, so only offer it for those words.
       const inSpellbright = [...made.keys()].some((word) => {

@@ -102,7 +102,10 @@ OFFENSIVE_USAGE = {"obscenity", "vulgarism", "ethnic_slur", "disparagement", "pr
                    "swearword", "curse"}
 PRUNED = WORDLIST / "wordnet_block.txt"  # read by wordlist/tools/build_lists.py too
 
-BAD_USAGE = {"obscenity", "vulgarism", "ethnic_slur", "disparagement", "profanity", "slang", "slang_expression",
+# G9b: "slang" is not unsafe in itself ("batty", "baloney", and "corpse", whose
+# group of synonyms includes the slang "stiff"); a sexual or crude slang sense
+# is still caught by its wording, its topic, or the marks below.
+BAD_USAGE = {"obscenity", "vulgarism", "ethnic_slur", "disparagement", "profanity",
              "dirty_word", "smut", "swearword", "curse"}
 BAD_TOPIC = {"sex", "sexual_activity", "sexual_practice", "sexual_intercourse", "drug_of_abuse", "illegal_drug",
              "drug_abuse", "narcotic", "pornography", "prostitution", "erotica"}
@@ -126,6 +129,20 @@ homosexual homosexuals homosexuality orgy orgies orgiastic putz goddamn goddamne
 NAMES_IN_MEANINGS = {"jew", "jews", "mongol", "mongols", "hun", "huns", "welsh"}
 
 # Phrases that mark a sense as unsuitable even without a blocked word.
+# G9b: words that may appear in a definition shown to a child although they
+# are blocked as game words or listed above: they are innocent there ("horny
+# plates", "retards the ball", "offensive players", "(slang) crazy", "an
+# alkaloid narcotic drug", "between the stomach and the anus"). An insult is
+# still caught by MEANING_PHRASES ("offensive term for") and by "despicable"
+# and "contemptible", which WordNet uses for insults ("bum": "a person who is
+# deemed to be despicable or contemptible").
+TEXT_OK = {"offensive", "slang", "horny", "retards", "narcotic",
+           "narcotics", "opium", "opiate", "opiates", "anus", "anal", "rectum", "rectal", "buttocks",
+           "torture", "tortured", "nudity"}
+# "sex" only as biology: "of either sex", "both sexes" (the token check sees the rest).
+SAFE_SEX = re.compile(r"\b(?:either|both|each|one|opposite|same|other|male|female|the two) sex(?:es)?\b|\bsexes\b"
+                      r"|\bregardless of (?:\w+ )?sex\b|\b(?:age|and|or) sex\b|\bsex (?:and|or) age\b")
+
 MEANING_PHRASES = re.compile(r"\b(offensive (term|name|word)|term of (abuse|contempt)|used as a term|ethnic slur|"
                              r"informal term for (a|the) (penis|breast|buttocks)|street name for|make love|making love|made love|lovemaking)\b")
 
@@ -707,10 +724,13 @@ def main():
     words = lists["xlarge"]
     british = set(words)
 
+    blocked = blocked - TEXT_OK
+
     def unsafe(text):
         low = text.lower()
         if MEANING_PHRASES.search(low):
             return True
+        low = SAFE_SEX.sub(" ", low)
         for tok in re.findall(r"[a-z]+", low):
             if tok in blocked or any(r in tok for r in roots):
                 return True
@@ -718,13 +738,14 @@ def main():
 
     unsafe_seen = set()  # words with a sense the child-safety filter dropped
 
-    def first_safe_sense(net, lemma, p, w):
+    def first_safe_sense(net, lemma, p, w, caps=False):
         wn, bad_usage, bad_topic = net
         for off in wn.senses(lemma, p):
             ss_type, ptrs, gloss, members = wn.synset(off, p)
             # WordNet's index is lower case, so "it" also finds IT and "us" the US:
-            # a sense counts only if the word is written in lower case there.
-            if lemma not in members:
+            # a sense counts only if the word is written in lower case there
+            # (caps, G9b: or in any case, for a word that has no other sense).
+            if lemma not in members and not (caps and lemma in (m.lower() for m in members)):
                 continue
             if any(sym == ";u" and (o, q) in bad_usage or sym == ";c" and (o, q) in bad_topic for sym, o, q in ptrs):
                 unsafe_seen.add(w)
@@ -737,13 +758,13 @@ def main():
             return POS[ss_type], meaning, examples
         return None
 
-    def meaning_from(net, w):
+    def meaning_from(net, w, caps=False):
         wn = net[0]
         entry = {}
         cands = [(wn.weight(l, p) * (1.2 if l == w else 1), l, p) for p in POS_FILES for l in wn.lemmas(w, p)]
         cands.sort(key=lambda c: -c[0])
         for _, lemma, p in cands:
-            s = first_safe_sense(net, lemma, p, w)
+            s = first_safe_sense(net, lemma, p, w, caps)
             if not s:
                 continue
             pos, meaning, examples = s
@@ -792,12 +813,17 @@ def main():
     dropped = 0
     from_oewn = set()
     from_phrase = set()
+    from_caps = set()
     for w in words:
         entry = meaning_from(nets[0], w)
         if "m" not in entry:  # G6b: Open English WordNet for the gaps
             entry = meaning_from(nets[1], w)
             if "m" in entry:
                 from_oewn.add(w)
+        if "m" not in entry:  # G9b: only capitalised senses ("antarctic", "druid", "amen")
+            entry = meaning_from(nets[0], w, caps=True) or meaning_from(nets[1], w, caps=True)
+            if "m" in entry:
+                from_caps.add(w)
         if "m" not in entry:  # G9: only a phrase has it ("eke" -> "eke out")
             ph = phrase_meaning(w)
             if ph:

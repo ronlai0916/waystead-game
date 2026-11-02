@@ -8,6 +8,12 @@ once, tagged with the smallest list it is in (its "tier": 0 starter,
 1 steady, 2 full, 3 large, 4 xlarge). The game loads only this file.
 With --single-lists it also writes one DAWG per list as words_<list>.dawg
 (the older format below; not shipped since C3a).
+Also writes voice-allow.txt (G9b): every playable word (the xlarge list, after
+every blocklist; not the few that contain another game's name) and
+Spellbright's curriculum words, one per line, sorted,
+lower case, then a last line "sha256:<hex>", the SHA-256 of all the lines
+above it (each with its "\n"). The Waystead account's voice server reads it
+from the public site to know which words it may record. Not cached by sw.js.
 Also copies the three boards and tiles.json, writes star_words.json with one
 entry per word ("years" is a list, e.g. busy: ["2", "3-4"]; Spellbright's words
 also get "ipa", "pos" and "audio": true when its MP3 exists), and puts the two
@@ -47,7 +53,9 @@ words_all.dawg ("WBG2"), all little-endian:
     bits 12-31 index of the child node's first edge (0 = no child)
 """
 import gzip
+import hashlib
 import json
+import re
 import shutil
 import struct
 import sys
@@ -366,6 +374,31 @@ def main():
         shutil.copyfile(WORDLIST / f, ROOT / "wordbright" / f)
     print(f"Star words: {len(stars)}")
     print(f"Copied boards, tiles and Star words to {OUT.relative_to(ROOT)}/, licences to wordbright/")
+    write_voice_allow(tiers)
+
+
+def voice_allow_text(words):
+    """The voice allow-list: sorted unique lower-case words, then sha256 of those lines."""
+    lines = sorted({w.strip().lower() for w in words if w.strip()})
+    bad = [w for w in lines if not re.fullmatch(r"[a-z]{1,20}", w)]
+    if bad:
+        sys.exit(f"voice-allow.txt: not a-z words: {bad[:5]}")
+    body = "".join(w + "\n" for w in lines)
+    return body + "sha256:" + hashlib.sha256(body.encode("ascii")).hexdigest() + "\n"
+
+
+# Other games' names never appear in Wordbright's files (PLAN.md section 2;
+# wordbright/tests/names.test.js), so the few playable words that contain one
+# are left out: the device's voice says them instead.
+NAMES = re.compile("|".join(a + b for a, b in [("scr", "abble"), ("bin", "go")]))
+
+
+def write_voice_allow(tiers):
+    curriculum = json.loads((ROOT / "site" / "data" / "curriculum.json").read_text(encoding="utf-8"))
+    spell = [e["word"] for key in ("year_3_4", "year_5_6") for ch in curriculum[key]["chapters"] for e in ch["words"]]
+    text = voice_allow_text([w for w in list(tiers) + spell if not NAMES.search(w.lower())])
+    (OUT / "voice-allow.txt").write_text(text, encoding="ascii")
+    print(f"voice-allow.txt: {text.count(chr(10)) - 1:,} words ({len(text.encode()) / 1e6:.1f} MB), {text.splitlines()[-1][:20]}…")
 
 
 if __name__ == "__main__":

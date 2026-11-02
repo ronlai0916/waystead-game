@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createMeanings, shardKey, wordInfo, readIndex, SPELLBRIGHT_AUDIO } from '../site/js/meanings.js';
-import { resultsHtml, movedWords, LOOK_UP } from '../site/js/ui/results.js';
+import { resultsHtml, movedWords, LOOK_UP, fillRows, PENDING_MEANING, FAILED_MEANING, NO_MEANING } from '../site/js/ui/results.js';
 import { starEntry } from '../site/js/ui/moves.js';
 import { newGame, play, act } from '../site/js/engine/game.js';
 import { computerTurn } from '../site/js/ai/computer.js';
@@ -55,8 +55,11 @@ test('British IPA where known, in Spellbright\'s symbols', () => {
 });
 
 test('child-safety filter: blocked senses are removed, and a word with none left has no meaning', () => {
-  const bad = /\b(sex|sexual|sexually|penis|vagina|genitals?|erotic|copulate|cocaine|heroin|marijuana|offensive|derogatory|disparaging|slur|obscene|vulgar|expletives?|pejorative)\b/i;
-  const hits = [...allEntries()].filter(([, e]) => bad.test((e.m || '') + ' ' + (e.e || ''))).map(([w]) => w);
+  // G9b: "sex" only as biology ("of either sex", "both sexes"); "offensive" only
+  // where it is not an insult ("offensive players"; insults are "offensive term").
+  const SAFE_SEX = /\b(?:either|both|each|one|opposite|same|other|male|female|the two) sex(?:es)?\b|\bsexes\b|\bregardless of (?:\w+ )?sex\b|\b(?:age|and|or) sex\b|\bsex (?:and|or) age\b/gi;
+  const bad = /\b(sex|sexual|sexually|penis|vagina|genitals?|erotic|copulate|cocaine|heroin|marijuana|offensive (?:term|name|word)|derogatory|disparaging|slur|obscene|vulgar|expletives?|pejorative)\b/i;
+  const hits = [...allEntries()].filter(([, e]) => bad.test(((e.m || '') + ' ' + (e.e || '')).replace(SAFE_SEX, ' '))).map(([w]) => w);
   assert.deepEqual(hits.slice(0, 10), []);
   // Every sense of "negroid" is marked as offensive: no meaning, nothing to show.
   assert.ok(!entry('negroid') || !entry('negroid').m);
@@ -285,4 +288,41 @@ test('G9: stale and offline: no meaning, but no error either', async () => {
   const got = await m.lookup(['eke', 'roved']);
   assert.equal(got.size, 0);
   assert.equal(wordInfo('constructor', null, null).meaning, '', 'and a word like "constructor" is never read from Object');
+});
+
+// ---- G9b: common words are never "rare"; drop only unsafe senses -------------------
+test('G9b: these common words always have a meaning', () => {
+  const must = ['sin', 'god', 'church', 'war', 'kill', 'die', 'drug', 'beer', 'wine', 'bomb', 'gun', 'blood', 'hell', 'devil'];
+  assert.deepEqual(must.filter((w) => !(entry(w) && entry(w).m)), []);
+});
+
+test('G9b: a sense is dropped only when it is unsafe, not because a word in it looks like a blocked one', () => {
+  // Once "rare": a definition with "horny plates", "offensive players", "(slang)", "both sexes", a slang synonym, or only a capitalised sense.
+  for (const w of ['armadillo', 'baleen', 'backfield', 'abhorrent', 'backspin', 'batty', 'daft', 'bonkers', 'baloney', 'corpse', 'cadaver',
+    'cattle', 'reindeer', 'checkup', 'youngster', 'morphine', 'intestine', 'antarctic', 'druid', 'amen', 'eureka']) {
+    assert.ok(entry(w) && entry(w).m, w);
+  }
+  assert.match(entry('armadillo').m, /horny plates/);
+  // Every sense unsafe: still no meaning.
+  for (const w of ['lesbian', 'bidet']) assert.ok(!entry(w) || !entry(w).m, w);
+  assert.equal(entry('bum').m, 'A vagrant.', 'the insult sense is still dropped');
+});
+
+// The panel: a slow look-up is "Finding the meaning…" and fills in; a failed one says so.
+test('G9b: a slow meaning shows "Finding the meaning…" and fills in when it arrives; never "rare" before then', () => {
+  const score = { words: [{ word: 'sin', points: 3, main: true }, { word: 'ren', points: 3, main: false }], starBonus: 0, fullRack: 0, total: 6 };
+  const html = resultsHtml('Pip', score, new Map(), starWords, { pending: true });
+  assert.ok(html.includes(PENDING_MEANING));
+  assert.ok(!html.includes(NO_MEANING), 'not "rare" while waiting');
+  // A tiny DOM for fillRows: rows with data-pending are replaced in place.
+  const rows = [...html.matchAll(/<li class="wordrow" data-word="(\w+)" data-pending>/g)].map((m) => m[1]);
+  assert.deepEqual(rows, ['sin', 'ren']);
+  const replaced = [];
+  const li = (word) => ({ dataset: { word }, querySelector: () => ({ firstChild: { textContent: '3' } }), insertAdjacentHTML: (_where, h) => replaced.push(h), remove() {} });
+  fillRows({ querySelectorAll: () => rows.map(li) }, new Map([['sin', entry('sin')]]), starWords);
+  assert.match(replaced[0], /Estrangement from god/);
+  assert.ok(replaced[1].includes(NO_MEANING), 'REN: rare, once the look-up has finished');
+  replaced.length = 0;
+  fillRows({ querySelectorAll: () => rows.map(li) }, null, starWords);
+  assert.ok(replaced.every((h) => h.includes(FAILED_MEANING)), 'failed: says so, not "rare"');
 });

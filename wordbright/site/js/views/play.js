@@ -12,7 +12,7 @@ import { checkPin } from '../pin.js';
 import { boardHtml, legendHtml, squareInner, squareLabel, squareClass, tileHtml } from '../ui/board.js';
 import { enableDrag } from '../ui/drag.js';
 import { wordsHtml, scoresHtml } from '../ui/moves.js';
-import { resultsHtml, wireRows } from '../ui/results.js';
+import { resultsHtml, wireRows, fillRows } from '../ui/results.js';
 import { askComputer, askHint } from '../ai/client.js';
 import { character, pictureHtml } from '../ai/characters.js';
 
@@ -78,21 +78,25 @@ export function playView(main) {
     return '<div class="card movecard" aria-live="polite">' + body + '</div>';
   }
 
-  // Meanings for a move's words: whatever has arrived after a short wait.
+  // Meanings for a move's words: { entries, later }. After a short wait the
+  // panel is drawn with what has arrived; later resolves with the rest (G9b:
+  // a slow shard is "Finding the meaning…", never "rare"), or null if it failed.
   function entriesFor(score) {
+    const look = meanings.lookup(score.words.map((w) => w.word));
     const late = new Promise((resolve) => setTimeout(() => resolve(null), MEANING_WAIT_MS));
-    return Promise.race([meanings.lookup(score.words.map((w) => w.word)), late])
-      .catch(() => null).then((m) => m || new Map());
+    return Promise.race([look.then((m) => ({ entries: m, later: null }), () => ({ entries: new Map(), later: Promise.resolve(null), failed: true })), late])
+      .then((r) => r || { entries: new Map(), later: look.catch(() => null) });
   }
 
   // The results panel for a play, then the button on. The heading takes focus,
   // so a screen reader reads the words and Tab goes Hear … Look it up … the button.
   async function showResults(box, done, label, onNext) {
-    const entries = await entriesFor(done.score);
+    const { entries, later } = await entriesFor(done.score);
     if (!alive || !box.isConnected) return;
-    box.innerHTML = resultsHtml(done.name, done.score, entries, env.starWords)
+    box.innerHTML = resultsHtml(done.name, done.score, entries, env.starWords, { pending: !!later })
       + '<button type="button" class="btn btn--primary" data-next>' + label + ICON.arrow + '</button>';
     stops.push(wireRows(box));
+    if (later) later.then((m) => { if (alive && box.isConnected) fillRows(box, m, env.starWords); });
     box.querySelector('[data-next]').addEventListener('click', onNext);
     const h = box.querySelector('#results-title');
     h.tabIndex = -1;
