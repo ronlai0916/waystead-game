@@ -5,7 +5,7 @@
 // Account calls (account.waystead.co.uk) are never cached: see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-02b';
+const VERSION = 'spellbright-2026-11-02c';
 
 const SHELL = [
   './',
@@ -33,12 +33,15 @@ const SHELL = [
   'js/account/chip.js',
   'js/account/config.js',
   'js/account/forget.js',
+  'js/account/gate.js',
   'js/account/importer.js',
   'js/account/merge.js',
   'js/account/player.js',
   'js/account/prefs.js',
   'js/account/session.js',
   'js/account/sync.js',
+  'js/voice/menu.js',
+  'js/voice/voice.js',
   'data/curriculum.json',
   'data/assets.json',
   'manifest.webmanifest',

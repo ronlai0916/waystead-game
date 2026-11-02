@@ -231,12 +231,24 @@ session: `/play`), My account and Sign out.
 - **Import.** The first time a player signs in on a device that has signed-out
   progress: "Save this device's progress to <name>?" (Yes / Not now / Never on
   this device), with their name and picture.
-- **G6.** `REQUIRE_SIGN_IN` in `shared/account/config.js` (off): on, Play sends
-  a signed-out player to sign in first.
+- **G6.** `REQUIRE_SIGN_IN` in `shared/account/config.js` (on since 2 Nov 2026).
+  Signed out, a play route (Spellbright: Quick game, Practice, Test, Pick words →
+  Play; Wordbright: New game, Continue game, a board card) shows "Sign in to
+  play", with a Sign in button back to that game (`shared/account/gate.js`). The
+  home pages, chapter and study pages, How to play and For parents stay open.
+  A player cached on the device plays offline, and when the account is down
+  (network error or 5xx), with progress queued. Nobody cached and no account:
+  "You need to be online the first time you sign in" (or "Sign-in isn't
+  answering"). A 401 mid-game: that game is finished first; the next one asks.
+- **Voice (G8).** "Hear" uses the device's best British voice
+  (`shared/voice/voice.js`: en-GB, Premium/Enhanced/Natural, known good, never
+  novelty voices; rate 0.9), or the one chosen under Voice in the look menu:
+  `sb.voice`, shared by both games and saved with the look in `/api/prefs`
+  (as `prefs.voice`). With no British voice, a tip on adding one.
 
-The client is `shared/account/`, copied into each site by
-`node tools/sync-shared.mjs` (the sites are separate roots and must work
-offline). Tests: `node --test shared/tests/` (a fake account API).
+The account client is `shared/account/` and the voice is `shared/voice/`, copied
+into each site by `node tools/sync-shared.mjs` (the sites are separate roots and
+must work offline). Tests: `node --test shared/tests/` (a fake account API).
 On localhost the games look for the account at `http://localhost:3000`.
 
 ## Deploy (waystead-prod)

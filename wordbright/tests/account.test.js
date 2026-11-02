@@ -5,6 +5,8 @@
 // Run: node --test wordbright/tests/
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { memoryStorage, fakeAccount, manualTimers, CHILD_A, KID_A, KID_B } from '../../shared/tests/fake-account.js';
 
 globalThis.localStorage = memoryStorage();
@@ -153,11 +155,18 @@ test('a finished Wordbright game saves to the account (fake API), with the resul
 });
 
 // ---- G6 -----------------------------------------------------------------------------
-test('REQUIRE_SIGN_IN off: signed out plays; on: New game and Continue game send a signed-out player to sign in', () => {
+test('REQUIRE_SIGN_IN on (G6): New game and Continue game need a signed-in player; the other pages never', () => {
   for (const p of ['new', 'play']) {
-    assert.equal(needsSignIn(p, null), false, 'off by default: ' + p);
-    assert.equal(needsSignIn(p, null, true), true, 'on: ' + p);
-    assert.equal(needsSignIn(p, { id: A }, true), false);
+    assert.equal(needsSignIn(p, null), true, 'on: ' + p);
+    assert.equal(needsSignIn(p, null, false), false, 'off: ' + p);
+    assert.equal(needsSignIn(p, { id: A }), false);
   }
-  for (const p of ['', 'end', 'rules', 'about']) assert.equal(needsSignIn(p, null, true), false, p);
+  for (const p of ['', 'end', 'rules', 'about']) assert.equal(needsSignIn(p, null), false, p);
+});
+
+test('G6: the router shows the gate card for a play route (account/gate.js), with a return URL to this game', () => {
+  const app = readFileSync(fileURLToPath(new URL('../site/js/app.js', import.meta.url)), 'utf8');
+  assert.match(app, /account\.gate\(path, isPlayPath\(path\)\)/);
+  assert.match(app, /gateHtml\(gateCard\(answer, navigator\.onLine\), signInUrl\(account\.origin, location\.href\)\)/);
+  assert.match(app, /here: currentPath/);
 });

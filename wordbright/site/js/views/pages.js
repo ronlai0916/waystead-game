@@ -77,7 +77,7 @@ export function about(main) {
     + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
     + '<p class="small muted">The look menu at the top switches Day (Sunny garden or Paint box), Night and Match device (which follows this device’s light or dark setting). Day, Night and Match device are shared with Spellbright and the Waystead Game home page.</p>'
     + '<h2>Privacy</h2>'
-    + '<p>There are no adverts, no tracking and no analytics. You can play without an account: then progress and saved games stay in the browser on this device and are never sent to us. Signed in with a Waystead account, the player\'s progress, saved games and look are saved to that account too, so they follow the player to other devices. Each page asks account.waystead.co.uk whether someone is signed in; signed out, nothing else is sent. Allowed words and the grown-up PIN always stay on this device.</p>'
+    + '<p>There are no adverts, no tracking and no analytics. To play, a child signs in with a Waystead account: their progress, saved games, look and voice are saved to that account, so they follow them to other devices, and play goes on offline on a device they have signed in on before. The home page and this page need no account. Each page asks account.waystead.co.uk whether someone is signed in; signed out, nothing else is sent. Allowed words and the grown-up PIN always stay on this device.</p>'
     + '<h2>Credits</h2>'
     + '<p>Word lists are made from the English Speller Database (ESDB), with this notice:</p>'
     + '<blockquote class="notice">Copyright 2000-2026 by Kevin Atkinson<br><br>'

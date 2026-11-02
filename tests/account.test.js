@@ -167,16 +167,25 @@ test('a finished test reaches the account (fake API), merged with another device
 });
 
 // ---- G6 -----------------------------------------------------------------------------
-test('REQUIRE_SIGN_IN off: signed out plays everything; on: the play routes send a signed-out player to sign in', () => {
+test('REQUIRE_SIGN_IN on (G6): the play routes need a signed-in player; the other pages, For parents included, never', () => {
   const plays = ['y34/ch01/quick', 'y34/ch01/quick/accident', 'y56/ch07/practice', 'y34/ch02/test', 'custom/play'];
   const pages = ['', 'y34', 'y34/ch01', 'y34/ch01/study', 'tricky', 'progress', 'custom', 'about'];
   for (const p of plays) {
     assert.ok(isPlayPath(p), p);
-    assert.equal(needsSignIn(p, null), false, 'off by default: ' + p);
-    assert.equal(needsSignIn(p, null, true), true, 'on: ' + p);
-    assert.equal(needsSignIn(p, { id: A }, true), false, 'on, signed in: ' + p);
+    assert.equal(needsSignIn(p, null), true, 'on: ' + p);
+    assert.equal(needsSignIn(p, null, false), false, 'off: ' + p);
+    assert.equal(needsSignIn(p, { id: A }), false, 'signed in: ' + p);
   }
-  for (const p of pages) assert.equal(needsSignIn(p, null, true), false, 'never gated: ' + p);
+  for (const p of pages) assert.equal(needsSignIn(p, null), false, 'never gated: ' + p);
+});
+
+test('G6: the router shows the gate card for a play route, and a finished session sends wa:finished', () => {
+  const app = readFileSync(fileURLToPath(new URL('../site/js/app.js', import.meta.url)), 'utf8');
+  assert.match(app, /account\.gate\(path, isPlayPath\(path\)\)/);
+  assert.match(app, /gateHtml\(gateCard\(answer, navigator\.onLine\), signInUrl\(account\.origin, location\.href\)\)/);
+  assert.match(app, /here: currentPath/);
+  const play = readFileSync(fileURLToPath(new URL('../site/js/play.js', import.meta.url)), 'utf8');
+  assert.match(play, /dispatchEvent\(new Event\('wa:finished'\)\)/);
 });
 
 // ---- offline ------------------------------------------------------------------------

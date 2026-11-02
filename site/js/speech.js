@@ -1,23 +1,17 @@
 // Audio: the bundled British MP3s when they exist (same voice on every device);
-// otherwise the device's own en-GB voice, so the game still talks before the
-// MP3s are generated.
+// otherwise the device's voice, chosen by voice/voice.js (G8): the best
+// British voice, or the player's own choice from the look menu (sb.voice).
 import { hasWordAudio, hasLetterAudio, wordAudioUrl, letterAudioUrl } from './data.js';
+import { createSpeaker } from './voice/voice.js';
 
 let current = null;
-let gbVoice = null;
 let runId = 0;
+let speaker = null;
 
-function pickVoice() {
-  if (!('speechSynthesis' in window)) return;
-  const voices = speechSynthesis.getVoices();
-  gbVoice = voices.find((v) => v.lang === 'en-GB' && /female|serena|kate|sonia|libby|martha/i.test(v.name))
-    || voices.find((v) => v.lang === 'en-GB')
-    || voices.find((v) => v.lang && v.lang.startsWith('en'))
-    || null;
-}
-if ('speechSynthesis' in window) {
-  pickVoice();
-  speechSynthesis.addEventListener('voiceschanged', pickVoice);
+// The one speaker (null on a device that cannot speak).
+export function getSpeaker() {
+  if (!speaker && typeof globalThis.speechSynthesis !== 'undefined' && typeof globalThis.SpeechSynthesisUtterance === 'function') speaker = createSpeaker();
+  return speaker;
 }
 
 export function stop() {
@@ -26,7 +20,7 @@ export function stop() {
     current.pause();
     current = null;
   }
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  if (getSpeaker()) getSpeaker().cancel();
 }
 
 function playFile(url) {
@@ -40,16 +34,8 @@ function playFile(url) {
 }
 
 function sayAloud(text, rate) {
-  return new Promise((resolve) => {
-    if (!('speechSynthesis' in window)) return resolve(false);
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-GB';
-    u.rate = rate;
-    if (gbVoice) u.voice = gbVoice;
-    u.onend = () => resolve(true);
-    u.onerror = () => resolve(false);
-    speechSynthesis.speak(u);
-  });
+  const sp = getSpeaker();
+  return sp ? sp.speak(text, { rate }) : Promise.resolve(false);
 }
 
 async function wordOnce(word) {
@@ -57,7 +43,7 @@ async function wordOnce(word) {
     const ok = await playFile(wordAudioUrl(word));
     if (ok) return true;
   }
-  return sayAloud(word, 0.85);
+  return sayAloud(word, 0.9);
 }
 async function letterOnce(L) {
   if (hasLetterAudio(L)) {

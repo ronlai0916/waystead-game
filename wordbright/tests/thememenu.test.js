@@ -202,3 +202,25 @@ test('the For parents picker and the menu stay in step', async () => {
     assert.equal((p.doc.listeners['wb:look'] || []).length, 1, 'leaving the page stops the picker listening');
   } finally { cleanup(); }
 });
+
+test('G8: the Voice items join the menu: arrow keys reach them; choosing one saves it and the menu stays open', async () => {
+  const { wireThemeMenu } = await import('../site/js/ui/thememenu.js');
+  try {
+    const p = page({ mode: 'light', dayStyle: 'garden' });
+    const voiceEls = ['', 'Daniel'].map((id) => new El(p.doc, { 'data-voice': id, role: 'menuitemradio', 'aria-checked': 'false' }));
+    voiceEls.forEach((e) => { e.parent = p.menu; p.menu.kids.push(e); });
+    const picked = [];
+    let shown = 0;
+    wireThemeMenu(p.btn, p.menu, p.doc, { items: () => voiceEls, pick: (id) => picked.push(id), show: () => { shown++; } });
+    assert.ok(shown >= 1, 'the voice tick is drawn with the look tick');
+    p.btn.fire('click');
+    p.doc.activeElement.fire('keydown', { key: 'End' });
+    assert.equal(p.doc.activeElement, voiceEls[1]);
+    p.doc.activeElement.fire('keydown', { key: 'Enter' });
+    assert.deepEqual(picked, ['Daniel']);
+    assert.equal(p.menu.hidden, false, 'stays open, so another voice can be tried');
+    assert.equal(p.store.get('sb.theme'), 'light', 'the look is unchanged');
+    voiceEls[0].fire('click');
+    assert.deepEqual(picked, ['Daniel', '']);
+  } finally { cleanup(); }
+});

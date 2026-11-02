@@ -1,4 +1,4 @@
-// The player chip in the top bar. Signed out: "Sign in to save progress".
+// The player chip in the top bar. Signed out: "Sign in".
 // Signed in: the player's picture (or initial) and name, opening a menu:
 // Switch player (an adult's session), My account, Sign out.
 // THIS FILE IS A COPY: edit shared/account/ and run `node tools/sync-shared.mjs`.
@@ -19,8 +19,8 @@ const SPACER = '<svg class="thememenu__tick" viewBox="0 0 24 24" aria-hidden="tr
 
 export function chipHtml(player, origin, here) {
   if (!player) {
-    return '<a class="iconbtn playerchip playerchip--out" href="' + esc(signInUrl(origin, here)) + '" aria-label="Sign in to save progress">'
-      + PERSON + '<span class="playerchip__text">Sign in to save progress</span></a>';
+    return '<a class="iconbtn playerchip playerchip--out" href="' + esc(signInUrl(origin, here)) + '" aria-label="Sign in">'
+      + PERSON + '<span class="playerchip__text">Sign in</span></a>';
   }
   const face = player.avatar
     ? '<img class="playerchip__face" src="' + esc(player.avatar) + '" alt="" width="28" height="28" referrerpolicy="no-referrer">'

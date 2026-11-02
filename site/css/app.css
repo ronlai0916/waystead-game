@@ -430,8 +430,13 @@ details.hint .hint__body { padding: 0 16px 14px; display: grid; gap: 6px; }
 .thememenu__item[aria-checked="true"] .thememenu__tick { visibility: visible; color: var(--link); }
 .thememenu__ico svg { display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .thememenu__ico svg .fill { fill: currentColor; stroke: none; }
-.thememenu__item:nth-child(3) { margin-top: 4px; position: relative; }
-.thememenu__item:nth-child(3)::before { content: ""; position: absolute; left: 8px; right: 8px; top: -3px; border-top: 1px solid var(--line); }
+.thememenu__list > .thememenu__item:nth-child(3) { margin-top: 4px; position: relative; }
+.thememenu__list > .thememenu__item:nth-child(3)::before { content: ""; position: absolute; left: 8px; right: 8px; top: -3px; border-top: 1px solid var(--line); }
+/* G8: the Voice part of the look menu (shown once the device lists its voices). */
+.thememenu__sep { margin: 6px 8px; border-top: 1px solid var(--line); }
+.thememenu__head { padding: 2px 12px 2px 8px; font-size: 0.8125rem; font-weight: 700; color: var(--muted); }
+.thememenu__group { margin: 0; padding: 0; list-style: none; }
+.thememenu__tip { max-width: 260px; padding: 4px 12px 6px 8px; font-size: 0.8125rem; color: var(--muted); white-space: normal; }
 
 /* ---- Day style picker (For parents) ---------------------------------------- */
 .daystyle { display: grid; gap: 10px; }

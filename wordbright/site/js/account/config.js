@@ -1,9 +1,11 @@
 // Waystead Account settings shared by the home page, Spellbright and Wordbright.
 // THIS FILE IS A COPY: edit shared/account/ and run `node tools/sync-shared.mjs`.
 
-// G6, login before play. Off: signed out, the games work exactly as before.
-// On: the Play buttons send a signed-out player to sign in first.
-export const REQUIRE_SIGN_IN = false;
+// G6, login before play (on since 2 Nov 2026, Ron's decision). On: a
+// signed-out player who presses Play, or opens a game or test by its link, is
+// asked to sign in first (gate.js); the home and For parents pages stay open.
+// Off: signed out, the games work exactly as before.
+export const REQUIRE_SIGN_IN = true;
 
 export const ACCOUNT_ORIGIN = 'https://account.waystead.co.uk';
 // The account service's dev server, used when the game itself runs on localhost.

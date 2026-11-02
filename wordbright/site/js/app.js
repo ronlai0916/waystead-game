@@ -8,9 +8,12 @@ import { endView } from './views/end.js';
 import { rules, about, notFound } from './views/pages.js';
 import * as S from './store.js';
 import * as D from './player-data.js';
+import { wireVoiceMenu } from './voice/menu.js';
+import { getSpeaker } from './ui/speak.js';
 import { startAccount } from './account/boot.js';
 import { signInUrl } from './account/config.js';
-import { needsSignIn } from './gate.js';
+import { gateHtml, gateCard } from './account/gate.js';
+import { isPlayPath } from './gate.js';
 
 const main = document.getElementById('main');
 const backBtn = document.getElementById('back');
@@ -21,14 +24,34 @@ const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?
 const ROUTES = { '': home, new: setup, play: playView, end: endView, rules, about };
 const PARENT = { new: '#/', play: '#/', end: '#/', rules: '#/', about: '#/' };
 
+// G6: a play route for a signed-out player shows a card instead: "Sign in to
+// play" (with a return URL to this game), "You need to be online" or a short
+// wait while /api/me answers (account/gate.js).
+let waiting = null;
+function gated(path) {
+  waiting = null;
+  if (!account) return false;
+  const answer = account.gate(path, isPlayPath(path));
+  if (answer === 'play') return false;
+  main.innerHTML = gateHtml(gateCard(answer, navigator.onLine), signInUrl(account.origin, location.href));
+  backBtn.hidden = false;
+  backBtn.onclick = () => { location.hash = '#/'; };
+  document.body.dataset.view = 'gate';
+  const retry = main.querySelector('[data-gate-retry]');
+  if (retry) retry.addEventListener('click', () => account.session.refresh().then(() => render()));
+  if (answer === 'wait') {
+    waiting = path;
+    account.ready.then(() => { if (waiting === path) render(); });
+  }
+  setTitle();
+  return true;
+}
+
 function render() {
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
   const path = currentPath();
-  if (account && needsSignIn(path, account.session.player)) {
-    location.assign(signInUrl(account.origin, location.href));
-    return;
-  }
+  if (gated(path)) return;
   const view = Object.prototype.hasOwnProperty.call(ROUTES, path) ? ROUTES[path] : notFound;
   backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = PARENT[path] || '#/'; };
@@ -62,9 +85,11 @@ function wireBrand() {
   document.getElementById('brand').setAttribute('aria-label', BRAND.product + ' home');
 }
 
-// The look menu: Day · Sunny garden, Day · Paint box, Night, Match device.
+// The look menu: Day · Sunny garden, Day · Paint box, Night, Match device,
+// and (G8) the Voice for "Hear" once the device lists its voices.
 function wireTheme() {
-  wireThemeMenu(document.getElementById('theme'), document.getElementById('theme-menu'), document);
+  const menu = document.getElementById('theme-menu');
+  wireThemeMenu(document.getElementById('theme'), menu, document, wireVoiceMenu(menu, getSpeaker()));
 }
 
 // The Waystead account: the player chip, and (signed in) this player's saved
@@ -87,6 +112,7 @@ function wireAccount() {
     }),
     redraw: () => render(),
     busy: () => currentPath() === 'play',
+    here: currentPath,
     applyLook: () => {
       if (window.wbTheme) window.wbTheme.apply();
       document.dispatchEvent(new Event('wb:look'));

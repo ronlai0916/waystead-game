@@ -38,7 +38,8 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Signed out: today's keys unchanged. Signed in: `<key>:<player id>` (Spellbright `sb.progress:<id>`; Wordbright `wb.game:`, `wb.setup:`, `wb.stats:`). Merge rules: `site/js/progress-doc.js`, `wordbright/site/js/player-data.js`, `shared/account/merge.js`. Results merge by id and counters are counted from them, never added.
 - Sign out goes through the account's `/signout`; back with `?signedout=1`, the device forgets that player (`forget.js`), keeping only unsent queued changes. A plain 401 keeps everything.
 - The service workers never handle cross-origin requests or `/api/` (account answers are never cached).
-- `REQUIRE_SIGN_IN` (G6) in `shared/account/config.js` stays `false` until Ron says otherwise.
+- `REQUIRE_SIGN_IN` (G6) in `shared/account/config.js` is `true` (Ron, 2 Nov 2026). Play routes for a signed-out player show the gate card (`shared/account/gate.js`); a cached player plays offline or when the account is down; a 401 mid-game finishes that game first.
+- Voice (G8): `shared/voice/` (voice choice and the look menu's Voice part), copied into `site/js/voice/` and `wordbright/site/js/voice/` by `node tools/sync-shared.mjs`. `sb.voice` is shared by both games and synced as `prefs.voice`.
 - Tests: `node --test shared/tests/` too.
 
 ## Workflow
@@ -51,7 +52,7 @@ A word-tile board game, to be served at /wordbright/. Design files and decisions
 - `wordbright/site/data/` is generated: rebuild with `python3 tools/build-wordgraph.py`, never edit by hand. The licence files in `wordbright/` travel with it.
 - Never use other games' names or terms (see PLAN.md section 2); `wordbright/tests/names.test.js` checks.
 - The product name is only in `BRAND` (`wordbright/site/js/brand.js`); the HTML `<title>` is the one static copy, for link previews.
-- localStorage: `sb.theme` and `sb.dayStyle` are shared with Spellbright; everything else starts with `wb.`.
+- localStorage: `sb.theme`, `sb.dayStyle` and `sb.voice` are shared with Spellbright; everything else starts with `wb.`.
 - Squares: never show codes like DL/TW/2L/3W; use the names (Spark, Glow, Shine, Star) and our icons.
 - The game loads one word graph, `words_all.dawg`: each word tagged with its tier (smallest list: 0 starter … 4 xlarge). Check words with `isWord(word, graph, maxTier, maxLength)`; a level's list is `listTier(list)`. Children play the whole list (xlarge) at every level; computer and hint lists go by level.
 - Words a grown-up allowed (`wb.allowed`) reach the engine as `env.allowed` and count for children only, never for computers or hints.

@@ -1,13 +1,15 @@
 // Entry point: load data, route by the URL hash, wire the header.
 import { loadData } from './data.js';
 import { wireThemeMenu } from './thememenu.js';
-import { stop } from './speech.js';
+import { stop, getSpeaker } from './speech.js';
 import * as V from './views.js';
 import * as S from './store.js';
 import * as P from './progress-doc.js';
+import { wireVoiceMenu } from './voice/menu.js';
 import { startAccount } from './account/boot.js';
 import { signInUrl } from './account/config.js';
-import { isPlayPath, needsSignIn } from './gate.js';
+import { gateHtml, gateCard } from './account/gate.js';
+import { isPlayPath } from './gate.js';
 
 const main = document.getElementById('main');
 const backBtn = document.getElementById('back');
@@ -61,15 +63,34 @@ function parentOf(path) {
   return '#/' + parts.join('/');
 }
 
+// G6: a play route for a signed-out player shows a card instead: "Sign in to
+// play" (with a return URL to this game), "You need to be online" or a short
+// wait while /api/me answers (account/gate.js).
+let waiting = null;
+function gated(path) {
+  waiting = null;
+  if (!account) return false;
+  const answer = account.gate(path, isPlayPath(path));
+  if (answer === 'play') return false;
+  main.innerHTML = gateHtml(gateCard(answer, navigator.onLine), signInUrl(account.origin, location.href));
+  backBtn.hidden = false;
+  backBtn.onclick = () => { location.hash = parentOf(path); };
+  const retry = main.querySelector('[data-gate-retry]');
+  if (retry) retry.addEventListener('click', () => account.session.refresh().then(() => render()));
+  if (answer === 'wait') {
+    waiting = path;
+    account.ready.then(() => { if (waiting === path) render(); });
+  }
+  document.title = main.querySelector('h1').textContent + ' · Spellbright by Waystead';
+  return true;
+}
+
 function render() {
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
   stop();
   const path = currentPath();
-  if (account && needsSignIn(path, account.session.player)) {
-    location.assign(signInUrl(account.origin, location.href));
-    return;
-  }
+  if (gated(path)) return;
   const found = match(path);
   backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = parentOf(path); };
@@ -89,9 +110,11 @@ function onNavigate() {
   main.focus({ preventScroll: true });
 }
 
-// The look menu: Day · Sunny garden, Day · Paint box, Night, Match device.
+// The look menu: Day · Sunny garden, Day · Paint box, Night, Match device,
+// and (G8) the Voice for "Hear" once the device lists its voices.
 function wireTheme() {
-  wireThemeMenu(document.getElementById('theme'), document.getElementById('theme-menu'), document);
+  const menu = document.getElementById('theme-menu');
+  wireThemeMenu(document.getElementById('theme'), menu, document, wireVoiceMenu(menu, getSpeaker()));
 }
 
 // The Waystead account: the player chip, and (signed in) this player's
@@ -111,6 +134,7 @@ function wireAccount() {
     }),
     redraw: () => { if (drawn) render(); },
     busy: () => isPlayPath(currentPath()),
+    here: currentPath,
     applyLook: () => {
       if (window.sbTheme) window.sbTheme.apply();
       document.dispatchEvent(new Event('sb:look'));

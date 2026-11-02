@@ -10,19 +10,26 @@
 //   'signout'  /api/me says nobody is signed in;
 //   'expired'  a data call answered 401 part-way through.
 // The page decides what to redraw; nothing saved on the device is deleted.
+//
+// `reach` says whether the account answered: 'unknown' (not asked yet),
+// 'online' (it answered /api/me), 'offline' (no network, or the service is
+// down: a network error or a 5xx). A 401 from /api/me is an answer: signed out.
 import { cachedPlayer, cachePlayer, playerFromMe } from './player.js';
 
 export function createSession({ api, storage, origin }) {
   let player = cachedPlayer(storage);
   let checked = false;
+  let reach = 'unknown';
   const listeners = new Set();
   const emit = (e) => listeners.forEach((fn) => fn(e));
 
   async function refresh() {
     const r = await api.me();
-    if (!r.ok || !r.data) return { offline: true, player };
+    const signedOut = r.status === 401;
+    if (!signedOut && (!r.ok || !r.data)) { reach = 'offline'; return { offline: true, player }; }
     checked = true;
-    const next = playerFromMe(r.data, origin);
+    reach = 'online';
+    const next = signedOut ? null : playerFromMe(r.data, origin);
     const prev = player;
     player = next;
     cachePlayer(storage, next);
@@ -44,6 +51,7 @@ export function createSession({ api, storage, origin }) {
   return {
     get player() { return player; },
     get checked() { return checked; },
+    get reach() { return reach; },
     refresh,
     expired,
     on(fn) { listeners.add(fn); return () => listeners.delete(fn); },

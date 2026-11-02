@@ -39,9 +39,12 @@ export function buttonLabel(id = currentChoice()) {
 }
 
 // btn: the menu button; menu: the [role=menu] list of [data-choice] items;
-// doc: the document (for clicks outside). Returns a function that stops listening.
-export function wireThemeMenu(btn, menu, doc) {
-  const items = [...menu.querySelectorAll('[data-choice]')];
+// doc: the document (for clicks outside); voice (G8): the Voice part of the
+// menu (voice/menu.js: { items(), pick(id), show() }), or null.
+// Returns a function that stops listening.
+export function wireThemeMenu(btn, menu, doc, voice = null) {
+  const looks = [...menu.querySelectorAll('[data-choice]')];
+  const items = () => (voice ? [...looks, ...voice.items()] : looks);
   const isOpen = () => btn.getAttribute('aria-expanded') === 'true';
 
   function show() {
@@ -50,14 +53,15 @@ export function wireThemeMenu(btn, menu, doc) {
     btn.setAttribute('aria-label', buttonLabel(id));
     const name = btn.querySelector('[data-theme-name]');
     if (name) name.textContent = CHOICES.find((c) => c.id === id).short;
-    items.forEach((it) => it.setAttribute('aria-checked', String(it.dataset.choice === id)));
+    looks.forEach((it) => it.setAttribute('aria-checked', String(it.dataset.choice === id)));
+    if (voice) voice.show();
   }
 
   function open(focusAt = 'checked') {
     menu.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
-    const at = focusAt === 'last' ? items.length - 1
-      : Math.max(0, items.findIndex((it) => it.getAttribute('aria-checked') === 'true'));
+    const at = focusAt === 'last' ? items().length - 1
+      : Math.max(0, looks.findIndex((it) => it.getAttribute('aria-checked') === 'true'));
     focusItem(at);
   }
   function close(returnFocus = true) {
@@ -67,13 +71,18 @@ export function wireThemeMenu(btn, menu, doc) {
     if (returnFocus) btn.focus();
   }
   function focusItem(i) {
-    const k = (i + items.length) % items.length;
-    items.forEach((it, j) => { it.tabIndex = j === k ? 0 : -1; });
-    items[k].focus();
+    const all = items();
+    const k = (i + all.length) % all.length;
+    all.forEach((it, j) => { it.tabIndex = j === k ? 0 : -1; });
+    all[k].focus();
   }
-  const at = (el) => items.indexOf(el);
+  const at = (el) => items().indexOf(el);
 
   function pick(it) {
+    if (voice && it.dataset.voice !== undefined) {
+      voice.pick(it.dataset.voice); // stays open: the voice says hello, so another can be tried
+      return;
+    }
     choose(it.dataset.choice);
     show();
     close();
@@ -91,13 +100,13 @@ export function wireThemeMenu(btn, menu, doc) {
     if (e.key === 'ArrowDown') { e.preventDefault(); focusItem(i + 1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); focusItem(i - 1); }
     else if (e.key === 'Home') { e.preventDefault(); focusItem(0); }
-    else if (e.key === 'End') { e.preventDefault(); focusItem(items.length - 1); }
-    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(items[i]); }
+    else if (e.key === 'End') { e.preventDefault(); focusItem(items().length - 1); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(items()[i]); }
     else if (e.key === 'Escape') { e.preventDefault(); close(); }
     else if (e.key === 'Tab') close(false);
   };
   const onMenuClick = (e) => {
-    const it = e.target.closest('[data-choice]');
+    const it = e.target.closest('[data-choice]') || (voice ? e.target.closest('[data-voice]') : null);
     if (it) pick(it);
   };
   const onDocDown = (e) => {

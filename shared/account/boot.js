@@ -11,6 +11,11 @@
 //   busy()        true while a game is being played: then nothing is redrawn under it
 //   applyLook()   apply sb.theme / sb.dayStyle after they change
 //   importer      { gameName, has(), run(playerId, deviceId) -> keys changed } for the one-time question
+//   here()        the current route (G6: the game being finished when the session ends mid-game)
+//
+// It answers { session, api, origin, ready, gate(path, isPlay), finished() }:
+// gate() is gate.js's answer for a route; finished() ends the "finish this
+// game" grace (a game page also sends the 'wa:finished' event).
 import { accountOrigin } from './config.js';
 import { createApi } from './api.js';
 import { createSession } from './session.js';
@@ -20,6 +25,7 @@ import { mountChip } from './chip.js';
 import { deviceId } from './player.js';
 import { SIGNED_OUT_PARAM, forgetPlayer, withoutSignedOut } from './forget.js';
 import { offerImport, askImport } from './importer.js';
+import { gateFor } from './gate.js';
 
 function memoryStorage() {
   const m = new Map();
@@ -30,7 +36,7 @@ function storageOf(win, name) {
 }
 
 export function startAccount({ win = window, doc = document, slot = null, game = null, docs = null, usePlayer = () => {},
-  redraw = () => {}, busy = () => false, applyLook = () => {}, importer = null, fetch = undefined }) {
+  redraw = () => {}, busy = () => false, applyLook = () => {}, importer = null, fetch = undefined, here = () => '' }) {
   const origin = accountOrigin(win.location);
   const api = createApi(fetch ? { origin, fetch } : { origin });
   const local = storageOf(win, 'localStorage');
@@ -43,6 +49,7 @@ export function startAccount({ win = window, doc = document, slot = null, game =
   const leaving = signedOut ? session.player : null;
   let sync = null;
   let prefs = null;
+  let finishing = null; // G6: the route of the game the session ended in, until it is over
   const expired = () => session.expired();
 
   function connect(player) {
@@ -83,15 +90,24 @@ export function startAccount({ win = window, doc = document, slot = null, game =
     if (reason === 'expired' || (reason === 'signout' && busy() && !signedOut)) {
       // Mid-game: keep playing and saving on this device under the same
       // player; sending resumes when they sign in again. Next visit: signed out.
+      // G6: they finish this game; the next one asks them to sign in.
       if (sync) sync.stop();
       if (prefs) prefs.stop();
+      if (busy()) finishing = here();
       return;
     }
+    if (player) finishing = null;
     if (reason !== 'same') { connect(player); redraw(); }
     if (player) catchUp(player);
   });
 
-  win.addEventListener('online', () => { if (sync) sync.flush(); if (prefs) prefs.flush(); });
+  win.addEventListener('online', () => {
+    if (sync) sync.flush();
+    if (prefs) prefs.flush();
+    // Back online after "You need to be online": ask again, and show the answer.
+    if (session.reach !== 'online') session.refresh().then(() => { if (!busy()) redraw(); });
+  });
+  win.addEventListener('wa:finished', () => { finishing = null; });
   doc.addEventListener('visibilitychange', () => {
     if (doc.visibilityState === 'hidden') { if (sync) sync.flush(); if (prefs) prefs.flush(); }
     else if (session.player && sync) sync.pull();
@@ -105,5 +121,16 @@ export function startAccount({ win = window, doc = document, slot = null, game =
     }
     return r;
   });
-  return { session, api, origin, ready, get sync() { return sync; }, get prefs() { return prefs; } };
+  function gate(path, play) {
+    if (finishing !== null && finishing !== path) finishing = null; // left that game: it is over
+    const nav = win.navigator;
+    const reach = session.reach === 'unknown' && nav && nav.onLine === false ? 'offline' : session.reach;
+    return gateFor({ play, player: session.player, reach, finishing: finishing !== null && finishing === path });
+  }
+
+  return {
+    session, api, origin, ready, gate,
+    finished() { finishing = null; },
+    get sync() { return sync; }, get prefs() { return prefs; },
+  };
 }

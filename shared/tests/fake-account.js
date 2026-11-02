@@ -13,6 +13,7 @@ export function fakeAccount() {
     prefs: new Map(), // profile id -> {theme, dayStyle, prefs}
     data: new Map(), // profile id -> Map(game/key -> {value, version, updatedAt})
     failNext: null, // { status, times } for the next data calls
+    meStatus: 0, // e.g. 503 (the service down) or 401: what /api/me answers instead
   };
   const profile = () => {
     const me = acct.who;
@@ -33,7 +34,7 @@ export function fakeAccount() {
     acct.calls.push({ method, path: u.pathname, credentials: init.credentials, body: init.body });
     if (init.credentials !== 'include') throw new Error('every call must send credentials: include');
     if (acct.offline) throw new TypeError('Failed to fetch');
-    if (u.pathname === '/api/me') return json(200, acct.who || { signedIn: false });
+    if (u.pathname === '/api/me') return acct.meStatus ? json(acct.meStatus, { error: 'forced' }) : json(200, acct.who || { signedIn: false });
     if (acct.failNext && acct.failNext.times > 0) {
       acct.failNext.times -= 1;
       return json(acct.failNext.status, { error: 'forced' });

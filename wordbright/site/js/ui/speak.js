@@ -1,45 +1,37 @@
 // "Hear" a word: Spellbright's recording for Star words, otherwise the
-// device's English voice (British if it has one). Only ever on a tap.
+// device's voice, chosen by voice/voice.js (G8): the best British voice, or
+// the player's own choice from the look menu (sb.voice), at rate 0.9. Only
+// ever on a tap.
+import { createSpeaker } from '../voice/voice.js';
 
-let voice = null; // the chosen voice, once the device has listed its voices
-const synth = () => (typeof window !== 'undefined' && window.speechSynthesis) || null;
-
-function pickVoice() {
-  if (!synth()) return null;
-  const voices = synth().getVoices();
-  voice = voices.find((v) => /^en[-_]GB$/i.test(v.lang))
-    || voices.find((v) => /^en\b/i.test(v.lang))
-    || null;
-  return voice;
+let speaker = null;
+// The one speaker (null on a device that cannot speak).
+export function getSpeaker() {
+  if (!speaker && typeof globalThis.speechSynthesis !== 'undefined' && typeof globalThis.SpeechSynthesisUtterance === 'function') speaker = createSpeaker();
+  return speaker;
 }
 
 // Calls back when the device's voices are known (they may arrive later).
 export function onVoices(cb) {
-  const s = synth();
-  if (!s) return () => {};
-  pickVoice();
-  const again = () => { pickVoice(); cb(); };
-  s.addEventListener('voiceschanged', again);
-  return () => s.removeEventListener('voiceschanged', again);
+  const s = getSpeaker();
+  return s ? s.onVoices(cb) : () => {};
 }
 
 export function canSpeak() {
-  return !!(voice || pickVoice());
+  const s = getSpeaker();
+  return !!(s && s.current());
 }
 
 function say(word) {
-  if (!canSpeak()) return;
-  const u = new SpeechSynthesisUtterance(word);
-  u.voice = voice;
-  u.lang = voice.lang;
-  u.rate = 0.9;
-  synth().cancel();
-  synth().speak(u);
+  const s = getSpeaker();
+  if (s) s.speak(word);
 }
 
 let playing = null;
 export function hear(word, audio) {
   if (playing) { playing.pause(); playing = null; }
+  const s = getSpeaker();
+  if (s) s.cancel();
   if (!audio) { say(word); return; }
   const a = new Audio(audio);
   playing = a;

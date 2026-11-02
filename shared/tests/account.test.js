@@ -14,6 +14,7 @@ import { offerImport, importKey } from '../account/importer.js';
 import { REQUIRE_SIGN_IN, mustSignIn, signInUrl, accountOrigin, ACCOUNT_ORIGIN } from '../account/config.js';
 import { startAccount } from '../account/boot.js';
 import { forgetPlayer, withoutSignedOut } from '../account/forget.js';
+import { gateFor, gateHtml, gateCard, GATE_TEXT } from '../account/gate.js';
 import { fakeAccount, memoryStorage, manualTimers, ADULT, KID_A, KID_B, CHILD_A, playingAs } from './fake-account.js';
 
 const ORIGIN = 'https://account.waystead.co.uk';
@@ -51,7 +52,7 @@ test('signed out: no player, nothing cached, the chip offers sign-in back to thi
   assert.equal(r.player, null);
   assert.equal(t.storage.getItem(PLAYER_KEY), null);
   const html = chipHtml(null, ORIGIN, HERE);
-  assert.match(html, /Sign in to save progress/);
+  assert.match(html, />Sign in<\/span>/);
   assert.ok(html.includes('href="' + ORIGIN + '/signin?return=' + encodeURIComponent(HERE).replace(/&/g, '&amp;') + '"'));
   assert.equal(playerKey('sb.progress', null), 'sb.progress', 'signed out: today\'s key unchanged');
 });
@@ -244,7 +245,7 @@ test('prefs: a first sign-in saves this device\'s look; later the account\'s loo
   let applied = 0;
   const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id, applyLook: () => { applied++; } });
   assert.equal(await p.pull(), 'saved');
-  assert.deepEqual(t.acct.prefs.get(KID_A.id), { theme: 'dark', dayStyle: 'paint', prefs: { saved: 1 } });
+  assert.deepEqual(t.acct.prefs.get(KID_A.id), { theme: 'dark', dayStyle: 'paint', prefs: { saved: 1, voice: '' } });
   // On another device, with another look: the account's wins, with no change sent.
   const other = memoryStorage();
   other.setItem('sb.theme', 'light');
@@ -253,6 +254,31 @@ test('prefs: a first sign-in saves this device\'s look; later the account\'s loo
   assert.equal(other.getItem('sb.theme'), 'dark');
   assert.equal(other.getItem('sb.dayStyle'), 'paint');
   assert.equal(applied, 1);
+});
+
+test('prefs (G8): the voice (sb.voice) is saved with the look and follows the player; a look from before G8 keeps this device\'s voice', async () => {
+  const t = setup(CHILD_A);
+  t.storage.setItem('sb.voice', 'Serena (Premium)');
+  const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id });
+  assert.equal(await p.pull(), 'saved');
+  assert.equal(t.acct.prefs.get(KID_A.id).prefs.voice, 'Serena (Premium)');
+  const other = memoryStorage();
+  let applied = 0;
+  assert.equal(await createPrefsSync({ api: t.api, storage: other, playerId: KID_A.id, applyLook: () => { applied++; } }).pull(), 'applied');
+  assert.equal(other.getItem('sb.voice'), 'Serena (Premium)');
+  assert.equal(applied, 1);
+  // "Best voice" again: no sb.voice key, and '' on the account.
+  t.storage.removeItem('sb.voice');
+  assert.equal(await p.push(), 'saved');
+  assert.equal(t.acct.prefs.get(KID_A.id).prefs.voice, '');
+  assert.equal(await createPrefsSync({ api: t.api, storage: other, playerId: KID_A.id }).pull(), 'applied');
+  assert.equal(other.getItem('sb.voice'), null);
+  // An account look saved before G8 (no voice): this device's voice stays, and is sent.
+  t.acct.prefs.set(KID_A.id, { theme: 'dark', dayStyle: 'paint', prefs: { saved: 1 } });
+  other.setItem('sb.voice', 'Daniel');
+  assert.equal(await createPrefsSync({ api: t.api, storage: other, playerId: KID_A.id }).pull(), 'saved');
+  assert.equal(other.getItem('sb.voice'), 'Daniel');
+  assert.equal(t.acct.prefs.get(KID_A.id).prefs.voice, 'Daniel');
 });
 
 test('prefs: a change is sent after a pause; offline, it waits; "Match device" is system', async () => {
@@ -325,11 +351,11 @@ test('import: never asked with nothing to import; never into a player who change
 
 // ---- G6 and config -----------------------------------------------------------------
 
-test('REQUIRE_SIGN_IN is off by default: signed out still plays; on, a signed-out player must sign in', () => {
-  assert.equal(REQUIRE_SIGN_IN, false);
-  assert.equal(mustSignIn(null), false);
-  assert.equal(mustSignIn(null, true), true);
-  assert.equal(mustSignIn(SAM, true), false);
+test('REQUIRE_SIGN_IN is on (G6, 2 Nov 2026); mustSignIn and the sign-in URL', () => {
+  assert.equal(REQUIRE_SIGN_IN, true);
+  assert.equal(mustSignIn(null), true);
+  assert.equal(mustSignIn(null, false), false);
+  assert.equal(mustSignIn(SAM), false);
   assert.equal(signInUrl(ORIGIN, HERE), ORIGIN + '/signin?return=' + encodeURIComponent(HERE));
   assert.equal(accountOrigin({ hostname: 'game.waystead.co.uk' }), ACCOUNT_ORIGIN);
   assert.equal(accountOrigin({ hostname: 'localhost' }), 'http://localhost:3000');
@@ -340,7 +366,7 @@ test('REQUIRE_SIGN_IN is off by default: signed out still plays; on, a signed-ou
 function fakePage(acct, local = memoryStorage()) {
   const handlers = {};
   const on = (target) => (type, fn) => { (handlers[target + type] ||= []).push(fn); };
-  const win = { location: { hostname: 'game.waystead.co.uk', href: HERE }, localStorage: local, sessionStorage: memoryStorage(), addEventListener: on('win') };
+  const win = { location: { hostname: 'game.waystead.co.uk', href: HERE }, localStorage: local, sessionStorage: memoryStorage(), addEventListener: on('win'), navigator: { onLine: true } };
   win.history = { state: null, replaceState: (_s, _t, url) => { win.location.href = url; } };
   const doc = { visibilityState: 'visible', addEventListener: on('doc') };
   const fire = async (key) => { for (const fn of handlers[key] || []) await fn(); };
@@ -468,4 +494,160 @@ test('a plain 401 (an expired session, no ?signedout=1) keeps every copy: only w
   const a = startAccount({ win: page.win, doc: page.doc, fetch: acct.fetch });
   await a.ready;
   assert.deepEqual(page.local.keys().sort(), before);
+});
+
+// ---- G6: login before play ------------------------------------------------------------
+
+test('gateFor: play routes need a player; other pages never; a known player plays even offline', () => {
+  const on = { flag: true };
+  assert.equal(gateFor({ ...on, play: false, player: null, reach: 'online' }), 'play', 'home and For parents stay open');
+  assert.equal(gateFor({ ...on, play: true, player: null, reach: 'online' }), 'signin');
+  assert.equal(gateFor({ ...on, play: true, player: SAM, reach: 'offline' }), 'play', 'cached player, offline');
+  assert.equal(gateFor({ ...on, play: true, player: null, reach: 'offline' }), 'offline');
+  assert.equal(gateFor({ ...on, play: true, player: null, reach: 'unknown' }), 'wait');
+  assert.equal(gateFor({ ...on, play: true, player: null, reach: 'online', finishing: true }), 'play', 'finish this game');
+  assert.equal(gateFor({ flag: false, play: true, player: null, reach: 'online' }), 'play', 'flag off: as before');
+  assert.equal(gateCard('offline', false), 'offline');
+  assert.equal(gateCard('offline', true), 'down', 'online but the service is down');
+  assert.equal(gateCard('signin', true), 'signin');
+});
+
+test('the "Sign in to play" card: the friendly line, and sign-in with a return URL to this game', () => {
+  const game = 'https://game.waystead.co.uk/wordbright/#/new?board=junior';
+  const html = gateHtml('signin', signInUrl(ORIGIN, game));
+  assert.match(html, /<h1>Sign in to play<\/h1>/);
+  assert.ok(html.includes(GATE_TEXT.signin.line));
+  assert.equal(GATE_TEXT.signin.line, 'Sign in to play — your progress is saved to your account.');
+  assert.ok(html.includes('href="' + ORIGIN + '/signin?return=' + encodeURIComponent(game) + '"'));
+  assert.doesNotMatch(html, /style=|<script/);
+  assert.ok(gateHtml('offline').includes('You need to be online the first time you sign in'));
+  assert.match(gateHtml('offline'), /data-gate-retry/);
+  assert.match(gateHtml('down'), /data-gate-retry/);
+  assert.doesNotMatch(gateHtml('wait'), /btn/);
+});
+
+test('session reach: online when /api/me answers (a 401 too: signed out); offline on a network error or a 5xx', async () => {
+  for (const [setupFn, reach, player] of [
+    [(a) => { a.who = CHILD_A; }, 'online', KID_A.id],
+    [() => {}, 'online', null],
+    [(a) => { a.meStatus = 401; }, 'online', null],
+    [(a) => { a.offline = true; }, 'offline', null],
+    [(a) => { a.meStatus = 503; }, 'offline', null],
+  ]) {
+    const { acct, session } = setup();
+    setupFn(acct);
+    assert.equal(session.reach, 'unknown');
+    await session.refresh();
+    assert.equal(session.reach, reach);
+    assert.equal(session.player ? session.player.id : null, player);
+  }
+});
+
+function gatePage({ who = null, cached = false, offline = false, meStatus = 0, onLine = true } = {}) {
+  const acct = fakeAccount();
+  acct.who = who;
+  acct.offline = offline;
+  acct.meStatus = meStatus;
+  const page = fakePage(acct);
+  page.win.navigator.onLine = onLine;
+  const A = KID_A.id;
+  if (cached) page.local.setItem(PLAYER_KEY, JSON.stringify(SAM_CACHE));
+  const state = { path: 'play', redraws: 0, onChange: null };
+  const a = startAccount({
+    win: page.win, doc: page.doc, fetch: acct.fetch, game: 'wordbright',
+    docs: (id) => ({ game: doc(page.local, 'wb.game:' + id) }),
+    usePlayer: (p, onChange) => { state.onChange = onChange; },
+    busy: () => state.path === 'play', here: () => state.path, redraw: () => { state.redraws++; },
+  });
+  const queued = () => (JSON.parse(page.local.getItem('wa.sync:' + A + ':wordbright') || '{"dirty":[]}').dirty);
+  return { acct, page, a, state, A, queued };
+}
+const tick = () => new Promise((r) => setTimeout(r, 0));
+
+test('G6 signed out and online: play routes show "Sign in to play"; the home page and For parents stay open', async () => {
+  const { a } = gatePage();
+  assert.equal(a.gate('new', true), 'wait', 'before /api/me answers');
+  await a.ready;
+  assert.equal(a.gate('new', true), 'signin');
+  assert.equal(a.gate('play', true), 'signin', 'a deep link into a game too');
+  for (const p of ['', 'about', 'rules']) assert.equal(a.gate(p, false), 'play', p);
+});
+
+test('G6 signed in: plays straight away from the cached player, before /api/me answers', async () => {
+  const { a } = gatePage({ who: CHILD_A, cached: true });
+  assert.equal(a.gate('play', true), 'play');
+  await a.ready;
+  assert.equal(a.gate('new', true), 'play');
+});
+
+test('G6 offline with a player cached on this device: they play, and progress waits in the queue', async () => {
+  const { a, state, queued, page, A } = gatePage({ who: CHILD_A, cached: true, offline: true, onLine: false });
+  await a.ready;
+  assert.equal(a.session.reach, 'offline');
+  assert.equal(a.gate('play', true), 'play');
+  add(page.local, 'wb.game:' + A, 'move-1', 1);
+  state.onChange('game');
+  await a.sync.flush();
+  assert.deepEqual(queued(), ['game'], 'kept for when the device is back online');
+});
+
+test('G6 offline with nobody cached: "You need to be online the first time you sign in"; back online, sign-in', async () => {
+  const { a, acct, page, state } = gatePage({ offline: true, onLine: false });
+  assert.equal(a.gate('new', true), 'offline', 'the device says offline: no wait');
+  await a.ready;
+  assert.equal(a.gate('new', true), 'offline');
+  assert.equal(gateCard(a.gate('new', true), page.win.navigator.onLine), 'offline');
+  acct.offline = false;
+  page.win.navigator.onLine = true;
+  state.path = 'new';
+  await page.fire('winonline');
+  await tick();
+  assert.equal(a.gate('new', true), 'signin');
+  assert.equal(state.redraws, 1, 'the card is drawn again');
+});
+
+test('G6 the account service down (5xx): like offline; a child already signed in here is not locked out', async () => {
+  const kid = gatePage({ who: CHILD_A, cached: true, meStatus: 503 });
+  await kid.a.ready;
+  assert.equal(kid.a.gate('play', true), 'play');
+  assert.equal(cachedPlayer(kid.page.local).id, KID_A.id, 'the cached player is kept');
+  const nobody = gatePage({ meStatus: 503 });
+  await nobody.a.ready;
+  assert.equal(nobody.a.gate('new', true), 'offline');
+  assert.equal(gateCard(nobody.a.gate('new', true), true), 'down');
+});
+
+test('G6 a 401 mid-game: they finish this game (progress queued), then sign in before the next one', async () => {
+  const { a, acct, state, queued, page, A } = gatePage({ who: CHILD_A, cached: true });
+  await a.ready;
+  await tick();
+  acct.who = null; // the session ends on the server
+  add(page.local, 'wb.game:' + A, 'move-1', 1);
+  state.onChange('game');
+  await a.sync.flush(); // answers 401
+  assert.equal(a.session.player, null);
+  assert.equal(a.gate('play', true), 'play', 'this game goes on');
+  add(page.local, 'wb.game:' + A, 'move-2', 2);
+  state.onChange('game');
+  assert.deepEqual(queued(), ['game'], 'queued for when they sign in again');
+  state.path = 'end';
+  assert.equal(a.gate('end', false), 'play', 'the final scores');
+  state.path = 'new';
+  assert.equal(a.gate('new', true), 'signin', 'the next game asks them to sign in');
+  state.path = 'play';
+  assert.equal(a.gate('play', true), 'signin', 'and the game they left is not open either');
+  assert.deepEqual(queued(), ['game'], 'still queued');
+});
+
+test('G6 a 401 mid-game in Spellbright: "Play again" on the same page after the game ends asks to sign in', async () => {
+  const { a, acct, state, page, A } = gatePage({ who: CHILD_A, cached: true });
+  await a.ready;
+  await tick();
+  acct.who = null;
+  add(page.local, 'wb.game:' + A, 'word-1', 1);
+  state.onChange('game');
+  await a.sync.flush();
+  assert.equal(a.gate('play', true), 'play');
+  await page.fire('winwa:finished'); // the game's last word is done
+  assert.equal(a.gate('play', true), 'signin');
 });

@@ -1,6 +1,7 @@
-// G6, login before play (off for now: REQUIRE_SIGN_IN in account/config.js).
-// When it is on, a signed-out player who presses New game, Continue game or
-// a board card is sent to sign in first, and comes back here afterwards.
+// G6, login before play (on: REQUIRE_SIGN_IN in account/config.js). Which
+// routes are play routes; account/gate.js decides what a signed-out player sees.
+// A signed-out player who presses New game, Continue game or
+// a board card sees "Sign in to play", and comes back here afterwards.
 import { REQUIRE_SIGN_IN, mustSignIn } from './account/config.js';
 
 export const isPlayPath = (path) => path === 'new' || path === 'play';

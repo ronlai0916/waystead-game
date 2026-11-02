@@ -546,7 +546,7 @@ export function about(main) {
     + '<p>The look menu at the top (the sun or moon button) switches between Day · Sunny garden, Day · Paint box, Night and Match device (which follows this device\'s light or dark setting). The choice is shared with Wordbright, our word-tile game, which uses the same three styles. You can also pick the day style here:</p>'
     + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
     + '<h2>Privacy</h2>'
-    + '<p>There are no adverts, no tracking and no analytics. You can play without an account: then progress and saved games stay in the browser on this device and are never sent to us. Signed in with a Waystead account, the player\'s progress, saved games and look are saved to that account too, so they follow the player to other devices. Each page asks account.waystead.co.uk whether someone is signed in; signed out, nothing else is sent. Signed out, clearing the browser\'s site data, or using another device, starts afresh.</p>'
+    + '<p>There are no adverts, no tracking and no analytics. To play, a child signs in with a Waystead account: their progress, saved games, look and voice are saved to that account, so they follow them to other devices, and play goes on offline on a device they have signed in on before. The home page and this page need no account. Each page asks account.waystead.co.uk whether someone is signed in; signed out, nothing else is sent.</p>'
     + '<h2>Who makes it</h2>'
     + '<p>Spellbright is made by <a href="https://waystead.co.uk">Waystead</a>. It is an independent project and is not affiliated with the Department for Education or any exam board.</p>'
     + '<h2>Fonts</h2>'

@@ -8,15 +8,19 @@
 //   it is applied here; if it has none yet, this device's look is saved there.
 // · A change here is sent after a short pause; offline, it waits (wa.prefs:<player>).
 // · The account's theme is system / light / dark: "system" is no sb.theme key.
+// · The voice for "Hear" (G8: sb.voice, a voice name; none = the best voice)
+//   travels in the account's free-form prefs, as prefs.voice.
 
 const THEMES = ['light', 'dark'];
 const DAY_STYLES = ['garden', 'paint'];
+const cleanVoice = (v) => (typeof v === 'string' && v.length <= 100 ? v : '');
 
 export function readLook(storage) {
   let theme = null;
   let dayStyle = null;
-  try { theme = storage.getItem('sb.theme'); dayStyle = storage.getItem('sb.dayStyle'); } catch (e) { /* private mode */ }
-  return { theme: THEMES.includes(theme) ? theme : 'system', dayStyle: DAY_STYLES.includes(dayStyle) ? dayStyle : 'garden' };
+  let voice = null;
+  try { theme = storage.getItem('sb.theme'); dayStyle = storage.getItem('sb.dayStyle'); voice = storage.getItem('sb.voice'); } catch (e) { /* private mode */ }
+  return { theme: THEMES.includes(theme) ? theme : 'system', dayStyle: DAY_STYLES.includes(dayStyle) ? dayStyle : 'garden', voice: cleanVoice(voice) };
 }
 
 export function writeLook(storage, look) {
@@ -24,6 +28,10 @@ export function writeLook(storage, look) {
     if (THEMES.includes(look.theme)) storage.setItem('sb.theme', look.theme);
     else storage.removeItem('sb.theme');
     if (DAY_STYLES.includes(look.dayStyle)) storage.setItem('sb.dayStyle', look.dayStyle);
+    if (look.voice !== undefined) {
+      if (cleanVoice(look.voice)) storage.setItem('sb.voice', look.voice);
+      else storage.removeItem('sb.voice');
+    }
   } catch (e) { /* private mode */ }
 }
 
@@ -44,12 +52,15 @@ export function createPrefsSync({ api, storage, playerId, applyLook = () => {}, 
     if (!r.ok || !r.data) return 'later';
     other = r.data.prefs && typeof r.data.prefs === 'object' ? r.data.prefs : {};
     if (other.saved === 1) {
-      const there = { theme: r.data.theme, dayStyle: r.data.dayStyle };
       const here = readLook(storage);
-      if (there.theme !== here.theme || there.dayStyle !== here.dayStyle) {
+      // A look saved before G8 has no voice: this device's choice is kept, and sent.
+      const hasVoice = typeof other.voice === 'string';
+      const there = { theme: r.data.theme, dayStyle: r.data.dayStyle, voice: hasVoice ? cleanVoice(other.voice) : here.voice };
+      if (there.theme !== here.theme || there.dayStyle !== here.dayStyle || there.voice !== here.voice) {
         writeLook(storage, there);
         applyLook();
       }
+      if (!hasVoice && here.voice) return push();
       return 'applied';
     }
     return push();
@@ -65,7 +76,7 @@ export function createPrefsSync({ api, storage, playerId, applyLook = () => {}, 
   async function push() {
     if (stopped) return 'stopped';
     const look = readLook(storage);
-    const r = await api.putPrefs({ theme: look.theme, dayStyle: look.dayStyle, prefs: { ...other, saved: 1 } });
+    const r = await api.putPrefs({ theme: look.theme, dayStyle: look.dayStyle, prefs: { ...other, saved: 1, voice: look.voice } });
     if (r.ok) { setDirty(false); return 'saved'; }
     if (r.status === 401) { setDirty(true); stop(); onExpired(); return 'expired'; }
     setDirty(true);
