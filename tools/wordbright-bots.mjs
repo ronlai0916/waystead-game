@@ -3,6 +3,8 @@
 //   node tools/wordbright-bots.mjs                 # the full run (C3 report)
 //   node tools/wordbright-bots.mjs --games 20      # quicker: 20 games per pair and board
 //   node tools/wordbright-bots.mjs --level year-3  # word level for every bot (default year-5)
+//   node tools/wordbright-bots.mjs --pairs hard-crazy  # only some pairs (comma-separated)
+//   node tools/wordbright-bots.mjs --boards junior     # only some boards (comma-separated)
 //
 // Per board, three pairs play seeded games (Easy v Hard, Normal v Crazy, and
 // Hard v Crazy head to head, since the first two pairs face different
@@ -22,6 +24,7 @@ const DATA = fileURLToPath(new URL('../wordbright/site/data/', import.meta.url))
 const json = (name) => JSON.parse(readFileSync(DATA + name, 'utf8'));
 const tiles = json('tiles.json');
 const starWords = json('star_words.json');
+const leaves = json('leaves.json');
 const words = loadWordGraph(readFileSync(DATA + 'words_all.dawg'));
 
 const args = process.argv.slice(2);
@@ -31,12 +34,13 @@ const arg = (name, fallback) => {
 };
 const LEVEL = arg('level', 'year-5');
 const GAMES = arg('games', null);
+const BOARDS = arg('boards', 'junior,standard,large').split(',');
 const PLAN = [
   ['junior', GAMES ? Number(GAMES) : 200],
   ['standard', GAMES ? Number(GAMES) : 200],
   ['large', GAMES ? Math.max(1, Math.round(Number(GAMES) / 4)) : 50],
-];
-const PAIRS = [['easy', 'hard'], ['normal', 'crazy'], ['hard', 'crazy']];
+].filter(([b]) => BOARDS.includes(b));
+const PAIRS = arg('pairs', 'easy-hard,normal-crazy,hard-crazy').split(',').map((p) => p.split('-'));
 const NAMES = { easy: 'Easy', normal: 'Normal', hard: 'Hard', crazy: 'Crazy' };
 const now = () => performance.now();
 
@@ -44,12 +48,15 @@ function playGame(boardId, env, a, b, seed) {
   const first = seed % 2 === 0 ? [a, b] : [b, a];
   const players = first.map((strength) => ({ name: NAMES[strength], computer: true, strength }));
   let s = newGame({ board: boardId, seed, level: LEVEL, players }, env);
-  const out = { times: [], capped: 0, illegal: 0, swaps: 0 };
+  const out = { times: [], by: {}, capped: 0, illegal: 0, swaps: 0 };
   for (let turns = 0; !s.over; turns++) {
     if (turns > 2000) throw new Error('game did not end');
     const t0 = now();
     const res = computerTurn(s, env, { now, timeLimit: timeLimit(boardId) });
-    out.times.push(now() - t0);
+    const took = now() - t0;
+    out.times.push(took);
+    const who = s.players[s.turn].strength;
+    (out.by[who] = out.by[who] || []).push(took);
     if (res.capped) out.capped++;
     if (res.action.type === 'swap') out.swaps++;
     const next = act(s, res.action, env);
@@ -66,8 +73,9 @@ console.log(`Word level ${LEVEL}. Times are per computer move (move finder + cho
 console.log('| Board | Pair | Games | Mean score | Wins (draws) | Mean move | Slowest move | Cap hit | Swaps | Crashes | Illegal |');
 console.log('|---|---|---|---|---|---|---|---|---|---|---|');
 const byStrength = {};
+const timeBy = {}; // strength → board → { sum, n, max }
 for (const [boardId, games] of PLAN) {
-  const env = { board: loadBoard(json(`board_${boardId}.json`)), tiles, starWords, words };
+  const env = { board: loadBoard(json(`board_${boardId}.json`)), tiles, starWords, words, leaves: leaves[boardId] };
   for (const [a, b] of PAIRS) {
     const sum = { [a]: 0, [b]: 0 };
     const wins = { [a]: 0, [b]: 0 };
@@ -85,6 +93,10 @@ for (const [boardId, games] of PLAN) {
         sum[b] += r.scores[b];
         if (r.winners.length > 1) draws++; else wins[r.winners[0]]++;
         times = times.concat(r.times);
+        for (const [k, list] of Object.entries(r.by)) {
+          const t = ((timeBy[k] = timeBy[k] || {})[boardId] = timeBy[k][boardId] || { sum: 0, n: 0, max: 0 });
+          for (const x of list) { t.sum += x; t.n++; if (x > t.max) t.max = x; }
+        }
         capped += r.capped;
         illegal += r.illegal;
         swaps += r.swaps;
@@ -109,6 +121,14 @@ for (const [boardId, games] of PLAN) {
 console.log('\nMean score per strength, over all its games on that board (opponents differ, so the Hard v Crazy row above is the fairer comparison of those two):');
 console.log('| Strength | ' + PLAN.map(([b]) => b).join(' | ') + ' |');
 console.log('|---|' + PLAN.map(() => '---|').join(''));
-for (const k of ['easy', 'normal', 'hard', 'crazy']) {
+const used = ['easy', 'normal', 'hard', 'crazy'].filter((k) => byStrength[k]);
+for (const k of used) {
   console.log(`| ${NAMES[k]} | ` + PLAN.map(([b]) => pad((byStrength[k][b].sum / byStrength[k][b].games).toFixed(0), 4)).join(' | ') + ' |');
+}
+
+console.log('\nMove time per strength, mean / slowest (time cap: 3 s, 5 s on Large):');
+console.log('| Strength | ' + PLAN.map(([b]) => b).join(' | ') + ' |');
+console.log('|---|' + PLAN.map(() => '---|').join(''));
+for (const k of used) {
+  console.log(`| ${NAMES[k]} | ` + PLAN.map(([b]) => { const t = timeBy[k][b]; return `${(t.sum / t.n).toFixed(1)} / ${t.max.toFixed(0)} ms`; }).join(' | ') + ' |');
 }

@@ -115,7 +115,7 @@ wordbright/
 ├── site/index.html, css/app.css   # shared structure
 ├── site/css/styles/  # the three looks: garden (Sunny garden), paint (Paint box), night (Night sky)
 ├── site/assets/fonts/  # OFL fonts, licences in licences/; each style's fonts load only when it is shown
-├── site/data/        # built: words_all.dawg (every list, tagged), board_*.json, tiles.json, star_words.json
+├── site/data/        # built: words_all.dawg (every list, tagged), board_*.json, tiles.json, star_words.json, leaves.json (Crazy's leave values)
 ├── site/data/meanings/  # built by tools/build-meanings.py (WordNet + Britfone): meanings and IPA, one shard per first 2–3 letters, fetched on demand
 ├── LICENSE-WORDNET.txt, LICENSE-BRITFONE.txt  # licences for the meanings data
 ├── site/assets/characters/  # built: the four computer players, WebP 256/128 px
@@ -157,8 +157,17 @@ python3 tools/wordbright-characters.py
 Computer players play each other (strengths, move times, illegal moves):
 
 ```bash
-node tools/wordbright-bots.mjs            # full run, about 2 minutes
+node tools/wordbright-bots.mjs            # full run (about 30 minutes; --boards junior to split it)
 node tools/wordbright-bots.mjs --games 20 # quick
+node tools/wordbright-bots.mjs --pairs hard-crazy --boards standard
+```
+
+Crazy's rack-leave table (`site/data/leaves.json`, one per board) is learned
+from self-play with our own bags, boards and word lists. Rebuild it after
+changing the tiles, boards or word lists (about 10 minutes, all cores):
+
+```bash
+node tools/wordbright-leaves.mjs
 ```
 
 Run the tests (Node 26, no npm packages):

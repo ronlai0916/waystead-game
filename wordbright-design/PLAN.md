@@ -180,3 +180,11 @@ Star words: 316 (Y1 43, Y2 61, Y3–4 109, Y5–6 104) in star_words.json, each 
 ## Launched 28/29 Oct 2026
 - Trade mark (UKIPO, Ron): no UK mark "Wordbright". BRIGHTWORK (classes 9/35/41/42) is a different word. Wordbright Ltd is a UK copywriting firm, a different field. Always shown as "Wordbright by Waystead".
 - `/wordbright/` open: no password, no noindex. Home page Wordbright card is a link (`WORDBRIGHT_LIVE = true`); home page accent Terracotta #B4532A (dark #E8875E).
+
+## G7 decisions (2 Nov 2026): a stronger Crazy
+- **Leave values learned from self-play** (`tools/wordbright-leaves.mjs` → `site/data/leaves.json`, one table per board): Hard plays Hard at a mix of word levels; at each turn a random part of the rack is kept, the rest drawn from the unseen tiles, and the best score found is recorded. A ridge regression over letters, doubles, triples, letter pairs and the vowel/consonant mix (with the board's openness as a covariate) gives each part's worth in points. No outside data.
+- **Reply simulation on Junior and Standard:** Crazy's 12 best moves (score + leave) are tried against seeded racks for the next player (12 × 8, then 6 × 8, then 3 × 8); the mean best reply counts against each. Soft budget: 40% of the time cap. Off on Large, where it only added noise (36 of 50 wins without it, 28 with).
+- **End of the bag:** with fewer than 7 tiles in the bag the learned leave fades out and kept tiles' points count against it (letters worth 4+ half again). With the bag empty and one other player, Crazy looks three moves ahead with both racks known.
+- **Swaps:** Crazy swaps when the best tiles to keep are worth more than any play.
+- Easy, Normal and Hard are unchanged.
+- Result (200/200/50 seeded games, year-5): Crazy beat Hard 133–67 on Junior, 141–58 on Standard (1 draw), 36–14 on Large. Mean Crazy move 62 ms / 127 ms / 5 ms on a desktop; slowest 0.9 s / 1.3 s / 0.5 s; time cap never hit.

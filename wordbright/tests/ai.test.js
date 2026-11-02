@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import { newGame, act, play, replay, hintsLeft, useHint, HINTS_PER_GAME, wordCheck } from '../site/js/engine/game.js';
 import { isWord } from '../site/js/engine/words.js';
 import { computerList, listTier } from '../site/js/engine/levels.js';
-import { computerTurn, chooseMove, leaveValue, rackAfter, timeLimit } from '../site/js/ai/computer.js';
+import { computerTurn, chooseMove, leaveValue, rackAfter, timeLimit, crazyLeave } from '../site/js/ai/computer.js';
+import { learnedLeave, leaveFeatures } from '../site/js/ai/leave.js';
 import { findHint, takeHint } from '../site/js/ai/hint.js';
 import { findMoves } from '../site/js/engine/movegen.js';
 import { CHARACTERS, STRENGTH_ORDER } from '../site/js/ai/characters.js';
-import { env, tiles, BOARD_IDS } from './helpers.js';
+import { env, tiles, leaves, BOARD_IDS } from './helpers.js';
 
 const bot = (strength, level) => ({ name: strength, computer: true, strength, level });
 
@@ -110,15 +111,60 @@ test('rack leave: blanks and S are worth keeping, Q without U is not; empty bag 
   assert.deepEqual(rackAfter(['a', '?', 'b'], [{ letter: 'x', blank: true }, { letter: 'b', blank: false }]), ['a']);
 });
 
-test('Crazy plays a move worth at least as much (score + leave) as Hard\'s', () => {
+test('learned leave table (data/leaves.json): one per board, empty leave 0, blank worth keeping, Q wants U', () => {
+  for (const boardId of BOARD_IDS) {
+    const t = leaves[boardId];
+    assert.ok(t && Object.keys(t).length > 100, boardId);
+    assert.equal(learnedLeave(t, []), 0);
+    assert.ok(learnedLeave(t, ['?']) > 3, `${boardId}: blank`);
+    assert.ok(learnedLeave(t, ['?']) > learnedLeave(t, ['v']), boardId);
+    assert.ok(learnedLeave(t, ['e', 'r', 's', 't']) > learnedLeave(t, ['a', 'e', 'i', 'o']), `${boardId}: too many vowels`);
+    if (boardId !== 'junior') assert.ok(learnedLeave(t, ['q', 'u']) > learnedLeave(t, ['q', 'i']), `${boardId}: Q without U`); // no Q in the Junior bag
+  }
+  assert.deepEqual(leaveFeatures(['s', 'e', '?', 'e']), ['1?', '1e', '2e', '1s', 'p?e', 'p?s', 'pes', 'vc2-1']);
+});
+
+test('Crazy near the end: kept tiles cost more as the bag runs out; with it empty, points left count (half again for 4+)', () => {
+  const t = leaves.standard;
+  const at = (bagLeft) => crazyLeave({ table: t, bagLeft, values: tiles.values });
+  assert.equal(at(0)(['k', 'e']), -(tiles.values.k * 1.5 + tiles.values.e));
+  assert.equal(at(40)(['k', 'e']), learnedLeave(t, ['k', 'e']));
+  assert.ok(at(2)(['w']) < at(2)(['e']));
+  assert.ok(at(2)(['w']) < at(6)(['w']));
+  // Without a table (older data), Crazy falls back to the simple leave.
+  assert.equal(crazyLeave({ table: null, bagLeft: 50, values: tiles.values })(['q', 'u']), leaveValue(['q', 'u'], 50, tiles.values));
+});
+
+test('Crazy: same position gives the same move, and it keeps to the time cap on a slow device', () => {
   const e = env('standard');
-  const s = newGame({ board: 'standard', seed: 9, level: 'year-5', players: [bot('crazy'), bot('hard')] }, e);
-  const crazy = computerTurn(s, e);
-  const hardState = { ...s, players: s.players.map((p, i) => (i === 0 ? { ...p, strength: 'hard' } : p)) };
-  const hard = computerTurn(hardState, e);
-  const value = (m) => m.score.total + leaveValue(rackAfter(s.players[0].rack, m.tiles), 50, e.tiles.values);
-  assert.ok(value(crazy.move) >= value(hard.move));
-  assert.ok(hard.move.score.total >= crazy.move.score.total);
+  let s = newGame({ board: 'standard', seed: 9, level: 'year-5', players: [bot('hard'), bot('crazy')] }, e);
+  for (let k = 0; k < 5; k++) s = act(s, computerTurn(s, e).action, e).state;
+  assert.equal(s.players[s.turn].strength, 'crazy');
+  const a = computerTurn(s, e);
+  assert.deepEqual(a.action, computerTurn(s, e).action);
+  assert.ok(act(s, a.action, e).ok);
+  // A clock that moves 20 ms every time it is read: about 150 reads fit in 3 s.
+  let t = 0;
+  let last = 0;
+  const now = () => (last = (t += 20));
+  const slow = computerTurn(s, e, { now, timeLimit: 3000 });
+  assert.ok(act(s, slow.action, e).ok);
+  assert.ok(last <= 3000 + 200, `took ${last} ms`);
+});
+
+test('Crazy v Hard on every board: legal moves only, and with the bag empty Crazy plays when it can', () => {
+  for (const boardId of BOARD_IDS) {
+    let endgame = 0;
+    for (const seed of [1, 2]) {
+      playOut(boardId, seed, [bot('crazy'), bot('hard')], 'year-5', (s, res) => {
+        if (s.players[s.turn].strength === 'crazy' && s.bag.pos === s.bag.order.length && res.found) {
+          endgame++;
+          assert.equal(res.action.type, 'play');
+        }
+      });
+    }
+    assert.ok(endgame > 0, `${boardId}: no end-game moves seen`);
+  }
 });
 
 // ---- Hints ---------------------------------------------------------------

@@ -28,13 +28,16 @@ export const boardJson = (id) => json('data/board_' + id + '.json');
 export const board = (id) => once('board:' + id, () => boardJson(id).then(loadBoard));
 export const tiles = () => json('data/tiles.json');
 export const starWords = () => json('data/star_words.json');
+// Rack-leave values for the Crazy computer, one table per board. Crazy still
+// plays (with its simpler leave) if the file cannot be read.
+const leaves = () => json('data/leaves.json').catch(() => ({}));
 // Word meanings: fetched a shard at a time, only when needed (not part of gameEnv).
 export const meanings = createMeanings((path) => fetchOk(path).then((r) => r.json()));
 export const wordGraph = () => once('graph', () => fetchOk('data/words_all.dawg').then((r) => r.arrayBuffer()).then(loadWordGraph));
 
-// Everything the engine needs for one game: the board, tiles, Star words and
-// the word graph.
+// Everything the engine needs for one game: the board, tiles, Star words,
+// the word graph and this board's leave table.
 export async function gameEnv(boardId) {
-  const [b, t, s, words] = await Promise.all([board(boardId), tiles(), starWords(), wordGraph()]);
-  return { board: b, tiles: t, starWords: s, words };
+  const [b, t, s, words, l] = await Promise.all([board(boardId), tiles(), starWords(), wordGraph(), leaves()]);
+  return { board: b, tiles: t, starWords: s, words, leaves: l[boardId] || null };
 }
