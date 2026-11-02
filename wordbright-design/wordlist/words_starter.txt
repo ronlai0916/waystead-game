@@ -21182,8 +21182,6 @@ middle
 middleman
 middlemen
 middles
-midget
-midgets
 midnight
 midnights
 midriff
@@ -30984,9 +30982,7 @@ sirloin
 sirloins
 sirs
 sissier
-sissies
 sissiest
-sissy
 sister
 sisterhood
 sisterhoods
@@ -31689,7 +31685,6 @@ soda
 sodas
 sodded
 sodden
-sodding
 sodium
 sods
 sofa

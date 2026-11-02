@@ -1,4 +1,6 @@
 # Every WordNet sense is offensive (tools/build-meanings.py --prune-lists).
+boche
+boches
 coolie
 coolies
 cooly
@@ -28,12 +30,21 @@ gypping
 gyps
 honkies
 honky
+jerries
+jerry
 kafir
 kafirs
+kraut
+krauts
+mick
+mickey
+mickeys
+micks
 mongolism
 mongolisms
 mongoloid
 mongoloids
+moonie
 nance
 nances
 negroid

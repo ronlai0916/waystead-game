@@ -4828,7 +4828,6 @@ billows
 billowy
 bills
 billy
-bimbo
 bimonthlies
 bimonthly
 bin
@@ -6815,14 +6814,12 @@ busyness
 busywork
 but
 butane
-butch
 butcher
 butchered
 butcheries
 butchering
 butchers
 butchery
-butches
 butler
 butlers
 butt
@@ -9539,8 +9536,6 @@ cockroach
 cockroaches
 cockscomb
 cockscombs
-cocksucker
-cocksuckers
 cocksure
 cocktail
 cocktails
@@ -19252,9 +19247,6 @@ fading
 fads
 faecal
 faeces
-fagged
-fagging
-fags
 fail
 failed
 failing
@@ -19399,9 +19391,7 @@ fanfares
 fang
 fangs
 fanned
-fannies
 fanning
-fanny
 fans
 fantasied
 fantasies
@@ -20555,8 +20545,6 @@ floorboards
 floored
 flooring
 floors
-floozies
-floozy
 flop
 flophouse
 flophouses
@@ -22563,7 +22551,6 @@ gimmick
 gimmickry
 gimmicks
 gimmicky
-gimpy
 gin
 ginger
 gingerbread
@@ -23394,8 +23381,6 @@ grinding
 grinds
 grindstone
 grindstones
-gringo
-gringos
 grinned
 grinning
 grins
@@ -23802,9 +23787,7 @@ gynaecological
 gynaecologist
 gynaecologists
 gynaecology
-gypsies
 gypsum
-gypsy
 gyrate
 gyrated
 gyrates
@@ -25466,7 +25449,6 @@ horticultural
 horticulture
 horticulturist
 horticulturists
-hos
 hosanna
 hosannas
 hose
@@ -25840,7 +25822,6 @@ husks
 husky
 hussar
 hussars
-hussies
 hustings
 hustle
 hustled
@@ -32850,8 +32831,6 @@ middling
 middy
 midge
 midges
-midget
-midgets
 midland
 midlands
 midmost
@@ -34221,8 +34200,6 @@ muggy
 mugs
 mukluk
 mukluks
-mulatto
-mulattoes
 mulberries
 mulberry
 mulch
@@ -41559,7 +41536,6 @@ psychical
 psychically
 psychics
 psyching
-psycho
 psychoanalyse
 psychoanalysed
 psychoanalyses
@@ -41578,7 +41554,6 @@ psychology
 psychopath
 psychopathic
 psychopaths
-psychos
 psychoses
 psychosis
 psychosomatic
@@ -42139,7 +42114,6 @@ queenliest
 queenly
 queens
 queerest
-queerness
 quell
 quelled
 quelling
@@ -43354,8 +43328,6 @@ redistrict
 redistricted
 redistricting
 redistricts
-redneck
-rednecks
 redness
 redo
 redoes
@@ -43386,8 +43358,6 @@ redresses
 redressing
 redrew
 reds
-redskin
-redskins
 reduce
 reduced
 reduces
@@ -48654,9 +48624,7 @@ sis
 sisal
 sises
 sissier
-sissies
 sissiest
-sissy
 sister
 sisterhood
 sisterhoods
@@ -49696,7 +49664,6 @@ soda
 sodas
 sodded
 sodden
-sodding
 sodium
 sods
 sofa
@@ -50773,12 +50740,10 @@ squatter
 squatters
 squattest
 squatting
-squaw
 squawk
 squawked
 squawking
 squawks
-squaws
 squeak
 squeaked
 squeakier
@@ -59346,10 +59311,6 @@ welling
 wells
 wellspring
 wellsprings
-welsh
-welshed
-welshes
-welshing
 welt
 welted
 welter

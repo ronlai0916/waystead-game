@@ -16,6 +16,7 @@ Not used: Collins Scrabble Words, NWL/TWL, ENABLE as a game list, or any tournam
 5. Two-letter words: only a short, child-friendly list of 36.
 6. Star words: 316 — Year 1 (43) and Year 2 (61) common exception words (tools/ks1_words.json, meanings written for Wordbright; a, I, Mr, Mrs, Christmas left out because they cannot be played), plus Spellbright's 213 Year 3–6 words. All are added to every list (including "february").
 7. Large and Very large lists were reviewed by pattern search; extra unsuitable words found there are in OWN_BLOCK in tools/build_lists.py.
+8. G7b review (2 Nov 2026): slurs and insults the filter missed (WordNet usage domains and glosses, plus our own sweep), 158 more words in OWN_BLOCK, plus 39 from the starter and steady lists decided by Ron on 2 Nov (RON_APPROVED_STARTER_STEADY); see review-2026-11-02.md. `tools/build-meanings.py --prune-lists` applies OWN_BLOCK and the WordNet check (now case-insensitive) to the lists without a full rebuild; new finds in the starter or steady lists are only reported.
 
 ## Letter values
 value = round(1 + log2(share of "e" / share of the letter)), clamped to 1–8.

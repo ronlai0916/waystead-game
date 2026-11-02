@@ -51,6 +51,27 @@ methedrine methedrines methaqualone methaqualones opiumism opiumisms'''.split())
 # Swearing that slipped through (W1a review).
 OWN_BLOCK |= {'goddamn', 'goddamns', 'goddamned', 'goddamning', 'goddammit'}
 
+# Slurs and insults found in the G7b review (2 Nov 2026): see wordlist/review-2026-11-02.md.
+OWN_BLOCK |= set('''abo abos assed berk berks bint bints boche boches bogtrotter bogtrotters bohunk bohunks boong boongs bulldike
+chola cholas cholo cholos crip crips darky dink dinks fagoter fagoters fagoting gimp gimped gimping gimps
+ginzoes gipper gippers gippo gippos git gits golliwog golliwogs gringa gringas gypper gyppers gypster
+gypsters gypsyish harlotry headcase headcases hun hunnish huns jerries jerry jew jewed jewfish jewfishes
+jewing jews kaffir kaffirs kraut krauts ladyboy lez limey limeys lowlife lowlifes lubra lubras mammies mammy
+marrano marranos mick mickey mickeys micks minge minging mongol mongols moonie nancies nancy nancys negress
+negresses nellie nellies nelly nutcase nutcases nutter nutters octoroon octoroons papism papisms papist
+papistries papistry pecker peckers peckerwood peckerwoods pillock pillocks plonker plonkers pom pommie
+pommies pommy poms poofter poofters poperies popery pouf poufed pouffed pouffy poufs putz putzed putzes
+putzing quadroon quadroons rednecked sambo sambos sawney sawneys schizo schizos sheeny shylock shylocks
+sissyish sissyness slanty slapper slappers slitty tarty trannie trannies welcher welchers welsher welshers
+woggish'''.split())
+
+# Ron's decisions on the G7b "Ron decides" list (2 Nov 2026): blocked, and
+# removed from the starter and steady lists too (see review-2026-11-02.md).
+RON_APPROVED_STARTER_STEADY = set('''cocksucker cocksuckers redskin redskins squaw squaws mulatto mulattoes gringo gringos
+welsh welshed welshes welshing fags fagged fagging butch butches queerness sissy sissies hussies floozy floozies
+bimbo hos fanny fannies sodding psycho psychos gimpy midget midgets redneck rednecks gypsy gypsies'''.split())
+OWN_BLOCK |= RON_APPROVED_STARTER_STEADY
+
 # Words whose every WordNet sense is offensive, found by tools/build-meanings.py --prune-lists.
 _WN_BLOCK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'wordnet_block.txt')
 if os.path.exists(_WN_BLOCK):

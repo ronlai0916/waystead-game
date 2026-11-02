@@ -9889,9 +9889,7 @@ bergs
 bergschrund
 bergschrunds
 beriberi
-berk
 berkelium
-berks
 berley
 berlin
 berlins
@@ -10462,7 +10460,6 @@ biltong
 bimah
 bimahs
 bimanous
-bimbo
 bimestrial
 bimetal
 bimetallic
@@ -10521,8 +10518,6 @@ binomially
 binomials
 binominal
 bins
-bint
-bints
 binturong
 binturongs
 binucleate
@@ -11814,8 +11809,6 @@ bogies
 bogle
 bogles
 bogs
-bogtrotter
-bogtrotters
 bogus
 bogusly
 bogusness
@@ -11828,8 +11821,6 @@ boho
 bohos
 bohrium
 bohriums
-bohunk
-bohunks
 boil
 boiled
 boiler
@@ -12147,8 +12138,6 @@ boondoggler
 boondogglers
 boondoggles
 boondoggling
-boong
-boongs
 boonies
 boons
 boor
@@ -13839,7 +13828,6 @@ bullae
 bullate
 bullbat
 bullbats
-bulldike
 bulldog
 bulldogged
 bulldogging
@@ -14326,7 +14314,6 @@ butanol
 butanols
 butanone
 butanones
-butch
 butcher
 butcherbird
 butcherbirds
@@ -14337,7 +14324,6 @@ butcheries
 butchering
 butchers
 butchery
-butches
 butene
 butenes
 buteo
@@ -18460,8 +18446,6 @@ choker
 chokers
 chokes
 choking
-chola
-cholas
 cholecalciferol
 cholecalciferols
 cholecyst
@@ -18486,8 +18470,6 @@ cholinesterases
 cholis
 cholla
 chollas
-cholo
-cholos
 chomp
 chomped
 chomping
@@ -20310,8 +20292,6 @@ cockshies
 cockshy
 cockspur
 cockspurs
-cocksucker
-cocksuckers
 cocksure
 cockswain
 cockswains
@@ -26939,7 +26919,6 @@ darkness
 darkroom
 darkrooms
 darksome
-darky
 darling
 darlings
 darmstadtium
@@ -30643,11 +30622,9 @@ dingy
 dining
 dinitrobenzene
 dinitrobenzenes
-dink
 dinkier
 dinkies
 dinkiest
-dinks
 dinky
 dinned
 dinner
@@ -39686,10 +39663,6 @@ faffed
 faffing
 faffs
 fagaceous
-fagged
-fagging
-fagoting
-fags
 fah
 fahlband
 fahlbands
@@ -39914,9 +39887,7 @@ fanjets
 fanlight
 fanlights
 fanned
-fannies
 fanning
-fanny
 fanon
 fanons
 fans
@@ -42182,8 +42153,6 @@ floorshow
 floorshows
 floorwalker
 floorwalkers
-floozies
-floozy
 flop
 flophouse
 flophouses
@@ -46104,11 +46073,6 @@ gimmick
 gimmickry
 gimmicks
 gimmicky
-gimp
-gimped
-gimping
-gimps
-gimpy
 gin
 ginger
 gingerbread
@@ -46188,10 +46152,8 @@ girts
 gisarme
 gisarmes
 gist
-git
 gite
 gites
-gits
 gittern
 gitterns
 give
@@ -46943,8 +46905,6 @@ goliards
 goliath
 goliaths
 gollies
-golliwog
-golliwogs
 golly
 gombroon
 gombroons
@@ -47904,8 +47864,6 @@ grindings
 grinds
 grindstone
 grindstones
-gringo
-gringos
 grinned
 grinner
 grinners
@@ -48728,16 +48686,9 @@ gynoecia
 gynoecium
 gynophore
 gynophores
-gypper
-gyppers
-gypsies
 gypsophila
 gypsophilas
-gypster
-gypsters
 gypsum
-gypsy
-gypsyish
 gyral
 gyrate
 gyrated
@@ -49598,7 +49549,6 @@ harlequin
 harlequinade
 harlequinades
 harlequins
-harlotry
 harls
 harm
 harmattan
@@ -49965,8 +49915,6 @@ headbutt
 headbutted
 headbutting
 headbutts
-headcase
-headcases
 headcheese
 headcloth
 headcloths
@@ -52151,7 +52099,6 @@ horticulturally
 horticulture
 horticulturist
 horticulturists
-hos
 hosanna
 hosannah
 hosannahs
@@ -52614,7 +52561,6 @@ humpiest
 humps
 humpy
 hums
-hun
 hunch
 hunchback
 hunchbacked
@@ -52649,7 +52595,6 @@ hunkier
 hunkiest
 hunks
 hunky
-huns
 hunt
 hunted
 hunter
@@ -52735,7 +52680,6 @@ husks
 husky
 hussar
 hussars
-hussies
 hustings
 hustle
 hustled
@@ -58854,8 +58798,6 @@ jeroboam
 jeroboams
 jerreed
 jerreeds
-jerries
-jerry
 jerrybuilt
 jerrycan
 jerrycans
@@ -58897,8 +58839,6 @@ jettons
 jetty
 jetway
 jetways
-jew
-jewed
 jewel
 jewelfish
 jewelled
@@ -58910,10 +58850,6 @@ jewelling
 jewels
 jewelweed
 jewelweeds
-jewfish
-jewfishes
-jewing
-jews
 jezebel
 jezebels
 jib
@@ -60642,8 +60578,6 @@ krait
 kraits
 kraken
 krakens
-kraut
-krauts
 kremlin
 kremlins
 kreplach
@@ -60941,7 +60875,6 @@ lads
 lady
 ladybird
 ladybirds
-ladyboy
 ladybug
 ladybugs
 ladyfinger
@@ -62783,8 +62716,6 @@ limescale
 limestone
 limewater
 limewaters
-limey
-limeys
 limicoline
 limicolous
 limier
@@ -63974,8 +63905,6 @@ lowlanders
 lowlands
 lowlier
 lowliest
-lowlife
-lowlifes
 lowlight
 lowlights
 lowliness
@@ -64007,8 +63936,6 @@ lube
 lubed
 lubes
 lubing
-lubra
-lubras
 lubric
 lubricant
 lubricants
@@ -65102,7 +65029,6 @@ mammals
 mammary
 mammet
 mammets
-mammies
 mammiferous
 mammilla
 mammillae
@@ -65118,7 +65044,6 @@ mammonist
 mammonists
 mammoth
 mammoths
-mammy
 mampara
 mams
 man
@@ -67425,10 +67350,6 @@ mic
 mica
 mice
 micellae
-mick
-mickey
-mickeys
-micks
 micro
 microaggression
 microaggressions
@@ -67677,8 +67598,6 @@ midfielder
 midfielders
 midge
 midges
-midget
-midgets
 midgut
 midguts
 midi
@@ -68068,10 +67987,8 @@ minesweeper
 minesweepers
 mineworker
 mineworkers
-minge
 mingily
 minginess
-minging
 mingle
 mingled
 mingler
@@ -69285,8 +69202,6 @@ mongering
 mongers
 mongo
 mongoes
-mongol
-mongols
 mongoose
 mongooses
 mongos
@@ -69602,7 +69517,6 @@ mooneye
 mooneyes
 moonfish
 moong
-moonie
 mooning
 moonless
 moonlight
@@ -70291,8 +70205,6 @@ mujik
 mujiks
 mukluk
 mukluks
-mulatto
-mulattoes
 mulberries
 mulberry
 mulch
@@ -71100,8 +71012,6 @@ namesakes
 nametape
 nametapes
 naming
-nancies
-nancy
 nankeen
 nankeens
 nankin
@@ -71649,8 +71559,6 @@ neighs
 neither
 nekton
 nektons
-nellies
-nelly
 nelson
 nelsons
 nemathelminth
@@ -73576,8 +73484,6 @@ nut
 nutation
 nutations
 nutbrown
-nutcase
-nutcases
 nutcracker
 nutcrackers
 nutgall
@@ -73617,8 +73523,6 @@ nuts
 nutshell
 nutshells
 nutted
-nutter
-nutters
 nuttier
 nuttiest
 nuttily
@@ -74191,8 +74095,6 @@ octopod
 octopods
 octopus
 octopuses
-octoroon
-octoroons
 octosyllabic
 octosyllable
 octosyllables
@@ -77843,12 +77745,7 @@ papillons
 papillose
 papillote
 papillotes
-papism
-papisms
-papist
 papistical
-papistries
-papistry
 papoose
 papooses
 pappi
@@ -78980,8 +78877,6 @@ peccavi
 peccavis
 peck
 pecked
-pecker
-peckers
 pecking
 peckish
 pecks
@@ -81309,8 +81204,6 @@ pillion
 pillions
 pilliwinks
 pilliwinkses
-pillock
-pillocks
 pilloried
 pillories
 pillory
@@ -82284,8 +82177,6 @@ ploddings
 plods
 plonk
 plonked
-plonker
-plonkers
 plonking
 plonks
 plop
@@ -82995,7 +82886,6 @@ polyzoans
 polyzoaria
 polyzoarium
 polyzoic
-pom
 pomace
 pomaces
 pomade
@@ -83021,8 +82911,6 @@ pommel
 pommelled
 pommelling
 pommels
-pommies
-pommy
 pomologies
 pomology
 pomp
@@ -83038,7 +82926,6 @@ pomposity
 pompous
 pompously
 pompousness
-poms
 ponce
 ponceau
 ponceaus
@@ -83110,8 +82997,6 @@ poodle
 poodles
 poods
 pooed
-poofter
-poofters
 pooh
 poohed
 poohing
@@ -83151,8 +83036,6 @@ popcorn
 pope
 popedom
 popedoms
-poperies
-popery
 popes
 popeyed
 popgun
@@ -83695,10 +83578,8 @@ pouchier
 pouchiest
 pouching
 pouchy
-pouf
 pouffe
 pouffes
-poufs
 poulard
 poulards
 poult
@@ -86423,7 +86304,6 @@ psychically
 psychics
 psyching
 psychism
-psycho
 psychoactive
 psychoanalyse
 psychoanalysed
@@ -86498,7 +86378,6 @@ psychophysiological
 psychophysiologist
 psychophysiologists
 psychophysiology
-psychos
 psychoses
 psychosexual
 psychosis
@@ -87139,8 +87018,6 @@ putty
 puttying
 puttyroot
 puttyroots
-putz
-putzes
 puzzle
 puzzled
 puzzlement
@@ -87376,8 +87253,6 @@ quadrisects
 quadrivalent
 quadrivial
 quadrivium
-quadroon
-quadroons
 quadrumanous
 quadruped
 quadrupedal
@@ -87606,7 +87481,6 @@ queens
 queenship
 queenships
 queerest
-queerness
 quell
 quelled
 queller
@@ -90008,9 +89882,6 @@ redlined
 redlines
 redlining
 redly
-redneck
-rednecked
-rednecks
 redness
 redo
 redoes
@@ -90061,8 +89932,6 @@ redshirt
 redshirted
 redshirting
 redshirts
-redskin
-redskins
 redstart
 redstarts
 redtop
@@ -95309,8 +95178,6 @@ sambaing
 sambar
 sambars
 sambas
-sambo
-sambos
 same
 samekh
 samekhs
@@ -96230,7 +96097,6 @@ schistose
 schistosome
 schistosomes
 schistosomiasis
-schizo
 schizogeneses
 schizogenesis
 schizogonies
@@ -96246,7 +96112,6 @@ schizophrenics
 schizophyceous
 schizopod
 schizopods
-schizos
 schizothymia
 schizothymias
 schlemiel
@@ -98641,7 +98506,6 @@ sheds
 sheen
 sheenier
 sheeniest
-sheeny
 sheep
 sheepcote
 sheepcotes
@@ -99377,8 +99241,6 @@ shy
 shyer
 shyest
 shying
-shylock
-shylocks
 shyly
 shyness
 shyster
@@ -100031,11 +99893,8 @@ sises
 siskin
 siskins
 sissier
-sissies
 sissiest
 sissified
-sissy
-sissyish
 sister
 sisterhood
 sisterhoods
@@ -100477,8 +100336,6 @@ slapheads
 slapjack
 slapjacks
 slapped
-slapper
-slappers
 slapping
 slaps
 slapstick
@@ -101721,7 +101578,6 @@ sodden
 soddenly
 soddenness
 soddennesses
-sodding
 sodium
 sods
 soever
@@ -103760,14 +103616,12 @@ squatter
 squatters
 squattest
 squatting
-squaw
 squawk
 squawked
 squawker
 squawkers
 squawking
 squawks
-squaws
 squeak
 squeaked
 squeaker
@@ -109147,7 +109001,6 @@ tartrate
 tartrates
 tartrazine
 tarts
-tarty
 tarweed
 tarweeds
 taser
@@ -112647,8 +112500,6 @@ trance
 trances
 tranche
 tranches
-trannie
-trannies
 tranquil
 tranquiler
 tranquilest
@@ -121279,12 +121130,6 @@ wells
 wellspring
 wellsprings
 welly
-welsh
-welshed
-welsher
-welshers
-welshes
-welshing
 welt
 welted
 welter

@@ -5715,9 +5715,7 @@ berets
 berg
 bergs
 beriberi
-berk
 berkelium
-berks
 berm
 berms
 berried
@@ -6078,7 +6076,6 @@ bills
 billy
 billycan
 billycans
-bimbo
 bimetallic
 bimetallics
 bimetallism
@@ -8622,14 +8619,12 @@ busyness
 busywork
 but
 butane
-butch
 butcher
 butchered
 butcheries
 butchering
 butchers
 butchery
-butches
 butler
 butlers
 buts
@@ -12085,8 +12080,6 @@ cockroach
 cockroaches
 cockscomb
 cockscombs
-cocksucker
-cocksuckers
 cocksure
 cocktail
 cocktails
@@ -24159,10 +24152,6 @@ faff
 faffed
 faffing
 faffs
-fagged
-fagging
-fagoting
-fags
 fail
 failed
 failing
@@ -24328,9 +24317,7 @@ fangs
 fanlight
 fanlights
 fanned
-fannies
 fanning
-fanny
 fans
 fantail
 fantails
@@ -25751,8 +25738,6 @@ flooring
 floors
 floorwalker
 floorwalkers
-floozies
-floozy
 flop
 flophouse
 flophouses
@@ -28188,11 +28173,6 @@ gimmick
 gimmickry
 gimmicks
 gimmicky
-gimp
-gimped
-gimping
-gimps
-gimpy
 gin
 ginger
 gingerbread
@@ -28241,10 +28221,8 @@ girths
 girting
 girts
 gist
-git
 gite
 gites
-gits
 give
 giveaway
 giveaways
@@ -28664,8 +28642,6 @@ golfers
 golfing
 golfs
 gollies
-golliwog
-golliwogs
 golly
 gonad
 gonadal
@@ -29247,8 +29223,6 @@ grinding
 grinds
 grindstone
 grindstones
-gringo
-gringos
 grinned
 grinning
 grins
@@ -29785,13 +29759,7 @@ gynaecological
 gynaecologist
 gynaecologists
 gynaecology
-gypper
-gyppers
-gypsies
-gypster
-gypsters
 gypsum
-gypsy
 gyrate
 gyrated
 gyrates
@@ -30323,7 +30291,6 @@ harking
 harks
 harlequin
 harlequins
-harlotry
 harm
 harmed
 harmful
@@ -30584,8 +30551,6 @@ headbutt
 headbutted
 headbutting
 headbutts
-headcase
-headcases
 headcheese
 headcount
 headcounts
@@ -31891,7 +31856,6 @@ horticulturalists
 horticulture
 horticulturist
 horticulturists
-hos
 hosanna
 hosannas
 hose
@@ -32347,7 +32311,6 @@ husks
 husky
 hussar
 hussars
-hussies
 hustings
 hustle
 hustled
@@ -35960,8 +35923,6 @@ jettisoned
 jettisoning
 jettisons
 jetty
-jew
-jewed
 jewel
 jewelled
 jeweller
@@ -35970,8 +35931,6 @@ jewellers
 jewellery
 jewelling
 jewels
-jewing
-jews
 jib
 jibbed
 jibbing
@@ -36920,8 +36879,6 @@ kowtowing
 kowtows
 kraal
 kraals
-kraut
-krauts
 krill
 krone
 kroner
@@ -38188,8 +38145,6 @@ limericks
 limes
 limescale
 limestone
-limey
-limeys
 limier
 limiest
 liming
@@ -38939,8 +38894,6 @@ lowlanders
 lowlands
 lowlier
 lowliest
-lowlife
-lowlifes
 lowliness
 lowly
 lowness
@@ -39607,14 +39560,12 @@ mammalian
 mammalians
 mammals
 mammary
-mammies
 mammogram
 mammograms
 mammography
 mammon
 mammoth
 mammoths
-mammy
 mams
 man
 manacle
@@ -40950,10 +40901,6 @@ miasmas
 mic
 mica
 mice
-mick
-mickey
-mickeys
-micks
 micro
 microaggression
 microaggressions
@@ -41056,8 +41003,6 @@ midfielder
 midfielders
 midge
 midges
-midget
-midgets
 midi
 midis
 midland
@@ -42115,8 +42060,6 @@ monger
 mongered
 mongering
 mongers
-mongol
-mongols
 mongoose
 mongooses
 mongrel
@@ -42743,8 +42686,6 @@ mugwumps
 mujahideen
 mukluk
 mukluks
-mulatto
-mulattoes
 mulberries
 mulberry
 mulch
@@ -44670,8 +44611,6 @@ nurtures
 nurturing
 nus
 nut
-nutcase
-nutcases
 nutcracker
 nutcrackers
 nuthatch
@@ -44703,8 +44642,6 @@ nuts
 nutshell
 nutshells
 nutted
-nutter
-nutters
 nuttier
 nuttiest
 nuttiness
@@ -47135,7 +47072,6 @@ papery
 papilla
 papillae
 papillary
-papist
 papoose
 papooses
 pappies
@@ -47864,8 +47800,6 @@ peccaries
 peccary
 peck
 pecked
-pecker
-peckers
 pecking
 peckish
 pecks
@@ -49173,8 +49107,6 @@ pilled
 pilling
 pillion
 pillions
-pillock
-pillocks
 pilloried
 pillories
 pillory
@@ -49755,8 +49687,6 @@ ploddings
 plods
 plonk
 plonked
-plonker
-plonkers
 plonking
 plonks
 plop
@@ -50167,7 +50097,6 @@ polyunsaturates
 polyurethane
 polyurethanes
 polyvinyl
-pom
 pomade
 pomaded
 pomades
@@ -50180,8 +50109,6 @@ pommel
 pommelled
 pommelling
 pommels
-pommies
-pommy
 pomp
 pompadour
 pompadours
@@ -50193,7 +50120,6 @@ pomposity
 pompous
 pompously
 pompousness
-poms
 ponce
 ponced
 ponces
@@ -50239,8 +50165,6 @@ pooches
 poodle
 poodles
 pooed
-poofter
-poofters
 pooh
 poohed
 poohing
@@ -50628,10 +50552,8 @@ pouch
 pouched
 pouches
 pouching
-pouf
 pouffe
 pouffes
-poufs
 poulterer
 poulterers
 poultice
@@ -52314,7 +52236,6 @@ psychical
 psychically
 psychics
 psyching
-psycho
 psychoactive
 psychoanalyse
 psychoanalysed
@@ -52347,7 +52268,6 @@ psychopaths
 psychopathy
 psychopharmacology
 psychophysiology
-psychos
 psychoses
 psychosis
 psychosocial
@@ -52794,8 +52714,6 @@ putting
 putts
 putty
 puttying
-putz
-putzes
 puzzle
 puzzled
 puzzlement
@@ -53022,7 +52940,6 @@ queenliest
 queenly
 queens
 queerest
-queerness
 quell
 quelled
 quelling
@@ -54685,8 +54602,6 @@ redivided
 redivides
 redividing
 redlining
-redneck
-rednecks
 redness
 redo
 redoes
@@ -54720,8 +54635,6 @@ redresses
 redressing
 redrew
 reds
-redskin
-redskins
 reduce
 reduced
 reducer
@@ -58869,13 +58782,11 @@ schismatics
 schisms
 schist
 schistosomiasis
-schizo
 schizoid
 schizoids
 schizophrenia
 schizophrenic
 schizophrenics
-schizos
 schlemiel
 schlemiels
 schlep
@@ -60412,7 +60323,6 @@ sheds
 sheen
 sheenier
 sheeniest
-sheeny
 sheep
 sheepdog
 sheepdogs
@@ -61364,10 +61274,8 @@ sis
 sisal
 sises
 sissier
-sissies
 sissiest
 sissified
-sissy
 sister
 sisterhood
 sisterhoods
@@ -61683,8 +61591,6 @@ slap
 slapdash
 slaphappy
 slapped
-slapper
-slappers
 slapping
 slaps
 slapstick
@@ -62607,7 +62513,6 @@ sodas
 sodded
 sodden
 soddenly
-sodding
 sodium
 sods
 soever
@@ -63916,14 +63821,12 @@ squatter
 squatters
 squattest
 squatting
-squaw
 squawk
 squawked
 squawker
 squawkers
 squawking
 squawks
-squaws
 squeak
 squeaked
 squeaker
@@ -67256,7 +67159,6 @@ tarting
 tartly
 tartness
 tarts
-tarty
 taser
 tasered
 tasering
@@ -74848,12 +74750,6 @@ wells
 wellspring
 wellsprings
 welly
-welsh
-welshed
-welsher
-welshers
-welshes
-welshing
 welt
 welted
 welter

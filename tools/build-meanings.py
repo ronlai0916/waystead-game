@@ -108,6 +108,9 @@ suicide torture despicable contemptible expletive expletives pejorative pejorati
 homosexual homosexuals homosexuality orgy orgies orgiastic putz goddamn goddamned
 """.split())
 
+# Blocked game words that are a people's name in a meaning (G7b).
+NAMES_IN_MEANINGS = {"jew", "jews", "mongol", "mongols", "hun", "huns", "welsh"}
+
 # Phrases that mark a sense as unsuitable even without a blocked word.
 MEANING_PHRASES = re.compile(r"\b(offensive (term|name|word)|term of (abuse|contempt)|used as a term|ethnic slur|"
                              r"informal term for (a|the) (penis|breast|buttocks)|street name for|make love|making love|made love|lovemaking)\b")
@@ -363,16 +366,24 @@ class WordNet:
         return ss_type, ptrs, gloss.strip(), members
 
 
-def load_blocklist():
+def load_build_lists():
     spec = importlib.util.spec_from_file_location("build_lists", WORDLIST / "tools" / "build_lists.py")
     bl = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(bl)
+    return bl
+
+
+def load_blocklist():
+    bl = load_build_lists()
     words = set(MEANING_BLOCK) | set(bl.OWN_BLOCK)
     for line in open(WORDLIST / "excluded_full.txt", encoding="utf-8"):
         w, _, why = line.rstrip("\n").partition("\t")
         if not why.startswith("2-letter"):
             words.add(w)
     words -= set(bl.ALLOW_BACK)
+    # Blocked as lower-case game words, but in a meaning they are the names of
+    # peoples ("a skullcap worn by Jews", "the Mongols"), so meanings may use them.
+    words -= NAMES_IN_MEANINGS
     return words, tuple(bl.ROOTS)
 
 
@@ -516,34 +527,55 @@ def write_licences(sources, wn_dir):
 
 def prune_lists(wn):
     """Remove from every word list each word whose senses (its own, or its lemma's)
-    are all marked obscene, vulgar, a slur, disparaging or profane. Star words stay.
+    are all marked obscene, vulgar, a slur, disparaging or profane, and every word
+    in our own blocklist (OWN_BLOCK). Star words stay.
     The words go into wordlist/wordnet_block.txt (build_lists.py blocks them on a
     rebuild) and excluded_full.txt."""
     bad = wn.offsets_named(OFFENSIVE_USAGE)
     xl = [w.strip() for w in open(WORDLIST / "words_xlarge.txt", encoding="utf-8") if w.strip()]
+    steady = {w.strip() for w in open(WORDLIST / "words_steady.txt", encoding="utf-8") if w.strip()}  # holds starter
     stars = {e["word"] for e in json.load(open(WORDLIST / "star_words.json", encoding="utf-8"))}
-    found = []
-    for w in xl:
-        marks = [any(sym == ";u" and (o, q) in bad for sym, o, q in wn.synset(off, p)[1])
-                 for p in POS_FILES for l in wn.lemmas(w, p) for off in wn.index[(l, p)] if l in wn.synset(off, p)[3]]
-        if marks and all(marks) and w not in stars:
-            found.append(w)
     old = {l.strip() for l in PRUNED.read_text().splitlines() if l.strip() and not l.startswith("#")} if PRUNED.exists() else set()
+    found = []
+    review = []
+    for w in xl:
+        # Case does not matter here: WordNet writes most slurs with a capital
+        # ("Kraut", "Boche"), so a lower-case-only match missed them (G7b).
+        marks = [any(sym == ";u" and (o, q) in bad for sym, o, q in wn.synset(off, p)[1])
+                 for p in POS_FILES for l in wn.lemmas(w, p) for off in wn.index[(l, p)]
+                 if l in (m.lower() for m in wn.synset(off, p)[3])]
+        if marks and all(marks) and w not in stars:
+            # A new word from the two smallest lists is reported for a person
+            # to decide (review-2026-11-02.md), never removed on its own.
+            (review if w in steady and w not in old else found).append(w)
     gone = sorted(old | set(found))
     PRUNED.write_text("# Every WordNet sense is offensive (tools/build-meanings.py --prune-lists).\n" + "\n".join(gone) + "\n")
-    drop = set(gone)
+    # Our own blocklist (OWN_BLOCK in build_lists.py) applies too, so new
+    # entries take effect without a full rebuild from the ESDB sources.
+    # In the starter and steady lists only words a person approved for removal
+    # (RON_APPROVED_STARTER_STEADY) go; any other match there is only reported.
+    bl = load_build_lists()
+    own = bl.OWN_BLOCK - stars
+    approved = getattr(bl, "RON_APPROVED_STARTER_STEADY", set()) - stars
+    review = sorted((set(review) | ((own - approved) & steady)) - approved)
+    drop = set(gone) | own
     for n in ("starter", "steady", "full", "large", "xlarge"):
         f = WORDLIST / f"words_{n}.txt"
         words = [w.strip() for w in open(f, encoding="utf-8") if w.strip()]
-        kept = [w for w in words if w not in drop]
+        kept = [w for w in words if w not in drop or (w in steady and w not in approved and w not in old)]
         f.write_text("\n".join(kept) + "\n")
         print(f"words_{n}: removed {len(words) - len(kept)}")
     ex = WORDLIST / "excluded_full.txt"
     rows = dict(l.rstrip("\n").split("\t", 1) for l in open(ex, encoding="utf-8") if "\t" in l)
     for w in gone:
         rows.setdefault(w, "every WordNet sense offensive")
+    known = set(xl)
+    for w in own & known:
+        rows.setdefault(w, "own list")
     ex.write_text("".join(f"{w}\t{rows[w]}\n" for w in sorted(rows)))
     print(f"{len(gone)} words whose every WordNet sense is offensive: " + " ".join(gone))
+    if review:
+        print(f"{len(review)} from the starter/steady lists, kept for a person to decide: " + " ".join(review))
 
 
 def main():
