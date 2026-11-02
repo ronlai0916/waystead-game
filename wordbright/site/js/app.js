@@ -9,7 +9,7 @@ import { rules, about, notFound } from './views/pages.js';
 import * as S from './store.js';
 import * as D from './player-data.js';
 import { wireVoiceMenu } from './voice/menu.js';
-import { getSpeaker } from './ui/speak.js';
+import { getSpeaker, hearSample, useVoiceAccount } from './ui/speak.js';
 import { startAccount } from './account/boot.js';
 import { gateHtml, gateCard } from './account/gate.js';
 import { isLocked } from './gate.js';
@@ -18,6 +18,7 @@ const main = document.getElementById('main');
 const backBtn = document.getElementById('back');
 let cleanup = null;
 let account = null;
+let voiceMenu = null; // the look menu's Voice part (G8c: redrawn when the player changes)
 const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?')[0];
 
 const ROUTES = { '': home, new: setup, play: playView, end: endView, rules, about };
@@ -88,7 +89,12 @@ function wireBrand() {
 // and (G8) the Voice for "Hear" once the device lists its voices.
 function wireTheme() {
   const menu = document.getElementById('theme-menu');
-  wireThemeMenu(document.getElementById('theme'), menu, document, wireVoiceMenu(menu, getSpeaker()));
+  // G8c: the Waystead voices, usable when signed in and online.
+  voiceMenu = wireVoiceMenu(menu, getSpeaker(), {
+    server: () => ({ signedIn: !!(account && account.session.player), online: navigator.onLine !== false }),
+    hearSample,
+  });
+  wireThemeMenu(document.getElementById('theme'), menu, document, voiceMenu);
 }
 
 // The Waystead account: the player chip, and (signed in) this player's saved
@@ -131,6 +137,9 @@ function wireAccount() {
       },
     },
   });
+  // G8c: Hear asks the account's voice server for a signed-in player.
+  useVoiceAccount(() => (account ? { origin: account.origin, signedIn: !!account.session.player } : null));
+  account.session.on(() => { if (voiceMenu) voiceMenu.redraw(); });
 }
 
 wireBrand();

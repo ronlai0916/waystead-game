@@ -540,6 +540,7 @@ export function about(main) {
     + '<h2>How a chapter works</h2>'
     + '<p>Each chapter has about ten words. Your child studies them (meaning, example, British pronunciation and the word split into spelling parts), plays a quick letter game where a flower loses a petal for each wrong guess, then a full practice game, then a test where they hear the word and type it. Every word right opens the next chapter.</p>'
     + '<p>Year 3–4 chapters go from easier to harder. Year 5–6 chapters group words by spelling pattern, such as silent letters or double consonants.</p>'
+    + '<p>Every word has a British recording that comes with the game. If one cannot play, a signed-in player hears the Waystead voice instead: a recording made once by the Waystead account service with Google Cloud Text-to-Speech, which is sent only the word, never anything about your child. Signed out or offline, this device’s own voice says it.</p>'
     + '<h2>Little and often</h2>'
     + '<p>Ten to fifteen minutes, three or four times a week, works better than one long session. Start each session with a few tricky words before moving on.</p>'
     + '<h2>How it looks</h2>'

@@ -624,6 +624,79 @@ def prune_lists(wn):
         print(f"{len(review)} from the starter/steady lists, kept for a person to decide: " + " ".join(review))
 
 
+# ---- G9c: Wiktionary for the words WordNet and OEWN leave without a meaning --------
+# From tools/wiktionary-extract.py (the kaikki.org English extract). CC BY-SA 4.0:
+# every meaning made here is kept apart, in data/meanings/wikt/, marked src "wikt".
+WIKT_SENSES = Path.home() / ".cache" / "wordbright-meanings" / "wiktionary-senses.json.gz"
+WIKTIONARY_NOTICE = """Word meanings in wordbright/site/data/meanings/wikt/ (marked "src": "wikt",
+shown with a "Wiktionary" credit) are adapted from Wiktionary, the free dictionary
+(https://en.wiktionary.org/), by its contributors, through the kaikki.org English
+extract made with wiktextract (https://kaikki.org/, Tatu Ylonen).
+
+Wiktionary's text is licensed under the Creative Commons Attribution-ShareAlike
+4.0 International licence (CC BY-SA 4.0): https://creativecommons.org/licenses/by-sa/4.0/
+Each word's page, with its history and authors, is at
+https://en.wiktionary.org/wiki/<word>.
+
+Changes made for Wordbright: one sense chosen per word and shortened to one
+sentence; senses marked offensive, vulgar, a slur, derogatory, sexual or
+obsolete left out, and every meaning passed through our child-safe filters;
+British spelling; forms of a word ("plural of …") written as "More than one …"
+with the base word's meaning. These adapted meanings (data/meanings/wikt/) are
+shared under the same licence, CC BY-SA 4.0. The other meanings (WordNet, Open
+English WordNet, our own) are under their own licences (LICENSE.txt).
+"""
+BAD_WIKT_TAGS = {"offensive", "vulgar", "slur", "ethnic", "derogatory", "pejorative", "obsolete", "sexual", "misspelling",
+                 "humorous-misspelling", "error-misspelling"}
+BAD_WIKT_TOPICS = re.compile(r"\b(sex|sexual|sexuality|human sexuality|bdsm|pornography|prostitution|paraphilias?|"
+                             r"fetishism|erotic|ethnic slurs|insults|vulgarities|offensive terms|derogatory terms|"
+                             r"recreational drugs|swear words|genitalia)\b", re.I)
+FORM_GLOSS = re.compile(r"^(plural|alternative|obsolete|archaic|misspelling|nonstandard|eye dialect|abbreviation|"
+                        r"initialism|acronym|clipping|synonym|comparative|superlative|present participle|past participle|"
+                        r"simple past|third-person singular|inflection|form|spelling)\b[^.]*? (form |spelling )?of\b", re.I)
+WIKT_POS = {"noun": "noun", "verb": "verb", "adj": "adjective", "adv": "adverb", "intj": "interjection",
+            "prep": "preposition", "conj": "conjunction", "pron": "pronoun", "det": "determiner", "num": "numeral",
+            "particle": "particle", "article": "article"}
+
+
+def one_sentence(text, limit=140):
+    """Wiktionary's gloss as one sentence of at most `limit` characters."""
+    t = re.sub(r"\s+", " ", text).strip()
+    # The first sentence end that is not an abbreviation ("P. yezoensis", "e.g.", "etc.").
+    for m in re.finditer(r"[.;!?](?=\s)", t):
+        before = t[: m.start() + 1]
+        if m.group() == "." and re.search(r"(?:^|[\s(])(?:[A-Za-z]|e\.g|i\.e|etc|cf|sp|spp|vs|approx|esp|incl|St|Mr|Mrs|Dr|No)\.$", before):
+            continue
+        t = t[: m.start() + 1]
+        break
+    t = t.rstrip(" ;:,")
+    if len(t) > limit:
+        t = t[: limit - 3].rsplit(" ", 1)[0].rstrip(",;: ") + "…"
+    if not t:
+        return ""
+    t = t[0].upper() + t[1:]
+    return t if t.endswith((".", "!", "?", "…")) else t + "."
+
+
+def wikt_form_template(tags, base, w):
+    if "synonym" in tags:
+        return f"Another word for {base}."
+    if "plural" in tags:
+        return f"More than one {base}."
+    if "comparative" in tags:
+        return f"More {base}."
+    if "superlative" in tags:
+        return f"Most {base}."
+    if "past" in tags:
+        return f"Past tense of {base}."
+    if "participle" in tags and "present" in tags or "gerund" in tags:
+        return f"The -ing form of {base}."
+    if "third-person" in tags:
+        return f"A form of {base}, as in \u201cshe {w}\u201d."
+    if "alt-of" in tags or "alternative" in tags:
+        return f"Another spelling of {base}."
+    return f"A form of {base}."
+
 # ---- G9: meanings from a base word -------------------------------------------------
 # Each rule: (ending, how to build the base, the base's part of speech, the sentence).
 def _bases(stem):
@@ -682,6 +755,9 @@ def derive(w, meaning_of):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[1])
     ap.add_argument("--sources", type=Path, default=Path.home() / ".cache" / "wordbright-meanings")
+    ap.add_argument("--wiktionary", type=Path, default=WIKT_SENSES,
+                    help="G9c: the extract tools/wiktionary-extract.py wrote (default ~/.cache/wordbright-meanings/)")
+    ap.add_argument("--no-wiktionary", action="store_true", help="build without the Wiktionary meanings")
     ap.add_argument("--prune-lists", action="store_true",
                     help="first remove words whose every WordNet sense is offensive from all five word lists "
                          "(then run tools/build-wordgraph.py)")
@@ -865,6 +941,88 @@ def main():
             derived[w] = base
     after = {n: sum(1 for w in lst if "m" not in out.get(w, {}) and w not in stars) for n, lst in lists.items()}
 
+    # G9c: Wiktionary, for the words still without a meaning. First pass: the
+    # first sense that is a real definition (not "plural of", "form of",
+    # "alternative spelling of"), not marked offensive, vulgar, a slur,
+    # derogatory, sexual or obsolete, and passing every child-safe filter, as
+    # one short sentence. Second pass: a form of another word, in our derived
+    # style, from that word's meaning (WordNet's, OEWN's or Wiktionary's).
+    # Kept apart (wikt), with src "wikt", so the CC BY-SA part is clear.
+    wikt = {}
+    wstats = {"marked": 0, "unsafe": 0, "unsafe_words": set()}
+    if not args.no_wiktionary:
+        if not args.wiktionary.exists():
+            sys.exit(f"{args.wiktionary}: no Wiktionary extract (run tools/wiktionary-extract.py), or pass --no-wiktionary")
+        with gzip.open(args.wiktionary, "rt", encoding="utf-8") as f:
+            wdata = json.load(f)
+        wsenses, wbases = wdata["senses"], wdata.get("bases", {})
+
+        def eligible(sn):
+            if set(sn["t"]) & BAD_WIKT_TAGS or any(BAD_WIKT_TOPICS.search(c) for c in sn["c"]):
+                wstats["marked"] += 1
+                return False
+            return True
+
+        def is_form(sn):
+            return bool(sn.get("f")) or bool({"form-of", "alt-of"} & set(sn["t"])) or bool(FORM_GLOSS.match(sn["g"]))
+
+        gaps = [w for w in words if w not in stars and "m" not in out.get(w, {})]
+        for w in gaps:
+            for sn in wsenses.get(w, []):
+                if is_form(sn) or not eligible(sn):
+                    continue
+                text = one_sentence(tidy(sn["g"], british))
+                if not text or unsafe(text) or BANNED_TERMS.search(w + " " + text):
+                    wstats["unsafe"] += 1
+                    wstats["unsafe_words"].add(w)
+                    continue
+                wikt[w] = {"m": text, "src": "wikt", **({"p": WIKT_POS[sn["p"]]} if sn["p"] in WIKT_POS else {})}
+                break
+        def phrase_meaning(b):
+            """A phrase our word is a spelling of ("notice board"): its first safe real definition."""
+            for sn in wbases.get(b, []):
+                if is_form(sn) or set(sn["t"]) & BAD_WIKT_TAGS or any(BAD_WIKT_TOPICS.search(c) for c in sn["c"]):
+                    continue
+                text = one_sentence(tidy(sn["g"], british))
+                if text and not unsafe(text) and not BANNED_TERMS.search(b + " " + text):
+                    return {"m": text, **({"p": WIKT_POS[sn["p"]]} if sn["p"] in WIKT_POS else {})}
+            return None
+
+        for w in gaps:
+            if w in wikt:
+                continue
+            for sn in wsenses.get(w, []):
+                if not is_form(sn) or not eligible(sn):
+                    continue
+                b = sn.get("f")
+                if not b:  # "Synonym of around, about …": the first word or phrase named
+                    m = re.search(r"\bof ([A-Za-z][A-Za-z' -]*?)(?=\s*(?:[,;:.(]|$))", sn["g"])
+                    b = m.group(1) if m else None
+                if not b:
+                    continue
+                b = b.strip().lower()
+                if b in british:
+                    be = out.get(b) if "m" in out.get(b, {}) else wikt.get(b)
+                elif " " in b:  # a phrase, never a single word left out of our lists
+                    be = phrase_meaning(b)
+                else:
+                    be = None
+                if b == w or not be or "m" not in be or "d" in be:
+                    continue
+                m = be["m"].rstrip()
+                if m[:1].isupper() and not re.match(r"I\b|[A-Z]{2}", m):
+                    m = m[0].lower() + m[1:]
+                tags = set(sn["t"]) | ({"synonym"} if sn["g"].lower().startswith("synonym of") else set())
+                text = wikt_form_template(tags, b, w) + " " + b + ": " + m
+                if unsafe(text) or BANNED_TERMS.search(w + " " + text):
+                    wstats["unsafe"] += 1
+                    wstats["unsafe_words"].add(w)
+                    continue
+                wikt[w] = {"m": text, "src": "wikt", "d": b, **({"p": be["p"]} if be.get("p") else {})}
+                break
+        wstats["unsafe_words"] -= set(wikt)
+    after_wikt = {n: sum(1 for w in lst if "m" not in out.get(w, {}) and w not in stars and w not in wikt) for n, lst in lists.items()}
+
     # Spellbright's IPA for its own words (the game prefers it for Star words anyway).
     cur = json.load(open(CURRICULUM, encoding="utf-8"))
     for key in ("year_3_4", "year_5_6"):
@@ -877,7 +1035,7 @@ def main():
     # the first three letters (index.json lists every shard; the game uses the
     # longest one that starts the word).
     if OUT.exists():
-        for f in OUT.glob("*.json"):
+        for f in list(OUT.glob("*.json")) + list((OUT / "wikt").glob("*.json")):
             f.unlink()
     OUT.mkdir(parents=True, exist_ok=True)
     dump = lambda d: json.dumps(d, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
@@ -901,10 +1059,32 @@ def main():
         text = dump({**d, "~": stamps[k]})
         (OUT / f"{k}.json").write_text(text, encoding="utf-8")
         sizes[k] = len(text.encode())
-    (OUT / "index.json").write_text(json.dumps({"v": 2, "shards": stamps}, sort_keys=True), encoding="utf-8")
+    # G9c: Wiktionary's meanings, in their own shards (data/meanings/wikt/,
+    # CC BY-SA 4.0), listed in the index under "wikt" with their stamps. The
+    # game reads them only for a word whose own shard has no meaning.
+    wshards = {}
+    for w, e in wikt.items():
+        wshards.setdefault(w[:2], {})[w] = e
+    for k in list(wshards):
+        if len(dump(wshards[k]).encode()) > SPLIT_AT:
+            for w in [w for w in wshards[k] if len(w) > 2]:
+                wshards.setdefault(w[:3], {})[w] = wshards[k].pop(w)
+            if not wshards[k]:
+                del wshards[k]
+    wstamps = {}
+    if wshards:
+        (OUT / "wikt").mkdir(exist_ok=True)
+    for k, d in sorted(wshards.items()):
+        wstamps[k] = hashlib.sha256(dump(d).encode()).hexdigest()[:10]
+        (OUT / "wikt" / f"{k}.json").write_text(dump({**d, "~": wstamps[k]}), encoding="utf-8")
+    index = {"v": 2, "shards": stamps, **({"wikt": wstamps} if wstamps else {})}
+    (OUT / "index.json").write_text(json.dumps(index, sort_keys=True), encoding="utf-8")
     # The notices go with every copy of the data, including the one on the web.
+    (ROOT / "wordbright" / "LICENSE-WIKTIONARY.txt").write_text(WIKTIONARY_NOTICE, encoding="utf-8")
     (OUT / "LICENSE.txt").write_text("\n\n".join((ROOT / "wordbright" / f).read_text(encoding="utf-8")
-                                              for f in ("LICENSE-WORDNET.txt", "LICENSE-OEWN.txt", "LICENSE-BRITFONE.txt")), encoding="utf-8")
+                                              for f in ("LICENSE-WORDNET.txt", "LICENSE-OEWN.txt", "LICENSE-BRITFONE.txt", "LICENSE-WIKTIONARY.txt")), encoding="utf-8")
+    if wshards:
+        (OUT / "wikt" / "LICENSE.txt").write_text(WIKTIONARY_NOTICE, encoding="utf-8")
 
     # Report.
     total = sum(sizes.values())
@@ -920,7 +1100,13 @@ def main():
         i = sum(1 for w in lst if "i" in out.get(w, {}))
         o = sum(1 for w in lst if w in from_oewn)
         print(f"  words_{n}: no meaning {before[n]:,} before deriving, {after[n]:,} after ({before[n] - after[n]:,} from a base word)")
-        print(f"words_{n}: {len(lst):,} words, meaning {m / len(lst):.1%} ({o:,} from OEWN), IPA {i / len(lst):.1%}")
+        wk = sum(1 for w in lst if w in wikt)
+        print(f"  words_{n}: no meaning {after[n]:,} before Wiktionary, {after_wikt[n]:,} after ({wk:,} from Wiktionary)")
+        print(f"words_{n}: {len(lst):,} words, meaning {(m + wk) / len(lst):.1%} ({o:,} from OEWN, {wk:,} from Wiktionary), IPA {i / len(lst):.1%}")
+    if not args.no_wiktionary:
+        print(f"Wiktionary: {len(wikt):,} meanings ({sum(1 for e in wikt.values() if 'd' in e):,} from a base word); "
+              f"senses skipped as marked (offensive, vulgar, slur, derogatory, sexual, obsolete, misspelling): {wstats['marked']:,}; "
+              f"rejected by the child-safe filters: {wstats['unsafe']:,} senses, leaving {len(wstats['unsafe_words']):,} words without a meaning")
 
 
 if __name__ == "__main__":

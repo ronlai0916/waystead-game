@@ -205,8 +205,11 @@ test('the service worker\'s shell has every script, the account client included'
   assert.deepEqual(files('js').filter((f) => !shell.includes(f)), []);
 });
 
-test('the service worker never answers for the account or any /api path', () => {
+test('the service worker answers for no account call or /api path, except the Waystead voice\'s MP3s (G8c)', () => {
   assert.match(sw, /if \(url\.origin !== location\.origin \|\| url\.pathname\.startsWith\('\/api\/'\)\) return;/);
-  const code = sw.replace(/\/\/.*$/gm, '');
-  assert.doesNotMatch(code, /account\.waystead/, 'no account URL is ever listed or fetched');
+  // The one account URL in the worker: the voice origins (tests/sw-voice.test.js drives the rule).
+  const code = sw.replace(/^\s*\/\/.*$/gm, '');
+  assert.deepEqual(code.match(/account\.waystead\.co\.uk/g), ['account.waystead.co.uk']);
+  assert.match(code, /const VOICE_ORIGINS = \['https:\/\/account\.waystead\.co\.uk', 'http:\/\/localhost:3000'\];/);
+  assert.match(code, /if \(isVoiceRequest\(url\)\) \{ event\.respondWith\(voiceRecording\(req\)\); return; \}/);
 });

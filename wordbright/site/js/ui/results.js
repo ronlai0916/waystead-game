@@ -18,6 +18,8 @@ export function movedWords(score) {
 
 // One row. w: { word, points, star }; info: from wordInfo(); by: who made it (end screen).
 // A word in our list with no meaning in WordNet or Open English WordNet (G6b).
+// G9c: a meaning from Wiktionary carries a credit link to the word's page there.
+export const WIKTIONARY = 'https://en.wiktionary.org/wiki/';
 export const NO_MEANING = 'A rare word — it’s in our word list, but we don’t have its meaning yet.';
 // G9b: never "rare" before the look-up has finished: a slow connection shows
 // this, and the meaning fills in when it arrives (fillRows).
@@ -46,6 +48,8 @@ export function wordRowHtml(w, info, { by = '', speak = false, pop = false, pend
         + '<p class="wordrow__meaning" id="' + id + '"' + (info.derived ? ' data-derived="' + esc(info.derived) + '"' : '') + '>' + esc(info.meaning) + '</p>'
         + '<button type="button" class="linkbtn wordrow__more" data-more aria-controls="' + id + '" aria-expanded="false" hidden>More</button>'
         + (info.example ? '<p class="example">' + esc(info.example) + '</p>' : '')
+        + (info.src === 'wikt' ? '<p class="small muted wordrow__credit">Meaning: <a href="' + WIKTIONARY + encodeURIComponent(w.word) + '" target="_blank" rel="noopener">Wiktionary'
+          + '<span class="sr"> (CC BY-SA 4.0; opens in a new tab)</span></a></p>' : '')
       : '<p class="wordrow__meaning muted">' + (pending ? PENDING_MEANING : failed ? FAILED_MEANING : NO_MEANING) + '</p>')
     + '<a class="small wordrow__look" href="' + LOOK_UP + encodeURIComponent(w.word) + '" target="_blank" rel="noopener">Look it up'
     + '<span class="sr"> in the Cambridge Dictionary (opens in a new tab)</span>' + ICON.external + '</a>'

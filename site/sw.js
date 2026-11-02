@@ -2,10 +2,11 @@
 // and audio are cached the first time they're used, and fetched in the
 // background once the new version is active.
 // Bump VERSION on every deploy so phones pick up the new files.
-// Account calls (account.waystead.co.uk) are never cached: see the fetch handler.
+// Account calls (account.waystead.co.uk) are never cached, apart from the
+// Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-02f';
+const VERSION = 'spellbright-2026-11-02g';
 
 const SHELL = [
   './',
@@ -41,6 +42,7 @@ const SHELL = [
   'js/account/session.js',
   'js/account/sync.js',
   'js/voice/menu.js',
+  'js/voice/server.js',
   'js/voice/voice.js',
   'data/curriculum.json',
   'data/assets.json',
@@ -88,11 +90,38 @@ async function prefetchMedia() {
   } catch (e) { /* ignore */ }
 }
 
+// G8c: the Waystead voice's recordings (GET <account>/api/voice/<voiceId>/<word>,
+// MP3): their own runtime cache, "voice", shared by both games, cache-first,
+// at most 1,500 files (the oldest go first). Only a 200 audio answer is kept;
+// a 401, 404, 429 or 503 never is. Never in the shell, and kept across
+// VERSION changes (only "<game>-…" caches are deleted). Every other account
+// call goes to the network and is never cached.
+const VOICE_CACHE = 'voice';
+const VOICE_MAX = 1500;
+const VOICE_ORIGINS = ['https://account.waystead.co.uk', 'http://localhost:3000'];
+const VOICE_PATH = /^\/api\/voice\/en-GB-[A-Za-z0-9-]{1,40}\/[a-z]{2,20}$/;
+const isVoiceRequest = (url) => VOICE_ORIGINS.includes(url.origin) && VOICE_PATH.test(url.pathname);
+
+async function voiceRecording(req) {
+  const cache = await caches.open(VOICE_CACHE);
+  const hit = await cache.match(req.url);
+  if (hit) return hit;
+  const res = await fetch(req);
+  if (res.status === 200 && /^audio\//.test(res.headers.get('content-type') || '')) {
+    await cache.put(req.url, res.clone());
+    const keys = await cache.keys(); // oldest first
+    for (let i = 0; i < keys.length - VOICE_MAX; i++) await cache.delete(keys[i]);
+  }
+  return res;
+}
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  // Never the Waystead account (its API, its avatars): those go to the network,
+  // G8c: a Waystead voice recording: the "voice" cache (above).
+  if (isVoiceRequest(url)) { event.respondWith(voiceRecording(req)); return; }
+  // Otherwise never the Waystead account (its API, its avatars): those go to the network,
   // and only the browser's own cache may keep a picture. Nor any /api path here.
   if (url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
 

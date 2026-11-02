@@ -14,7 +14,7 @@ const MEANINGS = DATA + 'meanings/';
 const INDEX = JSON.parse(readFileSync(MEANINGS + 'index.json', 'utf8'));
 const KEYS = readIndex(INDEX).keys;
 const shardOf = (w) => JSON.parse(readFileSync(MEANINGS + shardKey(w, KEYS) + '.json', 'utf8'));
-const entry = (w) => shardOf(w)[w] || null;
+const entry = (w) => (shardKey(w, KEYS) ? shardOf(w)[w] || null : null); // no shard: nothing known
 
 // Every shard, read once.
 let all = null;
@@ -292,7 +292,7 @@ test('G9: stale and offline: no meaning, but no error either', async () => {
 
 // ---- G9b: common words are never "rare"; drop only unsafe senses -------------------
 test('G9b: these common words always have a meaning', () => {
-  const must = ['sin', 'god', 'church', 'war', 'kill', 'die', 'drug', 'beer', 'wine', 'bomb', 'gun', 'blood', 'hell', 'devil'];
+  const must = ['sin', 'god', 'church', 'war', 'kill', 'die', 'drug', 'beer', 'wine', 'bomb', 'gun', 'blood', 'hell', 'devil', 'pus'];
   assert.deepEqual(must.filter((w) => !(entry(w) && entry(w).m)), []);
 });
 
@@ -325,4 +325,71 @@ test('G9b: a slow meaning shows "Finding the meaning…" and fills in when it ar
   replaced.length = 0;
   fillRows({ querySelectorAll: () => rows.map(li) }, null, starWords);
   assert.ok(replaced.every((h) => h.includes(FAILED_MEANING)), 'failed: says so, not "rare"');
+});
+
+// ---- G9c: Wiktionary fills the gaps, kept apart and credited ----------------------------
+const WIKT = MEANINGS + 'wikt/';
+let wiktAll = null;
+function wiktEntries() {
+  if (!wiktAll) {
+    wiktAll = new Map();
+    for (const k of Object.keys(INDEX.wikt || {})) {
+      const d = JSON.parse(readFileSync(WIKT + k + '.json', 'utf8'));
+      assert.equal(d['~'], INDEX.wikt[k], 'stamp ' + k);
+      for (const [w, e] of Object.entries(d)) if (w !== '~') wiktAll.set(w, e);
+    }
+  }
+  return wiktAll;
+}
+
+test('G9c: Wiktionary meanings are in their own shards (data/meanings/wikt/), each marked src "wikt", only for words with no other meaning', () => {
+  const W = wiktEntries();
+  assert.ok(W.size > 40000, W.size + ' meanings');
+  const files = readdirSync(WIKT).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5));
+  assert.deepEqual(files.sort(), Object.keys(INDEX.wikt).sort());
+  for (const [w, e] of W) {
+    assert.equal(e.src, 'wikt', w);
+    const own = entry(w);
+    assert.ok(!own || !own.m, w + ' already had a meaning');
+  }
+  assert.ok(existsSync(WIKT + 'LICENSE.txt'));
+  assert.match(readFileSync(ROOT + 'LICENSE-WIKTIONARY.txt', 'utf8'), /CC BY-SA 4\.0/);
+  assert.match(readFileSync(MEANINGS + 'LICENSE.txt', 'utf8'), /Wiktionary/);
+  assert.match(readFileSync(ROOT + 'site/js/views/pages.js', 'utf8'), /href="https:\/\/en\.wiktionary\.org\/">Wiktionary<\/a>.*CC BY-SA 4\.0/);
+});
+
+test('G9c: every Wiktionary meaning is one short sentence and passes the child-safe checks', () => {
+  const SAFE_SEX = /\b(?:either|both|each|one|opposite|same|other|male|female|the two) sex(?:es)?\b|\bsexes\b|\bregardless of (?:\w+ )?sex\b|\b(?:age|and|or) sex\b|\bsex (?:and|or) age\b/gi;
+  const bad = /\b(sex|sexual|sexually|penis|vagina|genitals?|erotic|copulate|cocaine|heroin|marijuana|offensive (?:term|name|word)|derogatory|disparaging|slur|obscene|vulgar|expletives?|pejorative)\b/i;
+  const long = [];
+  const hits = [];
+  for (const [w, e] of wiktEntries()) {
+    if (bad.test(e.m.replace(SAFE_SEX, ' '))) hits.push(w);
+    if (!e.d && e.m.length > 141) long.push(w);
+  }
+  assert.deepEqual(hits.slice(0, 10), []);
+  assert.deepEqual(long.slice(0, 10), []);
+});
+
+test('G9c: PUS, REN and SIN all have meanings in the game (REN from Wiktionary, with its credit)', async () => {
+  const { m } = diskMeanings();
+  const got = await m.lookup(['pus', 'ren', 'sin', 'noticeboard']);
+  assert.match(got.get('pus').m, /inflammation/);
+  assert.equal(got.get('sin').m, 'Estrangement from god.');
+  assert.equal(got.get('ren').m, 'A kidney.');
+  assert.equal(got.get('ren').src, 'wikt');
+  const info = wordInfo('ren', got.get('ren'), null);
+  assert.equal(info.src, 'wikt');
+  const html = resultsHtml('Pip', { words: [{ word: 'ren', points: 3, main: true }], starBonus: 0, fullRack: 0, total: 3 }, got, starWords);
+  assert.match(html, /<p class="small muted wordrow__credit">Meaning: <a href="https:\/\/en\.wiktionary\.org\/wiki\/ren" target="_blank" rel="noopener">Wiktionary/);
+  assert.doesNotMatch(resultsHtml('Pip', { words: [{ word: 'sin', points: 3, main: true }], starBonus: 0, fullRack: 0, total: 3 }, got, starWords), /wiktionary/i);
+});
+
+test('G9c: an index from before the Wiktionary shards still finds REN (a fresh index from the server)', async () => {
+  const before = { v: 2, shards: INDEX.shards }; // no "wikt"
+  const { m, calls } = cachedMeanings({ index: before });
+  const got = await m.lookup(['ren', 'sin']);
+  assert.equal(got.get('ren').m, 'A kidney.');
+  assert.equal(got.get('sin').m, 'Estrangement from god.');
+  assert.ok(calls.includes('fresh data/meanings/index.json'));
 });

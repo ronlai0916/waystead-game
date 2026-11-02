@@ -8,12 +8,15 @@
 
 export const SPELLBRIGHT_AUDIO = '../spellbright/assets/audio/words/';
 
-// The shard index: G9's {"v": 2, "shards": {key: stamp}} or an older plain
-// list of keys (a copy cached before G9).
+// The shard index: G9's {"v": 2, "shards": {key: stamp}, "wikt"?: {key: stamp}}
+// or an older plain list of keys (a copy cached before G9). "wikt" (G9c) lists
+// the Wiktionary shards (data/meanings/wikt/, CC BY-SA 4.0), read only for a
+// word whose own shard has no meaning.
 export function readIndex(ix) {
-  if (Array.isArray(ix)) return { keys: new Set(ix), stamps: null };
+  if (Array.isArray(ix)) return { keys: new Set(ix), stamps: null, wkeys: null, wstamps: null };
   const stamps = (ix && ix.shards) || {};
-  return { keys: new Set(Object.keys(stamps)), stamps };
+  const wstamps = ix && ix.wikt && typeof ix.wikt === 'object' ? ix.wikt : null;
+  return { keys: new Set(Object.keys(stamps)), stamps, wkeys: wstamps ? new Set(Object.keys(wstamps)) : null, wstamps };
 }
 
 // fetchJson(path, { fresh }) resolves the parsed JSON; fresh: past every cache
@@ -23,13 +26,15 @@ export function readIndex(ix) {
 // missing, or whose stamp ("~") is not the one the index lists, means an old
 // cached copy met a newer one (or the reverse): the index and that shard are
 // then fetched afresh, so a word never shows "no meaning" just because of a
-// stale cache. An old-style index (no stamps) that has no shard for a word is
-// also checked once against a fresh index.
+// stale cache. An index with no shard for a word (an old-style one, or one
+// from before the Wiktionary shards) is also checked once against a fresh index.
 export function createMeanings(fetchJson) {
-  const shards = new Map(); // key -> Promise of { word: entry }
-  let index = null; // Promise of { keys, stamps }
+  const sets = {
+    main: { dir: 'data/meanings/', got: new Map(), fresh: new Map(), keys: (ix) => ix.keys, stamps: (ix) => ix.stamps },
+    wikt: { dir: 'data/meanings/wikt/', got: new Map(), fresh: new Map(), keys: (ix) => ix.wkeys, stamps: (ix) => ix.wstamps },
+  };
+  let index = null; // Promise of readIndex()
   let freshIndex = null; // the same, fetched past the caches (once)
-  const freshShards = new Map();
 
   const keys = () => {
     if (!index) index = fetchJson('data/meanings/index.json').then(readIndex).catch((e) => { index = null; throw e; });
@@ -39,31 +44,44 @@ export function createMeanings(fetchJson) {
     if (!freshIndex) freshIndex = fetchJson('data/meanings/index.json', { fresh: true }).then(readIndex).catch(() => { freshIndex = null; return null; });
     return freshIndex;
   };
-  const shard = (key) => {
-    if (!shards.has(key)) shards.set(key, fetchJson('data/meanings/' + key + '.json').catch((e) => { shards.delete(key); throw e; }));
-    return shards.get(key);
+  const load = (set, key, fresh) => {
+    const m = fresh ? set.fresh : set.got;
+    if (!m.has(key)) {
+      m.set(key, fetchJson(set.dir + key + '.json', fresh ? { fresh: true } : undefined).catch((e) => {
+        m.delete(key);
+        if (fresh) return null;
+        throw e;
+      }));
+    }
+    return m.get(key);
   };
-  const freshShard = (key) => {
-    if (!freshShards.has(key)) freshShards.set(key, fetchJson('data/meanings/' + key + '.json', { fresh: true }).catch(() => { freshShards.delete(key); return null; }));
-    return freshShards.get(key);
-  };
-  const matches = (d, ix, k) => !!d && (!ix.stamps || d['~'] === ix.stamps[k]);
+  const matches = (d, stamps, k) => !!d && (!stamps || d['~'] === stamps[k]);
   const entryOf = (d, w) => (w !== '~' && Object.prototype.hasOwnProperty.call(d, w) ? d[w] : null); // not "constructor" from Object
 
-  async function one(w, ix) {
-    const k = shardKey(w, ix.keys);
+  async function fromSet(set, w, ix) {
+    const ks = set.keys(ix);
+    const k = ks && shardKey(w, ks);
     if (k) {
-      const d = await shard(k).catch(() => null);
-      if (matches(d, ix, k)) return entryOf(d, w);
-    } else if (ix.stamps) {
+      const d = await load(set, k, false).catch(() => null);
+      if (matches(d, set.stamps(ix), k)) return entryOf(d, w);
+    } else if (ks && ix.stamps) {
       return null; // a current index: there is no shard for this word
     }
     // Missing, stale or mismatched: the index and the shard from the server.
     const fix = await freshKeys();
-    const fk = fix && shardKey(w, fix.keys);
+    const fks = fix && set.keys(fix);
+    const fk = fks && shardKey(w, fks);
     if (!fk) return null;
-    const d = await freshShard(fk);
-    return matches(d, fix, fk) ? entryOf(d, w) : null;
+    const d = await load(set, fk, true);
+    return matches(d, set.stamps(fix), fk) ? entryOf(d, w) : null;
+  }
+
+  async function one(w, ix) {
+    const e = await fromSet(sets.main, w, ix);
+    if (e && e.m) return e;
+    const we = await fromSet(sets.wikt, w, ix).catch(() => null);
+    if (!we) return e;
+    return e ? { ...e, ...we } : we; // the word's own IPA, Wiktionary's meaning
   }
 
   // The meanings of these words: Map word -> entry (words with nothing known are left out).
@@ -79,7 +97,7 @@ export function createMeanings(fetchJson) {
     lookup(words).catch(() => {});
   }
 
-  return { lookup, prefetch, loaded: () => [...shards.keys()] };
+  return { lookup, prefetch, loaded: () => [...sets.main.got.keys()] };
 }
 
 // The longest shard name the word starts with: "con" before "co".
@@ -105,5 +123,6 @@ export function wordInfo(word, entry, star) {
     };
   }
   // derived (G9): the base word when the meaning was made from it ("frothier" -> "frothy").
-  return { word, ipa: e.i || '', pos: e.p || '', meaning: e.m || '', example: e.e || '', lemma: e.l || '', audio: '', derived: e.d || '' };
+  // src (G9c): 'wikt' for a meaning from Wiktionary (the panel credits it).
+  return { word, ipa: e.i || '', pos: e.p || '', meaning: e.m || '', example: e.e || '', lemma: e.l || '', audio: '', derived: e.d || '', src: e.src === 'wikt' ? 'wikt' : '' };
 }

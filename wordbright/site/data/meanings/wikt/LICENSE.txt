@@ -1,0 +1,17 @@
+Word meanings in wordbright/site/data/meanings/wikt/ (marked "src": "wikt",
+shown with a "Wiktionary" credit) are adapted from Wiktionary, the free dictionary
+(https://en.wiktionary.org/), by its contributors, through the kaikki.org English
+extract made with wiktextract (https://kaikki.org/, Tatu Ylonen).
+
+Wiktionary's text is licensed under the Creative Commons Attribution-ShareAlike
+4.0 International licence (CC BY-SA 4.0): https://creativecommons.org/licenses/by-sa/4.0/
+Each word's page, with its history and authors, is at
+https://en.wiktionary.org/wiki/<word>.
+
+Changes made for Wordbright: one sense chosen per word and shortened to one
+sentence; senses marked offensive, vulgar, a slur, derogatory, sexual or
+obsolete left out, and every meaning passed through our child-safe filters;
+British spelling; forms of a word ("plural of …") written as "More than one …"
+with the base word's meaning. These adapted meanings (data/meanings/wikt/) are
+shared under the same licence, CC BY-SA 4.0. The other meanings (WordNet, Open
+English WordNet, our own) are under their own licences (LICENSE.txt).
