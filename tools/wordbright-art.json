@@ -130,6 +130,102 @@
    "prompt": "Keep exactly the same character, face, ear shape, head shape, outfit, colours, drawing style and plain warm-cream background. Do not change the ears or add any crest or new colours. Change only the expression and pose: eyes wide open in surprise and a small round open mouth; ears stay exactly as they are. No text, no letters."
   },
   {
+   "id": "avatar-red-squirrel",
+   "file": "wb-avatar-red-squirrel.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A cheerful young red squirrel, russet-red fur with a cream chest, tufted ears, a big bushy tail curling up behind, wearing a small knitted plum bobble hat, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-rabbit",
+   "file": "wb-avatar-rabbit.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A gentle young rabbit, soft grey-brown fur with a white tummy, long upright ears, a pink nose, wearing a teal neckerchief tied at the side, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-robin",
+   "file": "wb-avatar-robin.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A bright little robin, round and fluffy, orange-red breast, olive-brown back and wings, a small dark eye, wearing a tiny warm-gold knitted scarf, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-hare",
+   "file": "wb-avatar-hare.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A lively young hare, golden-brown fur, very long black-tipped ears, long legs tucked out of sight, wearing a coral sweatband round its head, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-frog",
+   "file": "wb-avatar-frog.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A happy little green frog, smooth bright green skin with a pale yellow throat, big round golden eyes, a wide smile, wearing a small indigo bow tie, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-duckling",
+   "file": "wb-avatar-duckling.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A fluffy yellow duckling, soft downy feathers, a small orange beak, bright dark eyes, wearing a tiny teal rain hat, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-fawn",
+   "file": "wb-avatar-fawn.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A shy young fawn, warm tan fur with soft white spots on its back, big dark eyes, large ears, wearing a little daisy-chain necklace, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-puffin",
+   "file": "wb-avatar-puffin.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A friendly puffin, black back and white face and front, a bright orange-and-grey striped beak, orange feet out of sight, wearing a small warm-gold knitted jumper, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-seal-pup",
+   "file": "wb-avatar-seal-pup.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A round, fluffy white seal pup, soft white fur, big dark shining eyes, whiskers, a gentle smile, wearing a small coral beanie hat, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-bumblebee",
+   "file": "wb-avatar-bumblebee.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A round, fuzzy friendly bumblebee, golden-yellow and black striped fur, small clear wings, short antennae, a happy face, wearing a tiny indigo flower behind one antenna, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-ladybird",
+   "file": "wb-avatar-ladybird.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A friendly ladybird, glossy red wing cases with round black spots, a black head with a smiling face, short antennae, holding a tiny warm-gold umbrella, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
+   "id": "avatar-tortoise",
+   "file": "wb-avatar-tortoise.png",
+   "kind": "generate",
+   "aspect": "1:1",
+   "options": 4,
+   "prompt": "A calm, kind tortoise, a brown and gold patterned shell, wrinkly olive-green skin, a slow wise smile, wearing a small plum flat cap, an original character, natural colours, head and shoulders, centred, facing the viewer, plain warm-cream background, no text."
+  },
+  {
    "id": "wg-hero",
    "file": "wg-hero.png",
    "kind": "generate",
