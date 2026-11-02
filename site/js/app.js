@@ -7,9 +7,8 @@ import * as S from './store.js';
 import * as P from './progress-doc.js';
 import { wireVoiceMenu } from './voice/menu.js';
 import { startAccount } from './account/boot.js';
-import { signInUrl } from './account/config.js';
 import { gateHtml, gateCard } from './account/gate.js';
-import { isPlayPath } from './gate.js';
+import { isPlayPath, isLocked } from './gate.js';
 
 const main = document.getElementById('main');
 const backBtn = document.getElementById('back');
@@ -63,17 +62,17 @@ function parentOf(path) {
   return '#/' + parts.join('/');
 }
 
-// G6: a play route for a signed-out player shows a card instead: "Sign in to
-// play" (with a return URL to this game), "You need to be online" or a short
-// wait while /api/me answers (account/gate.js).
+// G6/G6b: a locked page for a signed-out player shows a card instead: "Sign
+// in to play" (with a return URL to this page), "You need to be online" or a
+// short wait while /api/me answers (account/gate.js).
 let waiting = null;
 function gated(path) {
   waiting = null;
   if (!account) return false;
-  const answer = account.gate(path, isPlayPath(path));
+  const answer = account.gate(path, isLocked(path));
   if (answer === 'play') return false;
-  main.innerHTML = gateHtml(gateCard(answer, navigator.onLine), signInUrl(account.origin, location.href));
-  backBtn.hidden = false;
+  main.innerHTML = gateHtml(gateCard(answer, navigator.onLine), account.signInHref(), { href: '#/about', label: 'About Spellbright' });
+  backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = parentOf(path); };
   const retry = main.querySelector('[data-gate-retry]');
   if (retry) retry.addEventListener('click', () => account.session.refresh().then(() => render()));
@@ -134,7 +133,6 @@ function wireAccount() {
     }),
     redraw: () => { if (drawn) render(); },
     busy: () => isPlayPath(currentPath()),
-    here: currentPath,
     applyLook: () => {
       if (window.sbTheme) window.sbTheme.apply();
       document.dispatchEvent(new Event('sb:look'));

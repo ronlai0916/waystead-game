@@ -238,3 +238,10 @@ test('G8: the Voice items join the menu: arrow keys reach them; choosing one sav
     assert.deepEqual(picked, ['Daniel', '']);
   } finally { cleanup(); }
 });
+
+test('G6b item 4: the look menu\'s separator rule only reaches the menu, never the spelling chunks', () => {
+  const css = readFileSync(fileURLToPath(new URL('../site/css/app.css', import.meta.url)), 'utf8');
+  for (const rule of css.match(/[^}]*thememenu__item:nth-child\(3\)[^{]*\{/g) || []) assert.match(rule.trim(), /^\.thememenu__list > \.thememenu__item:nth-child\(3\)/, rule);
+  assert.doesNotMatch(css, /chunk[^{]*nth-child|nth-child[^{]*chunk/);
+  assert.match(css, /\.chunked__chunk \{ position: relative; padding: 0 0\.04em 0\.16em; \}/, 'the chunk rail as before G6/G8');
+});

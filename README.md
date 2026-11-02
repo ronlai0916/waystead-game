@@ -117,8 +117,8 @@ wordbright/
 ├── site/css/styles/  # the three looks: garden (Sunny garden), paint (Paint box), night (Night sky)
 ├── site/assets/fonts/  # OFL fonts, licences in licences/; each style's fonts load only when it is shown
 ├── site/data/        # built: words_all.dawg (every list, tagged), board_*.json, tiles.json, star_words.json, leaves.json (Crazy's leave values)
-├── site/data/meanings/  # built by tools/build-meanings.py (WordNet + Britfone): meanings and IPA, one shard per first 2–3 letters, fetched on demand
-├── LICENSE-WORDNET.txt, LICENSE-BRITFONE.txt  # licences for the meanings data
+├── site/data/meanings/  # built by tools/build-meanings.py (WordNet, then Open English WordNet; Britfone): meanings and IPA, one shard per first 2–3 letters, fetched on demand
+├── LICENSE-WORDNET.txt, LICENSE-OEWN.txt, LICENSE-BRITFONE.txt  # licences for the meanings data
 ├── site/assets/characters/  # built: the four computer players, WebP 256/128 px
 ├── site/js/engine/   # board, bag, words, rules, score, game, levels, movegen (pure ES modules)
 ├── site/js/ai/       # computer players and hints (pure), worker.js + client.js (Web Worker)
@@ -231,20 +231,24 @@ session: `/play`), My account and Sign out.
 - **Import.** The first time a player signs in on a device that has signed-out
   progress: "Save this device's progress to <name>?" (Yes / Not now / Never on
   this device), with their name and picture.
-- **G6.** `REQUIRE_SIGN_IN` in `shared/account/config.js` (on since 2 Nov 2026).
-  Signed out, a play route (Spellbright: Quick game, Practice, Test, Pick words →
-  Play; Wordbright: New game, Continue game, a board card) shows "Sign in to
-  play", with a Sign in button back to that game (`shared/account/gate.js`). The
-  home pages, chapter and study pages, How to play and For parents stay open.
-  A player cached on the device plays offline, and when the account is down
-  (network error or 5xx), with progress queued. Nobody cached and no account:
-  "You need to be online the first time you sign in" (or "Sign-in isn't
-  answering"). A 401 mid-game: that game is finished first; the next one asks.
+- **G6 / G6b.** `REQUIRE_SIGN_IN` in `shared/account/config.js` (on since 2 Nov 2026).
+  Signed out, every game page shows "Sign in to play", with a Sign in button back
+  to that page (`shared/account/gate.js`), except Wordbright's How to play and For
+  parents and Spellbright's About; the home page `/` needs no account. A player
+  cached on the device plays offline, and when the account is down (network
+  error or 5xx), with progress queued. Nobody cached and no account: "You need to
+  be online the first time you sign in" (or "Sign-in isn't answering"). The page
+  asks `/api/me` again on focus, on becoming visible and once a minute: signed
+  out in another tab or on the account site, a 401, or back from `/signout`, and
+  the card shows at once; the game is already saved on the device and the queue
+  keeps what is not sent. Signing in again comes back to the same page
+  (Wordbright resumes its saved game).
 - **Voice (G8).** "Hear" uses the device's best British voice
   (`shared/voice/voice.js`: en-GB, Premium/Enhanced/Natural, known good, never
   novelty voices; rate 0.9), or the one chosen under Voice in the look menu:
   `sb.voice`, shared by both games and saved with the look in `/api/prefs`
-  (as `prefs.voice`). With no British voice, a tip on adding one.
+  (as `prefs.voice`). The best choice names its voice ("Best British voice
+  (Daniel)"); the list below never repeats it. With no British voice, a tip on adding one.
 
 The account client is `shared/account/` and the voice is `shared/voice/`, copied
 into each site by `node tools/sync-shared.mjs` (the sites are separate roots and

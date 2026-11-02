@@ -4,6 +4,7 @@
 |---|---|---|---|
 | Words | English Speller Database (ESDB, formerly SCOWL), Kevin Atkinson — https://github.com/en-wl/wordlist | commit 1e5b7d3a (24 Jun 2026), file data/scowl-pre.txt | MIT-like; notice in LICENSE-ESDB.txt must be kept with any copy |
 | Child-safe filter | "List of Dirty, Naughty, Obscene, and Otherwise Bad Words" (LDNOOBW), file `en` — https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words | commit 5faf2ba4 (13 Jul 2020) | CC BY 4.0 (LICENSE-LDNOOBW.txt) — credit needed on the "For parents" page |
+| Meanings | WordNet 3.1 (Princeton University), then Open English WordNet for the words WordNet 3.1 has no safe meaning for — https://en-word.net/, the Open English Wordnet team | WordNet 3.1; OEWN 2025 edition (lexical items, WNDB files with the fixed index.sense, sha256 38b16326…) | WordNet licence; OEWN CC BY 4.0 (LICENSE-OEWN.txt) — credit on the "For parents" page |
 | Star words | Spellbright site/data/curriculum.json and English Appendix 1 Year 1–2 lists (DfE 2013) | Spellbright v4 | Open Government Licence v3.0 |
 
 Not used: Collins Scrabble Words, NWL/TWL, ENABLE as a game list, or any tournament list.
@@ -17,6 +18,7 @@ Not used: Collins Scrabble Words, NWL/TWL, ENABLE as a game list, or any tournam
 6. Star words: 316 — Year 1 (43) and Year 2 (61) common exception words (tools/ks1_words.json, meanings written for Wordbright; a, I, Mr, Mrs, Christmas left out because they cannot be played), plus Spellbright's 213 Year 3–6 words. All are added to every list (including "february").
 7. Large and Very large lists were reviewed by pattern search; extra unsuitable words found there are in OWN_BLOCK in tools/build_lists.py.
 8. G7b review (2 Nov 2026): slurs and insults the filter missed (WordNet usage domains and glosses, plus our own sweep), 158 more words in OWN_BLOCK, plus 39 from the starter and steady lists decided by Ron on 2 Nov (RON_APPROVED_STARTER_STEADY); see review-2026-11-02.md. `tools/build-meanings.py --prune-lists` applies OWN_BLOCK and the WordNet check (now case-insensitive) to the lists without a full rebuild; new finds in the starter or steady lists are only reported.
+9. G6b (2 Nov 2026): Open English WordNet 2025 as a second meaning source in tools/build-meanings.py, for words WordNet 3.1 has no safe meaning for, with the same child-safe filters (usage and topic domains, our blocklists, MEANING_BLOCK and the phrase check). It added 744 meanings (starter 9, steady 99, full 180, large 465, xlarge 744). No CC BY-SA source (such as Wiktionary) is used.
 
 ## Letter values
 value = round(1 + log2(share of "e" / share of the letter)), clamped to 1–8.

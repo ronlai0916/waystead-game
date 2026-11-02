@@ -99,7 +99,6 @@ export function runSession(main, opts) {
       stop();
       if (last) {
         cleanup();
-        window.dispatchEvent(new Event('wa:finished')); // G6: the next game needs a signed-in player
         onFinish(results);
       } else {
         index += 1;

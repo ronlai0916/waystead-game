@@ -9,6 +9,8 @@ For every word in wordbright-design/wordlist/words_xlarge.txt:
     choosing the reading that is most common in WordNet's tagged texts;
   - the first sense that passes the child-safety filter: its part of speech,
     its meaning and an example if WordNet has one;
+  - for a word WordNet 3.1 has no safe meaning for (G6b): the same again from
+    Open English WordNet (OEWN 2025, CC BY 4.0), with the same filters;
   - its British pronunciation (IPA) from Britfone, if Britfone has the word.
 Then Star words: their meanings are ours (star_words.json, applied in the game),
 so here they only get IPA where Spellbright has none.
@@ -32,6 +34,10 @@ Sources (downloaded into --sources the first time; the files are not kept in git
     wordbright/LICENSE-WORDNET.txt and the For parents page.
   Britfone 3.0.1, Jose Llarena  https://github.com/JoseLlarena/Britfone (commit 1062be14)
     Licence: MIT: wordbright/LICENSE-BRITFONE.txt.
+  Open English WordNet 2025 edition (lexical items only, no proper nouns), the
+    Open English Wordnet team  https://en-word.net/ (WNDB files, index.sense fixed)
+    Licence: CC BY 4.0, built on WordNet (the WordNet licence too):
+    wordbright/LICENSE-OEWN.txt and the For parents page.
 
 Run it by hand after the word list changes:
 
@@ -55,6 +61,7 @@ import re
 import sys
 import tarfile
 import urllib.request
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -67,6 +74,9 @@ WORDNET_URL = "https://wordnetcode.princeton.edu/wn3.1.dict.tar.gz"
 WORDNET_SHA256 = "3f7d8be8ef6ecc7167d39b10d66954ec734280b5bdcd57f7d9eafe429d11c22a"
 BRITFONE_URL = "https://raw.githubusercontent.com/JoseLlarena/Britfone/1062be14adc96c358f2087ac5449d72130c7a6f4/britfone.main.3.0.1.csv"
 BRITFONE_SHA256 = "59f197e98520856d1cc88e380beb54e4314d8712efc4d588b6778819c502d920"
+OEWN_URL = "https://github.com/globalwordnet/english-wordnet/releases/download/2025-edition/english-wordnet-2025-index.sense-fixed.zip"
+OEWN_SHA256 = "38b16326159f51853626b7d24a44c453fa88ab33f06fce5ec8fc5996d1c2be93"
+OEWN_LICENSE_URL = "https://raw.githubusercontent.com/globalwordnet/english-wordnet/main/LICENSE.md"
 BRITFONE_LICENSE_URL = "https://raw.githubusercontent.com/JoseLlarena/Britfone/1062be14adc96c358f2087ac5449d72130c7a6f4/LICENSE.txt"
 
 POS = {"n": "noun", "v": "verb", "a": "adjective", "s": "adjective", "r": "adverb"}
@@ -282,19 +292,23 @@ class WordNet:
         self.counts = {}  # (lemma, ss_type, offset) -> tag count
         for p, f in POS_FILES.items():
             for line in open(d / f"index.{f}", encoding="utf-8"):
-                if line.startswith(" "):
+                if line.startswith(" ") or not line.strip():
                     continue
                 t = line.split()
                 n_ptr = int(t[3])
                 n_syn = int(t[2])
                 self.index[(t[0], p)] = t[6 + n_ptr:6 + n_ptr + n_syn]
             for line in open(d / f"data.{f}", encoding="utf-8"):
-                if not line.startswith(" "):
+                if not line.startswith(" ") and line.strip():  # OEWN ends with a blank line
                     self.data[(line[:8], p)] = line
             for line in open(d / f"{f}.exc", encoding="utf-8"):
                 t = line.split()
+                if not t:
+                    continue
                 self.exc.setdefault((t[0], p), []).extend(t[1:])
         for line in open(d / "index.sense", encoding="utf-8"):
+            if not line.strip():
+                continue
             key, off, _num, cnt = line.split()
             lemma, rest = key.split("%")
             self.counts[(lemma, int(rest[0]), off)] = int(cnt)
@@ -523,6 +537,17 @@ def write_licences(sources, wn_dir):
         "Britfone 3.0.1 (https://github.com/JoseLlarena/Britfone), changed for Wordbright\n"
         "(symbols as in Spellbright, stress marks moved, regular word endings added). Its licence:\n\n"
         + lic.read_text(encoding="utf-8").strip() + "\n", encoding="utf-8")
+    lic = sources / "oewn-LICENSE.md"
+    if not lic.exists():
+        with urllib.request.urlopen(OEWN_LICENSE_URL) as r:
+            lic.write_bytes(r.read())
+    (ROOT / "wordbright" / "LICENSE-OEWN.txt").write_text(
+        "Word meanings in wordbright/site/data/meanings/ that WordNet 3.1 does not have are made\n"
+        "from Open English WordNet, 2025 edition (https://en-word.net/), by the Open English\n"
+        "Wordnet team, licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/),\n"
+        "changed for Wordbright (senses chosen and filtered, British spelling). It is based on\n"
+        "Princeton WordNet (see LICENSE-WORDNET.txt). Its licence:\n\n"
+        + lic.read_text(encoding="utf-8").strip() + "\n", encoding="utf-8")
 
 
 def prune_lists(wn):
@@ -597,17 +622,29 @@ def main():
             safe = [m for m in t.getmembers() if m.isfile() and m.name.startswith("dict/") and ".." not in m.name]
             t.extractall(args.sources, members=safe)
 
+    oz = args.sources / "english-wordnet-2025-index.sense-fixed.zip"
+    fetch(OEWN_URL, oz, OEWN_SHA256)
+    oewn_dir = args.sources / "oewn2025"
+    if not (oewn_dir / "data.noun").exists():
+        with zipfile.ZipFile(oz) as z:
+            for m in z.namelist():
+                if m.startswith("oewn2025/") and ".." not in m and not m.endswith("/"):
+                    (args.sources / m).parent.mkdir(parents=True, exist_ok=True)
+                    (args.sources / m).write_bytes(z.read(m))
+
     write_licences(args.sources, wn_dir)
     wn = WordNet(wn_dir)
+    oewn = WordNet(oewn_dir)
     if args.prune_lists:
         prune_lists(wn)
     blocked, roots = load_blocklist()
-    bad_usage = wn.offsets_named(BAD_USAGE)
-    bad_topic = wn.offsets_named(BAD_TOPIC)
+    # Each wordnet with its own usage and topic domains (offsets differ).
+    nets = [(wn, wn.offsets_named(BAD_USAGE), wn.offsets_named(BAD_TOPIC)),
+            (oewn, oewn.offsets_named(BAD_USAGE), oewn.offsets_named(BAD_TOPIC))]
     pron = britfone(bf)
 
     lists = {n: [w.strip() for w in open(WORDLIST / f"words_{n}.txt", encoding="utf-8") if w.strip()]
-             for n in ("starter", "steady", "full", "xlarge")}
+             for n in ("starter", "steady", "full", "large", "xlarge")}
     words = lists["xlarge"]
     british = set(words)
 
@@ -622,7 +659,8 @@ def main():
 
     unsafe_seen = set()  # words with a sense the child-safety filter dropped
 
-    def first_safe_sense(lemma, p, w):
+    def first_safe_sense(net, lemma, p, w):
+        wn, bad_usage, bad_topic = net
         for off in wn.senses(lemma, p):
             ss_type, ptrs, gloss, members = wn.synset(off, p)
             # WordNet's index is lower case, so "it" also finds IT and "us" the US:
@@ -640,14 +678,13 @@ def main():
             return POS[ss_type], meaning, examples
         return None
 
-    out = {}
-    dropped = 0
-    for w in words:
+    def meaning_from(net, w):
+        wn = net[0]
         entry = {}
         cands = [(wn.weight(l, p) * (1.2 if l == w else 1), l, p) for p in POS_FILES for l in wn.lemmas(w, p)]
         cands.sort(key=lambda c: -c[0])
         for _, lemma, p in cands:
-            s = first_safe_sense(lemma, p, w)
+            s = first_safe_sense(net, lemma, p, w)
             if not s:
                 continue
             pos, meaning, examples = s
@@ -662,6 +699,17 @@ def main():
             if lemma != w:
                 entry["l"] = lemma
             break
+        return entry
+
+    out = {}
+    dropped = 0
+    from_oewn = set()
+    for w in words:
+        entry = meaning_from(nets[0], w)
+        if "m" not in entry:  # G6b: Open English WordNet for the gaps
+            entry = meaning_from(nets[1], w)
+            if "m" in entry:
+                from_oewn.add(w)
         if w in unsafe_seen and "m" not in entry:
             dropped += 1
         if w in OWN_MEANINGS:
@@ -669,11 +717,14 @@ def main():
             entry = {"p": pos, "m": meaning}
             if example:
                 entry["e"] = example
+            from_oewn.discard(w)
         sound = pron.get(w) or inflected_ipa(w, pron)
         if sound:
             entry["i"] = sound
         if entry and not BANNED_TERMS.search(w + " " + " ".join(entry.values())):
             out[w] = entry
+        else:
+            from_oewn.discard(w)
 
     # Spellbright's IPA for its own words (the game prefers it for Star words anyway).
     cur = json.load(open(CURRICULUM, encoding="utf-8"))
@@ -708,7 +759,7 @@ def main():
     (OUT / "index.json").write_text(json.dumps(sorted(shards)), encoding="utf-8")
     # The notices go with every copy of the data, including the one on the web.
     (OUT / "LICENSE.txt").write_text("\n\n".join((ROOT / "wordbright" / f).read_text(encoding="utf-8")
-                                              for f in ("LICENSE-WORDNET.txt", "LICENSE-BRITFONE.txt")), encoding="utf-8")
+                                              for f in ("LICENSE-WORDNET.txt", "LICENSE-OEWN.txt", "LICENSE-BRITFONE.txt")), encoding="utf-8")
 
     # Report.
     total = sum(sizes.values())
@@ -722,7 +773,8 @@ def main():
     for n, lst in lists.items():
         m = sum(1 for w in lst if "m" in out.get(w, {}))
         i = sum(1 for w in lst if "i" in out.get(w, {}))
-        print(f"words_{n}: {len(lst):,} words, meaning {m / len(lst):.1%}, IPA {i / len(lst):.1%}")
+        o = sum(1 for w in lst if w in from_oewn)
+        print(f"words_{n}: {len(lst):,} words, meaning {m / len(lst):.1%} ({o:,} from OEWN), IPA {i / len(lst):.1%}")
 
 
 if __name__ == "__main__":

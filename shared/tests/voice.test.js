@@ -72,15 +72,19 @@ test('the saved choice (sb.voice) wins when this device has it; otherwise the be
   assert.equal(savedVoice(s), '');
 });
 
-test('the Voice menu: "Best British voice" and up to 3 British voices; the tick follows sb.voice', () => {
-  assert.deepEqual(voiceChoices(APPLE, 3).map((c) => c.id), ['Serena (Premium)', 'Daniel', 'Arthur']);
-  assert.deepEqual(voiceChoices(CHROME_WIN, 3).map((c) => c.label), ['UK English Female', 'UK English Male', 'Hazel']);
+test('the Voice menu: "Best British voice (<the voice it uses>)", then up to 3 other British voices; the tick follows sb.voice', () => {
+  assert.deepEqual(voiceChoices(APPLE, 3).map((c) => c.id), ['Daniel', 'Arthur', 'Kate'], 'Serena is the best: not listed again');
+  assert.deepEqual(voiceChoices(CHROME_WIN, 3).map((c) => c.label), ['UK English Male', 'Hazel']);
   const html = voiceItemsHtml(APPLE);
   assert.equal((html.match(/role="menuitemradio"/g) || []).length, 4);
-  assert.match(html, /data-voice=""[^>]*>.*Best British voice/);
+  assert.match(html, /data-voice=""[^>]*>.*Best British voice \(Serena, Premium\)<\/li>/);
+  assert.equal((html.match(/Serena/g) || []).length, 1, 'the best voice appears once');
+  assert.match(voiceItemsHtml(APPLE.filter((x) => !/Premium/.test(x.name))), /Best British voice \(Daniel\)<\/li>/);
+  assert.match(voiceItemsHtml(CHROME_WIN), /Best British voice \(UK English Female\)/);
   assert.doesNotMatch(html, /Bubbles|Eddy|Samantha|style=/);
-  assert.match(voiceItemsHtml(US_ONLY), /Best voice<\/li>.*Samantha/);
+  assert.match(voiceItemsHtml(US_ONLY), /Best voice \(Samantha\)<\/li>/);
   assert.equal(tickedVoice(APPLE, 'Daniel'), 'Daniel');
+  assert.equal(tickedVoice(APPLE, 'Serena (Premium)'), '', 'the best voice saved: "Best" is ticked');
   assert.equal(tickedVoice(APPLE, 'Gone'), '', 'not on this device: Best voice is ticked');
 });
 

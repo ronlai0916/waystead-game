@@ -12,7 +12,7 @@ import { memoryStorage, fakeAccount, manualTimers, CHILD_A, KID_A, KID_B } from 
 globalThis.localStorage = memoryStorage();
 const S = await import('../site/js/store.js');
 const D = await import('../site/js/player-data.js');
-const { needsSignIn } = await import('../site/js/gate.js');
+const { needsSignIn, isLocked } = await import('../site/js/gate.js');
 const { createApi } = await import('../site/js/account/api.js');
 const { createSync } = await import('../site/js/account/sync.js');
 
@@ -164,9 +164,13 @@ test('REQUIRE_SIGN_IN on (G6): New game and Continue game need a signed-in playe
   for (const p of ['', 'end', 'rules', 'about']) assert.equal(needsSignIn(p, null), false, p);
 });
 
-test('G6: the router shows the gate card for a play route (account/gate.js), with a return URL to this game', () => {
+test('G6b: signed out, every Wordbright page is locked except How to play and For parents', () => {
+  for (const p of ['', 'new', 'play', 'end', 'nope']) assert.equal(isLocked(p), true, p);
+  for (const p of ['rules', 'about']) assert.equal(isLocked(p), false, p);
+});
+
+test('G6b: the router shows the gate card for every locked page, returning to it after sign-in', () => {
   const app = readFileSync(fileURLToPath(new URL('../site/js/app.js', import.meta.url)), 'utf8');
-  assert.match(app, /account\.gate\(path, isPlayPath\(path\)\)/);
-  assert.match(app, /gateHtml\(gateCard\(answer, navigator\.onLine\), signInUrl\(account\.origin, location\.href\)\)/);
-  assert.match(app, /here: currentPath/);
+  assert.match(app, /account\.gate\(path, isLocked\(path\)\)/);
+  assert.match(app, /gateHtml\(gateCard\(answer, navigator\.onLine\), account\.signInHref\(\), \{ href: '#\/rules', label: 'How to play' \}\)/);
 });

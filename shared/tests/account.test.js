@@ -389,19 +389,20 @@ test('boot: the cached player is used before /api/me answers; a switch re-points
   assert.equal(cachedPlayer(page.local).id, KID_B.id);
 });
 
-test('boot: signed out on the server while not playing: back to today\'s keys; while playing: kept until the next visit', async () => {
+test('boot: signed out on the server, playing or not: drawn again (the card), then back to today\'s keys (G6b)', async () => {
   for (const playing of [false, true]) {
     const acct = fakeAccount();
     const page = fakePage(acct);
     page.local.setItem(PLAYER_KEY, JSON.stringify({ id: KID_A.id, name: 'Sam', avatar: null }));
     const uses = [];
-    const a = startAccount({ win: page.win, doc: page.doc, fetch: acct.fetch, usePlayer: (p) => uses.push(p ? p.id : null), busy: () => playing });
+    let redraws = 0;
+    const a = startAccount({ win: page.win, doc: page.doc, fetch: acct.fetch, usePlayer: (p) => uses.push(p ? p.id : null), busy: () => playing, redraw: () => { redraws++; } });
     await a.ready;
-    assert.deepEqual(uses, playing ? [KID_A.id] : [KID_A.id, null]);
+    assert.deepEqual(uses, [KID_A.id, null]);
+    assert.equal(redraws, 1);
     assert.equal(cachedPlayer(page.local), null, 'next visit: signed out');
   }
 });
-
 test('boot: the look changing sends it to the account', async () => {
   const acct = fakeAccount();
   acct.who = CHILD_A;
@@ -498,14 +499,13 @@ test('a plain 401 (an expired session, no ?signedout=1) keeps every copy: only w
 
 // ---- G6: login before play ------------------------------------------------------------
 
-test('gateFor: play routes need a player; other pages never; a known player plays even offline', () => {
+test('gateFor: locked pages need a player; open pages never; a known player plays even offline', () => {
   const on = { flag: true };
   assert.equal(gateFor({ ...on, play: false, player: null, reach: 'online' }), 'play', 'home and For parents stay open');
   assert.equal(gateFor({ ...on, play: true, player: null, reach: 'online' }), 'signin');
   assert.equal(gateFor({ ...on, play: true, player: SAM, reach: 'offline' }), 'play', 'cached player, offline');
   assert.equal(gateFor({ ...on, play: true, player: null, reach: 'offline' }), 'offline');
   assert.equal(gateFor({ ...on, play: true, player: null, reach: 'unknown' }), 'wait');
-  assert.equal(gateFor({ ...on, play: true, player: null, reach: 'online', finishing: true }), 'play', 'finish this game');
   assert.equal(gateFor({ flag: false, play: true, player: null, reach: 'online' }), 'play', 'flag off: as before');
   assert.equal(gateCard('offline', false), 'offline');
   assert.equal(gateCard('offline', true), 'down', 'online but the service is down');
@@ -552,12 +552,12 @@ function gatePage({ who = null, cached = false, offline = false, meStatus = 0, o
   page.win.navigator.onLine = onLine;
   const A = KID_A.id;
   if (cached) page.local.setItem(PLAYER_KEY, JSON.stringify(SAM_CACHE));
-  const state = { path: 'play', redraws: 0, onChange: null };
+  const state = { path: 'play', redraws: 0, onChange: null, clock: 1000000 };
   const a = startAccount({
     win: page.win, doc: page.doc, fetch: acct.fetch, game: 'wordbright',
     docs: (id) => ({ game: doc(page.local, 'wb.game:' + id) }),
     usePlayer: (p, onChange) => { state.onChange = onChange; },
-    busy: () => state.path === 'play', here: () => state.path, redraw: () => { state.redraws++; },
+    busy: () => state.path === 'play', redraw: () => { state.redraws++; }, setInterval: (fn) => { state.every = fn; }, now: () => state.clock,
   });
   const queued = () => (JSON.parse(page.local.getItem('wa.sync:' + A + ':wordbright') || '{"dirty":[]}').dirty);
   return { acct, page, a, state, A, queued };
@@ -617,37 +617,97 @@ test('G6 the account service down (5xx): like offline; a child already signed in
   assert.equal(gateCard(nobody.a.gate('new', true), true), 'down');
 });
 
-test('G6 a 401 mid-game: they finish this game (progress queued), then sign in before the next one', async () => {
+test('G6b a 401 mid-game: drawn again at once (the card), progress kept in the queue; signing in again sends it', async () => {
   const { a, acct, state, queued, page, A } = gatePage({ who: CHILD_A, cached: true });
   await a.ready;
   await tick();
+  const before = state.redraws;
   acct.who = null; // the session ends on the server
   add(page.local, 'wb.game:' + A, 'move-1', 1);
   state.onChange('game');
   await a.sync.flush(); // answers 401
   assert.equal(a.session.player, null);
-  assert.equal(a.gate('play', true), 'play', 'this game goes on');
-  add(page.local, 'wb.game:' + A, 'move-2', 2);
-  state.onChange('game');
-  assert.deepEqual(queued(), ['game'], 'queued for when they sign in again');
-  state.path = 'end';
-  assert.equal(a.gate('end', false), 'play', 'the final scores');
-  state.path = 'new';
-  assert.equal(a.gate('new', true), 'signin', 'the next game asks them to sign in');
-  state.path = 'play';
-  assert.equal(a.gate('play', true), 'signin', 'and the game they left is not open either');
-  assert.deepEqual(queued(), ['game'], 'still queued');
+  assert.equal(state.redraws, before + 1, 'the page is drawn again');
+  assert.equal(a.gate('play', true), 'signin', 'the card, not the game');
+  assert.equal(a.gate('new', true), 'signin');
+  assert.equal(a.gate('rules', false), 'play', 'How to play stays open');
+  assert.deepEqual(queued(), ['game'], 'the saved move waits for the next sign-in');
+  assert.ok(page.local.getItem('wb.game:' + A).includes('move-1'), 'the game is still on the device');
+  // Signed in again (back on the same page): the queue is sent.
+  acct.who = CHILD_A;
+  await a.session.refresh();
+  await tick(); await tick();
+  assert.equal(a.gate('play', true), 'play');
+  await a.sync.flush();
+  assert.deepEqual(queued(), []);
+  assert.deepEqual(acct.get(A, 'wordbright', 'game').results.map((r) => r.id), ['move-1']);
 });
 
-test('G6 a 401 mid-game in Spellbright: "Play again" on the same page after the game ends asks to sign in', async () => {
-  const { a, acct, state, page, A } = gatePage({ who: CHILD_A, cached: true });
+test('G6b signed out in another tab or on the account site: noticed on focus, on becoming visible, and once a minute', async () => {
+  for (const how of ['focus', 'visible', 'minute']) {
+    const { a, acct, state, queued, page, A } = gatePage({ who: CHILD_A, cached: true });
+    await a.ready;
+    await tick();
+    add(page.local, 'wb.game:' + A, 'move-1', 1);
+    acct.offline = true; // the move cannot be sent yet
+    state.onChange('game');
+    await a.sync.flush();
+    acct.offline = false;
+    acct.who = null; // signed out elsewhere
+    const before = acct.calls.filter((c) => c.path === '/api/me').length;
+    state.clock += 60000;
+    if (how === 'focus') await page.fire('winfocus');
+    if (how === 'visible') await page.fire('docvisibilitychange');
+    if (how === 'minute') { state.every(); }
+    await tick(); await tick();
+    assert.equal(acct.calls.filter((c) => c.path === '/api/me').length, before + 1, how + ': /api/me asked again');
+    assert.equal(a.session.player, null, how);
+    assert.equal(a.gate('play', true), 'signin', how + ': the card');
+    assert.ok(state.redraws >= 1, how + ': drawn again');
+    assert.deepEqual(queued(), ['game'], how + ': the unsent move is kept');
+  }
+});
+
+test('G6b focus and visibilitychange together ask /api/me once; a hidden page never asks', async () => {
+  const { a, acct, page, state } = gatePage({ who: CHILD_A, cached: true });
   await a.ready;
+  const n = () => acct.calls.filter((c) => c.path === '/api/me').length;
+  const start = n();
+  state.clock += 10000;
+  await page.fire('winfocus');
+  await page.fire('docvisibilitychange');
   await tick();
-  acct.who = null;
-  add(page.local, 'wb.game:' + A, 'word-1', 1);
-  state.onChange('game');
-  await a.sync.flush();
-  assert.equal(a.gate('play', true), 'play');
-  await page.fire('winwa:finished'); // the game's last word is done
-  assert.equal(a.gate('play', true), 'signin');
+  assert.equal(n(), start + 1, 'asked once for the two');
+  page.doc.visibilityState = 'hidden';
+  state.clock += 60000;
+  state.every();
+  await tick();
+  assert.equal(n(), start + 1, 'hidden: not asked');
+});
+
+test('G6b back from the account\'s sign-out (?signedout=1): the card at once, before /api/me answers', async () => {
+  const acct = fakeAccount();
+  const page = fakePage(acct);
+  page.win.location.href = 'https://game.waystead.co.uk/spellbright/?signedout=1#/y34/ch01/study';
+  page.local.setItem(PLAYER_KEY, JSON.stringify(SAM_CACHE));
+  let redraws = 0;
+  const a = startAccount({ win: page.win, doc: page.doc, fetch: acct.fetch, redraw: () => { redraws++; } });
+  assert.equal(a.gate('y34/ch01/study', true), 'signin', 'no wait, no play from the cached player');
+  assert.equal(a.gate('about', false), 'play');
+  assert.ok(!a.signInHref().includes('signedout'), 'the return URL drops ?signedout=1');
+  await a.ready;
+  assert.equal(a.gate('y34/ch01/study', true), 'signin');
+  assert.equal(cachedPlayer(page.local), null);
+  // The sign-out did not happen (still signed in): the page again.
+  const acct2 = fakeAccount();
+  acct2.who = CHILD_A;
+  const page2 = fakePage(acct2);
+  page2.win.location.href = 'https://game.waystead.co.uk/wordbright/?signedout=1#/play';
+  page2.local.setItem(PLAYER_KEY, JSON.stringify(SAM_CACHE));
+  let redraws2 = 0;
+  const b = startAccount({ win: page2.win, doc: page2.doc, fetch: acct2.fetch, redraw: () => { redraws2++; } });
+  assert.equal(b.gate('play', true), 'signin');
+  await b.ready;
+  assert.equal(b.gate('play', true), 'play');
+  assert.equal(redraws2, 1);
 });

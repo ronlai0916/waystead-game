@@ -135,7 +135,7 @@ test('panel after a computer\'s move, with cross words; Star words keep their +5
   assert.equal(shown[0][0], found.words.find((w) => w.main).word);
   for (const w of found.words) {
     const known = entries.get(w.word);
-    if (!known || !known.m) assert.match(html, /No meaning yet/);
+    if (!known || !known.m) assert.ok(html.includes('A rare word — it’s in our word list, but we don’t have its meaning yet.'));
   }
   // A made-up move with a Star word: the badge, and our meaning.
   const star = { words: [{ word: 'build', points: 9, main: true, star: true }], starBonus: 5, fullRack: 0, total: 14 };
@@ -174,4 +174,25 @@ test('shards: small, sorted by first letters, and index.json lists every one', (
     for (const w of Object.keys(d)) assert.equal(shardKey(w, KEYS), k, w);
   }
   assert.ok(existsSync(MEANINGS + 'LICENSE.txt'), 'the WordNet and Britfone notices travel with the data');
+});
+
+// ---- G6b: Open English WordNet fills gaps; a rare word says so ----------------------
+test('G6b: words WordNet 3.1 has no meaning for get one from Open English WordNet (same filters)', () => {
+  for (const w of ['everything', 'punchline', 'texting', 'micrometre']) {
+    const e = entry(w);
+    assert.ok(e && e.m, w + ' has a meaning');
+  }
+  const lic = readFileSync(MEANINGS + 'LICENSE.txt', 'utf8');
+  assert.match(lic, /Open English WordNet/);
+  assert.match(lic, /CC BY 4\.0/);
+  assert.ok(existsSync(ROOT + 'LICENSE-OEWN.txt'));
+  const about = readFileSync(ROOT + 'site/js/views/pages.js', 'utf8');
+  assert.match(about, /Open English WordNet<\/a> \(2025 edition\)/, 'credited on For parents');
+});
+
+test('G6b: a rare word with no meaning says so, kindly', async () => {
+  assert.equal(entry('ren'), null, 'REN: in the list, in neither wordnet');
+  const html = resultsHtml('Pip', { words: [{ word: 'ren', points: 3, main: true }], starBonus: 0, fullRack: 0, total: 3 }, new Map(), starWords);
+  assert.ok(html.includes('A rare word — it’s in our word list, but we don’t have its meaning yet.'));
+  assert.doesNotMatch(html, /No meaning yet/);
 });

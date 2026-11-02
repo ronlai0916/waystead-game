@@ -48,13 +48,14 @@ export function pickVoice(voices, saved = '') {
   return (saved && ranked.find((v) => v.name === saved)) || ranked[0] || null;
 }
 
-// The choices for the Voice menu: "Best voice" ('' = automatic) and the top few.
+// The choices for the Voice menu after "Best voice" ('' = automatic): the next
+// few, never the best voice itself (it is named on "Best voice").
 export function voiceChoices(voices, max = 4) {
   const ranked = rankVoices(voices);
   const british = ranked.filter(isBritish);
-  return (british.length ? british : ranked).slice(0, max).map((v) => ({ id: v.name, label: label(v) }));
+  return (british.length ? british : ranked).slice(1, max + 1).map((v) => ({ id: v.name, label: voiceLabel(v) }));
 }
-const label = (v) => String(v.name).replace(/^(Google|Microsoft)\s+/, '').replace(/\s+Online\s*\(Natural\).*$/, ' (Natural)').replace(/\s+-\s+English.*$/, '');
+export const voiceLabel = (v) => String(v.name).replace(/^(Google|Microsoft)\s+/, '').replace(/\s+Online\s*\(Natural\).*$/, ' (Natural)').replace(/\s+-\s+English.*$/, '');
 
 // The one-line tip when the device has no British voice (null when it has one).
 export function voiceTip(voices, nav = {}) {

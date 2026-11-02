@@ -12,7 +12,7 @@ import { memoryStorage, fakeAccount, manualTimers, CHILD_A, KID_A, KID_B } from 
 globalThis.localStorage = memoryStorage();
 const S = await import('../site/js/store.js');
 const P = await import('../site/js/progress-doc.js');
-const { needsSignIn, isPlayPath } = await import('../site/js/gate.js');
+const { needsSignIn, isPlayPath, isLocked, isOpenPath } = await import('../site/js/gate.js');
 const { createApi } = await import('../site/js/account/api.js');
 const { createSync } = await import('../site/js/account/sync.js');
 
@@ -179,13 +179,20 @@ test('REQUIRE_SIGN_IN on (G6): the play routes need a signed-in player; the othe
   for (const p of pages) assert.equal(needsSignIn(p, null), false, 'never gated: ' + p);
 });
 
-test('G6: the router shows the gate card for a play route, and a finished session sends wa:finished', () => {
+test('G6b: signed out, every Spellbright page is locked except About (For parents)', () => {
+  for (const p of ['', 'y34', 'y34/ch01', 'y34/ch01/study', 'y34/ch01/study/build', 'y34/ch01/quick', 'y56/ch07/practice', 'y34/ch02/test', 'tricky', 'progress', 'custom', 'custom/play', 'nope']) {
+    assert.equal(isLocked(p), true, p);
+  }
+  assert.equal(isLocked('about'), false);
+  assert.equal(isOpenPath('about'), true);
+});
+
+test('G6b: the router shows the gate card for every locked page, returning to it after sign-in', () => {
   const app = readFileSync(fileURLToPath(new URL('../site/js/app.js', import.meta.url)), 'utf8');
-  assert.match(app, /account\.gate\(path, isPlayPath\(path\)\)/);
-  assert.match(app, /gateHtml\(gateCard\(answer, navigator\.onLine\), signInUrl\(account\.origin, location\.href\)\)/);
-  assert.match(app, /here: currentPath/);
+  assert.match(app, /account\.gate\(path, isLocked\(path\)\)/);
+  assert.match(app, /gateHtml\(gateCard\(answer, navigator\.onLine\), account\.signInHref\(\), \{ href: '#\/about', label: 'About Spellbright' \}\)/);
   const play = readFileSync(fileURLToPath(new URL('../site/js/play.js', import.meta.url)), 'utf8');
-  assert.match(play, /dispatchEvent\(new Event\('wa:finished'\)\)/);
+  assert.doesNotMatch(play, /wa:finished/, 'no "finish this game" grace any more');
 });
 
 // ---- offline ------------------------------------------------------------------------

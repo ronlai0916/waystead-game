@@ -11,12 +11,20 @@
 //   busy()        true while a game is being played: then nothing is redrawn under it
 //   applyLook()   apply sb.theme / sb.dayStyle after they change
 //   importer      { gameName, has(), run(playerId, deviceId) -> keys changed } for the one-time question
-//   here()        the current route (G6: the game being finished when the session ends mid-game)
+//   setInterval, now  for the once-a-minute check while the page is visible (tests pass their own)
 //
-// It answers { session, api, origin, ready, gate(path, isPlay), finished() }:
-// gate() is gate.js's answer for a route; finished() ends the "finish this
-// game" grace (a game page also sends the 'wa:finished' event).
-import { accountOrigin } from './config.js';
+// It answers { session, api, origin, ready, gate(path, locked), signInHref() }:
+// gate() is gate.js's answer for a route; signInHref() is the account's sign-in
+// with this page (without ?signedout=1) as the return URL.
+//
+// G6b: the session is checked again (GET /api/me) when the page gets focus or
+// becomes visible, and once a minute while it is visible, so signing out in
+// another tab or on the account site shows the "Sign in to play" card here
+// too. Signed out or expired (a 401) mid-game: the game is already saved on
+// the device, the queue keeps what is not sent yet, and the card shows; signing
+// in again comes back to the same page (Wordbright resumes its saved game).
+// Back from the account's /signout (?signedout=1): the card at once.
+import { accountOrigin, signInUrl } from './config.js';
 import { createApi } from './api.js';
 import { createSession } from './session.js';
 import { createSync } from './sync.js';
@@ -36,7 +44,8 @@ function storageOf(win, name) {
 }
 
 export function startAccount({ win = window, doc = document, slot = null, game = null, docs = null, usePlayer = () => {},
-  redraw = () => {}, busy = () => false, applyLook = () => {}, importer = null, fetch = undefined, here = () => '' }) {
+  redraw = () => {}, busy = () => false, applyLook = () => {}, importer = null, fetch = undefined,
+  setInterval: every = (fn, ms) => (typeof win.setInterval === 'function' ? win.setInterval(fn, ms) : null), now = () => Date.now() }) {
   const origin = accountOrigin(win.location);
   const api = createApi(fetch ? { origin, fetch } : { origin });
   const local = storageOf(win, 'localStorage');
@@ -49,7 +58,8 @@ export function startAccount({ win = window, doc = document, slot = null, game =
   const leaving = signedOut ? session.player : null;
   let sync = null;
   let prefs = null;
-  let finishing = null; // G6: the route of the game the session ended in, until it is over
+  // G6b: back from /signout, nobody plays from the cached player, even before /api/me answers.
+  let leftNow = signedOut;
   const expired = () => session.expired();
 
   function connect(player) {
@@ -87,16 +97,17 @@ export function startAccount({ win = window, doc = document, slot = null, game =
 
   session.on(({ player, reason }) => {
     if (chip) chip.render();
-    if (reason === 'expired' || (reason === 'signout' && busy() && !signedOut)) {
-      // Mid-game: keep playing and saving on this device under the same
-      // player; sending resumes when they sign in again. Next visit: signed out.
-      // G6: they finish this game; the next one asks them to sign in.
+    if (player && leftNow) { leftNow = false; if (reason === 'same') redraw(); } // the sign-out did not happen
+    if (reason === 'expired' || reason === 'signout') {
+      // The game is saved after every move; stop sending (the queue stays on
+      // the device for the next sign-in), then draw again: the card shows.
+      // The store still points at the player's keys while the old page cleans up.
       if (sync) sync.stop();
       if (prefs) prefs.stop();
-      if (busy()) finishing = here();
+      redraw();
+      if (reason === 'signout') connect(null);
       return;
     }
-    if (player) finishing = null;
     if (reason !== 'same') { connect(player); redraw(); }
     if (player) catchUp(player);
   });
@@ -107,30 +118,43 @@ export function startAccount({ win = window, doc = document, slot = null, game =
     // Back online after "You need to be online": ask again, and show the answer.
     if (session.reach !== 'online') session.refresh().then(() => { if (!busy()) redraw(); });
   });
-  win.addEventListener('wa:finished', () => { finishing = null; });
+  // G6b: signed out elsewhere? Ask again on focus, on becoming visible, and
+  // once a minute while visible (a focus and a visibilitychange together ask once).
+  let lastCheck = 0;
+  const recheck = (minGap) => {
+    const t = now();
+    if (t - lastCheck < minGap || doc.visibilityState === 'hidden') return null;
+    lastCheck = t;
+    return session.refresh();
+  };
   doc.addEventListener('visibilitychange', () => {
-    if (doc.visibilityState === 'hidden') { if (sync) sync.flush(); if (prefs) prefs.flush(); }
-    else if (session.player && sync) sync.pull();
+    if (doc.visibilityState === 'hidden') { if (sync) sync.flush(); if (prefs) prefs.flush(); return; }
+    recheck(2000);
+    if (session.player && sync) sync.pull();
   });
+  win.addEventListener('focus', () => { recheck(2000); });
+  every(() => { recheck(55000); }, 60000);
   win.addEventListener('wa:look', () => { if (prefs) prefs.changed(); });
 
+  lastCheck = now();
   const ready = session.refresh().then((r) => {
+    if (leftNow && !r.offline && !r.player) leftNow = false; // confirmed: plainly signed out now
     if (signedOut && !r.offline) {
       if (!r.player && leaving) forgetPlayer(local, leaving.id);
       try { if (win.history && win.history.replaceState) win.history.replaceState(win.history.state, '', withoutSignedOut(win.location.href)); } catch (e) { /* keep the URL */ }
     }
     return r;
   });
-  function gate(path, play) {
-    if (finishing !== null && finishing !== path) finishing = null; // left that game: it is over
+  function gate(path, locked) {
     const nav = win.navigator;
-    const reach = session.reach === 'unknown' && nav && nav.onLine === false ? 'offline' : session.reach;
-    return gateFor({ play, player: session.player, reach, finishing: finishing !== null && finishing === path });
+    let reach = session.reach === 'unknown' && nav && nav.onLine === false ? 'offline' : session.reach;
+    if (leftNow && reach === 'unknown') reach = 'online'; // just signed out: the card, no wait
+    return gateFor({ play: locked, player: leftNow ? null : session.player, reach });
   }
 
   return {
     session, api, origin, ready, gate,
-    finished() { finishing = null; },
+    signInHref: () => signInUrl(origin, withoutSignedOut(win.location.href)),
     get sync() { return sync; }, get prefs() { return prefs; },
   };
 }

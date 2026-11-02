@@ -17,6 +17,9 @@ export function movedWords(score) {
 }
 
 // One row. w: { word, points, star }; info: from wordInfo(); by: who made it (end screen).
+// A word in our list with no meaning in WordNet or Open English WordNet (G6b).
+export const NO_MEANING = 'A rare word — it’s in our word list, but we don’t have its meaning yet.';
+
 export function wordRowHtml(w, info, { by = '', speak = false, pop = false } = {}) {
   const id = 'wm' + (++ids);
   const hearable = !!info.audio || speak;
@@ -39,7 +42,7 @@ export function wordRowHtml(w, info, { by = '', speak = false, pop = false } = {
         + '<p class="wordrow__meaning" id="' + id + '">' + esc(info.meaning) + '</p>'
         + '<button type="button" class="linkbtn wordrow__more" data-more aria-controls="' + id + '" aria-expanded="false" hidden>More</button>'
         + (info.example ? '<p class="example">' + esc(info.example) + '</p>' : '')
-      : '<p class="wordrow__meaning muted">No meaning yet.</p>')
+      : '<p class="wordrow__meaning muted">' + NO_MEANING + '</p>')
     + '<a class="small wordrow__look" href="' + LOOK_UP + encodeURIComponent(w.word) + '" target="_blank" rel="noopener">Look it up'
     + '<span class="sr"> in the Cambridge Dictionary (opens in a new tab)</span>' + ICON.external + '</a>'
     + '</li>';

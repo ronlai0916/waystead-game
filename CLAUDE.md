@@ -38,7 +38,7 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Signed out: today's keys unchanged. Signed in: `<key>:<player id>` (Spellbright `sb.progress:<id>`; Wordbright `wb.game:`, `wb.setup:`, `wb.stats:`). Merge rules: `site/js/progress-doc.js`, `wordbright/site/js/player-data.js`, `shared/account/merge.js`. Results merge by id and counters are counted from them, never added.
 - Sign out goes through the account's `/signout`; back with `?signedout=1`, the device forgets that player (`forget.js`), keeping only unsent queued changes. A plain 401 keeps everything.
 - The service workers never handle cross-origin requests or `/api/` (account answers are never cached).
-- `REQUIRE_SIGN_IN` (G6) in `shared/account/config.js` is `true` (Ron, 2 Nov 2026). Play routes for a signed-out player show the gate card (`shared/account/gate.js`); a cached player plays offline or when the account is down; a 401 mid-game finishes that game first.
+- `REQUIRE_SIGN_IN` (G6) in `shared/account/config.js` is `true` (Ron, 2 Nov 2026). G6b: signed out, every game page shows the gate card (`shared/account/gate.js`) except Wordbright's How to play and For parents and Spellbright's About (`isOpenPath` in each `gate.js`); the home page `/` stays open. A cached player plays offline or when the account is down. Signed out elsewhere (rechecked on focus, visibility and once a minute), a 401, or back from /signout: the card at once; the game is saved and the queue kept.
 - Voice (G8): `shared/voice/` (voice choice and the look menu's Voice part), copied into `site/js/voice/` and `wordbright/site/js/voice/` by `node tools/sync-shared.mjs`. `sb.voice` is shared by both games and synced as `prefs.voice`.
 - Tests: `node --test shared/tests/` too.
 
