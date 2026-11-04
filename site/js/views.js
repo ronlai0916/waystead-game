@@ -7,6 +7,7 @@ import { runSession, summaryHtml } from './play.js';
 import { esc, ICON, picture, chunked, chunkText, boldWord, redact, shuffle, toast, meter, applyMeters } from './ui.js';
 import { dayStyleHtml, wireDayStyle } from './daystyle.js';
 import { burstHtml, placeBursts } from './celebrate.js';
+import { todayLine, backAgainFor } from './words-views.js';
 
 const MAX_PICK = 30;
 
@@ -82,6 +83,7 @@ export function home(main) {
     + '</div></div>'
     + '<div class="years">' + yearCard('y34') + yearCard('y56') + '</div>'
     + '<div class="shortcuts">'
+    + '<a class="card shortcut" href="#/words"><span><strong>My words</strong><br><span class="muted small">' + esc(todayLine()) + '</span></span>' + ICON.arrow + '</a>'
     + '<a class="card shortcut" href="#/custom"><span><strong>Pick your own words</strong><br><span class="muted small">Any words, any chapter</span></span>' + ICON.arrow + '</a>'
     + '<a class="card shortcut" href="#/tricky"><span><strong>Tricky words</strong><br><span class="muted small">' + (tricky ? tricky + ' to go back to' : 'None yet') + '</span></span>' + ICON.arrow + '</a>'
     + '<a class="card shortcut" href="#/progress"><span><strong>Progress</strong><br><span class="muted small">Chapters and settings</span></span>' + ICON.arrow + '</a>'
@@ -180,7 +182,7 @@ export function study(main, { yearId, slug }) {
     + '<div class="studylist">' + wordEntries(ch).map((w) =>
       '<article class="card wordcard" id="w-' + esc(w.word) + '">' + picture(w)
       + '<div class="wordcard__body">'
-      + '<h2 class="wordcard__word">' + chunked(w) + '</h2>'
+      + '<h2 class="wordcard__word">' + chunked(w, '', { tricky: true }) + '</h2>'
       + '<div class="wordcard__line"><span class="ipa">' + esc(w.ipa) + '</span><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span><span class="chunktext">' + esc(chunkText(w)) + '</span></div>'
       + '<p>' + esc(w.meaning.definition) + '</p>'
       + '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>'
@@ -207,7 +209,7 @@ export function spell(main, { yearId, slug, word }) {
   if (!w) return notFound(main);
   main.innerHTML = '<section class="wrap page"><div class="card spell">'
     + picture(w)
-    + '<div class="spell__word">' + chunked(w) + '</div>'
+    + '<div class="spell__word">' + chunked(w, '', { tricky: true }) + '</div>'
     + '<p class="ipa">' + esc(w.ipa) + ' · <span class="chunktext">' + esc(chunkText(w)) + '</span></p>'
     + '<div class="btnrow">'
     + '<button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear the word</button>'
@@ -236,8 +238,10 @@ export function quick(main, { yearId, slug, word }) {
   const base = href(yearId, slug);
   const single = word ? D.entry(decodeURIComponent(word)) : null;
   if (word && !single) return notFound(main);
-  const words = single ? [single] : shuffle(wordEntries(ch));
+  const back = single ? [] : backAgainFor(ch.words.map((x) => x.word));
+  const words = single ? [single] : shuffle([...wordEntries(ch), ...back]);
   return runSession(main, {
+    backAgain: back,
     eyebrow: 'Chapter ' + t.n + ' · Quick game',
     title: single ? 'One word' : t.name,
     words,
@@ -261,10 +265,12 @@ export function practice(main, { yearId, slug }) {
   if (!ch || !isUnlocked(ch)) return notFound(main);
   const t = D.chapterTitle(ch);
   const base = href(yearId, slug);
+  const back = backAgainFor(ch.words.map((x) => x.word));
   return runSession(main, {
+    backAgain: back,
     eyebrow: 'Chapter ' + t.n + ' · Practice',
     title: t.name,
-    words: shuffle(wordEntries(ch)),
+    words: shuffle([...wordEntries(ch), ...back]),
     mode: 'full',
     onFinish: (results) => {
       S.markPractised(ch.id);
@@ -516,6 +522,7 @@ export function progress(main) {
   main.innerHTML = '<section class="wrap page">'
     + '<div class="pagehead"><span class="eyebrow">Progress</span><h1>How it\'s going</h1>'
     + '<p class="muted">' + (S.currentPlayer() ? 'Progress is saved to the player signed in, on every device they sign in on.' : 'Progress is saved in this browser on this device only.') + '</p></div>'
+    + (S.currentPlayer() ? '<div class="btnrow"><a class="btn btn--ghost" href="#/words/progress">My word numbers' + ICON.arrow + '</a></div>' : '')
     + '<div class="settings">' + yearBlockHtml('y34') + yearBlockHtml('y56')
     + '<div class="card setting"><h2>Open every chapter</h2><p class="muted small">Normally a chapter opens when the one before it is passed. Turn this on to jump ahead.</p>'
     + '<label class="radios"><input type="checkbox" data-unlock' + (S.unlockAll() ? ' checked' : '') + '> Open all chapters</label></div>'
@@ -541,6 +548,9 @@ export function about(main) {
     + '<p>Each chapter has about ten words. Your child studies them (meaning, example, British pronunciation and the word split into spelling parts), plays a quick letter game where a flower loses a petal for each wrong guess, then a full practice game, then a test where they hear the word and type it. Every word right opens the next chapter.</p>'
     + '<p>Year 3–4 chapters go from easier to harder. Year 5–6 chapters group words by spelling pattern, such as silent letters or double consonants.</p>'
     + '<p>Every word has a British recording that comes with the game. If one cannot play, a signed-in player hears the Waystead voice instead: a recording made once by the Waystead account service with Google Cloud Text-to-Speech, which is sent only the word, never anything about your child. Signed out or offline, this device’s own voice says it.</p>'
+    + '<h2>My words</h2>'
+    + '<p>My words is a weekly list. Your child picks up to ten words and a test date, then practises a little each day: the word is spoken and hidden, and they spell it letter by letter. The day before the test is the last practice day. On test day there is no help and no checking until the end, and the day after, any words that slipped come back as fix-ups.</p>'
+    + '<p>A word counts as remembered once it is spelled with no help, at the first go of the day, on three different days at least a week apart from first to last. Words not yet remembered come back in later lists. The numbers are for your child and you only: there are no leagues and no comparing with anyone else.</p>'
     + '<h2>Little and often</h2>'
     + '<p>Ten to fifteen minutes, three or four times a week, works better than one long session. Start each session with a few tricky words before moving on.</p>'
     + '<h2>How it looks</h2>'

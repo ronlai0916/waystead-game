@@ -32,10 +32,17 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Celebrations (`site/js/celebrate.js`): a word spelled and a chapter test passed. None with reduced motion (a still ring instead).
 - Tests: `node --test tests/*.test.js` (no npm packages).
 
+## My words (G4/G5, Spellbright 2)
+- A weekly word group, a daily plan, the practice grid and "remembered", at `#/words`. Rules, all pure with the date passed in: `site/js/words-doc.js` (groups, plan, remembered, returning words, merge) and `site/js/spell-run.js` (a pass at a word, the test). Pages: `site/js/words-views.js`. Signed-in only.
+- Saved as the account key `words` (game spellbright), on the device as `sb.words:<id>`, apart from `progress`. Tries merge by id; groups by newest `at`; every total, star and status is counted from the tries and the fold, never stored. Folding keeps each word-day's flags, so remembered survives.
+- Never put the word in a URL (`/spell/<row>`), and never show it on test day. Tricky letters show on the two study pages only: `chunked(w, '', { tricky: true })`.
+- Typed words: curriculum, or Wordbright's `words_all.dawg` (built without blocked words), fetched on demand by `site/js/wordcheck.js`. A blocked word and an unknown one get the same answer.
+- 29 one-syllable curriculum words are one chunk with a `tricky` field (`tests/words.test.js` lists them).
+
 ## Waystead account (B4b)
 - The client is `shared/account/` (API, player, session, sync, prefs, merge, chip, import question, boot). Each site serves a COPY (`site/js/account/`, `wordbright/site/js/account/`, `hub/site/home-assets/js/account/`): edit `shared/account/`, then `node tools/sync-shared.mjs`. `shared/tests/copies.test.js` fails on a stale copy.
 - Fetch with `credentials: 'include'` only. Never store, log or read a token, email or session id; the device keeps only `wa.player` = {id, name, avatar URL}.
-- Signed out: today's keys unchanged. Signed in: `<key>:<player id>` (Spellbright `sb.progress:<id>`; Wordbright `wb.game:`, `wb.setup:`, `wb.stats:`). Merge rules: `site/js/progress-doc.js`, `wordbright/site/js/player-data.js`, `shared/account/merge.js`. Results merge by id and counters are counted from them, never added.
+- Signed out: today's keys unchanged. Signed in: `<key>:<player id>` (Spellbright `sb.progress:<id>`, `sb.words:<id>`; Wordbright `wb.game:`, `wb.setup:`, `wb.stats:`). Merge rules: `site/js/progress-doc.js`, `wordbright/site/js/player-data.js`, `shared/account/merge.js`. Results merge by id and counters are counted from them, never added.
 - Sign out goes through the account's `/signout`; back with `?signedout=1`, the device forgets that player (`forget.js`), keeping only unsent queued changes. A plain 401 keeps everything.
 - The service workers never handle cross-origin requests or `/api/` (account answers are never cached), with one exception (G8c): the Waystead voice's MP3s (`<account>/api/voice/<voiceId>/<word>`, 200 audio only) go in the shared runtime cache `voice` (cache-first, at most 1,500, oldest out first; never in the shell).
 - `REQUIRE_SIGN_IN` (G6) in `shared/account/config.js` is `true` (Ron, 2 Nov 2026). G6b: signed out, every game page shows the gate card (`shared/account/gate.js`) except Wordbright's How to play and For parents and Spellbright's About (`isOpenPath` in each `gate.js`); the home page `/` stays open. A cached player plays offline or when the account is down. Signed out elsewhere (rechecked on focus, visibility and once a minute), a 401, or back from /signout: the card at once; the game is saved and the queue kept.

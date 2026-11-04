@@ -11,7 +11,7 @@ import { esc, picture, setBlur, revealPicture, chunked, redact, keyboard, ICON }
 const MAX_BLUR = 20;
 
 export function runSession(main, opts) {
-  const { title, eyebrow, words, mode, onFinish } = opts;
+  const { title, eyebrow, words, mode, onFinish, backAgain = [] } = opts;
   const maxWrong = mode === 'mini' ? 6 : 10;
   const results = [];
   let index = 0;
@@ -36,7 +36,8 @@ export function runSession(main, opts) {
     round = new Round(w.word, maxWrong);
     main.innerHTML = '<section class="wrap page play">'
       + '<div class="pagehead"><span class="eyebrow">' + esc(eyebrow) + '</span><h1>' + esc(title) + '</h1></div>'
-      + '<div class="status"><span class="progressline">Word ' + (index + 1) + ' of ' + words.length + '</span>'
+      + '<div class="status"><span class="progressline">Word ' + (index + 1) + ' of ' + words.length
+      + (backAgain.includes(w) ? ' <span class="pill">Back again</span>' : '') + '</span>'
       + '<span class="lives" aria-label="Lives">' + '<i></i>'.repeat(maxWrong) + '</span></div>'
       + '<div class="play__top">' + picture(w, { blur: MAX_BLUR }) + flower(maxWrong) + '</div>'
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hearmain>' + ICON.play + 'Hear the word</button></div>'

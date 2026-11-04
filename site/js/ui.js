@@ -45,15 +45,23 @@ export function revealPicture(root, w) {
 }
 
 // The word laid out as its spelling chunks, each letter addressable for highlights.
-export function chunked(w, cls = '') {
+// A one-syllable word is one chunk. With { tricky: true } (study pages only,
+// never in a test or the practice boxes) its tricky letters stand out.
+export function chunked(w, cls = '', { tricky = false } = {}) {
+  const from = tricky && w.tricky ? w.word.indexOf(w.tricky) : -1;
+  const to = from < 0 ? -1 : from + w.tricky.length;
   let i = 0;
   const parts = w.chunks.map((c) => {
-    const letters = [...c].map((ch) => '<span class="chunked__letter" data-i="' + (i++) + '">' + esc(ch) + '</span>').join('');
+    const letters = [...c].map((ch) => {
+      const hot = i >= from && i < to;
+      return '<span class="chunked__letter' + (hot ? ' is-tricky' : '') + '" data-i="' + (i++) + '">' + esc(ch) + '</span>';
+    }).join('');
     return '<span class="chunked__chunk">' + letters + '</span>';
   });
-  return '<span class="chunked ' + cls + '" aria-label="' + esc(w.word + ', in parts: ' + w.chunks.join(', ')) + '">' + parts.join('') + '</span>';
+  const label = w.word + (w.chunks.length > 1 ? ', in parts: ' + w.chunks.join(', ') : '') + (from >= 0 ? ', tricky letters: ' + w.tricky : '');
+  return '<span class="chunked ' + cls + '" aria-label="' + esc(label) + '">' + parts.join('') + '</span>';
 }
-export const chunkText = (w) => w.chunks.join(' · ');
+export const chunkText = (w) => (w.tricky ? 'Tricky letters: ' + w.tricky : w.chunks.join(' · '));
 
 // Hide the target word (and simple endings) inside an example sentence.
 export function redact(sentence, word) {

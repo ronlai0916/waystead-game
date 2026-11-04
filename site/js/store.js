@@ -4,6 +4,7 @@
 // (progress-doc.js), which account/sync.js also saves to the Waystead account.
 // sb.unlockAll ("Open all chapters") stays this device's setting either way.
 import * as P from './progress-doc.js';
+import * as W from './words-doc.js';
 
 const KEYS = { progress: 'sb.progress', tricky: 'sb.tricky', unlockAll: 'sb.unlockAll', theme: 'sb.theme', dayStyle: 'sb.dayStyle' };
 
@@ -23,7 +24,17 @@ function update(fn) {
   writeDoc(fn(readDoc()));
   if (changed) changed(P.DOC_KEY);
 }
-const newId = () => 'r' + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => b.toString(16).padStart(2, '0')).join('');
+// "My words" (words-doc.js): its own value, "sb.words:<player id>", signed in only.
+const wordsKey = (id = player) => 'sb.words:' + id;
+export const readWords = (id = player) => W.normalise(read(wordsKey(id), null));
+export const hasWords = (id = player) => read(wordsKey(id), null) !== null;
+export const writeWords = (d, id = player) => write(wordsKey(id), d);
+export function updateWords(fn) {
+  writeWords(fn(readWords()));
+  if (changed) changed(W.DOC_KEY);
+}
+
+export const newId = () => 'r' + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => b.toString(16).padStart(2, '0')).join('');
 
 // This device's signed-out progress, for "Save this device's progress to …?".
 export const deviceProgress = () => ({ progress: read(KEYS.progress, {}), tricky: read(KEYS.tricky, {}) });
@@ -106,6 +117,7 @@ export const setUnlockAll = (on) => write(KEYS.unlockAll, !!on);
 export function resetAll() {
   if (player) {
     update(() => P.reset(Date.now()));
+    updateWords(() => W.reset(Date.now()));
     try { localStorage.removeItem(KEYS.unlockAll); } catch (e) { /* ignore */ }
     return;
   }

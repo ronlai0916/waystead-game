@@ -83,6 +83,15 @@ Practice (10 wrong guesses; picture blurred until the end) → Test (hear the
 word, type it; every word right opens the next chapter). Missed test words go
 into "Tricky words". "Pick words" plays any chosen list.
 
+## My words
+
+A weekly list, beside the chapters, at `#/words` (signed in). A group has a name, a test date (7 days on by default) and up to 10 words, picked from a chapter, Tricky words or a year list, or typed. The first visit makes one from the current chapter.
+
+- **Practise**, each day until the day before the test: one row per word, one column per day. The word is spoken and hidden, and spelled letter by letter, each checked at once. After a mistake or a peek it must be spelled once more, clean, to count for today.
+- **Test**, on the date: one go each, no peeking, results at the end.
+- **Fix-ups**, from the day after: the words that slipped, until spelled clean at a first go.
+- **Remembered**: clean and unaided at the first go of a day, on 3 different days at least 7 days apart from first to last; a right test answer counts as one. Words not yet remembered come back, up to 3 at a time, in new groups and in the flower game.
+
 ## Audio
 
 `tools/generate-audio.py` makes 213 word MP3s and 26 letter MP3s with Google

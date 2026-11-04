@@ -30,9 +30,9 @@
             },
             "image": "build.jpg",
             "chunks": [
-              "bu",
-              "ild"
-            ]
+              "build"
+            ],
+            "tricky": "ui"
           },
           {
             "word": "earth",
@@ -44,9 +44,9 @@
             },
             "image": "earth.jpg",
             "chunks": [
-              "ear",
-              "th"
-            ]
+              "earth"
+            ],
+            "tricky": "ear"
           },
           {
             "word": "fruit",
@@ -58,9 +58,9 @@
             },
             "image": "fruit.jpg",
             "chunks": [
-              "fr",
-              "uit"
-            ]
+              "fruit"
+            ],
+            "tricky": "ui"
           },
           {
             "word": "group",
@@ -72,9 +72,9 @@
             },
             "image": "group.jpg",
             "chunks": [
-              "gr",
-              "oup"
-            ]
+              "group"
+            ],
+            "tricky": "ou"
           },
           {
             "word": "guard",
@@ -86,9 +86,9 @@
             },
             "image": "guard.jpg",
             "chunks": [
-              "gu",
-              "ard"
-            ]
+              "guard"
+            ],
+            "tricky": "u"
           },
           {
             "word": "heard",
@@ -100,9 +100,9 @@
             },
             "image": "heard.jpg",
             "chunks": [
-              "hear",
-              "d"
-            ]
+              "heard"
+            ],
+            "tricky": "ear"
           },
           {
             "word": "heart",
@@ -114,9 +114,9 @@
             },
             "image": "heart.jpg",
             "chunks": [
-              "hear",
-              "t"
-            ]
+              "heart"
+            ],
+            "tricky": "ear"
           },
           {
             "word": "learn",
@@ -128,9 +128,9 @@
             },
             "image": "learn.jpg",
             "chunks": [
-              "lear",
-              "n"
-            ]
+              "learn"
+            ],
+            "tricky": "ear"
           },
           {
             "word": "reign",
@@ -142,9 +142,9 @@
             },
             "image": "reign.jpg",
             "chunks": [
-              "rei",
-              "gn"
-            ]
+              "reign"
+            ],
+            "tricky": "eign"
           },
           {
             "word": "breath",
@@ -156,10 +156,9 @@
             },
             "image": "breath.jpg",
             "chunks": [
-              "br",
-              "ea",
-              "th"
-            ]
+              "breath"
+            ],
+            "tricky": "ea"
           },
           {
             "word": "length",
@@ -171,9 +170,9 @@
             },
             "image": "length.jpg",
             "chunks": [
-              "leng",
-              "th"
-            ]
+              "length"
+            ],
+            "tricky": "gth"
           }
         ]
       },
@@ -205,9 +204,9 @@
             },
             "image": "strength.jpg",
             "chunks": [
-              "streng",
-              "th"
-            ]
+              "strength"
+            ],
+            "tricky": "gth"
           },
           {
             "word": "early",
@@ -233,9 +232,9 @@
             },
             "image": "guide.jpg",
             "chunks": [
-              "gu",
-              "ide"
-            ]
+              "guide"
+            ],
+            "tricky": "u"
           },
           {
             "word": "often",
@@ -381,10 +380,9 @@
             },
             "image": "breathe.jpg",
             "chunks": [
-              "br",
-              "ea",
-              "the"
-            ]
+              "breathe"
+            ],
+            "tricky": "ea"
           },
           {
             "word": "certain",
@@ -438,9 +436,9 @@
             },
             "image": "strange.jpg",
             "chunks": [
-              "str",
-              "ange"
-            ]
+              "strange"
+            ],
+            "tricky": "ange"
           },
           {
             "word": "famous",
@@ -494,10 +492,9 @@
             },
             "image": "straight.jpg",
             "chunks": [
-              "str",
-              "aigh",
-              "t"
-            ]
+              "straight"
+            ],
+            "tricky": "aigh"
           }
         ]
       },
@@ -587,9 +584,9 @@
             },
             "image": "eight.jpg",
             "chunks": [
-              "eigh",
-              "t"
-            ]
+              "eight"
+            ],
+            "tricky": "eigh"
           },
           {
             "word": "believe",
@@ -823,10 +820,9 @@
             },
             "image": "caught.jpg",
             "chunks": [
-              "c",
-              "augh",
-              "t"
-            ]
+              "caught"
+            ],
+            "tricky": "augh"
           }
         ]
       },
@@ -845,9 +841,9 @@
             },
             "image": "eighth.jpg",
             "chunks": [
-              "eigh",
-              "th"
-            ]
+              "eighth"
+            ],
+            "tricky": "ghth"
           },
           {
             "word": "height",
@@ -859,9 +855,9 @@
             },
             "image": "height.jpg",
             "chunks": [
-              "heigh",
-              "t"
-            ]
+              "height"
+            ],
+            "tricky": "eigh"
           },
           {
             "word": "possess",
@@ -887,9 +883,9 @@
             },
             "image": "though.jpg",
             "chunks": [
-              "th",
-              "ough"
-            ]
+              "though"
+            ],
+            "tricky": "ough"
           },
           {
             "word": "weight",
@@ -901,9 +897,9 @@
             },
             "image": "weight.jpg",
             "chunks": [
-              "weigh",
-              "t"
-            ]
+              "weight"
+            ],
+            "tricky": "eigh"
           },
           {
             "word": "arrive",
@@ -1039,8 +1035,8 @@
             "image": "interest.jpg",
             "chunks": [
               "in",
-              "te",
-              "rest"
+              "ter",
+              "est"
             ]
           },
           {
@@ -1157,10 +1153,9 @@
             },
             "image": "thought.jpg",
             "chunks": [
-              "th",
-              "ough",
-              "t"
-            ]
+              "thought"
+            ],
+            "tricky": "ough"
           }
         ]
       },
@@ -1179,9 +1174,9 @@
             },
             "image": "through.jpg",
             "chunks": [
-              "th",
-              "rough"
-            ]
+              "through"
+            ],
+            "tricky": "ough"
           },
           {
             "word": "important",
@@ -1450,8 +1445,7 @@
             },
             "image": "naughty.jpg",
             "chunks": [
-              "n",
-              "augh",
+              "naugh",
               "ty"
             ]
           },
@@ -1738,9 +1732,9 @@
             },
             "image": "rhyme.jpg",
             "chunks": [
-              "rh",
-              "yme"
-            ]
+              "rhyme"
+            ],
+            "tricky": "rhy"
           },
           {
             "word": "rhythm",
@@ -1752,9 +1746,8 @@
             },
             "image": "rhythm.jpg",
             "chunks": [
-              "rh",
-              "yth",
-              "m"
+              "rhy",
+              "thm"
             ]
           },
           {
@@ -1767,9 +1760,9 @@
             },
             "image": "yacht.jpg",
             "chunks": [
-              "y",
-              "acht"
-            ]
+              "yacht"
+            ],
+            "tricky": "ach"
           },
           {
             "word": "queue",
@@ -1781,9 +1774,9 @@
             },
             "image": "queue.jpg",
             "chunks": [
-              "q",
-              "ueue"
-            ]
+              "queue"
+            ],
+            "tricky": "ueue"
           },
           {
             "word": "muscle",
@@ -1809,9 +1802,9 @@
             },
             "image": "bruise.jpg",
             "chunks": [
-              "br",
-              "uise"
-            ]
+              "bruise"
+            ],
+            "tricky": "ui"
           }
         ]
       },
@@ -1900,9 +1893,9 @@
             },
             "image": "twelfth.jpg",
             "chunks": [
-              "twel",
-              "fth"
-            ]
+              "twelfth"
+            ],
+            "tricky": "fth"
           },
           {
             "word": "foreign",

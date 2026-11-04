@@ -523,3 +523,51 @@ main:focus, main:focus-visible { outline: none; }
 .dlg::backdrop { background: rgba(20, 19, 24, 0.55); }
 .dlg h2 { font-size: 1.25rem; margin-bottom: 8px; }
 .dlg .btnrow { margin-top: 16px; }
+
+/* ---- My words: tricky letters, today's job, the grid, letter boxes, numbers ---- */
+.chunked__letter.is-tricky { color: var(--sb); background: var(--sb-soft); border-radius: 0.12em; text-decoration: underline; text-underline-offset: 0.12em; }
+.sectionhead { margin: 22px 0 10px; font-size: 1.15rem; }
+.job { padding: 18px 20px; display: grid; gap: 8px; justify-items: start; margin-bottom: 16px; }
+.job h2 { font-size: 1.5rem; }
+.starline { display: flex; align-items: center; gap: 8px; margin: 0; }
+.starline svg { width: 22px; height: 22px; fill: var(--sb); }
+.gridwrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.wordgrid { border-collapse: collapse; min-width: 100%; }
+.wordgrid th, .wordgrid td { border-bottom: 1px solid var(--line); padding: 7px 4px; text-align: center; font-size: 0.8rem; line-height: 1.2; }
+.wordgrid tbody tr:last-child th, .wordgrid tbody tr:last-child td { border-bottom: 0; }
+.wordgrid thead th { color: var(--muted); font-weight: 600; min-width: 36px; }
+.wordgrid thead th.is-today { color: var(--text); }
+.wordgrid tbody th { text-align: left; padding-left: 12px; font-family: var(--f-display); font-size: 1rem; font-weight: 600; white-space: nowrap; position: sticky; left: 0; background: var(--surface); }
+.wordgrid tbody th a { color: var(--link); }
+.wordgrid .pill { font-size: 0.68rem; padding: 1px 6px; }
+.gridcell svg { width: 20px; height: 20px; display: block; margin: 0 auto; }
+.gridcell--clean svg, .gridkey svg:first-child { fill: var(--sb); }
+.gridcell--help svg { fill: none; stroke: var(--sb); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.gridcell.is-today, .wordgrid thead th.is-today { background: var(--sb-soft); }
+.gridkey { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; }
+.gridkey span { display: inline-flex; align-items: center; gap: 5px; }
+.gridkey svg { width: 16px; height: 16px; }
+.gridkey span:nth-child(2) svg { fill: none; stroke: var(--sb); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.gridkey__empty { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--line); border-radius: 3px; }
+.groupform { padding: 16px; display: grid; gap: 6px; }
+.groupform .field + label { margin-top: 8px; }
+.addwords { margin-top: 14px; }
+.typedword { flex: 1 1 160px; width: auto; }
+.chip { font: inherit; font-weight: 600; color: var(--text); background: var(--surface-2); border: 0; border-radius: 8px; padding: 2px 10px; cursor: pointer; }
+.spellpage { text-align: center; }
+.spellpage .pagehead { text-align: center; }
+.peek { min-height: 1.5em; margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.5rem, 7vw, 2.2rem); color: var(--sb); }
+.spellboxes { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 6px 0; }
+.spellboxes__group { display: inline-flex; gap: 3px; padding-bottom: 5px; border-bottom: 3px solid var(--sb); }
+.spellbox { width: clamp(24px, 7.4vw, 38px); height: clamp(32px, 9.6vw, 46px); display: grid; place-items: center; border: 2px solid var(--line); border-radius: 8px; background: var(--surface); font-family: var(--f-display); font-weight: 700; font-size: clamp(1.1rem, 5.4vw, 1.6rem); color: var(--text); }
+.spellbox.is-filled { border-color: var(--sb); }
+.spellbox.is-next { border-color: var(--focus); }
+.spellline { min-height: 1.5em; margin: 8px 0; font-weight: 600; }
+.spellpage .btnrow--center { margin-bottom: 14px; }
+.spellpage .result { text-align: left; margin-top: 8px; }
+.answerline { min-height: 2em; margin: 10px auto 14px; max-width: 420px; padding: 6px 10px; border-bottom: 3px solid var(--sb); font-family: var(--f-display); font-weight: 700; font-size: clamp(1.4rem, 6.5vw, 2rem); overflow-wrap: anywhere; }
+.testbtns { margin-top: 14px; }
+.stats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 16px; }
+.stat { padding: 14px 16px; display: grid; gap: 2px; }
+.stat b { font-family: var(--f-display); font-size: 2rem; line-height: 1.1; }
+.starsbyday { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0; color: var(--muted); }

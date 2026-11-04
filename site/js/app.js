@@ -3,6 +3,8 @@ import { loadData } from './data.js';
 import { wireThemeMenu } from './thememenu.js';
 import { stop, getSpeaker, hearSample, useVoiceAccount } from './speech.js';
 import * as V from './views.js';
+import * as MW from './words-views.js';
+import * as W from './words-doc.js';
 import * as S from './store.js';
 import * as P from './progress-doc.js';
 import { wireVoiceMenu } from './voice/menu.js';
@@ -27,6 +29,13 @@ const ROUTES = [
   ['custom/play', V.customPlay],
   ['tricky', V.tricky],
   ['progress', V.progress],
+  ['words', MW.myWords],
+  ['words/new', MW.newGroup],
+  ['words/progress', MW.wordsProgress],
+  ['words/g/:gid', MW.group],
+  ['words/g/:gid/edit', MW.editGroupPage],
+  ['words/g/:gid/spell/:n', MW.spellWord],
+  ['words/g/:gid/test', MW.testDay],
   [':yearId', V.year],
   [':yearId/:slug', V.chapter],
   [':yearId/:slug/study', V.study],
@@ -59,6 +68,8 @@ function match(path) {
 function parentOf(path) {
   const parts = path.split('/').filter(Boolean);
   if (parts[0] === 'custom' && parts[1] === 'play') return '#/custom';
+  if (parts[0] === 'words' && parts.length > 3) return '#/words/g/' + parts[2];
+  if (parts[0] === 'words' && parts.length > 1) return '#/words';
   parts.pop();
   return '#/' + parts.join('/');
 }
@@ -135,6 +146,12 @@ function wireAccount() {
         write: (v) => S.writeDoc(P.normalise(v), id),
         merge: P.merge,
         prepare: (v) => P.trim(P.normalise(v), Date.now()),
+      },
+      [W.DOC_KEY]: {
+        read: () => (S.hasWords(id) ? S.readWords(id) : undefined),
+        write: (v) => S.writeWords(W.normalise(v), id),
+        merge: W.merge,
+        prepare: (v) => W.trim(W.normalise(v), Date.now()),
       },
     }),
     redraw: () => { if (drawn) render(); },
