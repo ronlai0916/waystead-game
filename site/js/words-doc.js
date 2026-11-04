@@ -10,7 +10,8 @@
 //     folded:  { ['<group>|<word>']: { n, t, p, through, days } },  old tries
 //     steps:   { ['<group>|<step>']: { d: day, at } },  Study mode: jobs done
 //     clues:   { [word]: { t: text, at } },             memory clues
-//     notes:   [{ id, g: group, w: word, x: sentence, d: day, at }] }
+//     notes:   [{ id, g: group, w: word, x: sentence, d: day, at }],
+//     skips:   [{ id, g: group, w: word, d: day, f: flow, at }] }   "Skip for now"
 //
 //   k: 'p' practice, 't' the test, 'f' a fix-up. A practice or fix-up try may
 //   also have s: 'x' (Fix it in), 'g' (a spelling game) or 'm' (Meaning match);
@@ -18,6 +19,9 @@
 //   day's star and counts as played, and that's all (see MATCH). `back`
 //   is the words from earlier groups that came back with this one. `gone`
 //   marks a deleted group.
+//   A session is one word, one day, one flow: the grid 'p', Fix it in 'x' or
+//   fix-ups 'f'. Its count (3 clean in a row) isn't stored: it's counted from the
+//   tries, so it merges with them and another device carries straight on.
 //   `days` keeps what the rules need from folded tries: { [day]: flags }.
 //   SB2 added steps, clues, notes and `s`, still at v: 1, so a device on the
 //   old release keeps every try (it only ignores what it doesn't know).
@@ -28,7 +32,7 @@
 //   · a group: the copy changed last wins, whole; a deleted group stays
 //     deleted until someone changes it later; deleting never loses its tries;
 //   · resetAt: the later one; anything before it goes;
-//   · steps: the first time a job was done; clues: the newest; notes: by id.
+//   · steps: the first time a job was done; clues: the newest; notes, skips: by id.
 // SIZE: a value may be at most 64 KB. Past 48 KB the oldest tries are folded
 // (per group and word) until it is under 40 KB, and deleted groups older than
 // 90 days are dropped first. Remembered words are not affected by folding.
@@ -53,20 +57,21 @@ const CLEAN = 2; // spelled clean at some point that day
 const TEST_RIGHT = 4;
 const TEST_WRONG = 8;
 const FIX_FIRST = 16; // a fix-up's first try that day was clean
-// Practise 3 times: a clean pass that day, by where it came from.
-const ROUND = { p: 32, x: 64, g: 128 }; // the grid, Fix it in, a game
-const ROUND_BITS = Object.values(ROUND);
+// Practise 3 times: 3 clean spellings in a row that day, by flow.
+const ROW = { p: 2048, x: 4096, f: 8192 }; // the grid, Fix it in, fix-ups
+const ROW_BITS = ROW.p | ROW.x | ROW.f;
 // Meaning match on a day: played; played clean (the star). No dot, no first go,
 // no remembered, no fix-up, and the day's real first go is still to come.
 const MATCH = 256;
 const MATCH_CLEAN = 512;
 const SPELT = 1024; // someone spelled the word that day
-export const ROUNDS_NEEDED = 3;
+export const ROW_NEEDED = 3;
+const SKIP_KEEP_MS = 3 * 86400000; // a skip only matters on its own day
 export const MAX_NOTES = 60; // sentences kept when the value is trimmed
 export const MAX_CLUE = 80;
 export const MAX_NOTE = 160;
 
-export const emptyDoc = () => ({ v: 1, resetAt: 0, groups: {}, results: [], folded: {}, steps: {}, clues: {}, notes: [] });
+export const emptyDoc = () => ({ v: 1, resetAt: 0, groups: {}, results: [], folded: {}, steps: {}, clues: {}, notes: [], skips: [] });
 export const sizeOf = (d) => new TextEncoder().encode(JSON.stringify(d)).length;
 
 const num = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
@@ -96,6 +101,8 @@ export function normalise(d) {
   }
   out.notes = (Array.isArray(d.notes) ? d.notes : []).filter((x) => isObj(x) && typeof x.id === 'string' && typeof x.g === 'string'
     && typeof x.w === 'string' && typeof x.x === 'string' && isDay(x.d) && num(x.at));
+  out.skips = (Array.isArray(d.skips) ? d.skips : []).filter((x) => isObj(x) && typeof x.id === 'string' && typeof x.g === 'string'
+    && typeof x.w === 'string' && typeof x.f === 'string' && isDay(x.d) && num(x.at));
   return out;
 }
 
@@ -207,14 +214,23 @@ function flagsOf(r, first) {
   if (isMatch(r)) return MATCH | (unaided(r) ? MATCH_CLEAN : 0);
   const test = r.k === 't' ? (r.c ? TEST_RIGHT : TEST_WRONG) : 0;
   const fix = first && r.k === 'f' && unaided(r) ? FIX_FIRST : 0;
-  const round = r.k === 'p' && unaided(r) ? ROUND[r.s || 'p'] || 0 : 0;
-  return (first && unaided(r) ? FIRST : 0) | (r.c ? CLEAN : 0) | test | fix | round | SPELT;
+  return (first && unaided(r) ? FIRST : 0) | (r.c ? CLEAN : 0) | test | fix | SPELT;
 }
+
+/** The flow a try belongs to: 'p', 'x', 'f', or '' for a game or the test. */
+export function flowOf(r) {
+  if (r.k === 'f') return r.s ? '' : 'f';
+  if (r.k !== 'p') return '';
+  return r.s === 'x' ? 'x' : r.s ? '' : 'p';
+}
+const runKey = (g, w, day, flow) => cellKey(g, w) + '|' + day + '|' + flow;
 
 // Everything the rules read, from the fold and the tries:
 //   cells: group|word -> { day: flags };  days: word -> { day: counts towards remembered }
+//   runs: group|word|day|flow -> clean spellings in a row (a mistake or peek: 0)
 function ledger(d) {
   const cells = new Map();
+  const runs = new Map();
   const days = new Map();
   const dayMap = (w) => { if (!days.has(w)) days.set(w, {}); return days.get(w); };
   for (const [key, f] of Object.entries(d.folded)) {
@@ -228,12 +244,20 @@ function ledger(d) {
     const c = cells.get(key);
     const first = firstOf(c, r.d);
     c[r.d] = (c[r.d] || 0) | flagsOf(r, first);
+    const flow = flowOf(r);
+    if (flow) {
+      const k = runKey(r.g, r.w, r.d, flow);
+      const had = runs.get(k) || 0;
+      const n = had >= ROW_NEEDED ? had : unaided(r) ? had + 1 : 0; // done stays done
+      runs.set(k, n);
+      if (n >= ROW_NEEDED) c[r.d] |= ROW[flow];
+    }
     if (isMatch(r)) continue;
     const m = dayMap(r.w);
     if (!(r.d in m)) m[r.d] = unaided(r);
     if (r.k === 't' && r.c) m[r.d] = true; // a word right in the test always counts
   }
-  return { cells, days };
+  return { cells, days, runs };
 }
 const flagsOn = (L, g, w, day) => (L.cells.get(cellKey(g.id, w)) || {})[day] || 0;
 
@@ -252,28 +276,60 @@ export function starsOn(d, g, day, L = ledger(d)) {
 
 /** A try away from the grid: after the test, a word still to fix counts as a fix-up. */
 export const kindOn = (d, g, w, day) => (day >= g.test && fixups(d, g).includes(w) ? 'f' : 'p');
-/** The words the practice grid hasn't had a clean pass at today. */
-export function gridLeft(d, g, day, L = ledger(d)) { return rows(g).filter((w) => !(flagsOn(L, g, w, day) & ROUND.p)); }
-/** The first day the grid had every word: the Practice day's round. */
-export function gridRoundDay(d, g, L = ledger(d)) {
-  const days = new Set(rows(g).flatMap((w) => Object.keys(L.cells.get(cellKey(g.id, w)) || {})));
-  return [...days].sort().find((day) => !gridLeft(d, g, day, L).length) || '';
-}
 
 // ---- practise 3 times --------------------------------------------------------------
-/**
- * Clean rounds before the test, at most 3. Each place counts once a day: Fix
- * it in, the grid, and games (however many are played that day).
- */
-export function dots(d, g, w, L = ledger(d)) {
-  const days = L.cells.get(cellKey(g.id, w)) || {};
-  const n = Object.entries(days).filter(([day]) => day < g.test)
-    .reduce((sum, [, flags]) => sum + ROUND_BITS.filter((b) => flags & b).length, 0);
-  return Math.min(n, ROUNDS_NEEDED);
+/** How far today's session has got: 0 to 3. A mistake or a peek takes it back to 0, until it has reached 3. */
+export function sessionCount(d, g, w, day, flow, L = ledger(d)) {
+  return flagsOn(L, g, w, day) & ROW[flow] ? ROW_NEEDED : L.runs.get(runKey(g.id, w, day, flow)) || 0;
 }
-export function allDots(d, g) { const L = ledger(d); return rows(g).map((w) => ({ word: w, dots: dots(d, g, w, L), back: g.back.includes(w) })); }
-/** Only the group's own words are in the test, so only they need their 3. */
-export function readyForTest(d, g) { const L = ledger(d); return g.words.every((w) => dots(d, g, w, L) >= ROUNDS_NEEDED); }
+export const sessionDone = (d, g, w, day, flow, L = ledger(d)) => sessionCount(d, g, w, day, flow, L) >= ROW_NEEDED;
+const reachedOn = (L, g, w, flow) => Object.entries(L.cells.get(cellKey(g.id, w)) || {}).filter(([, f]) => f & ROW[flow]).map(([day]) => day).sort();
+/** Has this word had a whole session in this flow, on any day? */
+const reached = (L, g, w, flow) => reachedOn(L, g, w, flow).length > 0;
+/** Before the test, in Fix it in or on the grid. */
+function practised(L, g, w) { return [...reachedOn(L, g, w, 'p'), ...reachedOn(L, g, w, 'x')].some((day) => day < g.test); }
+
+/** The words a job still needs. Fix-ups go by the day; the others carry over, so a job left halfway keeps what's done. */
+export function jobLeft(d, g, day, flow, L = ledger(d)) {
+  if (flow === 'f') return fixups(d, g).filter((w) => !sessionDone(d, g, w, day, 'f', L));
+  return rows(g).filter((w) => !reached(L, g, w, flow));
+}
+/** The day a Fix it in or grid job was finished: every word has had its session. */
+export function roundDay(d, g, flow, L = ledger(d)) {
+  const days = rows(g).map((w) => reachedOn(L, g, w, flow)[0]);
+  return days.length && days.every(Boolean) ? [...days].sort().at(-1) : '';
+}
+/** The dots: 3 once a word has had a whole session before the test, else today's count. */
+export function dots(d, g, w, day, L = ledger(d)) {
+  if (practised(L, g, w)) return ROW_NEEDED;
+  return day < g.test ? Math.max(sessionCount(d, g, w, day, 'p', L), sessionCount(d, g, w, day, 'x', L)) : 0;
+}
+export function allDots(d, g, day) { const L = ledger(d); return rows(g).map((w) => ({ word: w, dots: dots(d, g, w, day, L), back: g.back.includes(w) })); }
+/** Only the group's own words are in the test, so only they need their session. */
+export function readyForTest(d, g) { const L = ledger(d); return g.words.every((w) => practised(L, g, w)); }
+
+// ---- skip for now ------------------------------------------------------------------
+export function addSkip(d, { id, group, word, day, flow, now }) {
+  return { ...d, skips: [...d.skips, { id, g: group, w: word, d: day, f: flow, at: now }] };
+}
+const skipTime = (d, g, w, day, flow) => d.skips.filter((s) => s.g === g.id && s.w === w && s.d === day && s.f === flow).reduce((t, s) => Math.max(t, s.at), 0);
+/** The order to go through a list: as it stands, then today's skipped words, last skipped last. */
+export function inTurn(d, g, list, day, flow) {
+  const when = new Map(list.map((w) => [w, skipTime(d, g, w, day, flow)]));
+  return [...list.filter((w) => !when.get(w)), ...list.filter((w) => when.get(w)).sort((a, b) => when.get(a) - when.get(b))];
+}
+/** What's left of a job, in turn. */
+export const queue = (d, g, day, flow) => inTurn(d, g, jobLeft(d, g, day, flow), day, flow);
+/** Today's "Come back to this" words, with the flow each belongs to. */
+export function comeBack(d, g, day) {
+  const L = ledger(d);
+  const out = [];
+  for (const flow of ['x', 'p', 'f']) {
+    const left = new Set(jobLeft(d, g, day, flow, L));
+    for (const w of inTurn(d, g, [...left], day, flow)) if (skipTime(d, g, w, day, flow)) out.push({ word: w, flow });
+  }
+  return out;
+}
 
 // ---- jobs done, clues, sentences ---------------------------------------------------
 const stepKey = (g, step) => g + '|' + step;
@@ -321,10 +377,10 @@ export const testDone = (d, g) => testLeft(d, g).length === 0;
 export const testDayOf = (results) => results.reduce((m, x) => (x.result && x.result.day > m ? x.result.day : m), '');
 export const slipped = (d, g) => testResults(d, g).filter((x) => x.result && !x.result.right).map((x) => x.word);
 
-/** The words still to fix: slipped, and not yet spelled clean at the first go of a day. */
+/** The words still to fix: slipped, and no day yet with a clean first go and a whole session. */
 export function fixups(d, g) {
   const L = ledger(d);
-  return slipped(d, g).filter((w) => !Object.values(L.cells.get(cellKey(g.id, w)) || {}).some((f) => f & FIX_FIRST));
+  return slipped(d, g).filter((w) => !Object.values(L.cells.get(cellKey(g.id, w)) || {}).some((f) => f & FIX_FIRST && f & ROW.f));
 }
 
 // ---- today's job ---------------------------------------------------------------
@@ -338,7 +394,7 @@ export function jobFor(d, g, today) {
   if (today <= testDayOf(results)) return 'wait';
   const left = fixups(d, g);
   if (!left.length) return 'finished';
-  return left.every((w) => doneOn(d, g, w, today)) ? 'fixed-today' : 'fixups';
+  return left.every((w) => sessionDone(d, g, w, today, 'f')) ? 'fixed-today' : 'fixups';
 }
 /** The group to show first: the soonest with something left to do, else the newest. */
 export function currentGroup(d, today) {
@@ -437,8 +493,9 @@ export function merge(a, b) {
     const c = newest(x.clues[w], y.clues[w], (v) => v.at);
     if (later(c)) out.clues[w] = c;
   }
-  const notes = new Map([...x.notes, ...y.notes].filter(later).map((n) => [n.id, n]));
-  out.notes = [...notes.values()].sort(byTime);
+  const byId = (list) => [...new Map(list.filter(later).map((n) => [n.id, n])).values()].sort(byTime);
+  out.notes = byId([...x.notes, ...y.notes]);
+  out.skips = byId([...x.skips, ...y.skips]);
   return out;
 }
 
@@ -448,7 +505,14 @@ export function trim(d, now) {
   // A job's part marks ('fix:2') only say where to carry on: once the job is done they can go.
   const steps = Object.fromEntries(Object.entries(d.steps).filter(([key]) => key.slice(0, key.indexOf('|')) in groups
     && !(key.includes(':') && key.slice(0, key.indexOf(':')) in d.steps)));
-  return foldOldest({ ...d, groups, steps, notes: [...d.notes].sort(byTime).slice(-MAX_NOTES) }, { target: TRIM_TO, sizeOf, ...LOG, tally: (f, r) => (isMatch(r) ? f : { ...f, t: f.t + r.t, p: f.p + r.p }) });
+  const L = ledger(d);
+  const out = foldOldest({ ...d, groups, steps, notes: [...d.notes].sort(byTime).slice(-MAX_NOTES), skips: d.skips.filter((s) => now - s.at < SKIP_KEEP_MS) }, { target: TRIM_TO, sizeOf, ...LOG, tally: (f, r) => (isMatch(r) ? f : { ...f, t: f.t + r.t, p: f.p + r.p }) });
+  // A session reached 3 from a run of tries: folding keeps that, not the run.
+  const folded = Object.fromEntries(Object.entries(out.folded).map(([key, f]) => {
+    const cell = L.cells.get(key) || {};
+    return [key, { ...f, days: Object.fromEntries(Object.entries(f.days).map(([day, flags]) => [day, flags | ((cell[day] || 0) & ROW_BITS)])) }];
+  }));
+  return { ...out, folded };
 }
 
 export const reset = (now) => ({ ...emptyDoc(), resetAt: now });

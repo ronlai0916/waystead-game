@@ -49,6 +49,7 @@ const ROUTES = [
   ['words/g/:gid/spell/:n', MW.spellWord],
   ['words/g/:gid/test', MW.testDay],
   ['words/g/:gid/study/:step', SV.studyStep],
+  ['words/g/:gid/study/:step/:n', SV.studyStep],
   ['words/g/:gid/games', GV.gameMode],
   ['words/g/:gid/game/:game', GV.oneGame],
   ['grownups', GU.grownups],

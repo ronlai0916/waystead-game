@@ -259,21 +259,28 @@ async function quickFire(wrongFirst = false) {
     await until('document.querySelector("[data-next]")', 'the end of the word');
   }
 }
-async function gridRound() {
-  for (let n = 0; n < 30; n += 1) {
-    await until('document.querySelector("[data-next]") || document.querySelector(".spellbox.is-next")', 'the grid');
-    if (await has('[data-next]')) {
-      const label = await text('[data-next]');
-      await click('[data-next]');
-      await sleep(60);
-      if (/Back/.test(label)) return;
-      continue;
-    }
-    const w = await lastWord();
-    await keys(w);
+const hasTurn = 'document.querySelector("[data-next]") || document.querySelector(".spellbox.is-next")';
+/** Spell the word on show until its session is done: 3 clean in a row. */
+async function spellToDone() {
+  for (let n = 0; n < 6; n += 1) {
+    await until(hasTurn, 'the word', 8000);
+    if (await has('[data-next]')) return;
+    await keys(await lastWord());
     await sleep(40);
   }
+  throw new Error('the word never finished');
 }
+async function gridRound() {
+  for (let n = 0; n < 12; n += 1) {
+    await spellToDone();
+    const label = await text('[data-next]');
+    await click('[data-next]');
+    await sleep(60);
+    if (/Back/.test(label)) return;
+  }
+}
+const rowNow = () => text('[data-row]');
+async function typeFix(w) { await keys(w); await key('Enter'); await sleep(40); }
 
 // ---- the scenarios -----------------------------------------------------------------------
 const MON = '2026-11-02';
@@ -359,8 +366,7 @@ scene('week', async () => {
       await click('[data-written]');
       await until('document.querySelector("[data-check]")', 'Type again');
     }
-    await keys(w);
-    await key('Enter');
+    for (let k = 0; k < 3; k += 1) await typeFix(w);
     await until('document.querySelector("[data-go]")', 'Check');
     if (i === 0) await allViews('day2-fix-check');
     await click('[data-go]');
@@ -378,7 +384,7 @@ scene('week', async () => {
   const g = W.groupById(d, 'g1');
   ok(W.clueFor(d, 'build'), 'the clue for build is saved');
   ok(W.clueFor(d, 'earth') === 'My own clue', 'the typed clue is saved');
-  ok(WORDS.every((w) => W.dots(d, g, w) === 1), 'one dot each after Fix it in');
+  ok(WORDS.every((w) => W.dots(d, g, w, plus(1)) === 3), 'all three dots after Fix it in');
 
   step('Day 3: Game day');
   await open(plus(2), '#/');
@@ -397,7 +403,6 @@ scene('week', async () => {
   await quickFire();
   await until('/Done for today/.test(document.querySelector("main").innerText)', 'Game day done');
   d = await readLocal();
-  ok(WORDS.every((w) => W.dots(d, g, w) === 2), 'two dots each after Game day: ' + WORDS.map((w) => W.dots(d, g, w)));
 
   step('Day 4: Story day');
   await open(plus(3), '#/');
@@ -472,8 +477,7 @@ scene('week', async () => {
   await click('[data-job]');
   await until('document.querySelector(".spellbox.is-next")', 'the fix-up');
   await allViews('day7-mend-fixup');
-  await keys(await lastWord());
-  await until('document.querySelector("[data-next]")', 'fix-up done');
+  await spellToDone();
   await click('[data-next]');
   await until('location.hash.endsWith("/g1")', 'the group');
   await click('[data-job]');
@@ -507,7 +511,7 @@ scene('each game once, in Game mode', async () => {
   const g = W.groupById(d, 'g1');
   ok(d.results.filter((r) => r.s === 'g').length === 12 && d.results.filter((r) => r.s === 'm').length === 4, 'each game records each word: ' + d.results.length);
   ok(d.results.some((r) => r.w === 'heart' && r.s === 'g'), 'the returning word joined in');
-  ok(W.dots(d, g, 'heart') === 1, 'four games on one day are one round');
+  ok(W.dots(d, g, 'heart', plus(1)) === 0, 'games earn no dots');
   ok(W.starsOn(d, g, plus(1)) === 4, 'a star each');
   step('a wrong letter in Missing letters is not clean');
   await go('#/words/g/g1/game/missing');
@@ -566,6 +570,195 @@ scene('test day: no page shows a test word', async () => {
   await open(plus(5), '#/words/progress');
   await until('/fruit/.test(document.querySelector("main").textContent)', 'the words on My word numbers');
   ok(!await has('[data-testcard]'), 'no card once the test is done');
+});
+
+function practiceDayDoc() {
+  let doc = weekDoc();
+  const g = W.groupById(doc, 'g1');
+  for (const [st, k] of [['hello', 0], ['fix', 1], ['games', 2], ['story', 3]]) doc = W.markStep(doc, g, st, plus(k), Date.parse(plus(k) + 'T09:00:00'));
+  return doc;
+}
+scene('a wrong word, a peek, a skip and coming back', async () => {
+  await seedChild(practiceDayDoc(), plus(4));
+  await open(plus(4), '#/');
+  await click('[data-job]');
+  await until('document.querySelector(".spellbox.is-next")', 'the first word');
+  const first = await lastWord();
+  const here = await ev('location.hash');
+  const turn = () => until('document.querySelector(".spellbox.is-next")', 'the word again', 8000);
+  step('a mistake: the same word again, at 0/3');
+  await keys('z');
+  ok(/0\/3/.test(await rowNow()), 'a mistake shows 0/3');
+  await allViews('spell-mistake');
+  await keys(first);
+  await until('/try that one again/.test(document.querySelector("[data-line]").innerText)', 'the retry line');
+  await allViews('spell-retry');
+  await turn();
+  ok(await ev('location.hash') === here, 'still the same word');
+  step('two clean, then a mistake at 2/3 resets');
+  await keys(first);
+  await sleep(60);
+  ok(/1\/3/.test(await rowNow()), '1/3: ' + await rowNow());
+  await turn();
+  await keys(first);
+  await sleep(60);
+  ok(/2\/3/.test(await rowNow()), '2/3');
+  await allViews('spell-two-of-three');
+  await turn();
+  await keys('z');
+  await keys(first);
+  await sleep(60);
+  ok(/0\/3/.test(await rowNow()), 'a mistake at 2/3 resets');
+  step('a peek resets too');
+  await turn();
+  await keys(first);
+  await sleep(60);
+  ok(/1\/3/.test(await rowNow()), '1/3 again');
+  await turn();
+  await click('[data-peekbtn]');
+  ok(/0\/3/.test(await rowNow()), 'a peek shows 0/3');
+  await sleep(2200);
+  await keys(first);
+  await sleep(60);
+  ok(/0\/3/.test(await rowNow()), 'a peek counts as no clean spelling');
+  await spellToDone();
+  ok(/3\/3/.test(await rowNow()), '3/3');
+  await click('[data-next]');
+  await until('document.querySelector(".spellbox.is-next") && location.hash !== ' + q(here), 'the next word');
+
+  step('Skip for now');
+  const skipped = await lastWord();
+  await click('[data-skip]');
+  await until('document.querySelector(".spellbox.is-next")', 'the word after');
+  await sleep(100);
+  const third = await lastWord();
+  ok(third !== skipped, 'the skipped word has gone to the end');
+  step('leaving halfway keeps the count');
+  await keys(third);
+  await sleep(60);
+  ok(/1\/3/.test(await rowNow()), '1/3');
+  await sleep(1800); // the debounced save
+  await go('#/words/g/g1');
+  await until('document.querySelector("[data-comeback]")', 'the marker on the group page');
+  ok(/Come back to this/.test(await text()), 'the marker');
+  ok(!/Done for today/.test(await text()), 'not done');
+  await allViews('group-comeback');
+  await go('#/');
+  await until('document.querySelector("[data-comeback]")', 'the marker in the room');
+  ok(await has('[data-room=job]'), 'the job is still open today');
+  await allViews('room-comeback');
+  await go('#/words/g/g1/spell/' + WORDS.indexOf(third));
+  await until('document.querySelector(".spellbox.is-next")', 'the word again');
+  ok(/1\/3/.test(await rowNow()), 'it carries on at 1/3');
+  await sleep(1800);
+
+  step('another device carries on');
+  const device = await ev('localStorage.getItem("wa.player")');
+  await ev('localStorage.clear()');
+  await ev('localStorage.setItem("wa.player",' + q(device) + ')');
+  await open(plus(4), '#/');
+  await until('document.querySelector("[data-comeback]")', 'the marker on the other device', 8000);
+  await go('#/words/g/g1/spell/' + WORDS.indexOf(third));
+  await until('document.querySelector("[data-row]").innerText.includes("1/3")', 'the count on the other device');
+
+  step('tapping the marker opens the word; the job ends only then');
+  await spellToDone();
+  await click('[data-next]');
+  await sleep(100);
+  await spellToDone(); // the fourth word
+  await click('[data-next]');
+  await sleep(100);
+  await until('document.querySelector(".spellbox.is-next") || document.querySelector("[data-comeback]")', 'the skipped word', 8000);
+  if (await has('[data-comeback]')) await click('[data-comeback]');
+  await until('document.querySelector(".spellbox.is-next")', 'the skipped word opens');
+  ok(await lastWord() === skipped, 'it is the skipped word');
+  await spellToDone();
+  await click('[data-next]');
+  await until('/Ready for the test/.test(document.querySelector("main").innerText)', 'ready');
+  ok(!await has('[data-comeback]'), 'no marker left');
+  await go('#/');
+  await until('document.querySelector("[data-room=ready]")', 'the job complete');
+  ok(!await has('[data-comeback]'), 'no marker in the room');
+});
+
+scene('Fix it in: a peek, a skip, coming back', async () => {
+  let doc = weekDoc(['build', 'earth']);
+  doc = W.markStep(doc, W.groupById(doc, 'g1'), 'hello', MON, Date.parse(MON + 'T09:00:00'));
+  await seedChild(doc, plus(1));
+  await open(plus(1), '#/');
+  await click('[data-job]');
+  await until('document.querySelector("[data-cover]")', 'Look');
+  await click('[data-skip]');
+  await until('document.querySelector("[data-cover]")', 'the next word');
+  const w = await lastWord();
+  ok(w === 'earth', 'the second word: ' + w);
+  await click('[data-cover]');
+  await click('[data-written]');
+  await until('document.querySelector("[data-peekbtn]")', 'Type');
+  await click('[data-peekbtn]');
+  ok(/0\/3/.test(await rowNow()), 'a peek shows 0/3');
+  await typeFix(w);
+  await until('document.querySelector("[data-go]")', 'Check');
+  ok(/try that one again/i.test(await text('h1')), 'right with a peek still comes back');
+  await click('[data-go]');
+  await until('document.querySelector("[data-cover]")', 'Look again');
+  await click('[data-cover]');
+  await click('[data-written]');
+  await until('document.querySelector("[data-check]")', 'Type again');
+  for (let k = 0; k < 3; k += 1) await typeFix(w);
+  await click('[data-go]');
+  await sleep(60);
+  if (await has('[data-noclue]')) await click('[data-noclue]');
+  await until('document.querySelector("[data-cover]")', 'the skipped word comes round');
+  ok(await lastWord() === 'build', 'the skipped word');
+  await click('[data-skip]');
+  await until('location.hash.endsWith("/g1")', 'back at the list: nothing else left');
+  ok(!/Done for today/.test(await text()), 'the job stays open');
+  await click('[data-comeback]');
+  await until('document.querySelector("[data-cover]")', 'it opens directly');
+  ok(/\/study\/fix\/0$/.test(await ev('location.hash')), 'by its row');
+  await click('[data-cover]');
+  await click('[data-written]');
+  await until('document.querySelector("[data-check]")', 'Type');
+  for (let k = 0; k < 3; k += 1) await typeFix('build');
+  await click('[data-go]');
+  await sleep(60);
+  if (await has('[data-noclue]')) await click('[data-noclue]');
+  await until('/Done for today/.test(document.querySelector("main").innerText)', 'only now');
+});
+
+scene('games: the same word back, and skip', async () => {
+  await seedChild(weekDoc(['fruit', 'earth'], plus(7)), plus(1));
+  await open(plus(1), '#/words/g/g1/game/quick');
+  await until('document.querySelector("[data-game=quick]")', 'Quick-fire');
+  const w = await lastWord();
+  await keys(w + 'x');
+  await key('Enter');
+  await until('/try that one again/.test(document.querySelector("[data-line]").innerText)', 'the retry');
+  ok(await lastWord() === w, 'the same word');
+  await allViews('game-retry');
+  await click('[data-skip]');
+  await sleep(60);
+  const other = await lastWord();
+  ok(other !== w, 'skipped to the other word');
+  await keys(other);
+  await key('Enter');
+  await click('[data-next]');
+  await sleep(60);
+  ok(await lastWord() === w, 'the skipped word comes back');
+  await keys(w);
+  await key('Enter');
+  await click('[data-next]');
+  await until('/ done/.test(document.querySelector("main").innerText)', 'the game ends');
+  step('Unjumble: a wrong tile');
+  await go('#/words/g/g1/game/unjumble');
+  await until('document.querySelector("[data-game=unjumble]")', 'Unjumble');
+  const u = await lastWord();
+  const wrong = [...u].find((c) => c !== u[0]);
+  await keys(wrong);
+  await keys(u);
+  await until('/try that one again/.test(document.querySelector("[data-line]").innerText)', 'the retry');
+  ok(await lastWord() === u, 'the same word');
 });
 
 scene('a reviewed story', async () => {

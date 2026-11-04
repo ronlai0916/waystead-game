@@ -223,22 +223,24 @@ test('back-again words join the practice but not the test', () => {
 });
 
 // ---- fix-ups -------------------------------------------------------------------------------
-test('fix-ups: the words that slipped, until spelled clean at a first go', () => {
+test('fix-ups: the words that slipped, until a clean first go and 3 in a row on one day', () => {
   const { d, g } = made(['fruit', 'earth', 'heart']);
   let t = attempt(d, g, 'fruit', '2026-11-09', { kind: 't' });
   t = attempt(t, g, 'earth', '2026-11-09', { kind: 't', tries: 1, clean: false });
   t = attempt(t, g, 'heart', '2026-11-09', { kind: 't', tries: 1, clean: false });
   assert.deepEqual(W.fixups(t, g), ['earth', 'heart']);
-  // Tuesday: earth clean at once; heart needs a mistake and a clean run.
-  t = attempt(t, g, 'earth', '2026-11-10', { kind: 'f' });
+  // Tuesday: earth clean at once; heart needs a mistake and then its run.
+  for (const hour of [9, 10, 11]) t = attempt(t, g, 'earth', '2026-11-10', { kind: 'f', hour });
   assert.deepEqual(W.fixups(t, g), ['heart']);
   assert.equal(W.jobFor(t, g, '2026-11-10'), 'fixups');
   t = attempt(t, g, 'heart', '2026-11-10', { kind: 'f', tries: 2, clean: false });
-  t = attempt(t, g, 'heart', '2026-11-10', { kind: 'f', hour: 13 });
+  for (const hour of [13, 14, 15]) t = attempt(t, g, 'heart', '2026-11-10', { kind: 'f', hour });
   assert.equal(W.jobFor(t, g, '2026-11-10'), 'fixed-today', 'done for today');
   assert.deepEqual(W.fixups(t, g), ['heart'], 'it comes back');
   assert.equal(W.jobFor(t, g, '2026-11-11'), 'fixups');
-  t = attempt(t, g, 'heart', '2026-11-11', { kind: 'f' });
+  t = attempt(t, g, 'heart', '2026-11-11', { kind: 'f', hour: 9 });
+  assert.deepEqual(W.fixups(t, g), ['heart'], 'a clean go, but the session isn\'t finished');
+  for (const hour of [10, 11]) t = attempt(t, g, 'heart', '2026-11-11', { kind: 'f', hour });
   assert.deepEqual(W.fixups(t, g), []);
   assert.equal(W.jobFor(t, g, '2026-11-11'), 'finished');
 });

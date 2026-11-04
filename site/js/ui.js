@@ -78,6 +78,10 @@ export function dotsHtml(n, of = 3) {
   return '<span class="dots" role="img" aria-label="' + n + ' of ' + of + ' clean rounds">' + Array.from({ length: of }, (_, i) => '<i' + (i < n ? ' class="is-on"' : '') + '></i>').join('') + '</span>';
 }
 
+// How far a word's session has got: the dots and "2/3".
+export const rowCountHtml = (n, of = 3) => dotsHtml(n, of) + ' <span class="small">' + n + '/' + of + '</span>';
+export const RETRY_LINE = 'Let\'s try that one again.';
+
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 export function keyboard() {
   return '<div class="keyboard" role="group" aria-label="Letters">' + ROWS.map((row) =>

@@ -129,10 +129,10 @@ test('Quick-fire: longer words get longer; time plays no part in a pass', () => 
 });
 
 // ---- recording: exactly like the grid ----------------------------------------------------
-test('each game\'s clean pass feeds the dots, the star and remembered', () => {
+test('each game\'s clean pass feeds the star and remembered, but no dot', () => {
   let { d, g } = made(['fruit'], plus(9));
   d = rec(d, g, 'fruit', { tries: 0, clean: true }, plus(1));
-  assert.equal(W.dots(d, g, 'fruit'), 1);
+  assert.equal(W.dots(d, g, 'fruit', plus(1)), 0);
   assert.equal(W.cell(d, g, 'fruit', plus(1)), 'clean');
   assert.equal(W.starsOn(d, g, plus(1)), 1);
   d = rec(d, g, 'fruit', { tries: 0, clean: true }, plus(4));
@@ -142,7 +142,6 @@ test('each game\'s clean pass feeds the dots, the star and remembered', () => {
 test('a pass with mistakes: no dot, no star, and it doesn\'t count towards remembered', () => {
   let { d, g } = made(['fruit']);
   d = rec(d, g, 'fruit', { tries: 2, clean: false });
-  assert.equal(W.dots(d, g, 'fruit'), 0);
   assert.equal(W.cell(d, g, 'fruit', plus(1)), 'todo');
   assert.deepEqual(W.goodDays(d, 'fruit'), []);
   assert.equal(W.groupProgress(d, g).tries, 2, 'the wrong letters show on the word\'s numbers');
@@ -152,7 +151,6 @@ test('a clean game after a slip that day is help, as on the grid', () => {
   d = rec(d, g, 'fruit', { tries: 1, clean: false });
   d = rec(d, g, 'fruit', { tries: 0, clean: true });
   assert.equal(W.cell(d, g, 'fruit', plus(1)), 'help');
-  assert.equal(W.dots(d, g, 'fruit'), 1);
 });
 test('the games record as practice with the game\'s mark', () => {
   let { d, g } = made(['fruit']);
@@ -160,22 +158,22 @@ test('the games record as practice with the game\'s mark', () => {
   const r = d.results.at(-1);
   assert.deepEqual([r.k, r.s, r.t, r.p, r.c, r.g], ['p', 'g', 0, 0, 1, 'g1']);
 });
-test('words back again join in and get their dots', () => {
+test('words back again join in', () => {
   let { d, g } = made(['fruit']);
   d = { ...d, groups: { ...d.groups, g1: { ...d.groups.g1, back: ['earth'] } } };
   g = W.groupById(d, 'g1');
   assert.deepEqual(W.rows(g), ['fruit', 'earth']);
   d = rec(d, g, 'earth', { tries: 0, clean: true });
-  assert.equal(W.dots(d, g, 'earth'), 1);
+  assert.equal(W.starsOn(d, g, plus(1)), 1);
   const src = readFileSync(fileURLToPath(new URL('../site/js/games-views.js', import.meta.url)), 'utf8');
   assert.match(src, /const words = W\.rows\(g\);/, 'the games play every row');
 });
-test('after the test, a game mends a slipped word as a fix-up', () => {
+test('after the test, a game on a slipped word is a fix-up try, but only Mend\'s 3 in a row clears it', () => {
   let { d, g } = made(['fruit'], plus(2));
   d = W.addTry(d, { id: 't', word: 'fruit', day: plus(2), group: 'g1', kind: 't', tries: 1, peeks: 0, clean: false, now: at(plus(2)) });
   d = rec(d, g, 'fruit', { tries: 0, clean: true }, plus(3));
   assert.equal(d.results.at(-1).k, 'f');
-  assert.deepEqual(W.fixups(d, g), []);
+  assert.deepEqual(W.fixups(d, g), ['fruit']);
 });
 // ---- Meaning match: stars and played, no dots ---------------------------------------------
 const m = (d, g, w, day = plus(1), ok = true) => rec(d, g, w, { tries: ok ? 0 : 1, clean: ok, source: 'm' }, day);
@@ -188,7 +186,7 @@ test('Meaning match passes are marked as such', () => {
 test('Meaning match earns no dot, however often it\'s played', () => {
   let { d, g } = made(['fruit']);
   for (const k of [1, 2, 3, 4]) d = m(d, g, 'fruit', plus(k));
-  assert.equal(W.dots(d, g, 'fruit'), 0);
+  assert.equal(W.dots(d, g, 'fruit', plus(4)), 0);
   assert.equal(W.readyForTest(d, g), false);
 });
 test('Meaning match earns the day\'s star, and the word counts as played', () => {
@@ -217,7 +215,6 @@ test('the day\'s real first go is still to come after Meaning match', () => {
   d = rec(d, g, 'fruit', { tries: 0, clean: true }, plus(1));
   assert.equal(W.cell(d, g, 'fruit', plus(1)), 'clean');
   assert.deepEqual(W.goodDays(d, 'fruit'), [plus(1)]);
-  assert.equal(W.dots(d, g, 'fruit'), 1, 'the dot is the spelling game\'s');
 });
 test('a slip when spelled isn\'t hidden by a clean Meaning match', () => {
   let { d, g } = made(['fruit']);
@@ -231,7 +228,7 @@ test('Meaning match doesn\'t do a word for the day, or fill the grid round', () 
   let { d, g } = made(['fruit']);
   d = m(d, g, 'fruit');
   assert.equal(W.doneOn(d, g, 'fruit', plus(1)), false);
-  assert.deepEqual(W.gridLeft(d, g, plus(1)), ['fruit']);
+  assert.deepEqual(W.jobLeft(d, g, plus(1), 'p'), ['fruit']);
 });
 test('Meaning match never mends a fix-up, nor spoils that day\'s', () => {
   let { d, g } = made(['fruit'], plus(2));
@@ -240,7 +237,7 @@ test('Meaning match never mends a fix-up, nor spoils that day\'s', () => {
   assert.equal(d.results.at(-1).k, 'p');
   assert.deepEqual(W.fixups(d, g), ['fruit']);
   assert.equal(W.jobFor(d, g, plus(3)), 'fixups');
-  d = rec(d, g, 'fruit', { tries: 0, clean: true }, plus(3));
+  for (let i = 0; i < 3; i += 1) d = W.addTry(d, { id: 'f' + i, word: 'fruit', day: plus(3), group: 'g1', kind: 'f', tries: 0, peeks: 0, clean: true, now: at(plus(3)) + 1000 + i });
   assert.deepEqual(W.fixups(d, g), [], 'the fix-up after it still counts as the first go');
 });
 test('all of that survives folding', () => {
@@ -250,14 +247,15 @@ test('all of that survives folding', () => {
   const small = W.normalise(W.trim(big, at(plus(9))));
   assert.equal(small.results.length, 0);
   assert.equal(W.starsOn(small, g, plus(1)), 1);
-  assert.equal(W.dots(small, g, 'fruit'), 0);
+  assert.equal(W.dots(small, g, 'fruit', plus(9)), 0);
   assert.equal(W.isRemembered(small, 'fruit'), false);
   assert.equal(W.overall(small).firstGoes, 0);
   assert.equal(W.overall(small).practised, 1);
 });
-test('the help text says so', () => {
-  assert.match(G.GAMES.match.line, /no dot/);
-  assert.match(readFileSync(fileURLToPath(new URL('../site/js/views.js', import.meta.url)), 'utf8'), /Meaning match can earn a star but no dot/);
+test('the help text says where dots come from', () => {
+  const about = readFileSync(fileURLToPath(new URL('../site/js/views.js', import.meta.url)), 'utf8');
+  assert.match(about, /3 times in a row/);
+  assert.match(about, /The games don\\'t earn dots/);
 });
 
 test('every game is registered for Game day, in order', () => {

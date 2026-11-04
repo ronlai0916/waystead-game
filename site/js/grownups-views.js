@@ -67,7 +67,7 @@ const needsApi = (main) => { if (A.CHILD_DATA_API) return false; location.replac
 
 /* --------------------------------------------------------------- dashboard --- */
 function reportHtml(r, cid) {
-  const row = (w) => '<tr><th scope="row">' + esc(w.word) + (w.back ? ' <span class="pill">back again</span>' : '') + '</th><td>' + dotsHtml(w.dots, W.ROUNDS_NEEDED) + '</td><td>' + w.tries + '</td><td>' + w.peeks + '</td><td>' + esc(w.status) + '</td></tr>';
+  const row = (w) => '<tr><th scope="row">' + esc(w.word) + (w.back ? ' <span class="pill">back again</span>' : '') + '</th><td>' + dotsHtml(w.dots, W.ROW_NEEDED) + '</td><td>' + w.tries + '</td><td>' + w.peeks + '</td><td>' + esc(w.status) + '</td></tr>';
   return '<div class="card setting report" data-report="' + esc(r.id) + '"><h2>' + esc(r.name) + '</h2>'
     + '<p class="muted small">Test on ' + esc(W.dayLabel(r.testDate)) + (r.job ? ' · Today: ' + esc(r.job) : '') + (r.ready ? ' · Ready for the test' : '') + '</p>'
     + stripHtml(r.steps, today())

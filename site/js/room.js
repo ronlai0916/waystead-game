@@ -5,7 +5,7 @@ import * as S from './store.js';
 import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import * as V from './views.js';
-import { stepHref, stripHtml, dotsListHtml } from './study-views.js';
+import { stepHref, stripHtml, dotsListHtml, comeBackHtml } from './study-views.js';
 import { kind, playerName } from './who.js';
 import { esc, ICON } from './ui.js';
 
@@ -37,6 +37,7 @@ export function room(main) {
     + '<p class="muted">' + esc(r.status === 'done' ? 'Well done. Your next job is ready tomorrow.' : SAY[r.status]) + '</p>'
     + (r.ready && r.status !== 'ready' && day < g.test ? '<p><span class="pill pill--done">Ready for the test</span></p>' : '') + '</div></div>'
     + '<div class="room__job">' + button + '</div>'
+    + (g && !r.hideWords ? comeBackHtml(g, r.comeBack) : '')
     + (g ? '<div class="stats">' + stat(r.stars, 'Stars this week') + stat(W.dayLabel(r.test), 'Test day') + '</div>'
       + '<h2 class="sectionhead">' + esc(g.name) + '</h2>' + stripHtml(r.strip, day)
       + '<h2 class="sectionhead">Practise 3 times</h2>' + dotsListHtml(r.dots, r.hideWords) : '')

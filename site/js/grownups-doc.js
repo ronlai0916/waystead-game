@@ -25,7 +25,7 @@ export const childTricky = (progress) => trickyWords(progress).map((t) => t.word
 
 function groupReport(d, g, today) {
   const p = W.groupProgress(d, g);
-  const dots = new Map(W.allDots(d, g).map((x) => [x.word, x.dots]));
+  const dots = new Map(W.allDots(d, g, today).map((x) => [x.word, x.dots]));
   const s = St.studyState(d, g, today);
   const test = W.testResults(d, g).filter((x) => x.result);
   return {

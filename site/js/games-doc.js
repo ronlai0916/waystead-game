@@ -1,16 +1,17 @@
 // Game mode's four games: the rules with no page in them. Pure; randomness comes
 // in as `rand` (Math.random, or a seeded one in the tests). Each game ends a
 // word with a pass, { tries, clean }, recorded like any try on the grid
-// (W.addTry, source 'g'), so it feeds the dots, the stars and "remembered".
-// Meaning match doesn't test spelling, so its pass has source 'm': it can earn
-// the day's star and counts as played, but never a dot.
+// (W.addTry, source 'g'), so it feeds the stars and "remembered". A pass with a
+// mistake brings the same word straight back until it's clean; games don't need
+// 3 in a row, so they earn no dots. Meaning match doesn't test spelling: its
+// pass has source 'm', can earn the day's star and counts as played.
 import * as R from './spell-run.js';
 import * as W from './words-doc.js';
 
 export const GAMES = {
   missing: { title: 'Missing letters', line: 'Hear the word and fill the gap.' },
   unjumble: { title: 'Unjumble', line: 'Tap the letters in the right order.' },
-  match: { title: 'Meaning match', line: 'Pair each word with what it means. It can earn a star, but no dot: dots are for spelling.' },
+  match: { title: 'Meaning match', line: 'Pair each word with what it means.' },
   quick: { title: 'Quick-fire', line: 'Spell each word as it\'s spoken. There\'s no rush.' },
 };
 export const GAME_IDS = Object.keys(GAMES);
@@ -25,6 +26,12 @@ export function shuffled(list, rand = Math.random) {
   }
   return a;
 }
+/**
+ * Going through a game's words: a pass with a mistake keeps the word at the
+ * front; a clean one takes it off; a skip sends it to the end.
+ */
+export const afterPass = (list, clean) => (clean ? list.slice(1) : list);
+export const afterSkip = (list) => [...list.slice(1), list[0]];
 export const passOf = (run) => ({ tries: run.tries, clean: R.isClean(run) });
 /** A game's pass into the saved value. */
 export function recordPass(d, g, word, { tries, clean, source = 'g' }, { id, day, now }) {

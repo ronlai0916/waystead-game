@@ -11,19 +11,20 @@ import * as G from './games-doc.js';
 import { entryFor, hasMeaning, meaningsFor } from './word-info.js';
 import { speak, stop } from './speech.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { esc, ICON, chunked, keyboard, toast } from './ui.js';
+import { esc, ICON, chunked, keyboard, toast, RETRY_LINE } from './ui.js';
 import { dotsListHtml } from './study-views.js';
 import { modeSwitch } from './words-views.js';
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
+const plural = (n, one) => n + ' ' + one + (n === 1 ? '' : 's');
 const plainKey = (e) => !(e.metaKey || e.ctrlKey || e.altKey);
 
 function pageHtml(ctx, title, n, body) {
   return '<section class="wrap page spellpage game" data-game="' + title.id + '"><div class="pagehead"><span class="eyebrow">' + esc(ctx.eyebrow) + '</span><h1>' + esc(title.text) + '</h1>'
     + (n ? '<p class="muted">' + esc(n) + '</p>' : '') + '</div>' + body + '</section>';
 }
-const heard = () => '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear again</button></div>';
+const heard = () => '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear again</button><button type="button" class="btn btn--ghost" data-skip>Skip for now</button></div>';
 
 function wordDone(ctx, slot, w, clean, next, last) {
   slot.innerHTML = '<div class="card result ' + (clean ? 'result--good' : 'result--bad') + '"><div class="result__head">'
@@ -38,23 +39,23 @@ function wordDone(ctx, slot, w, clean, next, last) {
 
 /* ------------------------------------------------------- Missing letters --- */
 function missing(main, ctx, done) {
-  const words = G.shuffled(ctx.words);
-  let i = 0;
+  let words = ctx.order();
   let w = '';
   let blanks = [];
   let run = null;
   let live = false;
-  function show() {
-    const e = entryFor(words[i]);
+  function show(line = '') {
+    const e = entryFor(words[0]);
     w = e.word;
     blanks = G.blanksFor(e);
     run = G.newMissing(w, blanks);
     live = true;
-    main.innerHTML = pageHtml(ctx, { id: 'missing', text: G.GAMES.missing.title }, 'Word ' + (i + 1) + ' of ' + words.length,
+    main.innerHTML = pageHtml(ctx, { id: 'missing', text: G.GAMES.missing.title }, ctx.leftLine(words),
       '<div class="spellboxes" aria-label="The word with letters missing">' + [...w].map((c, n) => '<span class="spellbox' + (blanks.includes(n) ? '" data-gap="' + blanks.indexOf(n) + '">' : ' is-filled">' + esc(c)) + '</span>').join('') + '</div>'
-      + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
+      + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
       + '<div data-slot>' + heard() + keyboard() + '</div>');
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
+    main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => letter(k.dataset.letter)));
     mark();
     speak(w);
@@ -77,10 +78,18 @@ function missing(main, ctx, done) {
       live = false;
       const p = G.passOf(run);
       ctx.record(w, p);
-      i += 1;
-      wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (i < words.length ? show() : done()), i >= words.length);
+      words = G.afterPass(words, p.clean);
+      if (!p.clean) { show(RETRY_LINE); return; }
+      wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (words.length ? show() : done()), !words.length);
       speak(w);
     }
+  }
+  function skip() {
+    if (!live) return;
+    if (R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false });
+    ctx.skip(w);
+    words = G.afterSkip(words);
+    show();
   }
   function onKey(e) {
     if (plainKey(e) && /^[a-z]$/i.test(e.key)) { e.preventDefault(); letter(e.key); }
@@ -95,20 +104,20 @@ function missing(main, ctx, done) {
 
 /* -------------------------------------------------------------- Unjumble --- */
 function unjumble(main, ctx, done) {
-  const words = G.shuffled(ctx.words);
-  let i = 0;
+  let words = ctx.order();
   let w = '';
   let run = null;
   let live = false;
-  function show() {
-    w = entryFor(words[i]).word;
+  function show(line = '') {
+    w = entryFor(words[0]).word;
     run = R.newRun(w);
     live = true;
-    main.innerHTML = pageHtml(ctx, { id: 'unjumble', text: G.GAMES.unjumble.title }, 'Word ' + (i + 1) + ' of ' + words.length,
+    main.innerHTML = pageHtml(ctx, { id: 'unjumble', text: G.GAMES.unjumble.title }, ctx.leftLine(words),
       '<div class="spellboxes" aria-label="Your word, ' + w.length + ' letters">' + [...w].map((_, n) => '<span class="spellbox" data-box="' + n + '"></span>').join('') + '</div>'
-      + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
+      + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
       + '<div data-slot>' + heard() + '<div class="tiles-row" role="group" aria-label="Letters">' + G.jumble(w).map((c) => '<button type="button" class="key tile" data-tile="' + esc(c.toLowerCase()) + '">' + esc(c.toUpperCase()) + '</button>').join('') + '</div></div>');
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
+    main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelectorAll('[data-tile]').forEach((t) => t.addEventListener('click', () => tap(t)));
     speak(w);
     window.scrollTo(0, 0);
@@ -130,10 +139,18 @@ function unjumble(main, ctx, done) {
       live = false;
       const p = G.passOf(run);
       ctx.record(w, p);
-      i += 1;
-      wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (i < words.length ? show() : done()), i >= words.length);
+      words = G.afterPass(words, p.clean);
+      if (!p.clean) { show(RETRY_LINE); return; }
+      wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (words.length ? show() : done()), !words.length);
       speak(w);
     }
+  }
+  function skip() {
+    if (!live) return;
+    if (R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false });
+    ctx.skip(w);
+    words = G.afterSkip(words);
+    show();
   }
   function onKey(e) {
     if (!plainKey(e) || !/^[a-z]$/i.test(e.key) || !live) return;
@@ -207,25 +224,25 @@ function match(main, ctx, done) {
 
 /* ------------------------------------------------------------- Quick-fire --- */
 function quick(main, ctx, done) {
-  const words = G.shuffled(ctx.words);
-  let i = 0;
+  let words = ctx.order();
   let w = '';
   let typed = '';
   let live = false;
   let timer = null;
-  function ask() {
-    w = entryFor(words[i]).word;
+  function ask(line = '') {
+    w = entryFor(words[0]).word;
     typed = '';
     live = true;
-    main.innerHTML = pageHtml(ctx, { id: 'quick', text: G.GAMES.quick.title }, 'Word ' + (i + 1) + ' of ' + words.length,
+    main.innerHTML = pageHtml(ctx, { id: 'quick', text: G.GAMES.quick.title }, ctx.leftLine(words),
       '<div class="gentlebar" aria-hidden="true"><span data-bar></span></div>'
-      + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
+      + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
       + '<p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
       + '<div data-slot>' + heard() + keyboard()
       + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--ghost" data-del>Delete</button><button type="button" class="btn btn--primary" data-go>Next' + ICON.arrow + '</button></div></div>');
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
     main.querySelector('[data-del]').addEventListener('click', del);
     main.querySelector('[data-go]').addEventListener('click', submit);
+    main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
     const secs = G.quickSeconds(w);
     main.querySelector('[data-bar]').style.setProperty('--secs', secs + 's');
@@ -248,9 +265,18 @@ function quick(main, ctx, done) {
     clearTimeout(timer);
     const p = G.quickPass(w, typed);
     ctx.record(w, p);
-    i += 1;
-    wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (i < words.length ? ask() : done()), i >= words.length);
+    words = G.afterPass(words, p.clean);
+    if (!p.clean) { ask(RETRY_LINE); return; }
+    wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (words.length ? ask() : done()), !words.length);
     speak(w);
+  }
+  function skip() {
+    if (!live) return;
+    live = false;
+    clearTimeout(timer);
+    ctx.skip(w);
+    words = G.afterSkip(words);
+    ask();
   }
   function onKey(e) {
     if (!plainKey(e)) return;
@@ -283,7 +309,11 @@ export function playGames(main, g, { eyebrow, games = G.GAME_IDS, part = '', onD
     if (n >= list.length) { onDone(); return; }
     const id = list[n];
     n += 1;
-    const ctx = { eyebrow: eyebrow + (list.length > 1 ? ' · game ' + n + ' of ' + list.length : ''), words, record };
+    const skip = (word) => { const day = today(); S.updateWords((d) => W.addSkip(d, { id: S.newId(), group: g.id, word, day, flow: 'g:' + id, now: Date.now() })); };
+    // Today's skipped words wait at the end, here and on another device.
+    const order = () => W.inTurn(S.readWords(), g, G.shuffled(words), today(), 'g:' + id);
+    const leftLine = (l) => plural(l.length, 'word') + ' to go';
+    const ctx = { eyebrow: eyebrow + (list.length > 1 ? ' · game ' + n + ' of ' + list.length : ''), words, record, skip, order, leftLine };
     end = PLAY[id](main, ctx, () => {
       if (end) end(); // its keys stop here, or they'd reach the next game
       end = null;
@@ -304,7 +334,7 @@ export function gameMode(main, { gid }) {
   main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>' + esc(g.name) + '</h1>'
     + '<p class="muted">The same words, any time.</p></div>' + modeSwitch(g, 'game')
     + '<div class="shortcuts gamecards">' + G.GAME_IDS.map((k) => '<a class="card shortcut" href="' + groupHref(id) + '/game/' + k + '"><span><strong>' + esc(G.GAMES[k].title) + '</strong><br><span class="muted small">' + esc(G.GAMES[k].line) + '</span></span>' + ICON.arrow + '</a>').join('') + '</div>'
-      + '<h2 class="sectionhead">Practise 3 times</h2>' + dotsListHtml(W.allDots(d, g), false)
+      + '<h2 class="sectionhead">Practise 3 times</h2>' + dotsListHtml(W.allDots(d, g, today()), false)
     + '</section>';
 }
 
@@ -320,7 +350,7 @@ export function oneGame(main, { gid, game }) {
     onDone: () => {
       const now = S.readWords();
       main.innerHTML = '<section class="wrap page"><div class="card result result--good"><div class="result__head"><span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(12, 1.3) + '</span><h1>' + esc(G.GAMES[game].title) + ' done</h1></div>'
-        + dotsListHtml(W.allDots(now, g), false)
+        + dotsListHtml(W.allDots(now, g, today()), false)
         + '<div class="btnrow"><a class="btn btn--primary" href="' + groupHref(id) + '/games">More games' + ICON.arrow + '</a><a class="btn btn--ghost" href="' + groupHref(id) + '">My words</a></div></div></section>';
       placeBursts(main);
     },

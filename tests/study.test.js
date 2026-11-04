@@ -25,10 +25,12 @@ const everyWord = (d, g, day, opts) => W.rows(g).reduce((x, w) => pass(x, g, w, 
 const mark = (d, g, step, day) => W.markStep(d, g, step, day, at(day));
 const job = (d, g, day) => St.studyState(d, g, day).job;
 const status = (d, g, day) => St.studyState(d, g, day).status;
-const dotsOf = (d, g, w) => W.dots(d, g, w);
+const dotsOf = (d, g, w, day = plus(1)) => W.dots(d, g, w, day);
+const threeTimes = (d, g, day, opts = {}) => [9, 10, 11].reduce((x, hour) => everyWord(x, g, day, { ...opts, hour }), d);
+const row3 = (d, g, w, day, opts = {}) => [9, 10, 11].reduce((x, hour) => pass(x, g, w, day, { ...opts, hour }), d);
 function doJob(d, g, step, day) {
-  if (step === 'practice') return everyWord(d, g, day);
-  if (step === 'fix') return mark(everyWord(d, g, day, { source: 'x' }), g, step, day);
+  if (step === 'practice') return threeTimes(d, g, day);
+  if (step === 'fix') return mark(threeTimes(d, g, day, { source: 'x' }), g, step, day);
   if (step === 'games') return mark(everyWord(d, g, day, { source: 'g' }), g, step, day);
   if (step === 'test') return g.words.reduce((x, w) => pass(x, g, w, day, { kind: 't' }), d);
   return mark(d, g, step, day);
@@ -136,14 +138,14 @@ test('fix-ups first, then the quick-fire round; a word needing tomorrow brings t
   assert.equal(status(d, g, plus(5)), 'done', 'tested today: fix-ups come tomorrow');
   assert.equal(job(d, g, plus(6)), 'mend');
   assert.equal(St.mendPart(d, g, plus(6)), 'fixups');
-  d = pass(d, g, 'earth', plus(6), { kind: 'f', clean: false, tries: 1, hour: 9 });
-  d = pass(d, g, 'earth', plus(6), { kind: 'f', hour: 10 });
+  d = pass(d, g, 'earth', plus(6), { kind: 'f', clean: false, tries: 1, hour: 8 });
+  d = row3(d, g, 'earth', plus(6), { kind: 'f' });
   assert.equal(St.mendPart(d, g, plus(6)), 'quick');
   assert.equal(job(d, g, plus(6)), 'mend');
   d = mark(d, g, 'mend', plus(6));
   assert.equal(status(d, g, plus(6)), 'done', 'quick round done; the fix-up comes back tomorrow');
   assert.equal(St.mendPart(d, g, plus(7)), 'fixups');
-  d = pass(d, g, 'earth', plus(7), { kind: 'f' });
+  d = row3(d, g, 'earth', plus(7), { kind: 'f' });
   assert.equal(status(d, g, plus(7)), 'finished');
 });
 test('Mend and keep stops waiting a week after its date when nothing slipped', () => {
@@ -183,88 +185,6 @@ test('moving the test date moves the plan', () => {
 });
 
 // ---- Practise 3 times ----------------------------------------------------------------------
-test('a clean round counts from each source: Fix it in, the grid, a game', () => {
-  let { d, g } = made(['fruit']);
-  assert.equal(dotsOf(d, g, 'fruit'), 0);
-  d = pass(d, g, 'fruit', plus(1), { source: 'x' });
-  assert.equal(dotsOf(d, g, 'fruit'), 1);
-  d = pass(d, g, 'fruit', plus(2), { source: 'g' });
-  assert.equal(dotsOf(d, g, 'fruit'), 2);
-  d = pass(d, g, 'fruit', plus(3));
-  assert.equal(dotsOf(d, g, 'fruit'), 3);
-  assert.equal(W.readyForTest(d, g), true);
-});
-test('a pass with a mistake or a peek is no round; the clean pass after it is', () => {
-  let { d, g } = made(['fruit']);
-  d = pass(d, g, 'fruit', plus(1), { clean: false, tries: 2 });
-  d = pass(d, g, 'fruit', plus(1), { clean: false, peeks: 1 });
-  assert.equal(dotsOf(d, g, 'fruit'), 0);
-  d = pass(d, g, 'fruit', plus(1));
-  assert.equal(dotsOf(d, g, 'fruit'), 1);
-});
-test('Meaning match is no source of rounds', () => {
-  let { d, g } = made(['fruit']);
-  d = pass(d, g, 'fruit', plus(1), { source: 'm' });
-  assert.equal(dotsOf(d, g, 'fruit'), 0);
-});
-test('each source counts once a day: four games on Game day are one round', () => {
-  let { d, g } = made(['fruit']);
-  for (let i = 0; i < 4; i += 1) d = pass(d, g, 'fruit', plus(2), { source: 'g', hour: 9 + i });
-  assert.equal(dotsOf(d, g, 'fruit'), 1);
-  d = pass(d, g, 'fruit', plus(2), { source: 'x' });
-  d = pass(d, g, 'fruit', plus(2));
-  assert.equal(dotsOf(d, g, 'fruit'), 3, 'a squeezed day can still earn all three');
-});
-test('games on three days count as three; never more than 3', () => {
-  let { d, g } = made(['fruit']);
-  for (const k of [1, 2, 3, 4]) d = pass(d, g, 'fruit', plus(k), { source: 'g' });
-  assert.equal(dotsOf(d, g, 'fruit'), 3);
-});
-test('only rounds before the test count, and the test and fix-ups aren\'t rounds', () => {
-  let { d, g } = made(['fruit'], { test: plus(3) });
-  d = pass(d, g, 'fruit', plus(3), { kind: 't' });
-  d = pass(d, g, 'fruit', plus(4), { kind: 'f' });
-  d = pass(d, g, 'fruit', plus(5), { source: 'g' });
-  assert.equal(dotsOf(d, g, 'fruit'), 0);
-});
-test('ready for the test: every word in the group; words back again show dots but don\'t hold it up', () => {
-  let { d, g } = made(['fruit', 'earth']);
-  g = { ...g, back: ['heart'] };
-  d = { ...d, groups: { ...d.groups, g1: { ...d.groups.g1, back: ['heart'] } } };
-  for (const k of [1, 2, 3]) { d = pass(d, g, 'fruit', plus(k)); }
-  assert.equal(W.readyForTest(d, g), false);
-  for (const k of [1, 2, 3]) { d = pass(d, g, 'earth', plus(k)); }
-  assert.equal(W.readyForTest(d, g), true);
-  assert.deepEqual(W.allDots(d, g).map((x) => [x.word, x.dots, x.back]), [['fruit', 3, false], ['earth', 3, false], ['heart', 0, true]]);
-});
-test('rounds survive folding, and a try is never counted twice after a merge', () => {
-  let { d, g } = made(['fruit']);
-  d = pass(d, g, 'fruit', plus(1), { source: 'x' });
-  d = pass(d, g, 'fruit', plus(2), { source: 'g' });
-  d = pass(d, g, 'fruit', plus(3));
-  const big = { ...d, groups: { ...d.groups, pad: { name: 'x'.repeat(60000), start: MON, test: plus(7), words: ['a'], back: [], at: at(MON) } } };
-  const small = W.trim(big, at(plus(4)));
-  assert.equal(small.results.length, 0, 'all folded');
-  assert.equal(W.dots(W.normalise(small), g, 'fruit'), 3);
-  const m = W.merge(d, small);
-  assert.equal(W.dots(m, g, 'fruit'), 3);
-});
-test('old tries, with no source, count as the grid', () => {
-  const { d, g } = made(['fruit']);
-  const old = W.normalise({ ...d, steps: undefined, clues: undefined, notes: undefined, results: [{ id: 'o', w: 'fruit', d: plus(1), g: 'g1', k: 'p', t: 0, p: 0, c: 1, at: at(plus(1)) }] });
-  assert.equal(W.dots(old, g, 'fruit'), 1);
-});
-test('the Practice job: the grid round itself, not words done another way', () => {
-  let { d, g } = made(['fruit', 'earth'], { test: plus(5) });
-  d = everyWord(d, g, plus(1), { source: 'x' });
-  assert.equal(W.gridRoundDay(d, g), '');
-  assert.deepEqual(W.gridLeft(d, g, plus(1)), ['fruit', 'earth']);
-  d = pass(d, g, 'fruit', plus(4));
-  assert.deepEqual(W.gridLeft(d, g, plus(4)), ['earth']);
-  d = pass(d, g, 'earth', plus(4));
-  assert.equal(W.gridRoundDay(d, g), plus(4));
-  assert.equal(St.doneDay(d, g, 'practice'), plus(4));
-});
 test('a game or Fix try is a grid cell like any other: stars and remembered', () => {
   let { d, g } = made(['fruit'], { test: plus(9) });
   d = pass(d, g, 'fruit', plus(1), { source: 'g' });
@@ -279,7 +199,7 @@ test('after the test a word still to fix counts as a fix-up, whatever page it\'s
   d = pass(d, g, 'fruit', plus(3), { kind: 't', clean: false, tries: 1 });
   assert.equal(W.kindOn(d, g, 'fruit', plus(2)), 'p');
   assert.equal(W.kindOn(d, g, 'fruit', plus(4)), 'f');
-  d = pass(d, g, 'fruit', plus(4), { kind: W.kindOn(d, g, 'fruit', plus(4)), source: 'g' });
+  d = row3(d, g, 'fruit', plus(4), { kind: W.kindOn(d, g, 'fruit', plus(4)) });
   assert.deepEqual(W.fixups(d, g), []);
 });
 
@@ -352,11 +272,10 @@ test('Game mode: open any time, except while the test is due', () => {
   d = pass(d, g, 'fruit', plus(3), { kind: 't' });
   assert.equal(St.gamesOpen(d, g, plus(3)), true);
 });
-test('Game mode doesn\'t move the guided week on, and it keeps the dots', () => {
+test('Game mode doesn\'t move the guided week on', () => {
   let { d, g } = made(['fruit']);
   d = pass(d, g, 'fruit', MON, { source: 'g' });
   assert.equal(job(d, g, MON), 'hello');
-  assert.equal(dotsOf(d, g, 'fruit'), 1);
 });
 test('the group page has the switch; each mode has its own address', () => {
   const v = readFileSync(fileURLToPath(new URL('../site/js/words-views.js', import.meta.url)), 'utf8');
@@ -421,7 +340,7 @@ test('room: on test day the words stay hidden and Pip thinks', () => {
 });
 test('room: ready for the test shows up as soon as every word has its dots', () => {
   let { d, g } = made(['fruit']);
-  for (const k of [1, 2, 3]) d = pass(d, g, 'fruit', plus(k));
+  d = row3(d, g, 'fruit', plus(3));
   assert.equal(St.roomState(d, plus(3)).ready, true);
 });
 test('room: finished, then the next group takes over', () => {

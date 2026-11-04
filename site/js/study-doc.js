@@ -22,10 +22,10 @@ export const SENTENCES = 3;
 
 export const STEP_TEXT = {
   hello: { title: 'Hello words', short: 'Hello', line: 'Meet each word: hear it, see what it means, then play the flower game.' },
-  fix: { title: 'Fix it in', short: 'Fix', line: 'Look, say, cover, write and check each word.' },
-  games: { title: 'Game day', short: 'Games', line: 'Four quick games with your words. The spelling games earn your dots.' },
+  fix: { title: 'Fix it in', short: 'Fix', line: 'Look, say, cover, write and check each word, then spell it 3 times in a row.' },
+  games: { title: 'Game day', short: 'Games', line: 'Four quick games with your words.' },
   story: { title: 'Story day', short: 'Story', line: 'See your words at work, then write three sentences of your own.' },
-  practice: { title: 'Practice day', short: 'Practice', line: 'One round of the practice grid: every word, hidden and spoken.' },
+  practice: { title: 'Practice day', short: 'Practice', line: 'One round of the practice grid: every word, hidden and spoken, 3 times in a row.' },
   test: { title: 'Test day', short: 'Test', line: 'Each word is spoken, with no peeking and one go each.' },
   mend: { title: 'Mend and keep', short: 'Mend', line: 'Mend any words that slipped, then a quick-fire round of them all.' },
 };
@@ -42,7 +42,8 @@ export function stepDates(g, testDone = '') {
 
 /** The day a job was finished, or ''. */
 export function doneDay(d, g, step) {
-  if (step === 'practice') return W.gridRoundDay(d, g);
+  if (step === 'practice') return W.roundDay(d, g, 'p');
+  if (step === 'fix') return W.stepDay(d, g, 'fix') || W.roundDay(d, g, 'x');
   if (step === 'test') return W.testDone(d, g) ? W.testDayOf(W.testResults(d, g)) : '';
   return W.stepDay(d, g, step);
 }
@@ -161,6 +162,6 @@ export function roomState(d, today) {
   const step = s.steps.find((x) => x.id === s.job) || null;
   return {
     status: s.status, group: g, step, strip: s.steps, stars: weekStars(d, g), test: g.test,
-    dots: W.allDots(d, g), ready: W.readyForTest(d, g), pip: pipFor(s.status, step, today), hideWords: showsHidden(g, hiddenWords(d, today)),
+    dots: W.allDots(d, g, today), ready: W.readyForTest(d, g), comeBack: W.comeBack(d, g, today), pip: pipFor(s.status, step, today), hideWords: showsHidden(g, hiddenWords(d, today)),
   };
 }

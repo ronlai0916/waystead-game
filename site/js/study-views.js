@@ -13,17 +13,23 @@ import { loadStories, storyFor } from './stories.js';
 import { storyPage } from './story-views.js';
 import { playGames } from './games-views.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { esc, ICON, picture, chunked, boldWord, keyboard, toast, dotsHtml } from './ui.js';
+import { esc, ICON, picture, chunked, boldWord, keyboard, toast, dotsHtml, rowCountHtml } from './ui.js';
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
 const head = (step, line) => '<div class="pagehead"><span class="eyebrow">' + esc(St.STEP_TEXT[step].title) + '</span>' + line + '</div>';
 
+/** "Come back to this": straight to that word, in the job it was skipped from. */
+export function comeBackHref(g, w, flow) {
+  const n = W.rows(g).indexOf(w);
+  return groupHref(g.id) + (flow === 'x' ? '/study/fix/' + n : '/spell/' + n);
+}
+
 /** Where a job's button goes. */
 export function stepHref(d, g, step, day) {
-  if (step === 'practice') return groupHref(g.id) + '/spell/' + W.rows(g).indexOf(W.gridLeft(d, g, day)[0] ?? W.rows(g)[0]);
+  if (step === 'practice') return groupHref(g.id) + '/spell/' + W.rows(g).indexOf(W.queue(d, g, day, 'p')[0] ?? W.rows(g)[0]);
   if (step === 'test') return groupHref(g.id) + '/test';
-  if (step === 'mend' && St.mendPart(d, g, day) === 'fixups') return groupHref(g.id) + '/spell/' + W.rows(g).indexOf(W.fixups(d, g).find((w) => !W.doneOn(d, g, w, day)));
+  if (step === 'mend' && St.mendPart(d, g, day) === 'fixups') return groupHref(g.id) + '/spell/' + W.rows(g).indexOf(W.queue(d, g, day, 'f')[0]);
   return groupHref(g.id) + '/study/' + step;
 }
 
@@ -99,24 +105,39 @@ function hello(main, g) {
 }
 
 /* -------------------------------------------------------------- Fix it in --- */
-function fix(main, g) {
-  const list = W.rows(g);
+// Look, say, cover, write, check; then the word is typed until it's clean 3
+// times in a row. A slip goes back to Look and starts the count again. `start`:
+// a row to open first, from "Come back to this".
+function fix(main, g, start) {
+  const rows = W.rows(g);
   const trickyList = new Set(S.trickyWords().map((t) => t.word));
-  let i = firstLeft(S.readWords(), g, 'fix', list.length);
+  const left = () => W.queue(S.readWords(), g, today(), 'x');
+  const first = rows[Number(start)];
+  let word = first !== undefined && left().includes(first) ? first : left()[0];
+  if (word === undefined) { location.replace(groupHref(g.id)); return undefined; }
   let typed = '';
+  let peeks = 0;
   let phase = 'look';
   let slipped = false; // this word needed another go
-  const w = () => entryFor(list[i]);
-  const page = (title, body) => { main.innerHTML = '<section class="wrap page spellpage">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (i + 1) + ' of ' + list.length + '</p>') + body + '</section>'; window.scrollTo(0, 0); };
+  let timer = null;
+  const w = () => entryFor(word);
+  const count = () => W.sessionCount(S.readWords(), g, word, today(), 'x');
+  const skipBtn = '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-skip>Skip for now</button></div>';
+  const page = (title, body, n = count()) => {
+    main.innerHTML = '<section class="wrap page spellpage">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (rows.indexOf(word) + 1) + ' of ' + rows.length + '</p><p class="rowcount" data-row>' + rowCountHtml(n) + '</p>') + body + '</section>';
+    const b = main.querySelector('[data-skip]');
+    if (b) b.addEventListener('click', skip);
+    window.scrollTo(0, 0);
+  };
   const button = (sel, fn) => main.querySelector(sel).addEventListener('click', fn);
 
-  function look() {
+  function look(line = '') {
     phase = 'look';
-    page('Look and say', '<div class="card spell"><div class="spell__word">' + chunked(w(), '', { tricky: true }) + '</div>'
+    page('Look and say', (line ? '<p class="spellline" role="status">' + esc(line) + '</p>' : '') + '<div class="card spell"><div class="spell__word">' + chunked(w(), '', { tricky: true }) + '</div>'
       + '<p class="muted">Look at the word. Say it out loud.</p>'
       + (W.clueFor(S.readWords(), w().word) ? '<p class="small"><b>Your clue:</b> ' + esc(W.clueFor(S.readWords(), w().word)) + '</p>' : '')
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button>'
-      + '<button type="button" class="btn btn--primary" data-cover>Cover it' + ICON.arrow + '</button></div></div>');
+      + '<button type="button" class="btn btn--primary" data-cover>Cover it' + ICON.arrow + '</button></div></div>' + skipBtn);
     button('[data-hear]', () => speak(w().word));
     button('[data-cover]', cover);
     speak(w().word);
@@ -126,37 +147,59 @@ function fix(main, g) {
     stop();
     page('Cover and write', '<div class="card spell"><p>The word is hidden. Write it on paper.</p>'
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button>'
-      + '<button type="button" class="btn btn--primary" data-written>I\'ve written it' + ICON.arrow + '</button></div></div>');
+      + '<button type="button" class="btn btn--primary" data-written>I\'ve written it' + ICON.arrow + '</button></div></div>' + skipBtn);
     button('[data-hear]', () => speak(w().word));
     button('[data-written]', type);
   }
-  function type() {
+  function type(line = '') {
     phase = 'type';
     typed = '';
-    page('Now type it', '<p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>' + keyboard()
+    peeks = 0;
+    page('Now type it', '<p class="peek" data-peek aria-live="polite"></p><p class="spellline" role="status">' + esc(typeof line === 'string' ? line : '') + '</p><p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
+      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button></div>' + keyboard()
       + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--ghost" data-del>Delete</button>'
-      + '<button type="button" class="btn btn--primary" data-check>Check' + ICON.arrow + '</button></div>');
+      + '<button type="button" class="btn btn--primary" data-check>Check' + ICON.arrow + '</button></div>' + skipBtn);
     main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
+    button('[data-hear]', () => speak(w().word));
+    button('[data-peekbtn]', peek);
     button('[data-del]', del);
     button('[data-check]', check);
+    speak(w().word);
+  }
+  function peek() {
+    peeks += 1;
+    main.querySelector('[data-row]').innerHTML = rowCountHtml(0);
+    main.querySelector('[data-peek]').textContent = w().word;
+    main.querySelector('[data-peekbtn]').disabled = true;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (phase !== 'type') return;
+      main.querySelector('[data-peek]').textContent = '';
+      main.querySelector('[data-peekbtn]').disabled = false;
+    }, 2000);
   }
   const show = () => { main.querySelector('[data-answer]').textContent = typed; };
   function put(L) { if (typed.length < 24) { typed += L.toLowerCase(); show(); } }
   function del() { typed = typed.slice(0, -1); show(); }
+  function record(right) {
+    const day = today();
+    S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w().word, day, group: g.id, kind: 'p', tries: right ? 0 : 1, peeks, clean: right && !peeks, source: 'x', now: Date.now() }));
+  }
   function check() {
     if (!typed) { toast('Type the word first'); return; }
     phase = 'check';
     const right = R.checkAnswer(w().word, typed);
-    const day = today();
-    S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w().word, day, group: g.id, kind: 'p', tries: right ? 0 : 1, peeks: 0, clean: right, source: 'x', now: Date.now() }));
-    if (!right) slipped = true;
-    page('Check', '<div class="card result ' + (right ? 'result--good' : 'result--bad') + '"><div class="result__head"><span class="result__badge">' + (right ? '✓' : '×') + '</span><h2>' + (right ? 'That\'s it' : 'Not quite yet') + '</h2></div>'
+    record(right);
+    const clean = right && !peeks;
+    if (clean && count() < W.ROW_NEEDED) { type('Clean! Now again, all on your own.'); return; }
+    if (!clean) slipped = true;
+    page(clean ? 'Check' : 'Let\'s try that one again', '<div class="card result ' + (clean ? 'result--good' : 'result--bad') + '"><div class="result__head"><span class="result__badge">' + (clean ? '✓' : '×') + '</span><h2>' + (clean ? 'That\'s it' : right ? 'Right, with a peek' : 'Not quite yet') + '</h2></div>'
       + '<div class="result__word">' + chunked(w(), '', { tricky: true }) + '</div>'
       + (right ? '' : '<p class="muted">You wrote: <b>' + esc(typed) + '</b></p>')
-      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-go>' + (right ? 'Next' : 'Look again') + ICON.arrow + '</button></div></div>');
-    button('[data-go]', right ? afterWord : look);
+      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-go>' + (clean ? 'Next' : 'Look again') + ICON.arrow + '</button></div></div>');
+    button('[data-go]', clean ? afterWord : () => look());
     main.querySelector('[data-go]').focus({ preventScroll: true });
-    if (right) speak(w().word);
+    if (clean) speak(w().word);
   }
   function afterWord() {
     const e = w();
@@ -168,17 +211,28 @@ function fix(main, g) {
     page('A memory clue', '<div class="card setting"><p>A clue can help a tricky word stick. Pick one, or type your own.</p>'
       + '<div class="list">' + options.map((c, n) => '<button type="button" class="btn btn--quiet" data-clue="' + n + '">' + esc(c) + '</button>').join('') + '</div>'
       + '<form class="btnrow" data-own><input class="field typedword" maxlength="' + W.MAX_CLUE + '" aria-label="Your own clue" placeholder="My clue" data-text><button type="submit" class="btn btn--quiet">Save</button></form>'
-      + '<div class="btnrow"><button type="button" class="btn btn--ghost" data-skip>Not now</button></div></div>');
+      + '<div class="btnrow"><button type="button" class="btn btn--ghost" data-noclue>Not now</button></div></div>');
     const save = (text) => { S.updateWords((d) => W.setClue(d, w().word, text, Date.now())); nextWord(); };
     main.querySelectorAll('[data-clue]').forEach((b) => b.addEventListener('click', () => save(options[Number(b.dataset.clue)])));
     main.querySelector('[data-own]').addEventListener('submit', (e) => { e.preventDefault(); const t = main.querySelector('[data-text]').value; if (t.trim()) save(t); });
-    button('[data-skip]', nextWord);
+    button('[data-noclue]', nextWord);
   }
   function nextWord() {
-    markPart(g, 'fix', i);
     slipped = false;
-    i += 1;
-    if (i < list.length) look(); else { phase = 'end'; finishStep(main, g, 'fix'); }
+    word = left()[0];
+    if (word !== undefined) look(); else { phase = 'end'; finishStep(main, g, 'fix'); }
+  }
+  // The word moves to the end of today's list. With nothing else left, back to the list: the job stays open.
+  function skip() {
+    const day = today();
+    if (phase === 'type' && peeks) record(true); // a peek still ends the run, as leaving does
+    S.updateWords((d) => W.addSkip(d, { id: S.newId(), group: g.id, word, day, flow: 'x', now: Date.now() }));
+    const others = left().filter((x) => x !== word);
+    phase = 'end';
+    if (!others.length) { location.hash = groupHref(g.id); return; }
+    word = others[0];
+    slipped = false;
+    look();
   }
   function onKey(e) {
     if (e.metaKey || e.ctrlKey || e.altKey || phase !== 'type') return;
@@ -186,7 +240,12 @@ function fix(main, g) {
   }
   document.addEventListener('keydown', onKey);
   look();
-  return () => { document.removeEventListener('keydown', onKey); stop(); };
+  return () => {
+    clearTimeout(timer);
+    if (phase === 'type' && peeks) record(true); // left after a peek: that still ends the run
+    document.removeEventListener('keydown', onKey);
+    stop();
+  };
 }
 
 /* ------------------------------------------------------------- Game day --- */
@@ -256,14 +315,14 @@ function storyDay(main, g) {
 /* ---------------------------------------------------------------- routes --- */
 const PAGES = { hello, fix, games: gameDay, story: storyDay, mend };
 
-export function studyStep(main, { gid, step }) {
+export function studyStep(main, { gid, step, n }) {
   const id = decodeURIComponent(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
   if (!g) { location.replace('#/words'); return undefined; }
   if (!PAGES[step] || !St.canOpen(d, g, step, today())) { location.replace(groupHref(id)); return undefined; }
   if (step === 'mend' && St.mendPart(d, g, today()) === 'fixups') { location.replace(groupHref(id)); return undefined; }
-  return PAGES[step](main, g);
+  return PAGES[step](main, g, n);
 }
 
 // The week strip: one badge a job. Used by the group page and My room.
@@ -274,7 +333,13 @@ export function stripHtml(steps, day) {
     + '<span class="weekstrip__date" aria-hidden="true">' + (s.date === day ? 'Today' : esc(W.dayParts(s.date).join(' '))) + '</span></li>').join('') + '</ol>';
 }
 
+/** Today's skipped words, each a link back to it. */
+export function comeBackHtml(g, list) {
+  if (!list.length) return '';
+  return '<h2 class="sectionhead">Come back to this</h2><div class="list">' + list.map((x) => '<a class="card listrow" href="' + comeBackHref(g, x.word, x.flow) + '" data-comeback><strong>' + esc(x.word) + '</strong><span class="pill pill--warm">Come back to this</span></a>').join('') + '</div>';
+}
+
 /** Each word and its dots. On a day the words can't be shown: only the dots. */
 export function dotsListHtml(list, hideWords) {
-  return '<ul class="dotlist">' + list.map((x, i) => '<li><span>' + (hideWords ? 'Word ' + (i + 1) : esc(x.word)) + '</span>' + dotsHtml(x.dots, W.ROUNDS_NEEDED) + '</li>').join('') + '</ul>';
+  return '<ul class="dotlist">' + list.map((x, i) => '<li><span>' + (hideWords ? 'Word ' + (i + 1) : esc(x.word)) + '</span>' + dotsHtml(x.dots, W.ROW_NEEDED) + '</li>').join('') + '</ul>';
 }

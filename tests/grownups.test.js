@@ -120,7 +120,7 @@ function fakeWeek() {
   const g = W.groupById(d, 'g1');
   d = W.markStep(d, g, 'hello', MON, at(MON));
   d = W.markStep(d, g, 'fix', plus(1), at(plus(1)));
-  d = tryOf(d, g, 'fruit', plus(1), { source: 'x' });
+  for (let i = 0; i < 3; i += 1) d = tryOf(d, g, 'fruit', plus(1), { source: 'x', now: at(plus(1)) + i });
   d = tryOf(d, g, 'earth', plus(1), { source: 'x', clean: false, tries: 2 });
   d = tryOf(d, g, 'earth', plus(1), { source: 'x' });
   d = tryOf(d, g, 'fruit', plus(2), { source: 'g' });
@@ -140,8 +140,8 @@ test('dashboard: this week\'s group and today\'s job', () => {
 test('dashboard: dots, tries and peeks per word', () => {
   const { d } = fakeWeek();
   const w = Object.fromEntries(P.dashboard(d, plus(2)).current.words.map((x) => [x.word, x]));
-  assert.deepEqual([w.fruit.dots, w.fruit.tries, w.fruit.peeks, w.fruit.status], [2, 0, 0, 'practising']);
-  assert.deepEqual([w.earth.dots, w.earth.tries, w.earth.peeks], [1, 2, 1]);
+  assert.deepEqual([w.fruit.dots, w.fruit.tries, w.fruit.peeks, w.fruit.status], [3, 0, 0, 'practising']);
+  assert.deepEqual([w.earth.dots, w.earth.tries, w.earth.peeks], [0, 2, 1]);
 });
 test('dashboard: remembered, practised and independent first goes', () => {
   const { d } = fakeWeek();

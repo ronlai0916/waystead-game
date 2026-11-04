@@ -8,13 +8,13 @@ import * as R from './spell-run.js';
 import { checkTyped } from './wordcheck.js';
 import { speak, stop } from './speech.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { esc, ICON, keyboard, shuffle, toast, dotsHtml } from './ui.js';
+import { esc, ICON, keyboard, shuffle, toast, dotsHtml, rowCountHtml, RETRY_LINE } from './ui.js';
 import * as St from './study-doc.js';
-import { stepHref, stripHtml } from './study-views.js';
+import { stepHref, stripHtml, comeBackHref, comeBackHtml } from './study-views.js';
 import { findEntry } from './word-info.js';
 
 const PEEK_MS = 2000;
-const AGAIN_MS = 1600; // how long a finished word stays before the clean run
+const AGAIN_MS = 1600; // how long a finished word stays before it comes back
 const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -68,7 +68,6 @@ function starsLine(d, g, day) {
   const n = W.starsOn(d, g, day);
   return '<p class="starline">' + ICON.star + '<span><b>' + n + ' of ' + W.rows(g).length + '</b> stars today</span></p>';
 }
-const firstToDo = (d, g, day, list) => list.find((w) => !W.doneOn(d, g, w, day));
 const spellHref = (g, w) => groupHref(g.id) + '/spell/' + W.rows(g).indexOf(w);
 
 // Study mode: the group's guided week.
@@ -101,11 +100,11 @@ function studyCard(d, g, day) {
 }
 
 // Practise 3 times, for the whole group.
-function roundsLine(d, g) {
-  const all = W.allDots(d, g).filter((x) => !x.back);
-  const full = all.filter((x) => x.dots >= W.ROUNDS_NEEDED).length;
+function roundsLine(d, g, day) {
+  const all = W.allDots(d, g, day).filter((x) => !x.back);
+  const full = all.filter((x) => x.dots >= W.ROW_NEEDED).length;
   return W.readyForTest(d, g) ? '<p class="readyline"><span class="pill pill--done">Ready for the test</span> Every word has its 3 dots.</p>'
-    : '<p class="readyline small muted">' + full + ' of ' + all.length + ' words have all 3 dots. Each word needs 3 clean rounds before the test.</p>';
+    : '<p class="readyline small muted">' + full + ' of ' + all.length + ' words have all 3 dots. Each word needs 3 clean spellings in a row before the test.</p>';
 }
 
 /** Study or Game: the same words, a guided week or the games any time. */
@@ -118,10 +117,15 @@ export { modeSwitch };
 function gridHtml(d, g, day, job) {
   const days = W.practiceDays(g);
   const open = job === 'practise';
-  const L = W.allDots(d, g);
+  const L = W.allDots(d, g, day);
+  const later = new Map(W.comeBack(d, g, day).map((x) => [x.word, x.flow]));
   const row = (w, i) => {
     const name = esc(w) + (g.back.includes(w) ? ' <span class="pill">back again</span>' : '');
-    return '<tr><th scope="row">' + (open ? '<a href="' + spellHref(g, w) + '">' + name + '</a>' : name) + '</th><td class="gridcell gridcell--dots">' + dotsHtml(L[i].dots, W.ROUNDS_NEEDED) + '</td>' + days.map((x) => {
+    if (later.has(w)) return rowHtml(w, i, '<a href="' + comeBackHref(g, w, later.get(w)) + '" data-comeback>' + name + '</a> <span class="pill pill--warm">Come back to this</span>');
+    return rowHtml(w, i, open ? '<a href="' + spellHref(g, w) + '">' + name + '</a>' : name);
+  };
+  const rowHtml = (w, i, head) => {
+    return '<tr><th scope="row">' + head + '</th><td class="gridcell gridcell--dots">' + dotsHtml(L[i].dots, W.ROW_NEEDED) + '</td>' + days.map((x) => {
       const c = W.cell(d, g, w, x);
       const mark = c === 'clean' ? ICON.star + '<span class="sr">Done clean</span>' : c === 'help' ? TICK + '<span class="sr">Done with help</span>' : '<span class="sr">Not yet</span>';
       return '<td class="gridcell gridcell--' + c + (x === day ? ' is-today' : '') + '">' + mark + '</td>';
@@ -148,7 +152,7 @@ function fixupList(d, g, day) {
   const left = W.fixups(d, g);
   if (!left.length) return '';
   return '<div class="list">' + left.map((w) => '<a class="card listrow" href="' + spellHref(g, w) + '"><strong>' + esc(w) + '</strong>'
-    + (W.doneOn(d, g, w, day) ? '<span class="pill pill--done">Done today</span>' : '<span class="pill">Not yet</span>') + '</a>').join('') + '</div>';
+    + (W.sessionDone(d, g, w, day, 'f') ? '<span class="pill pill--done">Done today</span>' : W.comeBack(d, g, day).some((x) => x.word === w && x.flow === 'f') ? '<span class="pill pill--warm">Come back to this</span>' : '<span class="pill">Not yet</span>') + '</a>').join('') + '</div>';
 }
 
 function drawGroup(main, g, others = []) {
@@ -164,8 +168,9 @@ function drawGroup(main, g, others = []) {
     + studyCard(d, g, day)
     + stripHtml(St.studyState(d, g, day).steps, day)
     + (job === 'fixups' || job === 'fixed-today' ? fixupList(d, g, day) : '')
+    + (testing ? '' : comeBackHtml(g, W.comeBack(d, g, day)))
     + (after ? resultsCard(d, g) : '')
-    + (day < g.test ? roundsLine(d, g) : '')
+    + (day < g.test ? roundsLine(d, g, day) : '')
     + (testing ? '' : gridHtml(d, g, day, job))
     + '<div class="btnrow"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
     + '<a class="btn btn--ghost" href="#/words/new">New group</a>'
@@ -323,50 +328,53 @@ export function spellWord(main, { gid, n }) {
   const fixing = (job === 'fixups' || job === 'fixed-today') && !!w && W.fixups(d0, g).includes(w);
   if (!w || !(job === 'practise' || fixing)) { if (g) toGroup(id); else location.replace('#/words'); return; }
   const kind = fixing ? 'f' : 'p';
+  const flow = kind;
   const list = fixing ? W.fixups(d0, g) : W.rows(g);
 
   let run = R.newRun(w);
-  let hold = false; // a peek on show, or the pause before the clean run
+  let hold = false; // a peek on show, or the pause before the next spelling
   let done = false;
   let timer = null;
+  const count = () => W.sessionCount(S.readWords(), g, w, day, flow);
 
   main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead"><span class="eyebrow">' + esc(fixing ? 'Fix-ups' : g.name) + '</span>'
     + '<h1>Word ' + (list.indexOf(w) + 1) + ' of ' + list.length + '</h1>'
-    + (g.back.includes(w) ? '<span class="pill">Back again</span>' : '') + '</div>'
+    + (g.back.includes(w) ? '<span class="pill">Back again</span>' : '') + '<p class="rowcount" data-row></p></div>'
     + '<p class="peek" data-peek aria-live="polite"></p>'
     + boxesHtml(w)
     + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
     + '<div data-slot><div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear again</button>'
-    + '<button type="button" class="btn btn--ghost" data-peekbtn>Peek</button></div>' + keyboard() + '</div></section>';
+    + '<button type="button" class="btn btn--ghost" data-peekbtn>Peek</button>'
+    + '<button type="button" class="btn btn--ghost" data-skip>Skip for now</button></div>' + keyboard() + '</div></section>';
 
   const line = (s) => { main.querySelector('[data-line]').textContent = s; };
+  const showRow = (n2) => { main.querySelector('[data-row]').innerHTML = rowCountHtml(n2); };
   const clearBoxes = () => main.querySelectorAll('[data-box]').forEach((b) => { b.textContent = ''; b.classList.remove('is-filled', 'is-next'); });
   const markNext = () => {
     main.querySelectorAll('[data-box]').forEach((b) => b.classList.toggle('is-next', Number(b.dataset.box) === run.at));
   };
   const record = (r, clean) => S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w, day, group: id, kind, tries: r.tries, peeks: r.peeks, clean, now: Date.now() }));
+  const nextHref = () => { const left = W.queue(S.readWords(), g, day, flow).filter((x) => x !== w); return left.length ? spellHref(g, left[0]) : ''; };
 
   function finish() {
     done = true;
-    const star = W.cell(S.readWords(), g, w, day) === 'clean';
     const d = S.readWords();
-    const left = (fixing ? W.fixups(d, g).filter((x) => !W.doneOn(d, g, x, day)) : W.gridLeft(d, g, day)).filter((x) => x !== w);
-    const next = left.length ? spellHref(g, left[0]) : groupHref(id);
+    const star = W.cell(d, g, w, day) === 'clean';
+    const next = nextHref();
     main.querySelector('[data-slot]').innerHTML = '<div class="card result result--good"><div class="result__head"><span class="celebrate"><span class="result__badge">' + (star ? '★' : '✓') + '</span>' + burstHtml(12, 1.3) + '</span>'
-      + '<h2>' + (star ? 'A star for today' : 'Done for today') + '</h2></div>'
+      + '<h2>' + (star ? 'A star for today' : '3 in a row!') + '</h2></div>'
       + (fixing ? '' : '<p class="muted">' + W.starsOn(d, g, day) + ' of ' + W.rows(g).length + ' stars today</p>')
-      + '<div class="btnrow"><a class="btn btn--primary" href="' + next + '" data-next>' + (left.length ? 'Next word' : 'Back to my words') + ICON.arrow + '</a>'
-      + (left.length ? '<a class="btn btn--ghost" href="' + groupHref(id) + '">Back to my words</a>' : '') + '</div></div>';
+      + '<div class="btnrow"><a class="btn btn--primary" href="' + (next || groupHref(id)) + '" data-next>' + (next ? 'Next word' : 'Back to my words') + ICON.arrow + '</a>'
+      + (next ? '<a class="btn btn--ghost" href="' + groupHref(id) + '">Back to my words</a>' : '') + '</div></div>';
     placeBursts(main);
     line('');
     main.querySelector('[data-next]').focus({ preventScroll: true });
   }
 
-  function endPass() {
-    if (R.isClean(run)) { record(run, true); finish(); return; }
-    record(run, false);
+  // The same word, straight back: after a slip, or until it has its 3 in a row.
+  function nextPass(say) {
     hold = true;
-    line('You got there. Now once more, all on your own.');
+    line(say);
     timer = setTimeout(() => {
       hold = false;
       run = R.again(run);
@@ -375,6 +383,14 @@ export function spellWord(main, { gid, n }) {
       line('');
       speak(w);
     }, AGAIN_MS);
+  }
+  function endPass() {
+    const clean = R.isClean(run);
+    record(run, clean);
+    const n2 = count();
+    showRow(n2);
+    if (n2 >= W.ROW_NEEDED && clean) { finish(); return; }
+    nextPass(clean ? 'Clean! Now again, all on your own.' : RETRY_LINE);
   }
 
   function letter(L) {
@@ -390,6 +406,7 @@ export function spellWord(main, { gid, n }) {
       markNext();
       if (r.finished) endPass();
     } else {
+      showRow(0);
       line(R.wrongLine(run.tries));
     }
   }
@@ -406,10 +423,18 @@ export function spellWord(main, { gid, n }) {
   window.addEventListener('pagehide', leave);
   main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => letter(k.dataset.letter)));
   main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
+  main.querySelector('[data-skip]').addEventListener('click', () => {
+    if (done) return;
+    leave();
+    S.updateWords((d) => W.addSkip(d, { id: S.newId(), group: id, word: w, day, flow, now: Date.now() }));
+    done = true; // nothing more to record for this visit
+    location.hash = nextHref() || groupHref(id);
+  });
   const peekBtn = main.querySelector('[data-peekbtn]');
   peekBtn.addEventListener('click', () => {
     if (hold || done) return;
     run = R.peek(run);
+    showRow(0);
     hold = true;
     peekBtn.disabled = true;
     main.querySelector('[data-peek]').textContent = w;
@@ -419,6 +444,7 @@ export function spellWord(main, { gid, n }) {
       main.querySelector('[data-peek]').textContent = '';
     }, PEEK_MS);
   });
+  showRow(count());
   markNext();
   speak(w);
   return () => {
