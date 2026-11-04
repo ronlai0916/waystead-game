@@ -21,6 +21,9 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 ## Rules that bit before
 - The keyboard is three `.keyboard-row` containers (10/9/7 keys) with `flex-wrap: nowrap`. Check in a 390px viewport that P stays on row 1.
 - Every word's `chunks` must join to the word exactly (checked at load).
+- A word is always shown whole (G4b): no gap between its letters. `.chunked` marks the syllables only with the coloured segments under it. The practice grid's boxes may keep a small group spacing, because the word is hidden there.
+- Top bar (G4b): `shared/topbar/nav.js` (copied to each site's `js/nav/`) measures the room and folds the links into a Menu button rather than wrapping them. Always folded under 700 px (the same number is in each site's CSS); All games joins the Menu under 600 px. Never `display: none` the nav: folded, it still has to measure.
+- One-load updates (G4b): `site/js/update.js`. The old app runs for the seconds the new worker takes to install, so an unknown page under `#/words` waits ("Just a moment") until the reload, or until there turns out to be no update. Keep `watchForUpdate` first in `start()`.
 - Bump `VERSION` in `site/sw.js` on every Spellbright release, and in `wordbright/site/sw.js` on every Wordbright release. Each worker deletes only its own caches (`spellbright-*`, `wordbright-*`).
 - The home page (`hub/site/`, served at `/`) keeps every file under `/home-assets/` so it never clashes with a game path. Its name is only in `BRAND` (`hub/site/home-assets/js/config.js`); `WORDBRIGHT_LIVE` there turns the Wordbright card into a link at launch (README "Launch checklist").
 

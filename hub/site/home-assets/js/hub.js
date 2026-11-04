@@ -3,6 +3,7 @@
 // (only without reduced motion).
 import { BRAND, WORDBRIGHT_LIVE } from './config.js';
 import { wireThemeMenu } from './thememenu.js';
+import { wireTopNav } from './nav/nav.js';
 import { startAccount } from './account/boot.js';
 
 const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
@@ -52,6 +53,7 @@ function wireVideo() {
 const wireTheme = () => wireThemeMenu(document.getElementById('theme'), document.getElementById('theme-menu'), document);
 
 wireBrand();
+wireTopNav();
 let unwireTheme = wireTheme();
 // The Waystead account: the player chip, and a signed-in player's look.
 startAccount({

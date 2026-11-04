@@ -10,6 +10,7 @@ import * as W from '../site/js/words-doc.js';
 import * as R from '../site/js/spell-run.js';
 import { usableWord, cleanWord } from '../site/js/wordcheck.js';
 import { isPlayPath } from '../site/js/gate.js';
+import { chunked, chunkText } from '../site/js/ui.js';
 import { createSync } from '../shared/account/sync.js';
 import { forgetPlayer } from '../shared/account/forget.js';
 import { loadWordGraph, isWord } from '../wordbright/site/js/engine/words.js';
@@ -489,4 +490,30 @@ test('every word\'s chunks join to it, and only those 29 have tricky letters', (
   assert.equal(allEntries.length, 213);
   for (const e of allEntries) assert.equal(e.chunks.join(''), e.word);
   assert.equal(allEntries.filter((e) => e.tricky).length, 29);
+});
+
+// ---- G4b: whole words ---------------------------------------------------------------
+test('G4b: a word is one whole word: no gap in the CSS, no space in the letters, segments mark the syllables', () => {
+  const css = readFileSync(fileURLToPath(new URL('../site/css/app.css', import.meta.url)), 'utf8');
+  const rule = (sel) => css.match(new RegExp('(?:^|\\n)' + sel.replace(/\./g, '\\.') + ' \\{([^}]*)\\}'))[1];
+  assert.doesNotMatch(rule('.chunked'), /gap/);
+  assert.match(rule('.chunked'), /flex-wrap: nowrap/, 'never split over two lines');
+  assert.match(rule('.chunked__chunk'), /padding: 0 0 /, 'no side padding between the parts');
+  assert.match(css, /\.chunked__chunk::after \{[^}]*left: 0\.04em; right: 0\.04em/, 'each segment stops short, so the syllables still show');
+  const html = chunked({ word: 'bargain', chunks: ['bar', 'gain'] });
+  assert.equal(html.replace(/<[^>]*>/g, ''), 'bargain');
+  assert.equal((html.match(/chunked__chunk/g) || []).length, 2);
+  assert.match(html, /aria-label="bargain, in parts: bar, gain"/);
+});
+
+test('G4b: tricky letters show only when asked for; the syllable line stays as it was', () => {
+  const w = { word: 'build', chunks: ['build'], tricky: 'ui' };
+  assert.equal((chunked(w, '', { tricky: true }).match(/is-tricky/g) || []).length, 2);
+  assert.doesNotMatch(chunked(w), /is-tricky/);
+  assert.equal(chunkText({ word: 'bargain', chunks: ['bar', 'gain'] }), 'bar · gain');
+});
+
+test('G4b: the grid boxes keep a small group spacing, as the word is hidden there', () => {
+  const css = readFileSync(fileURLToPath(new URL('../site/css/app.css', import.meta.url)), 'utf8');
+  assert.match(css, /\.spellboxes \{[^}]*gap: 6px 8px/);
 });

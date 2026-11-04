@@ -10,7 +10,9 @@ import * as P from './progress-doc.js';
 import { wireVoiceMenu } from './voice/menu.js';
 import { startAccount } from './account/boot.js';
 import { gateHtml, gateCard } from './account/gate.js';
-import { isPlayPath, isLocked } from './gate.js';
+import { isPlayPath, isLocked, isWordsPath } from './gate.js';
+import { watchForUpdate } from './update.js';
+import { wireTopNav } from './nav/nav.js';
 
 const main = document.getElementById('main');
 const backBtn = document.getElementById('back');
@@ -18,6 +20,7 @@ let cleanup = null;
 let account = null;
 let voiceMenu = null; // the look menu's Voice part (G8c: redrawn when the player changes)
 let drawn = false; // the word list is in and the first view is drawn
+let updates = null; // one-load updates (update.js)
 
 const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?')[0];
 
@@ -105,14 +108,23 @@ function render() {
   const found = match(path);
   backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = parentOf(path); };
-  document.querySelectorAll('.topbar__nav a').forEach((a) => {
+  document.querySelectorAll('.topbar__nav a, .navmenu a').forEach((a) => {
     a.toggleAttribute('aria-current', a.getAttribute('href') === '#/' + path.split('/')[0]);
     if (a.hasAttribute('aria-current')) a.setAttribute('aria-current', 'page');
   });
-  if (!found) { V.notFound(main); return; }
+  if (!found) { unknownPage(path); return; }
   cleanup = found.view(main, found.params) || null;
   const h1 = main.querySelector('h1');
   document.title = (path && h1 ? h1.textContent + ' · ' : '') + 'Spellbright by Waystead';
+}
+
+// A My words page this app doesn't know may belong to a release still on its
+// way (update.js): wait for it, and the reload, before saying it isn't here.
+function unknownPage(path) {
+  if (!isWordsPath(path)) { V.notFound(main); return; }
+  main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>Just a moment</h1>'
+    + '<p class="muted">Getting the newest Spellbright…</p></div></section>';
+  updates.settled().then(() => { if (currentPath() === path) V.notFound(main); });
 }
 
 function onNavigate() {
@@ -176,6 +188,13 @@ function wireAccount() {
 }
 
 async function start() {
+  updates = watchForUpdate({
+    sw: 'serviceWorker' in navigator && location.protocol === 'https:' ? navigator.serviceWorker : null,
+    isBusy: () => isPlayPath(currentPath()),
+    reload: () => location.reload(),
+    onLeave: (fn) => window.addEventListener('hashchange', fn),
+  });
+  wireTopNav();
   wireTheme();
   wireAccount();
   try {
@@ -187,19 +206,9 @@ async function start() {
     return;
   }
   window.addEventListener('hashchange', onNavigate);
+  updates.register();
   drawn = true;
   render();
-  if ('serviceWorker' in navigator && location.protocol === 'https:') {
-    // A new release's worker takes over at once (sw.js); this page still runs
-    // the old files, so load it again: now, or after the game in progress.
-    const hadWorker = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!hadWorker) return; // the first install: this page is already current
-      if (!(isPlayPath(currentPath()))) location.reload();
-      else window.addEventListener('hashchange', () => location.reload(), { once: true });
-    });
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
 }
 
 start();

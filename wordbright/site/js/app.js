@@ -1,6 +1,7 @@
 // Entry point: brand, look menu, and routing by the URL hash.
 import { BRAND } from './brand.js';
 import { wireThemeMenu } from './ui/thememenu.js';
+import { wireTopNav } from './nav/nav.js';
 import { home } from './views/home.js';
 import { setup } from './views/setup.js';
 import { playView } from './views/play.js';
@@ -55,7 +56,7 @@ function render() {
   const view = Object.prototype.hasOwnProperty.call(ROUTES, path) ? ROUTES[path] : notFound;
   backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = PARENT[path] || '#/'; };
-  document.querySelectorAll('.topbar__nav a').forEach((a) => {
+  document.querySelectorAll('.topbar__nav a, .navmenu a').forEach((a) => {
     if (a.getAttribute('href') === '#/' + path) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });
@@ -143,6 +144,7 @@ function wireAccount() {
 }
 
 wireBrand();
+wireTopNav();
 wireTheme();
 wireAccount();
 window.addEventListener('hashchange', onNavigate);

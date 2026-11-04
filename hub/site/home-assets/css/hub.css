@@ -111,10 +111,20 @@ img { max-width: 100%; display: block; }
 .brand__words { display: flex; flex-direction: column; line-height: 1; }
 .brand__name { font-family: "Sora", ui-sans-serif, system-ui, sans-serif; font-weight: 600; font-size: 1.15rem; color: var(--wordmark); letter-spacing: -0.01em; }
 .brand__product { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--product); margin-top: 3px; }
-.topbar__nav { display: flex; gap: 4px; }
-.topbar__nav a { text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.92rem; padding: 8px 10px; border-radius: var(--r-sm); }
+.topbar__nav { display: flex; flex: none; gap: 4px; }
+.topbar__nav a { text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.92rem; padding: 8px 10px; border-radius: var(--r-sm); white-space: nowrap; }
 .topbar__nav a:hover { background: var(--surface-2); }
-@media (max-width: 700px) { .topbar__nav { display: none; } }
+/* G4b: folded, the links still measure (shared/topbar/nav.js), but show only in the Menu. */
+.topbar__nav.is-folded { position: absolute; width: 0; height: 0; overflow: hidden; visibility: hidden; }
+@media (max-width: 700px) { .topbar__nav { position: absolute; width: 0; height: 0; overflow: hidden; visibility: hidden; } }
+.iconbtn.navmenu__btn { display: inline-flex; align-items: center; width: auto; gap: 8px; padding: 0 12px; font-weight: 600; font-size: 0.92rem; color: var(--text); white-space: nowrap; }
+.navmenu__btn[aria-expanded="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+@media (max-width: 599.98px) { .iconbtn.navmenu__btn { width: 40px; padding: 0; justify-content: center; } .navmenu__text { display: none; } }
+.navmenu .thememenu__list { min-width: 180px; }
+.navmenu .thememenu__item { display: flex; color: var(--text); text-decoration: none; padding: 6px 12px; }
+.navmenu .thememenu__item[aria-current="page"] { background: var(--surface-2); font-weight: 800; }
+.navmenu__phone { display: none; }
+@media (max-width: 599.98px) { .navmenu__phone { display: block; } }
 .iconbtn {
   width: 40px; height: 40px; flex: none; display: inline-grid; place-items: center;
   border: 1px solid var(--line); background: var(--surface); border-radius: 12px; cursor: pointer; color: var(--text);
@@ -131,7 +141,7 @@ img { max-width: 100%; display: block; }
 .ico-paint .dot { fill: #E5432D; stroke: var(--surface); stroke-width: 1.5; } /* Paint box tomato, in every style */
 
 /* ---- Look menu (top bar): the same as the games' ------------------------- */
-.themebtn { display: inline-flex; align-items: center; width: auto; min-width: 40px; gap: 8px; padding: 0 12px; font-weight: 600; font-size: 0.92rem; color: var(--text); }
+.themebtn { display: inline-flex; align-items: center; width: auto; min-width: 40px; gap: 8px; padding: 0 12px; font-weight: 600; font-size: 0.92rem; color: var(--text); white-space: nowrap; }
 @media (max-width: 899.98px) { .themebtn { padding: 0; width: 40px; } .themebtn__text { display: none; } }
 .thememenu { position: relative; flex: none; }
 .themebtn[aria-expanded="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }

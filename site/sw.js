@@ -1,12 +1,13 @@
 // Offline support. The app shell and word list are cached on install; pictures
 // and audio are cached the first time they're used, and fetched in the
 // background once the new version is active.
-// Bump VERSION on every deploy so phones pick up the new files.
+// Bump VERSION on every deploy so phones pick up the new files. A new version
+// takes over at once and the page reloads itself then (update.js).
 // Account calls (account.waystead.co.uk) are never cached, apart from the
 // Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-03a';
+const VERSION = 'spellbright-2026-11-04a';
 
 const SHELL = [
   './',
@@ -33,6 +34,8 @@ const SHELL = [
   'js/wordcheck.js',
   'js/progress-doc.js',
   'js/gate.js',
+  'js/update.js',
+  'js/nav/nav.js',
   'js/account/api.js',
   'js/account/boot.js',
   'js/account/chip.js',

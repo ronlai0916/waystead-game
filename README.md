@@ -259,7 +259,8 @@ session: `/play`), My account and Sign out.
   (as `prefs.voice`). The best choice names its voice ("Best British voice
   (Daniel)"); the list below never repeats it. With no British voice, a tip on adding one.
 
-The account client is `shared/account/` and the voice is `shared/voice/`, copied
+The account client is `shared/account/`, the voice is `shared/voice/` and the top
+bar's Menu button is `shared/topbar/`, copied
 into each site by `node tools/sync-shared.mjs` (the sites are separate roots and
 must work offline). Tests: `node --test shared/tests/` (a fake account API).
 On localhost the games look for the account at `http://localhost:3000`.

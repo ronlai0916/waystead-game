@@ -4,6 +4,7 @@
 // fails if a copy differs.
 //   shared/account/  the Waystead Account client  → all three sites
 //   shared/voice/    the device voice for "Hear"  → the two games (G8)
+//   shared/topbar/   the top bar's Menu button    → all three sites (G4b)
 //
 //   node tools/sync-shared.mjs
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
@@ -13,6 +14,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 export const SETS = [
   { source: 'shared/account/', targets: ['site/js/account/', 'wordbright/site/js/account/', 'hub/site/home-assets/js/account/'] },
   { source: 'shared/voice/', targets: ['site/js/voice/', 'wordbright/site/js/voice/'] },
+  { source: 'shared/topbar/', targets: ['site/js/nav/', 'wordbright/site/js/nav/', 'hub/site/home-assets/js/nav/'] },
 ];
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
