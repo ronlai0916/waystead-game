@@ -11,7 +11,7 @@ import { esc, picture, setBlur, revealPicture, chunked, redact, keyboard, ICON }
 const MAX_BLUR = 20;
 
 export function runSession(main, opts) {
-  const { title, eyebrow, words, mode, onFinish, backAgain = [] } = opts;
+  const { title, eyebrow, words, mode, onFinish, backAgain = [], lastLabel = 'See how you did' } = opts;
   const maxWrong = mode === 'mini' ? 6 : 10;
   const results = [];
   let index = 0;
@@ -92,7 +92,7 @@ export function runSession(main, opts) {
       + '<div class="stack"><div class="result__word">' + chunked(w) + '</div>'
       + '<p class="ipa">' + esc(w.ipa) + '</p>'
       + '<p>' + esc(w.meaning.definition) + '</p></div>'
-      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-next>' + (last ? 'See how you did' : 'Next word') + ICON.arrow + '</button>'
+      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-next>' + (last ? lastLabel : 'Next word') + ICON.arrow + '</button>'
       + '<button type="button" class="btn btn--ghost" data-hear2>' + ICON.play + 'Hear it</button></div></div>';
     placeBursts(main);
     main.querySelector('[data-hear2]').addEventListener('click', () => speak(w.word));

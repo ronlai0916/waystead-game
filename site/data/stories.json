@@ -1,0 +1,421 @@
+{
+ "_meta": {
+  "note": "Original Waystead stories, one per curriculum chapter. A story reaches children only once `reviewed` is true here: set it with tools/approve-stories.mjs, never by hand. tests/stories.test.js checks length and that every chapter word is used."
+ },
+ "stories": [
+  {
+   "chapter": "y34-ch01",
+   "title": "The Queen of the Compost Heap",
+   "reviewed": false,
+   "sentences": [
+    "Class Four had a garden behind the hall, and every group had its own patch of earth.",
+    "Nell's group wanted to build a shelter for hedgehogs.",
+    "They measured the length of the fence with a ball of string, then stacked up logs and leaves.",
+    "\"We need to learn what hedgehogs like to eat,\" said Asha.",
+    "\"Not much fruit,\" said Tom, who had read a whole book about them.",
+    "That evening, as the sun went down, they heard a snuffling noise behind the compost heap.",
+    "Nell held her breath, and her heart went thump, thump, thump.",
+    "Out came a small round hedgehog, walking as if she owned the place.",
+    "\"She's our queen,\" Asha whispered.",
+    "\"Long may she reign!\"",
+    "All autumn, the children took turns to stand guard by the shelter door, although the queen mostly just snored.",
+    "When spring came she woke up, blinked at them all, and trotted off to inspect her kingdom."
+   ]
+  },
+  {
+   "chapter": "y34-ch02",
+   "title": "The Walking Club",
+   "reviewed": false,
+   "sentences": [
+    "Mrs Okoro was a busy woman who ran the Saturday walking club.",
+    "She was often the first one up, and she met everyone early at the town centre.",
+    "\"Today,\" she said, \"I am your guide, and we are walking in a giant circle round the lake.\"",
+    "Two women from the bakery came along, and so did Idris, who was eight and wanted to prove his strength.",
+    "By noon his legs felt like jelly.",
+    "\"How far is it now?\" he asked.",
+    "Mrs Okoro smiled.",
+    "\"Do you want the kind answer or the actual answer?\"",
+    "\"The kind one, please.\"",
+    "\"Nearly there,\" she said, and handed him a toffee.",
+    "The actual answer was three more miles, but the toffee helped, and so did the two women, who sang silly songs the whole way.",
+    "When they reached the town again, Idris was tired, muddy and very pleased with himself."
+   ]
+  },
+  {
+   "chapter": "y34-ch03",
+   "title": "The Island That Moved",
+   "reviewed": false,
+   "sentences": [
+    "The boat rocked strangely as Mei and her uncle rowed forward through the mist.",
+    "\"That's odd,\" said Uncle Jun.",
+    "\"There's no island on this map, and it's quite a recent map.\"",
+    "Yet a low green island seemed to appear in front of them, about a quarter of a mile away.",
+    "Mei was certain it had not been there at breakfast.",
+    "\"Row straight for it,\" she said.",
+    "They rowed forwards a little more, and the strange island let out a long, slow sigh.",
+    "Mei could hardly breathe.",
+    "A huge wet eye opened and looked at her kindly.",
+    "It was no island at all, but a great old whale, covered in green weed.",
+    "It rolled gently, sent a fountain of spray into the sky and sank away without a sound.",
+    "Mei and Uncle Jun told the story on the harbour wall that night.",
+    "Nobody believed them, but the tale soon became famous all along the coast."
+   ]
+  },
+  {
+   "chapter": "y34-ch04",
+   "title": "Grandad's Bicycle",
+   "reviewed": false,
+   "sentences": [
+    "In the shed there was a bicycle nearly a century old.",
+    "Grandad said it had a long history.",
+    "It had carried bread, letters and various cross little dogs.",
+    "\"I've decided,\" said Ravi.",
+    "\"I am going to mend it.\"",
+    "He wrote a list, though his grammar made his sister laugh.",
+    "It took eight weekends to clean the rusty wheels, and each one felt like it went past in a minute.",
+    "On the final Sunday, Ravi wheeled it out and rang the bell.",
+    "\"I can't believe it!\" Grandad said.",
+    "\"You didn't even notice the rain!\"",
+    "Ravi hadn't.",
+    "He had been too busy to look up.",
+    "\"Well, you must decide who rides it first.\"",
+    "Ravi held out the handlebars.",
+    "Grandad wobbled, laughed and rode to the end of the lane with extreme care.",
+    "He came back pink in the face and looking about ten years younger.",
+    "\"Best ride of the century,\" he said."
+   ]
+  },
+  {
+   "chapter": "y34-ch05",
+   "title": "The Book That Came Back",
+   "reviewed": false,
+   "sentences": [
+    "A very special book came back to the library one wet Tuesday.",
+    "It had no address on the parcel, only a note.",
+    "\"Sorry this is late,\" it said.",
+    "\"I promise I can explain.\"",
+    "Miss Lund looked at the date inside.",
+    "The book was sixty years overdue!",
+    "\"Perhaps we should mention it in the newsletter,\" she said to Priya, who was a regular visitor.",
+    "It was a natural history of British birds, and it had once been the most popular book on the shelf.",
+    "Priya opened it, and a pressed feather slid out and was caught by the draught.",
+    "Under the feather was a second note, written in careful pencil.",
+    "\"I kept it for a purpose,\" it said.",
+    "\"Every bird in here, I went out and found.\"",
+    "Miss Lund smiled and put the book back on its shelf.",
+    "There was no fine to pay.",
+    "Sixty years of birdwatching seemed like a very good reason to be late."
+   ]
+  },
+  {
+   "chapter": "y34-ch06",
+   "title": "The Eighth Pumpkin",
+   "reviewed": false,
+   "sentences": [
+    "On the calendar in the kitchen, a red ring marked the day of the pumpkin show.",
+    "Ollie had grown seven small pumpkins, though none of them was any good.",
+    "The eighth pumpkin was different.",
+    "It had grown to the height of his knee, and he could not lift its weight on his own.",
+    "\"Consider this,\" said Dad.",
+    "\"If we use the wheelbarrow, we can arrive before the judges do.\"",
+    "So they set off.",
+    "They had to stop twice and continue slowly up the hill, but at last the job was complete.",
+    "A lady with a clipboard asked Ollie to describe how he had grown it.",
+    "\"I talked to it,\" he said.",
+    "\"I told it about my day.\"",
+    "The judges laughed, and they gave him first prize.",
+    "It was the only thing Ollie had ever wanted to possess: a small green rosette, which he stuck on the kitchen wall."
+   ]
+  },
+  {
+   "chapter": "y34-ch07",
+   "title": "The Potato Surprise",
+   "reviewed": false,
+   "sentences": [
+    "It was the coldest day in February, and Class Three were getting ready for a surprise.",
+    "Mr Bell had an interest in peculiar experiments, so nobody was shocked when he brought in a sack of potatoes.",
+    "\"Remember what we thought about electricity?\" he asked.",
+    "\"Probably not,\" said Zainab, which made him chuckle.",
+    "He pushed two strips of metal into a potato and joined them with a wire.",
+    "Then he added more potatoes, one by one, to increase the power.",
+    "Nobody thought it would work, but a tiny light began to glow.",
+    "\"Potatoes!\" gasped Zainab.",
+    "\"It isn't magic,\" said Mr Bell.",
+    "\"The material inside the potato helps the power move along the wire.\"",
+    "For homework, everyone had to write one sentence about what they had seen.",
+    "Zainab wrote, \"Never be rude to a potato.\"",
+    "Mr Bell gave her a gold star for that, and he had a jacket potato for his lunch."
+   ]
+  },
+  {
+   "chapter": "y34-ch08",
+   "title": "The Lemonade Business",
+   "reviewed": false,
+   "sentences": [
+    "Ana and Finn had an important idea.",
+    "\"Suppose we open a business,\" said Ana.",
+    "\"We could sell lemonade to the people going through the park.\"",
+    "It was difficult at first.",
+    "A wasp made one customer disappear in a hurry, and there was a small accident with a jug.",
+    "Finn could feel the pressure.",
+    "\"Imagine if nobody comes,\" he said.",
+    "\"Let's try something different,\" said Ana.",
+    "She wrote a new sign in huge letters: \"Lemonade: Actually Quite Nice.\"",
+    "A man laughed and bought two cups.",
+    "Then a whole football team came by and bought the lot.",
+    "By teatime the jug was empty and the money tin was heavy.",
+    "\"What shall we do with it?\" asked Finn.",
+    "They counted it twice, then walked to the animal shelter and dropped it all in the collection box.",
+    "\"Same again next week?\" said Ana.",
+    "Finn looked at the sticky table and grinned."
+   ]
+  },
+  {
+   "chapter": "y34-ch09",
+   "title": "A Naughty Pony",
+   "reviewed": false,
+   "sentences": [
+    "Pepper was the naughty pony at Hill Farm.",
+    "She was no ordinary pony.",
+    "She could undo gates, and she had a good knowledge of where the carrots were kept.",
+    "\"That's enough, Pepper,\" said Lucy, who looked after her every morning.",
+    "Then one day Pepper would not eat, not even her favourite apple.",
+    "The vet took her temperature and asked Lucy question after question.",
+    "\"She needs some medicine, and a stable of her own,\" said the vet.",
+    "\"Keep her separate from the others, and no exercise for a week.\"",
+    "Therefore Lucy sat with her every day after school, in the same position on an upturned bucket, reading out loud.",
+    "Pepper seemed to like the stories.",
+    "On the seventh day, Lucy heard a clink behind her.",
+    "Pepper had undone the stable gate.",
+    "\"You're better!\" laughed Lucy, and she gave her the biggest apple she could find."
+   ]
+  },
+  {
+   "chapter": "y34-ch10",
+   "title": "The Great Bean Experiment",
+   "reviewed": false,
+   "sentences": [
+    "Although Kit had never grown anything, she signed up for the science club's big experiment.",
+    "Each child had to plant two beans in two particular places.",
+    "One sat on the sunny windowsill, and the other in the dark cupboard on the opposite side of the room.",
+    "\"Is it possible they will both grow?\" asked Kit.",
+    "\"Let's find out,\" said Dr Shah.",
+    "Kit watered them occasionally, then every day, as she gained more experience.",
+    "On one occasion she accidentally knocked the windowsill pot to the floor and had to scoop up the soil with a spoon.",
+    "That bean was her proudest possession, and she was terribly worried.",
+    "Yet it grew green and strong.",
+    "The cupboard bean grew too, but it was pale and thin, stretching towards the crack of light under the door.",
+    "\"Plants don't give up,\" said Dr Shah, \"and neither did you.\"",
+    "Even now, Kit occasionally checks on it, just to say hello."
+   ]
+  },
+  {
+   "chapter": "y56-ch01",
+   "title": "The Yacht Race",
+   "reviewed": false,
+   "sentences": [
+    "At the regatta, the queue for the small boats stretched along the whole harbour wall.",
+    "Forty children were waiting, and Sana felt awkward in her borrowed life jacket.",
+    "Her uncle's little yacht had a symbol of a blue fish on its sail.",
+    "\"We have a system,\" he said.",
+    "\"Pull, tie, duck.\"",
+    "They had even made up a rhyme to help her remember it.",
+    "Pull the rope, tie it tight, duck the boom and you'll be right.",
+    "Soon Sana found the rhythm of it, and every muscle in her arms began to ache in a satisfying way.",
+    "The boom caught her elbow on the second turn, which left a purple bruise.",
+    "She did not mind.",
+    "They crossed the line in third place, and she hopped ashore grinning.",
+    "\"Same time next year?\" said her uncle.",
+    "Sana showed off her bruise to anyone who would look at it.",
+    "\"Pull, tie, duck,\" she said.",
+    "\"Definitely.\""
+   ]
+  },
+  {
+   "chapter": "y56-ch02",
+   "title": "The Soldier's Letter",
+   "reviewed": false,
+   "sentences": [
+    "Dara's neighbour, Mr Novak, spent his leisure hours mending old clocks.",
+    "One stormy evening, a flash of lightning made the lights go out, and Dara took a candle round to check on him.",
+    "He was holding a yellowed letter written in a foreign language.",
+    "\"My grandfather was a soldier,\" he said.",
+    "\"He wrote this on the twelfth of March, long ago, and I have never read it.\"",
+    "Dara was conscious of how much it mattered.",
+    "She felt a flutter in her stomach.",
+    "\"We could find out what it says,\" she said.",
+    "It took a thorough search of the library, and three weeks with a dictionary, but they did it.",
+    "The letter was not about battles.",
+    "It said, \"Tell my son I am sorry I missed his birthday.\"",
+    "Mr Novak was quiet for a long time.",
+    "\"He had a good conscience,\" he said at last, and he put the letter inside his best clock."
+   ]
+  },
+  {
+   "chapter": "y56-ch03",
+   "title": "The Seagull Committee",
+   "reviewed": false,
+   "sentences": [
+    "According to the sign, the seafront café could accommodate thirty people.",
+    "On Saturday it had to accommodate one aggressive seagull too.",
+    "The bird would occupy a table, stare at the customers and harass anyone who had chips.",
+    "It was starting to embarrass the owner, Mrs Doyle.",
+    "\"It's necessary to do something,\" she said, and she formed a committee.",
+    "Her son and two friends offered to accompany her to the beach to study the problem.",
+    "\"These things only occur when the bird is hungry,\" said Theo.",
+    "So the committee built a feeding table at the far end of the pier, and put out scraps each morning.",
+    "It worked.",
+    "By the end of the month, the seagull was too full to bother anyone.",
+    "Now it sits on the pier like a small, fat king.",
+    "Customers bring their cameras, and Mrs Doyle has put its picture on the menu."
+   ]
+  },
+  {
+   "chapter": "y56-ch04",
+   "title": "The Treehouse Radio",
+   "reviewed": false,
+   "sentences": [
+    "Jude and Amara wanted to communicate from one end of the street to the other.",
+    "\"I suggest a radio,\" said Amara.",
+    "Jude's aunt, who repaired old equipment, offered to equip them with two battered handsets.",
+    "Each one had a long wire attached to the back.",
+    "\"I don't want to exaggerate,\" she said, \"but these are the finest radios in town.\"",
+    "The children appreciate a challenge, and they soon had the treehouse fully equipped.",
+    "Then the crackling started.",
+    "\"Do not interfere with the dial,\" said Jude.",
+    "\"I'm not!\" said Amara.",
+    "\"Sorry to interrupt,\" said a third voice.",
+    "They both froze.",
+    "\"Who's that?\"",
+    "\"It's Mr Wells at number nine.",
+    "I can hear you on my radio.",
+    "Would you like to know what the weather is doing?\"",
+    "From then on, every evening at six, Mr Wells read them the weather, and they told him all the news of the street."
+   ]
+  },
+  {
+   "chapter": "y56-ch05",
+   "title": "The Ancient Coin",
+   "reviewed": false,
+   "sentences": [
+    "It was hardly a convenience to have a metal detector that beeped frequently at bottle tops.",
+    "For Leo's mother it was a nuisance, and for Leo's patience it was a hindrance.",
+    "\"Do you have sufficient evidence of treasure yet?\" she asked.",
+    "Leo shook his head.",
+    "Then, at the far end of the field, the beeping changed.",
+    "He dug carefully until the apparent lump of mud came away in his hand.",
+    "It was a coin, small and thin and very ancient.",
+    "The museum said it was an excellent find.",
+    "\"This proves the existence of a Roman road here,\" said the curator, who was thrilled.",
+    "It was relevant to everything they had been trying to learn about the valley.",
+    "Leo's name went on the little card in the display case.",
+    "His mother read it three times.",
+    "\"I take it all back,\" she said.",
+    "\"Beep as much as you like.\""
+   ]
+  },
+  {
+   "chapter": "y56-ch06",
+   "title": "The Cake Competition",
+   "reviewed": false,
+   "sentences": [
+    "The village baking competition was only days away, and Hana was desperate to enter.",
+    "She had one definite problem: her cake sank in the middle every time.",
+    "\"I hate to criticise,\" said her brother, \"but it looks like a crater.\"",
+    "She needed an immediate solution.",
+    "So she made a great sacrifice and gave up her Saturday to practise.",
+    "Her neighbour, a retired chef, gave her an explanation of what was going wrong.",
+    "\"You keep opening the oven,\" he said.",
+    "\"And it's called a génoise, by the way.\"",
+    "Hana's pronunciation made him smile.",
+    "On the day, she did not open the oven door once.",
+    "When the judges arrived, they could immediately recognise that this cake was something special.",
+    "It was tall and golden and perfectly level.",
+    "She won second place, and her brother ate three slices.",
+    "\"It still looks a bit like a crater,\" he said, reaching for a fourth."
+   ]
+  },
+  {
+   "chapter": "y56-ch07",
+   "title": "The Food Van",
+   "reviewed": false,
+   "sentences": [
+    "Bea's dad was an amateur cook with a big dream: a restaurant on wheels.",
+    "He bought an old vehicle and painted it yellow, and Bea, who liked lists, became his secretary.",
+    "There was some controversy over the name.",
+    "\"The Soup Wagon,\" said Dad.",
+    "\"The Ladle of Destiny,\" said Bea, who had looked up clever words in the dictionary.",
+    "They parked by the gate of the old cemetery, where walkers came to admire the wild daffodils.",
+    "It was hard physical work, chopping and stirring all morning.",
+    "On the first day, a lady spoke to them in a language they did not know, then pointed hopefully at the soup.",
+    "Dad gave her a bowl and she beamed.",
+    "At the end of the year, the van won a prize in the category of Best Newcomer.",
+    "\"The Soup Wagon,\" said the certificate.",
+    "Bea sighed, smiled and put the certificate in a very neat file."
+   ]
+  },
+  {
+   "chapter": "y56-ch08",
+   "title": "The Lost Tortoise",
+   "reviewed": false,
+   "sentences": [
+    "It was no average Monday when Max found a tortoise asleep under his school bag.",
+    "He swung the bag over his shoulder and knelt down with growing curiosity.",
+    "It seemed familiar.",
+    "There was a tiny signature painted on its shell: Tilly.",
+    "That was the name of the tortoise from the school environment club!",
+    "The temperature was dropping, and Max knew tortoises hate the cold.",
+    "He had to persuade his friends to help.",
+    "\"We can achieve this,\" he said.",
+    "\"We just need a plan.\"",
+    "They began to develop one straight away.",
+    "Sam found a box, Nia found some lettuce, and together they carried Tilly back across the field.",
+    "Mrs Grant, the club leader, was almost in tears.",
+    "\"We've been looking for two days!\"",
+    "Max's name went up on the club's board, and the gap in the fence was mended that afternoon.",
+    "Tilly chewed her lettuce slowly, as if nothing at all had happened."
+   ]
+  },
+  {
+   "chapter": "y56-ch09",
+   "title": "The Mischievous Goat",
+   "reviewed": false,
+   "sentences": [
+    "Every individual in the community had an opinion about Gerald.",
+    "Gerald was a marvellous goat, but a mischievous one.",
+    "He had eaten the programme at the summer fair and most of the mayor's speech.",
+    "The school had its own small parliament, and Year Six formed a government for one week as a project.",
+    "Their first opportunity to pass a law came quickly.",
+    "\"I can guarantee he'll eat the bunting next,\" said Rosa, who wanted to go into the legal profession.",
+    "The class voted on what to do.",
+    "Some wanted a taller fence.",
+    "Rosa had a better idea.",
+    "\"Give him a job,\" she said.",
+    "So Gerald was put in charge of the long grass by the playing field, and within a month it was as neat as a carpet.",
+    "The school saved money on the mower.",
+    "Gerald, for his part, got to eat as much as he liked, and nobody's speech was ever in danger again."
+   ]
+  },
+  {
+   "chapter": "y56-ch10",
+   "title": "The Vegetable Stall",
+   "reviewed": false,
+   "sentences": [
+    "Mina's family ran a vegetable stall, and the market was the place for a bargain.",
+    "A wide variety of marrows sat on the table, available at a very fair price.",
+    "Mina was determined to sell them all, especially the enormous one.",
+    "Sadly, the first attempt was disastrous, because nobody liked marrows.",
+    "There was a real prejudice against them.",
+    "\"Tell people a recipe,\" said her grandmother.",
+    "\"I recommend marrow and ginger jam.\"",
+    "Mina had a pen friend in Wales with whom she would correspond, and she wrote to ask for ideas.",
+    "A week later she had a whole new identity for the stall: The Marrow Jam Company.",
+    "It was a sincere effort, and people could taste that.",
+    "\"It has been a privilege,\" said an old man, buying his third jar.",
+    "Mina wrote to her friend that evening.",
+    "\"Thank you for the idea,\" she wrote.",
+    "\"Yours sincerely, the Queen of Marrows.\""
+   ]
+  }
+ ]
+}

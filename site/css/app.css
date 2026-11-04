@@ -582,3 +582,88 @@ main:focus, main:focus-visible { outline: none; }
 .stat { padding: 14px 16px; display: grid; gap: 2px; }
 .stat b { font-family: var(--f-display); font-size: 2rem; line-height: 1.1; }
 .starsbyday { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0; color: var(--muted); }
+
+/* ---- Spellbright 2: dots, the week strip, My room, the Study/Game switch ---- */
+.dots { display: inline-flex; gap: 4px; vertical-align: middle; }
+.dots i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--sb); background: transparent; }
+.dots i.is-on { background: var(--sb); }
+.gridcell--dots { white-space: nowrap; padding-left: 8px; padding-right: 8px; }
+.readyline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 0; }
+.modeswitch { margin-bottom: 14px; }
+a.tab { color: var(--text); text-decoration: none; }
+.weekstrip { list-style: none; margin: 0 0 12px; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.weekstrip__day { display: grid; justify-items: center; gap: 2px; padding: 8px 1px; border-radius: var(--r-sm); text-align: center; min-width: 0; }
+.weekstrip__day.is-today { background: var(--sb-soft); }
+.weekstrip__badge { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 0.9rem; background: var(--surface-2); color: var(--muted); }
+.weekstrip__day.is-done .weekstrip__badge { background: var(--sb); color: var(--surface); }
+.weekstrip__day.is-today .weekstrip__badge { background: var(--surface); color: var(--sb); box-shadow: inset 0 0 0 2px var(--sb); }
+.weekstrip__day.is-waiting .weekstrip__badge { color: var(--text); box-shadow: inset 0 0 0 2px var(--muted); }
+.weekstrip__badge svg { width: 18px; height: 18px; fill: currentColor; }
+.weekstrip__name { font-size: clamp(0.62rem, 2.7vw, 0.74rem); font-weight: 700; line-height: 1.15; white-space: nowrap; }
+.weekstrip__date { font-size: 0.66rem; color: var(--muted); line-height: 1.15; }
+.weekstrip__day.is-today .weekstrip__date { color: var(--text); }
+.dotlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px 18px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.dotlist li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--line); font-weight: 600; min-width: 0; }
+.room__top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; padding: 14px 18px; }
+.room__pip { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; }
+.room__say { display: grid; gap: 4px; justify-items: start; }
+.room__say h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); overflow-wrap: anywhere; }
+.room__job { display: grid; gap: 8px; justify-items: center; text-align: center; margin: 18px 0; }
+.btn--big { width: 100%; max-width: 460px; min-height: 68px; font-size: 1.3rem; font-family: var(--f-display); }
+.btn--big svg { width: 24px; height: 24px; }
+.room__more { margin-top: 18px; }
+.room .stat b { font-size: 1.5rem; }
+@media (max-width: 480px) { .room__pip { width: 84px; height: 84px; } .room__top { padding: 12px; } }
+
+/* ---- Game mode ---------------------------------------------------------------- */
+.tiles-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 480px; margin: 0 auto; }
+.tile { flex: none; width: clamp(38px, 11vw, 48px); }
+.tile:disabled { opacity: 0.45; }
+.matchgrid { display: grid; gap: 12px; text-align: left; }
+@media (min-width: 720px) { .matchgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
+.matchcol { display: grid; gap: 8px; align-content: start; }
+.matchcard { display: flex; gap: 10px; align-items: center; width: 100%; min-height: 48px; padding: 8px 12px; text-align: left; cursor: pointer; background: var(--surface); color: var(--text); border: 2px solid var(--line); border-radius: var(--r); font-size: 0.98rem; }
+.matchcard--word { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.matchcard.is-on { border-color: var(--sb); background: var(--sb-soft); }
+.matchcard.is-done { border-color: var(--good); background: var(--good-soft); cursor: default; }
+.matchcard__key { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--surface-2); color: var(--muted); font-size: 0.78rem; font-weight: 700; }
+.gentlebar { height: 8px; max-width: 420px; margin: 0 auto 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.gentlebar > span { display: block; height: 100%; background: var(--sb); border-radius: 99px; transform-origin: left; animation: gentle var(--secs, 12s) linear both; }
+@keyframes gentle { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.game .result { text-align: left; }
+.game .result__word .chunked { font-size: inherit; }
+.gamecards { margin-bottom: 8px; }
+
+/* ---- Grown-ups ------------------------------------------------------------------ */
+.grownups .shortcuts { margin-top: 16px; }
+.grownups .listrow { flex-wrap: wrap; }
+.report { margin-bottom: 14px; }
+.report h3 { font-size: 1.02rem; }
+.report__list { margin: 0; padding-left: 20px; list-style: disc; }
+ul.report__list.card { padding-left: 34px; }
+.reportgrid td, .reportgrid thead th { padding: 7px 8px; }
+.reportgrid thead th:first-child { text-align: left; padding-left: 12px; }
+.previewwords { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 1.25rem; }
+@media print {
+  .topbar, .foot, .noprint, .toast, .btn { display: none !important; }
+  :root[data-style] { --bg: var(--paper) !important; --surface: var(--paper) !important; --surface-2: var(--paper) !important; --text: var(--ink) !important; --muted: var(--ink) !important; --line: var(--ink) !important; --sb: var(--ink) !important; --sb-soft: var(--paper) !important; --eyebrow: var(--ink) !important; }
+  html, body, main { background: var(--paper); }
+  body::before, body::after { display: none !important; }
+  .card, .gridwrap { box-shadow: none; border: 1px solid var(--line); break-inside: avoid; }
+  .gridwrap { overflow: visible; }
+  .wordgrid tbody th { position: static; }
+  .grownups a { color: inherit; text-decoration: none; }
+}
+
+/* ---- Story day and the review page -------------------------------------------- */
+.storycard { padding: 18px 20px; margin-bottom: 14px; }
+.story { font-size: 1.12rem; line-height: 1.7; }
+.storyword { background: var(--sb-soft); color: var(--sb); font-weight: 700; border-radius: 4px; padding: 0 2px; }
+.storyline { border-radius: 4px; transition: background-color 150ms ease; }
+.storyline.is-on { background: var(--surface-2); }
+.storyline.is-on .storyword { background: var(--sb-soft); }
+.storyreview { margin-top: 14px; }
+.storyreview .story { font-size: 1rem; line-height: 1.6; }
+.approve { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; }
+.approve input { width: 20px; height: 20px; accent-color: var(--sb); }
+.command { display: block; padding: 8px 10px; border-radius: var(--r-sm); background: var(--surface-2); font-family: var(--f-mono); font-size: 0.85rem; overflow-wrap: anywhere; }

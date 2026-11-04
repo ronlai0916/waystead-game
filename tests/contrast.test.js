@@ -66,6 +66,8 @@ const TEXT = [
   ['--sb', '--sb-soft'],
   // My words: the peek, today's grid column
   ['--sb', '--surface'], ['--sb', '--bg'], ['--text', '--sb-soft'], ['--muted', '--sb-soft'],
+  // Spellbright 2: the week strip's badges, Meaning match, the story's words
+  ['--surface', '--sb'], ['--text', '--good-soft'], ['--text', '--surface'], ['--muted', '--surface-2'],
   // The Wordbright card
   ['--wb', '--surface'], ['--wb', '--bg'],
   // The Waystead Learning panel (its heading, text and Teal button)

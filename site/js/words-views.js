@@ -8,14 +8,16 @@ import * as R from './spell-run.js';
 import { checkTyped } from './wordcheck.js';
 import { speak, stop } from './speech.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { esc, ICON, keyboard, shuffle, toast } from './ui.js';
+import { esc, ICON, keyboard, shuffle, toast, dotsHtml } from './ui.js';
+import * as St from './study-doc.js';
+import { stepHref, stripHtml } from './study-views.js';
+import { findEntry } from './word-info.js';
 
 const PEEK_MS = 2000;
 const AGAIN_MS = 1600; // how long a finished word stays before the clean run
 const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
-const findEntry = (w) => D.entry(w) || D.allWords().find((e) => e.word.toLowerCase() === w.toLowerCase()) || null;
 const toGroup = (id) => { location.replace(groupHref(id)); };
 const plural = (n, one, many = one + 's') => n + ' ' + (n === 1 ? one : many);
 
@@ -36,11 +38,14 @@ function currentChapter() {
   const started = D.chapters('y56').some((c) => { const p = S.chapterProgress(c.id); return p.studied || p.practised || p.attempts > 0; });
   return (started && open('y56')) || open('y34') || open('y56') || D.chapters('y56').at(-1);
 }
-function ensureStarter() {
+export function ensureStarter() {
   if (!W.needsStarter(S.readWords())) return;
   const ch = currentChapter();
   S.updateWords((d) => W.starterGroup(d, { name: D.chapterTitle(ch).name, words: ch.words.map((w) => w.word), today: today() }));
 }
+
+/** The words of any test that's due, for the pages that list words. */
+export const hiddenToday = () => (S.currentPlayer() ? St.hiddenWords(S.readWords(), today()) : new Set());
 
 /** For the home page. */
 export function todayLine() {
@@ -66,32 +71,63 @@ function starsLine(d, g, day) {
 const firstToDo = (d, g, day, list) => list.find((w) => !W.doneOn(d, g, w, day));
 const spellHref = (g, w) => groupHref(g.id) + '/spell/' + W.rows(g).indexOf(w);
 
-function jobCard(d, g, day, job) {
-  const j = JOB[job];
-  let action = '';
-  if (job === 'practise') {
-    const next = firstToDo(d, g, day, W.rows(g));
-    action = starsLine(d, g, day) + (next ? '<a class="btn btn--primary" href="' + spellHref(g, next) + '">Start' + ICON.arrow + '</a>' : '<p class="muted small">Every word is done for today.</p>');
-  } else if (job === 'test') {
-    action = '<a class="btn btn--primary" href="' + groupHref(g.id) + '/test">Start the test' + ICON.arrow + '</a>';
-  } else if (job === 'fixups') {
-    action = '<a class="btn btn--primary" href="' + spellHref(g, firstToDo(d, g, day, W.fixups(d, g))) + '">Start' + ICON.arrow + '</a>';
-  }
-  return '<div class="card job job--' + job + '"><span class="eyebrow">Today</span><h2>' + esc(j.title) + '</h2><p class="muted">' + esc(j.line) + '</p>' + action + '</div>';
+// Study mode: the group's guided week.
+const STATUS_LINE = {
+  done: ['Done for today!', 'Your next job is ready tomorrow. You can still play games with these words.'],
+  rest: ['No job today', 'Your next job is on its way. You can still play games with these words.'],
+  ready: ['Every job done', 'Your test is on the way. Keep these words warm with a game.'],
+  finished: [JOB.finished.title, JOB.finished.line],
+};
+function testCard(g) {
+  return '<div class="card job job--test" data-testcard><span class="eyebrow">Today</span><h2>' + esc(JOB.test.title) + '</h2><p class="muted">' + esc(JOB.test.line) + '</p>'
+    + '<a class="btn btn--primary" href="' + groupHref(g.id) + '/test" data-job>Start the test' + ICON.arrow + '</a></div>';
 }
+/** In place of any page that would show a test's words (test-guard.js). */
+export function testTodayPage(main, g) {
+  main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">' + esc(g.name) + '</span><h1>' + esc(JOB.test.title) + '</h1></div>' + testCard(g) + '</section>';
+}
+function studyCard(d, g, day) {
+  const s = St.studyState(d, g, day);
+  const step = s.steps.find((x) => x.id === s.job);
+  if (s.job === 'test') return testCard(g);
+  if (!step) {
+    const [title, line] = STATUS_LINE[s.status];
+    return '<div class="card job"><span class="eyebrow">Today</span><h2>' + esc(title) + '</h2><p class="muted">' + esc(line) + '</p></div>';
+  }
+  const line = step.id === 'mend' && St.mendPart(d, g, day) === 'fixups' ? JOB.fixups.line : step.line;
+  return '<div class="card job job--' + step.id + '"><span class="eyebrow">Today</span><h2>' + esc(step.title) + '</h2><p class="muted">' + esc(line) + '</p>'
+    + (step.id === 'practice' ? starsLine(d, g, day) : '')
+    + '<a class="btn btn--primary" href="' + stepHref(d, g, step.id, day) + '" data-job>Start' + ICON.arrow + '</a></div>';
+}
+
+// Practise 3 times, for the whole group.
+function roundsLine(d, g) {
+  const all = W.allDots(d, g).filter((x) => !x.back);
+  const full = all.filter((x) => x.dots >= W.ROUNDS_NEEDED).length;
+  return W.readyForTest(d, g) ? '<p class="readyline"><span class="pill pill--done">Ready for the test</span> Every word has its 3 dots.</p>'
+    : '<p class="readyline small muted">' + full + ' of ' + all.length + ' words have all 3 dots. Each word needs 3 clean rounds before the test.</p>';
+}
+
+/** Study or Game: the same words, a guided week or the games any time. */
+function modeSwitch(g, mode) {
+  const link = (id, label, href) => '<a class="tab" href="' + href + '" role="tab" aria-selected="' + (mode === id) + '" data-mode="' + id + '">' + label + '</a>';
+  return '<div class="tabs modeswitch" role="tablist" aria-label="Study or Game">' + link('study', 'Study mode', groupHref(g.id)) + link('game', 'Game mode', groupHref(g.id) + '/games') + '</div>';
+}
+export { modeSwitch };
 
 function gridHtml(d, g, day, job) {
   const days = W.practiceDays(g);
   const open = job === 'practise';
-  const row = (w) => {
+  const L = W.allDots(d, g);
+  const row = (w, i) => {
     const name = esc(w) + (g.back.includes(w) ? ' <span class="pill">back again</span>' : '');
-    return '<tr><th scope="row">' + (open ? '<a href="' + spellHref(g, w) + '">' + name + '</a>' : name) + '</th>' + days.map((x) => {
+    return '<tr><th scope="row">' + (open ? '<a href="' + spellHref(g, w) + '">' + name + '</a>' : name) + '</th><td class="gridcell gridcell--dots">' + dotsHtml(L[i].dots, W.ROUNDS_NEEDED) + '</td>' + days.map((x) => {
       const c = W.cell(d, g, w, x);
       const mark = c === 'clean' ? ICON.star + '<span class="sr">Done clean</span>' : c === 'help' ? TICK + '<span class="sr">Done with help</span>' : '<span class="sr">Not yet</span>';
       return '<td class="gridcell gridcell--' + c + (x === day ? ' is-today' : '') + '">' + mark + '</td>';
     }).join('') + '</tr>';
   };
-  return '<div class="gridwrap" role="region" aria-label="Practice grid" tabindex="0"><table class="wordgrid"><thead><tr><th scope="col"><span class="sr">Word</span></th>'
+  return '<div class="gridwrap" role="region" aria-label="Practice grid" tabindex="0"><table class="wordgrid"><thead><tr><th scope="col"><span class="sr">Word</span></th><th scope="col">Rounds</th>'
     + days.map((x) => { const [a, b] = W.dayParts(x); return '<th scope="col"' + (x === day ? ' class="is-today"' : '') + '>' + a + '<br>' + b + '</th>'; }).join('')
     + '</tr></thead><tbody>' + W.rows(g).map(row).join('') + '</tbody></table></div>'
     + '<p class="gridkey small muted"><span>' + ICON.star + ' Done clean</span><span>' + TICK + ' Done with help</span><span><i class="gridkey__empty"></i> Not yet</span></p>';
@@ -124,9 +160,12 @@ function drawGroup(main, g, others = []) {
   main.innerHTML = '<section class="wrap page">'
     + '<div class="pagehead"><span class="eyebrow">My words</span><h1>' + esc(g.name) + '</h1>'
     + '<p class="muted">' + plural(g.words.length, 'word') + (g.back.length ? ', and ' + g.back.length + ' back again' : '') + ' · Test on ' + esc(W.dayLabel(g.test)) + '</p></div>'
-    + jobCard(d, g, day, job)
+    + modeSwitch(g, 'study')
+    + studyCard(d, g, day)
+    + stripHtml(St.studyState(d, g, day).steps, day)
     + (job === 'fixups' || job === 'fixed-today' ? fixupList(d, g, day) : '')
     + (after ? resultsCard(d, g) : '')
+    + (day < g.test ? roundsLine(d, g) : '')
     + (testing ? '' : gridHtml(d, g, day, job))
     + '<div class="btnrow"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
     + '<a class="btn btn--ghost" href="#/words/new">New group</a>'
@@ -140,7 +179,9 @@ function drawGroup(main, g, others = []) {
 export function myWords(main) {
   ensureStarter();
   const d = S.readWords();
-  const g = W.currentGroup(d, today());
+  const current = W.currentGroup(d, today());
+  // Another group sharing a word with a test that's due: the test's own page instead.
+  const g = current && St.showsHidden(current, St.hiddenWords(d, today())) ? St.dueGroups(d, today())[0] : current;
   if (!g) {
     main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>Your words for the week</h1></div>'
       + '<div class="card empty"><p class="muted">Make a group of up to ' + W.MAX_WORDS + ' words and pick a test date.</p><a class="btn btn--primary" href="#/words/new">New group</a></div></section>';
@@ -309,7 +350,7 @@ export function spellWord(main, { gid, n }) {
     done = true;
     const star = W.cell(S.readWords(), g, w, day) === 'clean';
     const d = S.readWords();
-    const left = (fixing ? W.fixups(d, g) : W.rows(g)).filter((x) => x !== w && !W.doneOn(d, g, x, day));
+    const left = (fixing ? W.fixups(d, g).filter((x) => !W.doneOn(d, g, x, day)) : W.gridLeft(d, g, day)).filter((x) => x !== w);
     const next = left.length ? spellHref(g, left[0]) : groupHref(id);
     main.querySelector('[data-slot]').innerHTML = '<div class="card result result--good"><div class="result__head"><span class="celebrate"><span class="result__badge">' + (star ? '★' : '✓') + '</span>' + burstHtml(12, 1.3) + '</span>'
       + '<h2>' + (star ? 'A star for today' : 'Done for today') + '</h2></div>'

@@ -92,6 +92,22 @@ A weekly list, beside the chapters, at `#/words` (signed in). A group has a name
 - **Fix-ups**, from the day after: the words that slipped, until spelled clean at a first go.
 - **Remembered**: clean and unaided at the first go of a day, on 3 different days at least 7 days apart from first to last; a right test answer counts as one. Words not yet remembered come back, up to 3 at a time, in new groups and in the flower game.
 
+## Study mode, Game mode and Grown-ups
+
+Each word group has a guided week (Study mode): Hello words, Fix it in, Game day, Story day, Practice day, Test day, Mend and keep, one job a day. The days up to the test are shared out evenly, so a short week puts several jobs on a day. A missed job waits; from the test date the test comes first. Each word needs 3 clean rounds (the dots) from Fix it in, the grid or the spelling games, and each of those counts once a day. Meaning match doesn't test spelling, so it can earn a star and counts as played, but earns no dot and no first go. Game mode has Missing letters, Unjumble, Meaning match and Quick-fire with the same words. While a test is due, no page shows its words (`site/js/test-guard.js`): those pages show the Test today card, and word lists leave them out. My room, the home page for a child, shows today's job.
+
+**Stories.** `site/data/stories.json` has one original story per chapter. To release some: read them at `#/grownups/stories`, tick Approve, run the command the page shows (`node tools/approve-stories.mjs <chapters>`), bump `VERSION` in `site/sw.js` and deploy. Then, for the Waystead voice, `GCP_PROJECT=… python3 tools/generate-story-audio.py`; until then the device's voice reads them.
+
+**Grown-ups** (`#/grownups`, an adult signed in as themselves) has the story review now. Plan a week and the dashboard wait for three routes on the Waystead account, then set `CHILD_DATA_API` to true in `site/js/grownups-data.js`:
+
+| Route | Answers |
+|---|---|
+| `GET /api/children` | `{children: [{id, nickname, year, avatar}]}` |
+| `GET /api/children/:id/game/:game` | as `GET /api/game/:game`, for that child |
+| `PUT /api/children/:id/game/:game/:key` | as `PUT /api/game/:game/:key`, 409 included |
+
+All three: an adult's session with `playingAs` null only (403 otherwise), 404 for a child who isn't theirs, the usual CORS, Origin and rate-limit rules. `shared/tests/fake-account.js` has them.
+
 ## Audio
 
 `tools/generate-audio.py` makes 213 word MP3s and 26 letter MP3s with Google

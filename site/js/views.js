@@ -7,7 +7,8 @@ import { runSession, summaryHtml } from './play.js';
 import { esc, ICON, picture, chunked, chunkText, boldWord, redact, shuffle, toast, meter, applyMeters } from './ui.js';
 import { dayStyleHtml, wireDayStyle } from './daystyle.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { todayLine, backAgainFor } from './words-views.js';
+import { todayLine, backAgainFor, hiddenToday } from './words-views.js';
+import { withoutHidden } from './study-doc.js';
 
 const MAX_PICK = 30;
 
@@ -51,7 +52,7 @@ function notFound(main) {
 
 /* ---------------------------------------------------------------- Home --- */
 export function home(main) {
-  const w = D.wordOfTheDay();
+  const w = D.wordOfTheDay(hiddenToday());
   const tricky = S.trickyWords().length;
   const yearCard = (id) => {
     const y = D.years()[id];
@@ -371,8 +372,9 @@ export function test(main, { yearId, slug }) {
 
 /* ---------------------------------------------------------- Pick words --- */
 export function custom(main) {
-  const all = D.allWords().sort((a, b) => a.word.localeCompare(b.word, 'en-GB', { sensitivity: 'base' }));
-  const tricky = S.trickyWords().map((t) => t.word).filter((w) => D.entry(w));
+  const hidden = hiddenToday(); // a test is due: its words stay out of the lists
+  const all = withoutHidden(D.allWords(), hidden).sort((a, b) => a.word.localeCompare(b.word, 'en-GB', { sensitivity: 'base' }));
+  const tricky = withoutHidden(S.trickyWords().map((t) => t.word).filter((w) => D.entry(w)), hidden);
   let tab = 'all';
   let chapterId = D.chapters('y34')[0].id;
   let filter = '';
@@ -380,7 +382,7 @@ export function custom(main) {
 
   function source() {
     if (tab === 'tricky') return tricky.map((w) => D.entry(w));
-    if (tab === 'chapter') return wordEntries(D.chapterById(chapterId));
+    if (tab === 'chapter') return withoutHidden(wordEntries(D.chapterById(chapterId)), hidden);
     return all.filter((w) => w.word.toLowerCase().includes(filter.toLowerCase()));
   }
 
@@ -455,7 +457,7 @@ export function custom(main) {
 }
 
 export function customPlay(main) {
-  const words = S.getSelection().map((w) => D.entry(w)).filter(Boolean);
+  const words = withoutHidden(S.getSelection(), hiddenToday()).map((w) => D.entry(w)).filter(Boolean);
   if (!words.length) { location.replace('#/custom'); return; }
   return runSession(main, {
     eyebrow: 'Pick words',
@@ -483,7 +485,7 @@ export function customPlay(main) {
 
 /* -------------------------------------------------------------- Tricky --- */
 export function tricky(main) {
-  const list = S.trickyWords().filter((t) => D.entry(t.word));
+  const list = withoutHidden(S.trickyWords().filter((t) => D.entry(t.word)), hiddenToday());
   main.innerHTML = '<section class="wrap page">'
     + '<div class="pagehead"><span class="eyebrow">Tricky words</span><h1>Words to go back to</h1>'
     + '<p class="muted">Each miss adds one. Each time you get it right in a test or quick game, it drops by one.</p></div>'
@@ -551,6 +553,10 @@ export function about(main) {
     + '<h2>My words</h2>'
     + '<p>My words is a weekly list. Your child picks up to ten words and a test date, then practises a little each day: the word is spoken and hidden, and they spell it letter by letter. The day before the test is the last practice day. On test day there is no help and no checking until the end, and the day after, any words that slipped come back as fix-ups.</p>'
     + '<p>A word counts as remembered once it is spelled with no help, at the first go of the day, on three different days at least a week apart from first to last. Words not yet remembered come back in later lists. The numbers are for your child and you only: there are no leagues and no comparing with anyone else.</p>'
+    + '<h2>Study mode and Game mode</h2>'
+    + '<p>Each word group comes with a guided week, one job a day of about ten to fifteen minutes: meet the words, fix them in with look, say, cover, write and check, play four games, see the words at work and write sentences, a round of the practice grid, the test, then mend anything that slipped. A missed day simply waits, and a short week fits the jobs into the days there are. Each word gets three dots for three clean rounds of spelling before the test; Meaning match can earn a star but no dot, because it doesn\'t test spelling. Game mode has the same four games with the same words at any time, except while a test is due: until it\'s done, its words are kept off every page.</p>'
+    + '<h2>Grown-ups</h2>'
+    + '<p>Signed in as yourself, you\'ll find Grown-ups on the first page. Planning a week and the dashboard open with the next Waystead account update. What a child writes (sentences and memory clues) can be seen only by that child and their own parent. The spelling patterns follow English Appendix 1, under the Open Government Licence v3.0.</p>'
     + '<h2>Little and often</h2>'
     + '<p>Ten to fifteen minutes, three or four times a week, works better than one long session. Start each session with a few tricky words before moving on.</p>'
     + '<h2>How it looks</h2>'

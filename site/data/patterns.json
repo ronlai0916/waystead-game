@@ -1,0 +1,538 @@
+{
+ "_meta": {
+  "credit": "Spelling patterns follow the national curriculum in England, English Appendix 1 (DfE, 2013). Contains public sector information licensed under the Open Government Licence v3.0. The wording and example words are Waystead's own.",
+  "note": "Each word must match its pattern's `re` and be on our lists: tests/grownups.test.js checks."
+ },
+ "patterns": [
+  {
+   "id": "double-before-ending",
+   "stage": "y34",
+   "title": "Doubling before an ending",
+   "rule": "When the last part of a longer word is stressed, its last letter doubles before -ing, -ed or -er.",
+   "re": "(.)\\1(ing|ed|er)$",
+   "words": [
+    "beginning",
+    "forgetting",
+    "preferred",
+    "regretted",
+    "admitted",
+    "equipped",
+    "occurring",
+    "omitted",
+    "permitted",
+    "upsetting"
+   ]
+  },
+  {
+   "id": "no-double",
+   "stage": "y34",
+   "title": "No doubling before an ending",
+   "rule": "When the last part is not stressed, the last letter stays single.",
+   "re": "(ing|ed|er)$",
+   "words": [
+    "gardening",
+    "limited",
+    "offering",
+    "visiting",
+    "opened",
+    "happened",
+    "listening",
+    "covered",
+    "remembered",
+    "wondered"
+   ]
+  },
+  {
+   "id": "y-short-i",
+   "stage": "y34",
+   "title": "y that sounds like short i",
+   "rule": "In some words the short i sound is spelled y.",
+   "re": "y",
+   "words": [
+    "mystery",
+    "pyramid",
+    "gym",
+    "myth",
+    "rhythm",
+    "symbol",
+    "system",
+    "crystal",
+    "lyric",
+    "cymbal"
+   ]
+  },
+  {
+   "id": "ou-short-u",
+   "stage": "y34",
+   "title": "ou that sounds like u",
+   "rule": "In some words the u sound in cup is spelled ou.",
+   "re": "ou",
+   "words": [
+    "young",
+    "touch",
+    "double",
+    "trouble",
+    "country",
+    "cousin",
+    "couple",
+    "enough",
+    "rough",
+    "southern"
+   ]
+  },
+  {
+   "id": "dis-mis",
+   "stage": "y34",
+   "title": "Prefixes dis- and mis-",
+   "rule": "dis- and mis- change a word to mean the opposite, or done wrongly.",
+   "re": "^(dis|mis)",
+   "words": [
+    "disagree",
+    "disappear",
+    "disappoint",
+    "dislike",
+    "disobey",
+    "misbehave",
+    "mislead",
+    "misspell",
+    "mistake",
+    "misplace"
+   ]
+  },
+  {
+   "id": "in-il-im-ir",
+   "stage": "y34",
+   "title": "Prefixes in-, il-, im- and ir-",
+   "rule": "All mean not. Before l it's il-, before m or p it's im-, before r it's ir-.",
+   "re": "^(in|il|im|ir)",
+   "words": [
+    "incorrect",
+    "invisible",
+    "illegal",
+    "illogical",
+    "impossible",
+    "immature",
+    "impatient",
+    "irregular",
+    "irrelevant",
+    "inactive"
+   ]
+  },
+  {
+   "id": "re-sub",
+   "stage": "y34",
+   "title": "Prefixes re- and sub-",
+   "rule": "re- means again or back; sub- means under.",
+   "re": "^(re|sub)",
+   "words": [
+    "redo",
+    "refresh",
+    "return",
+    "reappear",
+    "rebuild",
+    "submarine",
+    "subheading",
+    "subway",
+    "subtract",
+    "submerge"
+   ]
+  },
+  {
+   "id": "inter-super-anti-auto",
+   "stage": "y34",
+   "title": "Prefixes inter-, super-, anti- and auto-",
+   "rule": "inter- means between, super- above, anti- against and auto- self.",
+   "re": "^(inter|super|anti|auto)",
+   "words": [
+    "interact",
+    "international",
+    "supermarket",
+    "superstar",
+    "superhero",
+    "antiseptic",
+    "anticlockwise",
+    "autograph",
+    "automatic",
+    "autobiography"
+   ]
+  },
+  {
+   "id": "ation",
+   "stage": "y34",
+   "title": "Ending -ation",
+   "rule": "-ation turns a verb into a noun.",
+   "re": "ation$",
+   "words": [
+    "information",
+    "adoration",
+    "sensation",
+    "preparation",
+    "admiration",
+    "invitation",
+    "decoration",
+    "education",
+    "imagination",
+    "relaxation"
+   ]
+  },
+  {
+   "id": "ly",
+   "stage": "y34",
+   "title": "Ending -ly",
+   "rule": "-ly turns an adjective into an adverb. A word ending in y changes it to i first.",
+   "re": "ly$",
+   "words": [
+    "sadly",
+    "completely",
+    "finally",
+    "usually",
+    "happily",
+    "angrily",
+    "gently",
+    "simply",
+    "humbly",
+    "basically"
+   ]
+  },
+  {
+   "id": "sure-ture",
+   "stage": "y34",
+   "title": "Endings -sure and -ture",
+   "rule": "These endings sound like zher and cher.",
+   "re": "(sure|ture)$",
+   "words": [
+    "measure",
+    "treasure",
+    "pleasure",
+    "enclosure",
+    "creature",
+    "furniture",
+    "picture",
+    "nature",
+    "adventure",
+    "capture"
+   ]
+  },
+  {
+   "id": "ous",
+   "stage": "y34",
+   "title": "Ending -ous",
+   "rule": "-ous makes an adjective. Sometimes the word before it changes.",
+   "re": "ous$",
+   "words": [
+    "poisonous",
+    "dangerous",
+    "mountainous",
+    "famous",
+    "various",
+    "tremendous",
+    "enormous",
+    "jealous",
+    "humorous",
+    "courageous"
+   ]
+  },
+  {
+   "id": "tion-sion-ssion-cian",
+   "stage": "y34",
+   "title": "Endings -tion, -sion, -ssion and -cian",
+   "rule": "These all sound like shun. The word it comes from gives a clue.",
+   "re": "(tion|sion|ssion|cian)$",
+   "words": [
+    "invention",
+    "action",
+    "hesitation",
+    "expression",
+    "discussion",
+    "confession",
+    "extension",
+    "comprehension",
+    "musician",
+    "electrician"
+   ]
+  },
+  {
+   "id": "ch-k",
+   "stage": "y34",
+   "title": "ch that sounds like k",
+   "rule": "In words from Greek, ch often sounds like k.",
+   "re": "ch",
+   "words": [
+    "scheme",
+    "chorus",
+    "chemist",
+    "echo",
+    "character",
+    "anchor",
+    "ache",
+    "stomach",
+    "orchestra",
+    "school"
+   ]
+  },
+  {
+   "id": "ch-sh",
+   "stage": "y34",
+   "title": "ch that sounds like sh",
+   "rule": "In words from French, ch can sound like sh.",
+   "re": "ch",
+   "words": [
+    "chef",
+    "chalet",
+    "machine",
+    "brochure",
+    "parachute",
+    "moustache",
+    "chute",
+    "chandelier"
+   ]
+  },
+  {
+   "id": "que-gue",
+   "stage": "y34",
+   "title": "Endings -que and -gue",
+   "rule": "Words from French can end in -que (k) or -gue (g).",
+   "re": "(que|gue)$",
+   "words": [
+    "league",
+    "tongue",
+    "antique",
+    "unique",
+    "catalogue",
+    "dialogue",
+    "plague",
+    "vague",
+    "fatigue",
+    "technique"
+   ]
+  },
+  {
+   "id": "sc",
+   "stage": "y34",
+   "title": "sc that sounds like s",
+   "rule": "In some words from Latin, sc sounds like s.",
+   "re": "sc",
+   "words": [
+    "science",
+    "scene",
+    "discipline",
+    "fascinate",
+    "crescent",
+    "scent",
+    "scissors",
+    "descend",
+    "ascend",
+    "muscle"
+   ]
+  },
+  {
+   "id": "ei-eigh-ey",
+   "stage": "y34",
+   "title": "ei, eigh and ey that sound like ay",
+   "rule": "Three spellings of the same long a sound.",
+   "re": "(ei|ey)",
+   "words": [
+    "vein",
+    "weigh",
+    "eight",
+    "neighbour",
+    "they",
+    "obey",
+    "reign",
+    "sleigh",
+    "freight",
+    "prey"
+   ]
+  },
+  {
+   "id": "cious-tious",
+   "stage": "y56",
+   "title": "Endings -cious and -tious",
+   "rule": "Both sound like shus. If the root word ends in ce it's usually -cious.",
+   "re": "(cious|tious)$",
+   "words": [
+    "vicious",
+    "precious",
+    "conscious",
+    "delicious",
+    "malicious",
+    "suspicious",
+    "ambitious",
+    "cautious",
+    "fictitious",
+    "nutritious"
+   ]
+  },
+  {
+   "id": "cial-tial",
+   "stage": "y56",
+   "title": "Endings -cial and -tial",
+   "rule": "Both sound like shul. -cial often follows a vowel, -tial a consonant.",
+   "re": "(cial|tial)$",
+   "words": [
+    "official",
+    "special",
+    "artificial",
+    "social",
+    "crucial",
+    "partial",
+    "confidential",
+    "essential",
+    "initial",
+    "substantial"
+   ]
+  },
+  {
+   "id": "ant-ance",
+   "stage": "y56",
+   "title": "Endings -ant, -ance and -ancy",
+   "rule": "Use the a forms when a related word has a clear a sound.",
+   "re": "(ant|ance|ancy)$",
+   "words": [
+    "observant",
+    "observance",
+    "expectant",
+    "hesitant",
+    "hesitancy",
+    "tolerant",
+    "tolerance",
+    "substance",
+    "relevant",
+    "relevance"
+   ]
+  },
+  {
+   "id": "ent-ence",
+   "stage": "y56",
+   "title": "Endings -ent, -ence and -ency",
+   "rule": "Use the e forms after a soft c or g, or when a related word has a clear e sound.",
+   "re": "(ent|ence|ency)$",
+   "words": [
+    "innocent",
+    "innocence",
+    "decent",
+    "decency",
+    "frequent",
+    "frequency",
+    "confident",
+    "confidence",
+    "obedient",
+    "independent"
+   ]
+  },
+  {
+   "id": "able-ably",
+   "stage": "y56",
+   "title": "Endings -able and -ably",
+   "rule": "Often added to a whole word. Keep the e after a soft c or g.",
+   "re": "(able|ably)$",
+   "words": [
+    "adorable",
+    "adorably",
+    "applicable",
+    "applicably",
+    "considerable",
+    "considerably",
+    "tolerable",
+    "tolerably",
+    "changeable",
+    "noticeable"
+   ]
+  },
+  {
+   "id": "ible-ibly",
+   "stage": "y56",
+   "title": "Endings -ible and -ibly",
+   "rule": "Often added when the rest isn't a whole word.",
+   "re": "(ible|ibly)$",
+   "words": [
+    "possible",
+    "possibly",
+    "horrible",
+    "horribly",
+    "terrible",
+    "terribly",
+    "visible",
+    "visibly",
+    "incredible",
+    "sensible"
+   ]
+  },
+  {
+   "id": "fer",
+   "stage": "y56",
+   "title": "Words ending in -fer",
+   "rule": "The r doubles when the -fer part stays stressed.",
+   "re": "fer",
+   "words": [
+    "referring",
+    "referred",
+    "referral",
+    "preferring",
+    "preferred",
+    "transferring",
+    "transferred",
+    "reference",
+    "preference",
+    "transference"
+   ]
+  },
+  {
+   "id": "ie-ei",
+   "stage": "y56",
+   "title": "ie, and ei after c",
+   "rule": "i before e, except after c when the sound is ee.",
+   "re": "(ie|ei)",
+   "words": [
+    "deceive",
+    "conceive",
+    "receive",
+    "perceive",
+    "ceiling",
+    "believe",
+    "achieve",
+    "field",
+    "shield",
+    "receipt"
+   ]
+  },
+  {
+   "id": "ough",
+   "stage": "y56",
+   "title": "ough",
+   "rule": "One of the trickiest letter strings: it has many sounds.",
+   "re": "ough",
+   "words": [
+    "ought",
+    "bought",
+    "thought",
+    "nought",
+    "brought",
+    "rough",
+    "tough",
+    "enough",
+    "cough",
+    "though"
+   ]
+  },
+  {
+   "id": "silent",
+   "stage": "y56",
+   "title": "Silent letters",
+   "rule": "Letters you can't hear, but need to write.",
+   "re": "(b|t|k|n|w|h|l|c|s)",
+   "words": [
+    "doubt",
+    "island",
+    "lamb",
+    "solemn",
+    "thistle",
+    "knight",
+    "wrinkle",
+    "gnome",
+    "rhyme",
+    "yacht"
+   ]
+  }
+ ]
+}

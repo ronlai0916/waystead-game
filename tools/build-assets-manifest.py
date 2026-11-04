@@ -43,7 +43,9 @@ def main():
         h.update((SITE / "assets/audio/words" / (w + ".mp3")).read_bytes())
     for L in letters:
         h.update((SITE / "assets/audio/letters" / (L + ".mp3")).read_bytes())
-    out = {"images": images, "audioWords": words, "audioLetters": letters,
+    # Story day's sentences (tools/generate-story-audio.py): "<chapter>-<sentence>".
+    stories = [f[:-4] for f in names("assets/audio/stories", ".mp3")]
+    out = {"images": images, "audioWords": words, "audioLetters": letters, "audioStories": stories,
            "audioVersion": h.hexdigest()[:10] if (words or letters) else ""}
     (SITE / "data" / "assets.json").write_text(json.dumps(out, indent=1) + "\n")
     print(f"assets.json: {len(images)} of {len(wanted_images)} pictures, "

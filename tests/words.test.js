@@ -215,7 +215,8 @@ test('a test left halfway carries on with the words left, and the first answer s
 
 test('back-again words join the practice but not the test', () => {
   const a = made(['fruit']);
-  const b = made(['earth'], { id: 'g2', today: '2026-11-09', test: '2026-11-16' }, a.d);
+  const tested = attempt(a.d, a.g, 'fruit', '2026-11-09', { kind: 't', hour: 8 });
+  const b = made(['earth'], { id: 'g2', today: '2026-11-09', test: '2026-11-16' }, tested);
   assert.deepEqual(b.g.back, ['fruit']);
   assert.deepEqual(W.rows(b.g), ['earth', 'fruit']);
   assert.deepEqual(W.testLeft(b.d, b.g), ['earth']);
@@ -294,6 +295,7 @@ test('returning words: up to 3 from earlier groups, slipped ones first, never re
   for (const day of ['2026-11-02', '2026-11-05']) d = cleanFirst(d, a.g, 'heart', day);
   const older = made(['earth', 'build', 'guide', 'reign'], { id: 'g0', today: '2026-11-01', test: '2026-11-03' }, d);
   d = older.d;
+  for (const w of ['earth', 'build', 'guide', 'reign']) d = attempt(d, older.g, w, '2026-11-03', { kind: 't' });
   const back = W.returningWords(d, '2026-11-10', ['learn'], 3);
   assert.equal(back.length, 3);
   assert.equal(back[0], 'group', 'slipped first');
@@ -308,7 +310,8 @@ test('returning words: up to 3 from earlier groups, slipped ones first, never re
 test('returning words: a group still before its test keeps its own words', () => {
   const a = made(['fruit']);
   assert.deepEqual(W.returningWords(a.d, '2026-11-05', []), []);
-  assert.deepEqual(W.returningWords(a.d, '2026-11-09', []), ['fruit']);
+  assert.deepEqual(W.returningWords(a.d, '2026-11-09', []), [], 'nor while its test is due');
+  assert.deepEqual(W.returningWords(attempt(a.d, a.g, 'fruit', '2026-11-09', { kind: 't' }), '2026-11-09', []), ['fruit'], 'once it\'s taken');
   const b = made(['earth'], { id: 'g2', today: '2026-11-05' }, a.d);
   assert.deepEqual(b.g.back, []);
 });

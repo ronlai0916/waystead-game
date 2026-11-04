@@ -4,7 +4,7 @@
 // the device's voice, chosen by voice/voice.js (G8): the best British voice,
 // or the player's own choice from the look menu (sb.voice). Letters are
 // always the bundled MP3 or the device's voice.
-import { hasWordAudio, hasLetterAudio, wordAudioUrl, letterAudioUrl } from './data.js';
+import { hasWordAudio, hasLetterAudio, wordAudioUrl, letterAudioUrl, hasStoryAudio, storyAudioUrl } from './data.js';
 import { createSpeaker, savedVoice } from './voice/voice.js';
 import { createHear } from './voice/server.js';
 
@@ -85,6 +85,19 @@ async function letterOnce(L) {
 export function speak(word) {
   stop();
   return wordOnce(word);
+}
+
+/** A sentence, in the device's voice (the Waystead voice speaks single words only). Resolves when it ends. */
+export function sayLine(text) {
+  stop();
+  return sayAloud(text, 0.95);
+}
+
+/** One sentence of a story: its recording in the Waystead voice when it has one (tools/generate-story-audio.py), else the device's. */
+export async function sayStoryLine(key, text) {
+  stop();
+  if (hasStoryAudio(key) && await playFile(storyAudioUrl(key))) return true;
+  return sayAloud(text, 0.95);
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

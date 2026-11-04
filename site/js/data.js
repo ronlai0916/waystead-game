@@ -8,7 +8,7 @@ const YEARS = {
 let curriculum = null;
 let byWord = new Map();
 let chaptersById = new Map();
-let assets = { images: new Set(), audioWords: new Set(), audioLetters: new Set() };
+let assets = { images: new Set(), audioWords: new Set(), audioLetters: new Set(), audioStories: new Set() };
 let audioVersion = '';
 
 export async function loadData() {
@@ -41,6 +41,7 @@ export async function loadData() {
       assets.images = new Set(a.images || []);
       assets.audioWords = new Set(a.audioWords || []);
       assets.audioLetters = new Set(a.audioLetters || []);
+      assets.audioStories = new Set(a.audioStories || []);
       audioVersion = a.audioVersion || '';
     } catch (e) { /* no manifest yet: placeholders and device voice */ }
   }
@@ -50,6 +51,7 @@ export const years = () => YEARS;
 export const yearBlock = (yearId) => curriculum[YEARS[yearId].key];
 export const chapters = (yearId) => yearBlock(yearId).chapters;
 export const chapterBySlug = (yearId, slug) => chapters(yearId).find((c) => c.slug === slug) || null;
+export const allChapters = () => [...chaptersById.values()];
 export const chapterById = (id) => chaptersById.get(id) || null;
 export const entry = (word) => byWord.get(word) || null;
 export const allWords = () => [...byWord.values()];
@@ -57,6 +59,8 @@ export const hasImage = (w) => assets.images.has(w.image);
 export const letterAudioUrl = (L) => 'assets/audio/letters/' + L.toUpperCase() + '.mp3' + (audioVersion ? '?v=' + audioVersion : '');
 export const wordAudioUrl = (word) => 'assets/audio/words/' + word.toLowerCase() + '.mp3' + (audioVersion ? '?v=' + audioVersion : '');
 export const hasWordAudio = (word) => assets.audioWords.has(word.toLowerCase());
+export const storyAudioUrl = (key) => 'assets/audio/stories/' + key + '.mp3';
+export const hasStoryAudio = (key) => assets.audioStories.has(key);
 export const hasLetterAudio = (L) => assets.audioLetters.has(L.toUpperCase());
 
 export function chapterTitle(ch) {
@@ -70,8 +74,8 @@ export function chapterBlurb(ch) {
 }
 
 // The same word all day, a different one tomorrow.
-export function wordOfTheDay() {
-  const list = allWords();
+export function wordOfTheDay(hidden = new Set()) {
+  const list = allWords().filter((w) => !hidden.has(w.word.toLowerCase()));
   const d = new Date();
   const n = d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate();
   return list[(n * 7919) % list.length];

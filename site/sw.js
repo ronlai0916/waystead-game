@@ -7,7 +7,7 @@
 // Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-04a';
+const VERSION = 'spellbright-2026-11-04b';
 
 const SHELL = [
   './',
@@ -30,6 +30,19 @@ const SHELL = [
   'js/views.js',
   'js/words-views.js',
   'js/words-doc.js',
+  'js/study-doc.js',
+  'js/test-guard.js',
+  'js/study-views.js',
+  'js/room.js',
+  'js/who.js',
+  'js/word-info.js',
+  'js/games-doc.js',
+  'js/games-views.js',
+  'js/stories.js',
+  'js/story-views.js',
+  'js/grownups-data.js',
+  'js/grownups-doc.js',
+  'js/grownups-views.js',
   'js/spell-run.js',
   'js/wordcheck.js',
   'js/progress-doc.js',
@@ -53,9 +66,14 @@ const SHELL = [
   'js/voice/voice.js',
   'data/curriculum.json',
   'data/assets.json',
+  'data/patterns.json',
+  'data/stories.json',
   'manifest.webmanifest',
   'assets/icons/favicon.svg',
   'assets/icons/apple-touch-icon.png',
+  'assets/characters/pip-portrait-256.webp',
+  'assets/characters/pip-thinking-256.webp',
+  'assets/characters/pip-happy-256.webp',
 ];
 
 // Install the app shell only, so a new version takes over within seconds.

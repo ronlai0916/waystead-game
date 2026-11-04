@@ -73,6 +73,11 @@ export function boldWord(sentence, word) {
   return esc(sentence).replace(re, '<b>$1</b>');
 }
 
+// Practise 3 times: a word's dots. Filled as its clean rounds come in.
+export function dotsHtml(n, of = 3) {
+  return '<span class="dots" role="img" aria-label="' + n + ' of ' + of + ' clean rounds">' + Array.from({ length: of }, (_, i) => '<i' + (i < n ? ' class="is-on"' : '') + '></i>').join('') + '</span>';
+}
+
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 export function keyboard() {
   return '<div class="keyboard" role="group" aria-label="Letters">' + ROWS.map((row) =>

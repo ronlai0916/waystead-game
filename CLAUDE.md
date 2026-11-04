@@ -42,6 +42,17 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Typed words: curriculum, or Wordbright's `words_all.dawg` (built without blocked words), fetched on demand by `site/js/wordcheck.js`. A blocked word and an unknown one get the same answer.
 - 29 one-syllable curriculum words are one chunk with a `tricky` field (`tests/words.test.js` lists them).
 
+## Spellbright 2 Study, Game, Grown-ups (SB2)
+- Study mode: `site/js/study-doc.js` (pure: job dates, what's open, My room) and `study-views.js`. Seven jobs: hello, fix, games, story, practice, test, mend. A job opens on its date once the ones before are done. From the test date the test comes first, so no word is on show; Game mode is closed then too.
+- No word on show while its test is due (`jobFor` is 'test', on the date or any later day until it's done). `site/js/test-guard.js` decides for every route in `app.js` (the router calls it; a route not in `RULES` is blocked, and `tests/test-day.test.js` fails until it's classified). Lists use `withoutHidden`. Grown-ups pages are the exception: adults only.
+- Practise 3 times: `W.dots`. Each of grid / Fix it in / spelling games counts once a word a day, days before the test only. Meaning match (`s: 'm'`) earns stars and counts as played: no dot, first go, remembered, fix-up or wrong letters. The round bits live in the day flags, so they survive folding. New tries stay `k: 'p'` with `s: 'x'|'g'`: never add a new `k`, an older device would drop the try.
+- Games: `games-doc.js` (pure), `games-views.js`. Every pass goes through `recordPass`, so after the test a word still to fix counts as a fix-up (`kindOn`).
+- My room (`room.js`) is `#/` for a child; an adult playing as themselves gets the chapters page (also `#/chapters`) with the Grown-ups card. `who.js`: the cached player has no kind, so only a fresh /api/me makes an 'adult'. The room creates nothing.
+- Grown-ups: `grownups-data.js` (`CHILD_DATA_API`, off until the account has the routes in README "Grown-ups"), `grownups-doc.js`, `grownups-views.js`. Every page starts with `adultOnly`. Nothing about a child is stored on the adult's device.
+- Spelling patterns: `site/data/patterns.json`, our own wording and words (OGL credit in `_meta`). Each word must match its `re` and be on our lists (`tests/grownups.test.js`).
+- Stories: `site/data/stories.json`. Children see a story only with `"reviewed": true`, set by `node tools/approve-stories.mjs` (then bump VERSION, deploy). The review page's switches are one device's notes and release nothing. Sentences read with the device's voice until `tools/generate-story-audio.py` has made the MP3s: the account's voice speaks single words only.
+- Smoke test: `node tools/sb2-smoke.mjs <folder>` (real Chrome, fake clock, fake account on :3000, nginx's CSP).
+
 ## Waystead account (B4b)
 - The client is `shared/account/` (API, player, session, sync, prefs, merge, chip, import question, boot). Each site serves a COPY (`site/js/account/`, `wordbright/site/js/account/`, `hub/site/home-assets/js/account/`): edit `shared/account/`, then `node tools/sync-shared.mjs`. `shared/tests/copies.test.js` fails on a stale copy.
 - Fetch with `credentials: 'include'` only. Never store, log or read a token, email or session id; the device keeps only `wa.player` = {id, name, avatar URL}.

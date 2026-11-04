@@ -1,9 +1,17 @@
 // Entry point: load data, route by the URL hash, wire the header.
+import * as D from './data.js';
 import { loadData } from './data.js';
+import { testGuard } from './test-guard.js';
 import { wireThemeMenu } from './thememenu.js';
 import { stop, getSpeaker, hearSample, useVoiceAccount } from './speech.js';
 import * as V from './views.js';
 import * as MW from './words-views.js';
+import * as SV from './study-views.js';
+import * as GV from './games-views.js';
+import { home } from './room.js';
+import { useWho } from './who.js';
+import * as GU from './grownups-views.js';
+import { storyReview } from './story-views.js';
 import * as W from './words-doc.js';
 import * as S from './store.js';
 import * as P from './progress-doc.js';
@@ -26,7 +34,8 @@ const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?
 
 // Hash routes. :params are captured by name.
 const ROUTES = [
-  ['', V.home],
+  ['', home],
+  ['chapters', V.home],
   ['about', V.about],
   ['custom', V.custom],
   ['custom/play', V.customPlay],
@@ -39,6 +48,14 @@ const ROUTES = [
   ['words/g/:gid/edit', MW.editGroupPage],
   ['words/g/:gid/spell/:n', MW.spellWord],
   ['words/g/:gid/test', MW.testDay],
+  ['words/g/:gid/study/:step', SV.studyStep],
+  ['words/g/:gid/games', GV.gameMode],
+  ['words/g/:gid/game/:game', GV.oneGame],
+  ['grownups', GU.grownups],
+  ['grownups/stories', storyReview],
+  ['grownups/child/:cid', GU.childDashboard],
+  ['grownups/child/:cid/plan', GU.planWeek],
+  ['grownups/child/:cid/plan/:gid', GU.editWeek],
   [':yearId', V.year],
   [':yearId/:slug', V.chapter],
   [':yearId/:slug/study', V.study],
@@ -48,6 +65,8 @@ const ROUTES = [
   [':yearId/:slug/practice', V.practice],
   [':yearId/:slug/test', V.test],
 ];
+
+const chapterWords = (yearId, slug) => (D.chapterBySlug(yearId, slug) || { words: [] }).words.map((w) => w.word);
 
 function match(path) {
   const parts = path.split('/').filter(Boolean);
@@ -62,7 +81,7 @@ function match(path) {
     });
     if (ok && params.yearId && !/^y(34|56)$/.test(params.yearId)) ok = false;
     if (ok && params.slug && !/^ch\d\d$/.test(params.slug)) ok = false;
-    if (ok) return { view, params };
+    if (ok) return { view, params, pattern };
   }
   return null;
 }
@@ -71,6 +90,7 @@ function match(path) {
 function parentOf(path) {
   const parts = path.split('/').filter(Boolean);
   if (parts[0] === 'custom' && parts[1] === 'play') return '#/custom';
+  if (parts[0] === 'grownups') return parts.length > 3 ? '#/grownups/child/' + parts[2] : parts.length > 1 ? '#/grownups' : '#/';
   if (parts[0] === 'words' && parts.length > 3) return '#/words/g/' + parts[2];
   if (parts[0] === 'words' && parts.length > 1) return '#/words';
   parts.pop();
@@ -113,7 +133,9 @@ function render() {
     if (a.hasAttribute('aria-current')) a.setAttribute('aria-current', 'page');
   });
   if (!found) { unknownPage(path); return; }
-  cleanup = found.view(main, found.params) || null;
+  // A test is due: no page shows its words, so the page goes to the test instead.
+  const due = testGuard(found.pattern, found.params, S.readWords(), W.localDay(Date.now()), chapterWords);
+  if (due) MW.testTodayPage(main, due); else cleanup = found.view(main, found.params) || null;
   const h1 = main.querySelector('h1');
   document.title = (path && h1 ? h1.textContent + ' · ' : '') + 'Spellbright by Waystead';
 }
@@ -185,6 +207,14 @@ function wireAccount() {
   // G8c: Hear asks the account's voice server for a signed-in player.
   useVoiceAccount(() => (account ? { origin: account.origin, signedIn: !!account.session.player } : null));
   account.session.on(() => { if (voiceMenu) voiceMenu.redraw(); });
+  // /api/me says what kind of player this is; the cached player can't. It decides
+  // the home page, so draw it again once that's known.
+  useWho(() => account.session.player);
+  let knownKind = '';
+  account.session.on(({ player }) => {
+    const k = (player && player.kind) || '';
+    if (k !== knownKind) { knownKind = k; if (drawn && /^(grownups|$)/.test(currentPath())) render(); } // no other page depends on it: never wipe a half-filled form
+  });
 }
 
 async function start() {
