@@ -210,7 +210,7 @@ function wireAccount() {
   account.session.on(() => { if (voiceMenu) voiceMenu.redraw(); });
   // /api/me says what kind of player this is; the cached player can't. It decides
   // the home page, so draw it again once that's known.
-  useWho(() => account.session.player);
+  useWho(() => account.session.player, () => account.session.refresh());
   let knownKind = '';
   account.session.on(({ player }) => {
     const k = (player && player.kind) || '';

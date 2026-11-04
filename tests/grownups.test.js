@@ -39,8 +39,8 @@ const plan = (over = {}) => ({ name: 'Spellings', test: plus(5), words: ['fruit'
 const tryOf = (d, g, word, day, o = {}) => W.addTry(d, { id: nid(), word, day, group: g.id, kind: 'p', tries: 0, peeks: 0, clean: true, now: at(day), ...o });
 
 // ---- the flag ------------------------------------------------------------------------
-test('the child-data flag is off until the account has the routes', () => {
-  assert.equal(A.CHILD_DATA_API, false);
+test('the child-data flag is on: the account has the routes', () => {
+  assert.equal(A.CHILD_DATA_API, true);
 });
 
 // ---- plans --------------------------------------------------------------------------
@@ -143,6 +143,39 @@ test('dashboard: dots, tries and peeks per word', () => {
   assert.deepEqual([w.fruit.dots, w.fruit.tries, w.fruit.peeks, w.fruit.status], [3, 0, 0, 'practising']);
   assert.deepEqual([w.earth.dots, w.earth.tries, w.earth.peeks], [0, 2, 1]);
 });
+test('dashboard: each word\'s 3 in a row, and today\'s count', () => {
+  let { d, g } = fakeWeek();
+  for (let i = 0; i < 2; i += 1) d = tryOf(d, g, 'earth', plus(2), { source: 'x', now: at(plus(2)) + 1000 + i });
+  d = tryOf(d, g, 'fruit', plus(2), { now: at(plus(2)) + 2000 });
+  const w = Object.fromEntries(P.dashboard(d, plus(2)).current.words.map((x) => [x.word, x]));
+  assert.deepEqual([w.earth.dots, w.earth.today], [2, 2], 'on its way');
+  assert.deepEqual([w.fruit.dots, w.fruit.today], [3, 1], 'finished once, and at it again today');
+});
+test('dashboard: fix-ups in Mend show in today\'s count', () => {
+  let { d, g } = fakeWeek();
+  d = tryOf(d, g, 'earth', plus(5), { kind: 't', clean: false, tries: 1 });
+  d = tryOf(d, g, 'fruit', plus(5), { kind: 't' });
+  d = tryOf(d, g, 'earth', plus(6), { kind: 'f' });
+  assert.equal(P.dashboard(d, plus(6)).current.words.find((x) => x.word === 'earth').today, 1);
+});
+test('dashboard: skipped words, until they\'re done', () => {
+  let { d, g } = fakeWeek();
+  d = W.addSkip(d, { id: 'k1', group: 'g1', word: 'earth', day: plus(2), flow: 'x', now: at(plus(2)) });
+  let r = P.dashboard(d, plus(2)).current;
+  assert.deepEqual(r.comeBack, ['earth']);
+  assert.equal(r.words.find((x) => x.word === 'earth').comeBack, true);
+  assert.equal(r.words.find((x) => x.word === 'fruit').comeBack, false);
+  for (let i = 0; i < 3; i += 1) d = tryOf(d, g, 'earth', plus(2), { source: 'x', now: at(plus(2)) + 1000 + i });
+  r = P.dashboard(d, plus(2)).current;
+  assert.deepEqual(r.comeBack, []);
+  assert.deepEqual(P.dashboard(d, plus(3)).current.comeBack, [], 'a skip is for its own day');
+});
+test('the dashboard shows them', () => {
+  const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
+  assert.match(src, /<th scope="col">3 in a row<\/th>/);
+  assert.match(src, /rowCountHtml\(w\.dots, W\.ROW_NEEDED\)/);
+  assert.match(src, /<b>Come back to this:<\/b>/);
+});
 test('dashboard: remembered, practised and independent first goes', () => {
   const { d } = fakeWeek();
   const r = P.dashboard(d, plus(2));
@@ -198,7 +231,7 @@ test('a child\'s session is refused by the account as well', async () => {
   const { acct, api } = family();
   acct.who = childMe;
   assert.equal((await api.children()).status, 403);
-  assert.deepEqual(await A.listChildren(api), []);
+  assert.deepEqual(await A.listChildren(api), { problem: 'playing' });
   assert.equal((await api.game(KID)).status, 403);
   assert.equal((await api.put(KID, 'words', {}, 0)).status, 403);
 });
@@ -209,12 +242,134 @@ test('so is an adult playing as a child', async () => {
 });
 test('a parent sees only their own children, and can\'t reach another family\'s', async () => {
   const { acct, api } = family();
-  assert.deepEqual((await A.listChildren(api)).map((c) => c.nickname), ['Robin', 'Wren']);
+  assert.deepEqual((await A.listChildren(api)).children.map((c) => c.nickname), ['Robin', 'Wren']);
   acct.put(OTHER, 'spellbright', 'words', W.emptyDoc());
-  assert.equal(await A.readChild(api, OTHER), null);
-  assert.equal((await api.put(OTHER, 'words', W.emptyDoc(), 1)).status, 404);
-  assert.match((await A.changeWords(api, OTHER, (d) => ({ doc: d }))).error, /can't reach/);
+  assert.deepEqual(await A.readChild(api, OTHER), { problem: 'no-child' });
+  const put = await api.put(OTHER, 'words', W.emptyDoc(), 1);
+  assert.deepEqual([put.status, put.data], [404, { error: 'no-such-child' }]);
+  assert.deepEqual(await A.changeWords(api, OTHER, (d) => ({ doc: d })), { problem: 'no-child' });
 });
+// ---- the account's real replies ----------------------------------------------------------
+test('the routes, exactly as the account has them', async () => {
+  const { acct, api } = family();
+  await A.listChildren(api);
+  await A.readChild(api, KID);
+  await api.put(KID, 'words', {}, 0);
+  assert.deepEqual(acct.calls.map((c) => c.method + ' ' + c.path), ['GET /api/children', 'GET /api/children/' + KID + '/game/spellbright', 'PUT /api/children/' + KID + '/game/spellbright/words']);
+  assert.deepEqual(JSON.parse(acct.calls[2].body), { value: {}, version: 0 });
+});
+test('every reply gets its own problem', () => {
+  const p = (status, error) => A.problemOf({ status, data: error ? { error } : null });
+  assert.equal(p(0), 'network');
+  assert.equal(p(401), 'signed-out');
+  assert.equal(p(403, 'adult-session-required'), 'playing');
+  assert.equal(p(403, 'origin-not-allowed'), 'other', 'the other 403 isn\'t about who\'s playing');
+  assert.equal(p(404, 'no-such-child'), 'no-child');
+  assert.equal(p(404, 'unknown-game'), 'other');
+  assert.equal(p(413, 'value-too-large'), 'too-big');
+  assert.equal(p(413, 'profile-storage-full'), 'too-big');
+  assert.equal(p(429, 'rate-limited'), 'busy');
+  assert.equal(p(500), 'other');
+  for (const k of ['network', 'busy', 'too-big', 'signed-out', 'no-child', 'other']) assert.ok(P.PROBLEM_TEXT[k], k);
+});
+test('a failure is never "no children": the list reports it', async () => {
+  const { acct, api } = family();
+  acct.offline = true;
+  assert.deepEqual(await A.listChildren(api), { problem: 'network' });
+  acct.offline = false;
+  acct.who = null;
+  assert.deepEqual(await A.listChildren(api), { problem: 'signed-out' });
+});
+test('a parent with no children yet is an empty list, not a problem', async () => {
+  const { acct, api } = family();
+  acct.who = adultMe('66666666-6666-4666-8666-666666666666');
+  assert.deepEqual(await A.listChildren(api), { children: [] });
+});
+
+// ---- playing as a child -------------------------------------------------------------------
+test('the switch-back card: the wording, and the way back', () => {
+  assert.equal(P.playingLine('Robin'), 'You\'re playing as Robin. Switch back to yourself to plan and see progress.');
+  assert.equal(P.switchBackHref('https://account.waystead.co.uk', 'https://game.waystead.co.uk/spellbright/#/grownups'),
+    'https://account.waystead.co.uk/play?return=https%3A%2F%2Fgame.waystead.co.uk%2Fspellbright%2F%23%2Fgrownups');
+});
+test('only an adult playing as a child gets it: a child\'s own session can\'t switch', () => {
+  const o = 'https://account.example';
+  assert.equal(playerFromMe(adultMe(ADULT, { id: KID, nickname: 'Robin', year: 4, avatar: null }), o).canSwitch, true);
+  assert.equal(playerFromMe(childMe, o).canSwitch, false);
+  const src = readFileSync(file('site/js/who.js'), 'utf8');
+  assert.match(src, /p\.kind === 'child' && p\.canSwitch === true/);
+});
+test('a 403 from a route shows the same card, after asking who\'s playing', async () => {
+  const { acct, api } = family();
+  acct.who = adultMe(ADULT, { id: KID, nickname: 'Robin', year: 4, avatar: null });
+  assert.deepEqual(await A.readChild(api, KID), { problem: 'playing' });
+  assert.deepEqual(await A.changeWords(api, KID, () => { throw new Error('no change is made'); }), { problem: 'playing' });
+  const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
+  assert.match(src, /if \(problem === 'playing'\) \{ await recheckWho\(\); playingCard\(main\); return; \}/);
+});
+
+// ---- 404, network, nothing half-saved ------------------------------------------------------
+test('a 404 says so and goes back to the list', () => {
+  assert.equal(P.PROBLEM_TEXT['no-child'], 'That child isn\'t on your account.');
+  assert.match(readFileSync(file('site/js/grownups-views.js'), 'utf8'), /href="#\/grownups">Back to the list/);
+});
+test('a network failure while reading saves nothing', async () => {
+  const { acct, api } = family();
+  acct.offline = true;
+  assert.deepEqual(await A.changeWords(api, KID, (d) => P.createPlan(d, plan(), { id: 'p1', today: MON, now: at(MON) })), { problem: 'network' });
+  assert.equal((acct.data.get(KID) || new Map()).size, 0);
+});
+test('a network failure while writing: nothing saved, and trying again works', async () => {
+  const { acct, api } = family();
+  const flaky = { ...api, put: async (...a) => { acct.offline = true; const r = await api.put(...a); acct.offline = false; return r; } };
+  const make = (d) => P.createPlan(d, plan(), { id: 'p1', today: MON, now: at(MON) });
+  assert.deepEqual(await A.changeWords(flaky, KID, make), { problem: 'network' });
+  assert.equal((acct.data.get(KID) || new Map()).size, 0);
+  assert.equal((await A.changeWords(api, KID, make)).ok, true);
+});
+test('the answer lost after the save arrived: trying again makes no second plan', async () => {
+  const { acct, api } = family();
+  const lost = { ...api, put: async (...a) => { await api.put(...a); return { ok: false, status: 0, data: null }; } };
+  const make = (now) => (d) => P.createPlan(d, plan(), { id: 'p1', today: MON, now });
+  assert.deepEqual(await A.changeWords(lost, KID, make(at(MON))), { problem: 'network' });
+  assert.equal((await A.changeWords(api, KID, make(at(MON) + 1))).ok, true);
+  assert.deepEqual(Object.keys(acct.data.get(KID).get('spellbright/words').value.groups), ['p1']);
+  assert.match(readFileSync(file('site/js/grownups-views.js'), 'utf8'), /id: planId/, 'the form keeps one id');
+});
+test('a save that fails says nothing was saved, and the button comes back', () => {
+  const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
+  assert.match(src, /P\.PROBLEM_TEXT\[r\.problem\] \+ ' Nothing has been saved\.'/);
+  assert.match(src, /button\.disabled = false;/);
+});
+test('too big and rate-limited are reported too', async () => {
+  const { acct, api } = family();
+  acct.failNext = { status: 429, times: 1 };
+  assert.equal((await A.listChildren(api)).problem, 'busy');
+  const huge = await A.changeWords(api, KID, () => ({ doc: { ...W.emptyDoc(), groups: { g: { name: 'x'.repeat(70000), start: MON, test: plus(1), words: [], back: [], at: at(MON) } } } }));
+  assert.equal(huge.problem, 'too-big');
+});
+test('at the end of its tries a clash is a "try again", not a lost plan', async () => {
+  const { api } = family();
+  const clash = { ...api, put: async () => ({ ok: false, status: 409, data: { error: 'version-conflict', value: null, version: 9 } }) };
+  assert.deepEqual(await A.changeWords(clash, KID, (d) => ({ doc: d })), { problem: 'busy' });
+});
+
+// ---- the wording ------------------------------------------------------------------------------
+test('the new time is everywhere, and the old one nowhere', () => {
+  const text = (f) => readFileSync(file(f), 'utf8');
+  for (const f of ['site/js/views.js', 'site/js/words-views.js', 'site/js/room.js', 'site/js/grownups-views.js', 'README.md', 'site/js/study-doc.js']) {
+    assert.doesNotMatch(text(f), /10[–-]15|10 to 15|ten to fifteen/i, f);
+  }
+  for (const f of ['site/js/views.js', 'site/js/words-views.js', 'site/js/room.js', 'site/js/grownups-views.js']) assert.match(text(f), /DAILY_TIME/, f);
+  assert.match(text('site/js/study-doc.js'), /about 15–20 minutes a day/);
+  assert.match(text('README.md'), /about 15–20 minutes a day/);
+});
+test('parents are told how a word counts', () => {
+  assert.match(readFileSync(file('site/js/study-doc.js'), 'utf8'), /Each word is spelled 3 times in a row before it counts\./);
+  for (const f of ['site/js/views.js', 'site/js/grownups-views.js']) assert.match(readFileSync(file(f), 'utf8'), /ROW_LINE/, f);
+  assert.match(readFileSync(file('README.md'), 'utf8'), /Each word is spelled 3 times in a row before it counts\./);
+});
+
 test('signed out: nothing', async () => {
   const { acct, api } = family();
   acct.who = null;
@@ -241,9 +396,18 @@ test('a plan never loses what the child did: a 409 is made again on the newer co
     return P.createPlan(d, plan({ words: ['heart'], test: plus(7) }), { id: 'p1', today: MON, now: at(MON) });
   });
   assert.equal(r.ok, true);
+  assert.equal(r.updated, true, 'the page says "Updated with the latest"');
   const v = acct.data.get(KID).get('spellbright/words').value;
   assert.deepEqual(Object.keys(v.groups).sort(), ['own', 'p1']);
   assert.equal(v.results[0].id, 'late', 'the child\'s try is still there');
+});
+test('a plan with no clash isn\'t reported as updated', async () => {
+  const { api } = family();
+  const r = await A.changeWords(api, KID, (d) => P.createPlan(d, plan(), { id: 'p1', today: MON, now: at(MON) }));
+  assert.equal(r.updated, false);
+});
+test('the page says it', () => {
+  assert.match(readFileSync(file('site/js/grownups-views.js'), 'utf8'), /r\.updated \? 'Updated with the latest' : 'Saved'/);
 });
 test('a bad plan saves nothing', async () => {
   const { acct, api } = family();

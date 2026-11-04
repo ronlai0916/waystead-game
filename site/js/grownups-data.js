@@ -2,19 +2,21 @@
 // signed in as themselves. Nothing here is kept on the adult's device: each page
 // asks the account, and a child's words stay in memory while it's on show.
 //
-// CHILD_DATA_API is off until the Waystead account has these routes (README,
-// "Grown-ups"). Today an adult's session reaches only their own data, or that of
-// the child they're playing as, and can't list their children.
+// The routes are the Waystead account's (its README; since waystead-account 2204de9):
 //
 //   GET /api/children                             { children: [{ id, nickname, year, avatar }] }
 //   GET /api/children/:id/game/spellbright        { game, items }, as /api/game/:game
 //   PUT /api/children/:id/game/spellbright/:key   { value, version }, as /api/game/:game/:key
 //
+// All three: 401 signed out; 403 adult-session-required for a child's session or
+// an adult playing as a child; 404 no-such-child for anyone who isn't this adult's.
+// CHILD_DATA_API turns Plan and Dashboard off again, should that ever be needed.
+//
 // Fetch with credentials: 'include' only, as the account client does.
 import * as W from './words-doc.js';
 import { normalise as normaliseProgress } from './progress-doc.js';
 
-export const CHILD_DATA_API = false;
+export const CHILD_DATA_API = true;
 const GAME = 'spellbright';
 
 export function createChildApi({ origin, fetch: doFetch = (...a) => globalThis.fetch(...a) }) {
@@ -41,16 +43,32 @@ export function createChildApi({ origin, fetch: doFetch = (...a) => globalThis.f
   };
 }
 
-/** This adult's children, or [] (a child's session is refused by the account). */
-export async function listChildren(api) {
-  const r = await api.children();
-  return r.ok && r.data && Array.isArray(r.data.children) ? r.data.children : [];
+/**
+ * Why a call failed, for the page to say so. Never an empty answer: a failure
+ * mustn't look like "no children yet".
+ *   'network' 'signed-out' 'playing' 'no-child' 'too-big' 'busy' 'other'
+ */
+export function problemOf(r) {
+  const error = r.data && r.data.error;
+  if (r.status === 0) return 'network';
+  if (r.status === 401) return 'signed-out';
+  if (r.status === 403 && error === 'adult-session-required') return 'playing';
+  if (r.status === 404 && error === 'no-such-child') return 'no-child';
+  if (r.status === 413) return 'too-big';
+  if (r.status === 429) return 'busy';
+  return 'other';
 }
 
-/** { words, progress, version } for a child of this adult, or null. */
+/** { children } or { problem }. */
+export async function listChildren(api) {
+  const r = await api.children();
+  return r.ok && r.data && Array.isArray(r.data.children) ? { children: r.data.children } : { problem: problemOf(r) };
+}
+
+/** { words, progress, version } for a child of this adult, or { problem }. */
 export async function readChild(api, id) {
   const r = await api.game(id);
-  if (!r.ok || !r.data || typeof r.data.items !== 'object') return null;
+  if (!r.ok || !r.data || typeof r.data.items !== 'object') return { problem: problemOf(r) };
   const item = r.data.items[W.DOC_KEY];
   const p = r.data.items.progress;
   return { words: W.normalise(item ? item.value : null), progress: normaliseProgress(p ? p.value : null), version: item ? item.version : 0 };
@@ -59,18 +77,22 @@ export async function readChild(api, id) {
 /**
  * Change the child's words: change(doc) answers { doc } or { error }. A 409 means
  * the child's device saved first: the change is made again on that newer copy,
- * so nothing they did is lost. Answers { ok: true, doc } or { error }.
+ * so nothing they did is lost, and `updated` says so. One value, one PUT: it
+ * saves whole or not at all. Answers { ok: true, doc, updated }, { error } (the
+ * plan itself is wrong) or { problem }.
  */
 export async function changeWords(api, id, change, { tries = 4, now = () => Date.now() } = {}) {
+  let updated = false;
   for (let i = 0; i < tries; i += 1) {
     const c = await readChild(api, id);
-    if (!c) return { error: 'We can\'t reach that child\'s words just now. Please try again.' };
+    if (c.problem) return { problem: c.problem };
     const r = change(c.words);
     if (r.error) return { error: r.error };
     const value = W.trim(W.normalise(r.doc), now());
     const put = await api.put(id, W.DOC_KEY, value, c.version);
-    if (put.ok) return { ok: true, doc: value, ...r };
-    if (put.status !== 409) return { error: 'That didn\'t save. Please try again.' };
+    if (put.ok) return { ok: true, doc: value, updated };
+    if (put.status !== 409) return { problem: problemOf(put) };
+    updated = true;
   }
-  return { error: 'That didn\'t save. Please try again.' };
+  return { problem: 'busy' };
 }

@@ -5,8 +5,9 @@
 //
 //   node tools/sb2-smoke.mjs <folder for screenshots>
 //
-// The grown-ups' flag (CHILD_DATA_API) is off in the repo; the server here turns
-// it on in what it serves, so Plan and Dashboard can be walked through.
+// The grown-ups' flag (CHILD_DATA_API) is served as it is in the repo (on), and
+// the fake account follows the real /api/children replies. One scene turns the
+// flag off in what's served, to check that path still works.
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync, mkdirSync, rmSync } from 'node:fs';
 import { spawn } from 'node:child_process';
@@ -35,6 +36,7 @@ const csp = /add_header Content-Security-Policy "([^"]+)"/.exec(readFileSync(ROO
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.dawg': 'application/octet-stream' };
 
 let flagOn = true;
+let netDown = false;
 let storiesLive = false;
 const site = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, SITE).pathname);
@@ -44,7 +46,7 @@ const site = createServer((req, res) => {
   if (file && existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
   if (!file || !existsSync(file)) { res.writeHead(404, { 'Content-Security-Policy': csp }); res.end('not here'); return; }
   let body = readFileSync(file);
-  if (file.endsWith('grownups-data.js') && flagOn) body = String(body).replace('CHILD_DATA_API = false', 'CHILD_DATA_API = true');
+  if (file.endsWith('grownups-data.js') && !flagOn) body = String(body).replace('CHILD_DATA_API = true', 'CHILD_DATA_API = false');
   if (file.endsWith('stories.json') && storiesLive) body = String(body).replaceAll('"reviewed": false', '"reviewed": true');
   res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Content-Security-Policy': csp, 'Cache-Control': 'no-store' });
   res.end(body);
@@ -55,6 +57,7 @@ acct.children = (id) => (id === ADULT ? [{ id: CHILD, nickname: 'Robin', year: 4
 const account = createServer(async (req, res) => {
   const cors = { 'Access-Control-Allow-Origin': SITE, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS', Vary: 'Origin' };
   if (req.method === 'OPTIONS') { res.writeHead(204, cors); res.end(); return; }
+  if (acct.offline) { req.socket.destroy(); return; } // the network gone, as the browser sees it
   if (req.url.startsWith('/api/voice/')) { res.writeHead(404, cors); res.end(); return; }
   const chunks = [];
   for await (const c of req) chunks.push(c);
@@ -104,8 +107,9 @@ function listen() {
     if (m.method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(m.params.type)) problems.push('console.' + m.params.type + ': ' + m.params.args.map((a) => a.value ?? a.description).join(' '));
     if (m.method === 'Log.entryAdded' && ['error', 'warning'].includes(m.params.entry.level)) {
       const t = m.params.entry.text + ' ' + (m.params.entry.url || '');
-      // Expected: a 404 from the voice (the device speaks instead), a 409 from a save (merged and sent again).
-      if (!/\/api\/voice\//.test(t) && !/status of 409/.test(t)) problems.push('log: ' + t);
+      // Expected: a 404 from the voice (the device speaks instead), a 409 from a save (merged and sent again),
+      // the 403 and 404 the Grown-ups scenes ask for, and failed calls while the network is meant to be down.
+      if (!/\/api\/voice\//.test(t) && !/status of 40[349]/.test(t) && !(/net::ERR/.test(t) && netDown)) problems.push('log: ' + t);
     }
   });
 }
@@ -803,6 +807,9 @@ function childWeek() {
   d = W.markStep(d, g, 'fix', plus(1), Date.parse(plus(1) + 'T10:00:00'));
   t('build', plus(2), { source: 'g', clean: false, tries: 2 });
   t('earth', plus(2), { source: 'g' });
+  t('earth', plus(2), { source: 'x' });
+  t('earth', plus(2), { source: 'x' });
+  d = W.addSkip(d, { id: 'k1', group: 'g1', word: 'heart', day: plus(2), flow: 'x', now: Date.parse(plus(2) + 'T11:00:00') });
   d = W.setClue(d, 'build', 'Watch the letters ui in build', Date.parse(plus(1) + 'T10:00:00'));
   d = W.addNote(d, { id: 'n1', group: 'g1', word: 'build', text: 'We will build a den today.', day: plus(2), now: Date.parse(plus(2) + 'T10:00:00') });
   return d;
@@ -860,6 +867,9 @@ scene('grown-ups: plan and dashboard', async () => {
   ok(/Game day/.test(t), 'today\'s job on the dashboard');
   ok(/We will build a den today/.test(t), 'a sentence');
   ok(/Watch the letters ui/.test(t), 'a clue');
+  ok(/Come back to this: heart/.test(t), 'the skipped word');
+  ok(/2\/3/.test(await text('[data-report="g1"] tbody tr:nth-child(2) [data-inarow]')), 'earth at 2/3');
+  ok(/3 times in a row before it counts/.test(t), 'how a word counts');
   await allViews('grownups-dashboard');
   step('print');
   await send('Emulation.setEmulatedMedia', { media: 'print' });
@@ -880,7 +890,9 @@ scene('grown-ups: plan and dashboard', async () => {
   ok(after.words.join() === 'enough,cough,guard', 'the change saved');
   step('another family\'s child');
   await go('#/grownups/child/' + STRANGER);
-  await until('/couldn.t find that child/.test(document.querySelector("main").innerText)', 'refused');
+  await until('/That child isn.t on your account/.test(document.querySelector("main").innerText)', 'refused');
+  ok(await has('[data-problem="no-child"] a[href="#/grownups"]'), 'back to the list');
+  await allViews('grownups-no-child');
 
   step('the child sees the plan on their next visit');
   await seedKeep();
@@ -893,6 +905,72 @@ async function seedKeep() {
   await open(plus(2), '#/words');
   await until('/School spellings/.test(document.querySelector("main").innerText)', 'the plan on the child\'s device', 8000);
 }
+
+// Pick up a plan as far as the preview.
+async function toPreview(word) {
+  await go('#/grownups/child/' + CHILD + '/plan');
+  await until('document.querySelector(".picker input[value=guard]")', 'the plan form');
+  await click('.picker input[value=' + word + ']');
+  await sleep(30);
+  await click('[data-preview]');
+  await until('document.querySelector("[data-save]")', 'the preview');
+}
+const childGroups = () => W.liveGroups(W.normalise(acct.data.get(CHILD).get('spellbright/words').value));
+
+scene('grown-ups: when things go wrong', async () => {
+  await seedAdult();
+  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'home');
+  step('409: the child saved first');
+  await toPreview('guard');
+  const newer = W.addTry(W.normalise(acct.data.get(CHILD).get('spellbright/words').value), { id: 'late', word: 'earth', day: plus(2), group: 'g1', kind: 'p', tries: 0, peeks: 0, clean: true, now: Date.parse(plus(2) + 'T09:30:00') });
+  const realFetch = acct.fetch;
+  let raced = false; // the child's device saves between the page's read and its write
+  acct.fetch = async (url, init) => {
+    if (init.method === 'PUT' && String(url).includes('/api/children/') && !raced) { raced = true; acct.put(CHILD, 'spellbright', 'words', newer); }
+    return realFetch(url, init);
+  };
+  await click('[data-save]');
+  await until('document.querySelector("#toast").classList.contains("show") && /Updated with the latest/.test(document.querySelector("#toast").textContent)', 'Updated with the latest');
+  acct.fetch = realFetch;
+  ok(raced, 'the 409 really happened');
+  await until('document.querySelector("[data-print]")', 'the dashboard');
+  const after = W.normalise(acct.data.get(CHILD).get('spellbright/words').value);
+  ok(after.results.some((x) => x.id === 'late'), 'the child\'s try is still there');
+  ok(childGroups().length === 2, 'and the plan');
+
+  step('network: nothing half-saved, then try again');
+  await toPreview('heard');
+  const before = JSON.stringify(acct.data.get(CHILD).get('spellbright/words'));
+  netDown = true;
+  acct.offline = true;
+  await click('[data-save]');
+  await until('/can.t reach Waystead/.test(document.querySelector("[data-savenote]").innerText)', 'a kind message');
+  ok(/Nothing has been saved/.test(await text('[data-savenote]')), 'says nothing was saved');
+  ok(JSON.stringify(acct.data.get(CHILD).get('spellbright/words')) === before, 'nothing half-saved');
+  await allViews('grownups-network');
+  acct.offline = false;
+  await click('[data-save]');
+  await until('document.querySelector("[data-print]")', 'saved on the second go');
+  ok(childGroups().length === 3, 'exactly one more plan');
+
+  step('network while loading: try again');
+  acct.offline = true;
+  await go('#/grownups');
+  await until('document.querySelector("[data-retry]")', 'the retry');
+  ok(!/Add a child/.test(await text()), 'a failure doesn\'t look like no children');
+  acct.offline = false;
+  await click('[data-retry]');
+  await until('document.querySelector("[data-child]")', 'the list back');
+  await sleep(100);
+  netDown = false;
+
+  step('403: switched to playing as a child in another tab');
+  acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
+  await click('[data-child="' + CHILD + '"] a[href$="/plan"]');
+  await until('document.querySelector("[data-playing]")', 'the switch-back card');
+  ok(/You.re playing as Robin\. Switch back to yourself to plan and see progress/.test(await text()), 'names the child');
+  acct.who = adultMe;
+});
 
 scene('story review', async () => {
   await seedAdult();
@@ -922,10 +1000,18 @@ scene('permissions', async () => {
   await until('document.querySelector("[data-room]")', 'the room');
   ok(!/Grown-ups/.test(await text()), 'no Grown-ups link in the room');
   await allViews('grownups-refused');
-  step('an adult playing as a child is a child here');
+  step('an adult playing as a child: the switch-back card, and no data asked for');
   acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
-  await open(MON, '#/grownups');
-  await until('document.querySelector("[data-notforyou]")', 'refused');
+  acct.calls.length = 0;
+  for (const p of ['#/grownups', '#/grownups/stories', '#/grownups/child/' + CHILD, '#/grownups/child/' + CHILD + '/plan']) {
+    await open(MON, p);
+    await until('document.querySelector("[data-playing]")', 'the card at ' + p);
+  }
+  ok(/You.re playing as Robin/.test(await text()), 'names the child');
+  const back = await ev('document.querySelector("[data-switchback]").href');
+  ok(back.startsWith('http://localhost:3000/play?return=') && decodeURIComponent(back).endsWith('#/grownups/child/' + CHILD + '/plan'), 'back to this page: ' + back);
+  ok(!acct.calls.some((c) => c.path.startsWith('/api/children')), 'no child data asked for');
+  await allViews('grownups-playing');
   step('with the flag off');
   flagOn = false;
   await seedAdult();

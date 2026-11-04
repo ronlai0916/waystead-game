@@ -22,7 +22,7 @@ const toGroup = (id) => { location.replace(groupHref(id)); };
 const plural = (n, one, many = one + 's') => n + ' ' + (n === 1 ? one : many);
 
 const JOB = {
-  practise: { title: 'Practise', line: 'About 10 to 15 minutes. Tap a word: it\'s hidden and spoken, and you spell it.' },
+  practise: { title: 'Practise', line: St.DAILY_TIME_CAP + '. Tap a word: it\'s hidden and spoken, and you spell it.' },
   test: { title: 'Test today', line: 'Each word is spoken, with no peeking and one go each. You see how you did at the end.' },
   wait: { title: 'Test done', line: 'Well done. Your fix-ups come tomorrow.' },
   fixups: { title: 'Fix-ups', line: 'A little extra practice for the words that slipped.' },
@@ -94,7 +94,7 @@ function studyCard(d, g, day) {
     return '<div class="card job"><span class="eyebrow">Today</span><h2>' + esc(title) + '</h2><p class="muted">' + esc(line) + '</p></div>';
   }
   const line = step.id === 'mend' && St.mendPart(d, g, day) === 'fixups' ? JOB.fixups.line : step.line;
-  return '<div class="card job job--' + step.id + '"><span class="eyebrow">Today</span><h2>' + esc(step.title) + '</h2><p class="muted">' + esc(line) + '</p>'
+  return '<div class="card job job--' + step.id + '"><span class="eyebrow">Today</span><h2>' + esc(step.title) + '</h2><p class="muted">' + esc(line) + '</p><p class="muted small">' + esc(St.DAILY_TIME_CAP) + '</p>'
     + (step.id === 'practice' ? starsLine(d, g, day) : '')
     + '<a class="btn btn--primary" href="' + stepHref(d, g, step.id, day) + '" data-job>Start' + ICON.arrow + '</a></div>';
 }

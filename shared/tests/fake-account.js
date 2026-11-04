@@ -43,15 +43,15 @@ export function fakeAccount() {
     const pid = profile();
     if (!pid) return json(401, { signedIn: false });
     const body = init.body ? JSON.parse(init.body) : undefined;
-    // SB2-3, the routes the games need from B7-acct: an adult playing as themselves, their own children only.
+    // /api/children (waystead-account src/lib/data-api.ts): an adult playing as themselves, their own children only.
     const kids = /^\/api\/children(?:\/([^/]+)\/game\/(spellbright|wordbright)(?:\/([A-Za-z0-9._:-]{1,64}))?)?$/.exec(u.pathname);
     if (kids) {
       const me = acct.who;
-      if (me.kind !== 'parent' || me.playingAs) return json(403, { error: 'grown-ups-only' });
+      if (me.kind !== 'parent' || me.playingAs) return json(403, { error: 'adult-session-required' });
       const mine = acct.children(me.id);
       const [, cid, game, key] = kids;
       if (!cid) return json(200, { children: mine });
-      if (!mine.some((c) => c.id === cid)) return json(404, { error: 'not-found' });
+      if (!mine.some((c) => c.id === cid)) return json(404, { error: 'no-such-child' });
       if (!acct.data.has(cid)) acct.data.set(cid, new Map());
       const rows = acct.data.get(cid);
       if (!key && method === 'GET') {
@@ -60,6 +60,7 @@ export function fakeAccount() {
         return json(200, { game, items });
       }
       if (method !== 'PUT') return json(405, { error: 'method' });
+      if (bytes(body.value) > 65536) return json(413, { error: 'value-too-large' });
       const id = game + '/' + key;
       const cur = rows.get(id);
       if ((cur ? cur.version : 0) !== body.version) return json(409, { error: 'version-conflict', value: cur ? cur.value : null, version: cur ? cur.version : 0 });

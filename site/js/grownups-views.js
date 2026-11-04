@@ -7,8 +7,9 @@ import * as P from './grownups-doc.js';
 import * as A from './grownups-data.js';
 import { checkTyped } from './wordcheck.js';
 import { entryFor, findEntry } from './word-info.js';
-import { isAdult, kind } from './who.js';
-import { esc, ICON, chunked, toast, dotsHtml } from './ui.js';
+import { isAdult, kind, playingAsChild, playerName, recheckWho } from './who.js';
+import { esc, ICON, chunked, toast, rowCountHtml } from './ui.js';
+import { DAILY_TIME_CAP, ROW_LINE } from './study-doc.js';
 import { accountOrigin } from './account/config.js';
 import { stripHtml } from './study-views.js';
 
@@ -22,16 +23,34 @@ const childApi = () => { if (!api) api = A.createChildApi({ origin: accountOrigi
 const wrap = (eyebrow, title, line, body) => '<section class="wrap page grownups"><div class="pagehead"><span class="eyebrow">' + esc(eyebrow) + '</span><h1>' + esc(title) + '</h1>'
   + (line ? '<p class="muted">' + esc(line) + '</p>' : '') + '</div>' + body + '</section>';
 
+// An adult playing as a child: never the data, a way back to themselves.
+function playingCard(main) {
+  const href = P.switchBackHref(accountOrigin(location), location.href);
+  main.innerHTML = '<section class="wrap page"><div class="card empty" data-playing><h1>Grown-ups</h1><p class="muted">' + esc(P.playingLine(playingAsChild() ? playerName() : '')) + '</p>'
+    + '<a class="btn btn--primary" href="' + esc(href) + '" data-switchback>Switch back to myself' + ICON.arrow + '</a></div></section>';
+}
+
 // A child never gets past here: not the page, and not a single fetch.
 export function adultOnly(main) {
   if (isAdult()) return true;
+  if (playingAsChild()) { playingCard(main); return false; }
   main.innerHTML = kind() === 'unknown'
     ? '<section class="wrap page"><div class="card empty"><h1>Just a moment</h1><p class="muted">Checking who is here…</p></div></section>'
     : '<section class="wrap page"><div class="card empty" data-notforyou><h1>This page is for grown-ups</h1><a class="btn btn--primary" href="#/">Back to the start</a></div></section>';
   return false;
 }
-function failed(main, line) {
-  main.innerHTML = wrap('Grown-ups', 'That didn\'t load', line, '<a class="btn btn--primary" href="#/grownups">Back to Grown-ups</a>');
+const redraw = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
+
+// A call that failed, as a whole page. The session may have changed in another
+// tab (a 403, a 401): ask the account again, so the card names who's playing.
+async function showProblem(main, problem) {
+  if (problem === 'playing') { await recheckWho(); playingCard(main); return; }
+  if (problem === 'signed-out') recheckWho();
+  const back = problem === 'no-child';
+  main.innerHTML = wrap('Grown-ups', back ? P.PROBLEM_TEXT['no-child'] : 'That didn\'t load', back ? '' : P.PROBLEM_TEXT[problem], '<div class="btnrow" data-problem="' + esc(problem) + '">'
+    + (back ? '' : '<button type="button" class="btn btn--primary" data-retry>Try again</button>') + '<a class="btn ' + (back ? 'btn--primary' : 'btn--ghost') + '" href="#/grownups">Back to the list</a></div>');
+  const retry = main.querySelector('[data-retry]');
+  if (retry) retry.addEventListener('click', redraw);
 }
 
 /* ---------------------------------------------------------------- the home --- */
@@ -44,9 +63,10 @@ export function grownups(main) {
   }
   let stopped = false;
   main.innerHTML = wrap('Grown-ups', 'Grown-ups', 'Plan a week and see how it\'s going.', '<p class="muted">Finding your children…</p>');
-  A.listChildren(childApi()).then((list) => {
+  A.listChildren(childApi()).then(({ children: list, problem }) => {
     if (stopped) return;
-    main.innerHTML = wrap('Grown-ups', 'Grown-ups', 'Plan a week and see how it\'s going.', (list.length
+    if (problem) { showProblem(main, problem); return; }
+    main.innerHTML = wrap('Grown-ups', 'Grown-ups', 'Plan a week and see how it\'s going. ' + ROW_LINE, (list.length
       ? '<div class="list">' + list.map((c) => '<div class="card listrow" data-child="' + esc(c.id) + '"><span><strong>' + esc(c.nickname) + '</strong><br><span class="muted small">Year ' + esc(c.year) + '</span></span>'
         + '<span class="btnrow"><a class="btn btn--quiet btn--small" href="' + childHref(c.id) + '">Dashboard</a><a class="btn btn--primary btn--small" href="' + childHref(c.id) + '/plan">Plan a week</a></span></div>').join('') + '</div>'
       : '<div class="card empty"><p class="muted">Add a child to your Waystead account, and they\'ll show here.</p></div>')
@@ -57,21 +77,23 @@ export function grownups(main) {
 
 // The child, checked against this adult's own list first.
 async function loadChild(cid) {
-  const list = await A.listChildren(childApi());
-  const child = list.find((c) => c.id === cid);
-  if (!child) return null;
+  const { children, problem } = await A.listChildren(childApi());
+  if (problem) return { problem };
+  const child = children.find((c) => c.id === cid);
+  if (!child) return { problem: 'no-child' };
   const data = await A.readChild(childApi(), cid);
-  return data ? { child, ...data } : null;
+  return data.problem ? data : { child, ...data };
 }
 const needsApi = (main) => { if (A.CHILD_DATA_API) return false; location.replace('#/grownups'); return true; };
 
 /* --------------------------------------------------------------- dashboard --- */
 function reportHtml(r, cid) {
-  const row = (w) => '<tr><th scope="row">' + esc(w.word) + (w.back ? ' <span class="pill">back again</span>' : '') + '</th><td>' + dotsHtml(w.dots, W.ROW_NEEDED) + '</td><td>' + w.tries + '</td><td>' + w.peeks + '</td><td>' + esc(w.status) + '</td></tr>';
+  const row = (w) => '<tr><th scope="row">' + esc(w.word) + (w.back ? ' <span class="pill">back again</span>' : '') + (w.comeBack ? ' <span class="pill pill--warm">Come back to this</span>' : '') + '</th><td data-inarow>' + rowCountHtml(w.dots, W.ROW_NEEDED) + (w.today && w.today !== w.dots ? '<br><span class="small muted">Today ' + w.today + '/' + W.ROW_NEEDED + '</span>' : '') + '</td><td>' + w.tries + '</td><td>' + w.peeks + '</td><td>' + esc(w.status) + '</td></tr>';
   return '<div class="card setting report" data-report="' + esc(r.id) + '"><h2>' + esc(r.name) + '</h2>'
     + '<p class="muted small">Test on ' + esc(W.dayLabel(r.testDate)) + (r.job ? ' · Today: ' + esc(r.job) : '') + (r.ready ? ' · Ready for the test' : '') + '</p>'
     + stripHtml(r.steps, today())
-    + '<div class="gridwrap" role="region" aria-label="Words in ' + esc(r.name) + '" tabindex="0"><table class="wordgrid reportgrid"><thead><tr><th scope="col">Word</th><th scope="col">Rounds</th><th scope="col">Wrong letters</th><th scope="col">Peeks</th><th scope="col">Status</th></tr></thead><tbody>' + r.words.map(row).join('') + '</tbody></table></div>'
+    + '<div class="gridwrap" role="region" aria-label="Words in ' + esc(r.name) + '" tabindex="0"><table class="wordgrid reportgrid"><thead><tr><th scope="col">Word</th><th scope="col">3 in a row</th><th scope="col">Wrong letters</th><th scope="col">Peeks</th><th scope="col">Status</th></tr></thead><tbody>' + r.words.map(row).join('') + '</tbody></table></div>'
+    + (r.comeBack.length ? '<p data-reportskips><b>Come back to this:</b> ' + esc(r.comeBack.join(', ')) + '</p>' : '')
     + (r.test.taken ? '<p><b>Test:</b> ' + r.test.right + ' of ' + r.test.of + ' right' + (r.test.rows.some((x) => !x.right) ? ' · Slipped: ' + esc(r.test.rows.filter((x) => !x.right).map((x) => x.word).join(', ')) : '') + '</p>' : '')
     + (r.stars.length ? '<p class="small starsbyday">' + r.stars.map((s) => '<span>' + esc(W.dayLabel(s.day)) + ': ' + s.stars + ' of ' + r.of + '</span>').join('') + '</p>' : '')
     + (r.sentences.length ? '<h3>Sentences</h3><ul class="report__list">' + r.sentences.map((s) => '<li><b>' + esc(s.word) + ':</b> ' + esc(s.text) + '</li>').join('') + '</ul>' : '')
@@ -85,10 +107,10 @@ export function childDashboard(main, { cid }) {
   main.innerHTML = wrap('Grown-ups', 'Dashboard', '', '<p class="muted">Loading…</p>');
   loadChild(id).then((c) => {
     if (stopped) return;
-    if (!c) { failed(main, 'We couldn\'t find that child on your account.'); return; }
+    if (c.problem) { showProblem(main, c.problem); return; }
     const r = P.dashboard(c.words, today());
     const stat = (n, label, sub = '') => '<div class="card stat"><b>' + esc(n) + '</b><span>' + esc(label) + '</span>' + (sub ? '<span class="muted small">' + esc(sub) + '</span>' : '') + '</div>';
-    main.innerHTML = wrap('Grown-ups', c.child.nickname + '\'s words', PRIVACY,
+    main.innerHTML = wrap('Grown-ups', c.child.nickname + '\'s words', PRIVACY + ' ' + ROW_LINE,
       '<div class="btnrow noprint"><a class="btn btn--primary" href="' + childHref(id) + '/plan">Plan a week' + ICON.arrow + '</a><button type="button" class="btn btn--ghost" data-print>Print weekly report</button></div>'
       + '<div class="stats">' + stat(r.remembered, 'Remembered') + stat(r.practised, 'Words practised') + stat(r.independent + '%', 'Independent first goes', r.clean + ' of ' + plural(r.firstGoes, 'first go', 'first goes')) + '</div>'
       + (r.current ? reportHtml(r.current, id) : '<div class="card empty"><p class="muted">No word group yet. Plan a week to start.</p></div>')
@@ -118,6 +140,10 @@ function planForm(main, cid, gid) {
   let typed = '';
   let note = '';
   let showing = null; // the preview
+  let saving = false;
+  // One id for this plan, however many times it's sent: if a save arrives but
+  // its answer is lost, trying again changes that group, and never makes a second.
+  const planId = 'p' + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => b.toString(16).padStart(2, '0')).join('');
 
   const tricky = () => P.childTricky(c.progress).filter((w) => findEntry(w));
   const source = () => (tab === 'chapter' ? D.chapterById(chapterId).words.map((w) => w.word)
@@ -142,7 +168,7 @@ function planForm(main, cid, gid) {
   }
   function draw() {
     if (showing) { drawPreview(); return; }
-    main.innerHTML = wrap('Plan a week', 'For ' + c.child.nickname, 'Up to ' + W.MAX_WORDS + ' words. The week fits itself to the test date.', '<div class="card groupform">'
+    main.innerHTML = wrap('Plan a week', 'For ' + c.child.nickname, 'Up to ' + W.MAX_WORDS + ' words. The week fits itself to the test date. ' + DAILY_TIME_CAP + '. ' + ROW_LINE, '<div class="card groupform">'
       + '<label class="small muted" for="p-name">Name</label><input id="p-name" class="field" maxlength="' + W.MAX_NAME + '" value="' + esc(name) + '" placeholder="' + esc(W.defaultName(test)) + '" data-name>'
       + '<label class="small muted" for="p-test">Test date</label><input id="p-test" class="field" type="date" value="' + esc(test) + '" min="' + W.addDays(day, 1) + '" max="' + W.addDays(day, W.MAX_DAYS) + '" data-test></div>'
       + '<h2 class="sectionhead">Words <span class="muted small">(' + chosen.length + ' of ' + W.MAX_WORDS + ')</span></h2>'
@@ -197,23 +223,33 @@ function planForm(main, cid, gid) {
       + stripHtml(p.steps, day)
       + '<div class="previewwords">' + p.words.map((w) => '<span>' + chunked(entryFor(w)) + '</span>').join('') + '</div>'
       + (p.back.length ? '<p class="muted small">Back again with these: ' + esc(p.back.join(', ')) + '</p>' : '') + '</div>'
+      + '<p class="spellline" data-savenote role="alert"></p>'
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-save>' + (editing ? 'Save the changes' : 'Send to ' + esc(c.child.nickname)) + ICON.arrow + '</button><button type="button" class="btn btn--ghost" data-back>Change it</button></div>');
     main.querySelector('[data-back]').addEventListener('click', () => { showing = null; draw(); });
     main.querySelector('[data-save]').addEventListener('click', save);
   }
   async function save() {
+    if (saving) return;
+    saving = true;
+    const button = main.querySelector('[data-save]');
+    const note = main.querySelector('[data-savenote]');
+    button.disabled = true;
+    note.textContent = '';
     const now = Date.now();
-    const newId = 'p' + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => b.toString(16).padStart(2, '0')).join('');
     const r = await A.changeWords(childApi(), id, (doc) => (editing
       ? P.editPlan(doc, editing, { name: name.trim() || showing.name, words: chosen, test }, { today: day, now })
-      : P.createPlan(doc, { name, test, words: chosen }, { id: newId, today: day, now })));
-    if (r.error) { toast(r.error); return; }
-    toast('Saved');
-    location.hash = childHref(id);
+      : P.createPlan(doc, { name, test, words: chosen }, { id: planId, today: day, now })));
+    saving = false;
+    if (stopped) return;
+    if (r.ok) { toast(r.updated ? 'Updated with the latest' : 'Saved'); location.hash = childHref(id); return; }
+    if (r.problem === 'playing' || r.problem === 'no-child') { showProblem(main, r.problem); return; }
+    if (r.problem === 'signed-out') recheckWho();
+    button.disabled = false;
+    note.textContent = r.error || P.PROBLEM_TEXT[r.problem] + ' Nothing has been saved.';
   }
   Promise.all([loadChild(id), fetch('data/patterns.json').then((r) => r.json()).catch(() => ({ patterns: [] }))]).then(([child, data]) => {
     if (stopped) return;
-    if (!child) { failed(main, 'We couldn\'t find that child on your account.'); return; }
+    if (child.problem) { showProblem(main, child.problem); return; }
     c = child;
     patterns = data.patterns;
     credit = (data._meta || {}).credit || '';

@@ -94,11 +94,11 @@ A weekly list, beside the chapters, at `#/words` (signed in). A group has a name
 
 ## Study mode, Game mode and Grown-ups
 
-Each word group has a guided week (Study mode): Hello words, Fix it in, Game day, Story day, Practice day, Test day, Mend and keep, one job a day. The days up to the test are shared out evenly, so a short week puts several jobs on a day. A missed job waits; from the test date the test comes first. In Fix it in, the practice grid and Mend, a mistake or a peek brings the same word straight back and resets its count; a word is done for the session after 3 clean spellings in a row. "Skip for now" sends a word to the end of today's list, marked "Come back to this", and the job stays open until it's done. A word's dots show today's count, and stay at 3 once it has finished a session before the test; "Ready for the test" means every test word has. In the spelling games a mistake brings the word back until it's clean, with the same skip, but they earn no dots. Meaning match doesn't test spelling, so it can earn a star and counts as played, and no first go. Game mode has Missing letters, Unjumble, Meaning match and Quick-fire with the same words. While a test is due, no page shows its words (`site/js/test-guard.js`): those pages show the Test today card, and word lists leave them out. My room, the home page for a child, shows today's job.
+Each word group has a guided week (Study mode): Hello words, Fix it in, Game day, Story day, Practice day, Test day, Mend and keep, one job a day, about 15–20 minutes a day. Each word is spelled 3 times in a row before it counts. The days up to the test are shared out evenly, so a short week puts several jobs on a day. A missed job waits; from the test date the test comes first. In Fix it in, the practice grid and Mend, a mistake or a peek brings the same word straight back and resets its count; a word is done for the session after 3 clean spellings in a row. "Skip for now" sends a word to the end of today's list, marked "Come back to this", and the job stays open until it's done. A word's dots show today's count, and stay at 3 once it has finished a session before the test; "Ready for the test" means every test word has. In the spelling games a mistake brings the word back until it's clean, with the same skip, but they earn no dots. Meaning match doesn't test spelling, so it can earn a star and counts as played, and no first go. Game mode has Missing letters, Unjumble, Meaning match and Quick-fire with the same words. While a test is due, no page shows its words (`site/js/test-guard.js`): those pages show the Test today card, and word lists leave them out. My room, the home page for a child, shows today's job.
 
 **Stories.** `site/data/stories.json` has one original story per chapter. To release some: read them at `#/grownups/stories`, tick Approve, run the command the page shows (`node tools/approve-stories.mjs <chapters>`), bump `VERSION` in `site/sw.js` and deploy. Then, for the Waystead voice, `GCP_PROJECT=… python3 tools/generate-story-audio.py`; until then the device's voice reads them.
 
-**Grown-ups** (`#/grownups`, an adult signed in as themselves) has the story review now. Plan a week and the dashboard wait for three routes on the Waystead account, then set `CHILD_DATA_API` to true in `site/js/grownups-data.js`:
+**Grown-ups** (`#/grownups`, an adult signed in as themselves) has Plan a week, a dashboard for each child and the story review, through the account's `/api/children` routes (`site/js/grownups-data.js`; `CHILD_DATA_API` turns Plan and Dashboard off again). An adult playing as a child gets a card to switch back. Nothing about a child is kept on the adult's device.
 
 | Route | Answers |
 |---|---|
@@ -106,7 +106,7 @@ Each word group has a guided week (Study mode): Hello words, Fix it in, Game day
 | `GET /api/children/:id/game/:game` | as `GET /api/game/:game`, for that child |
 | `PUT /api/children/:id/game/:game/:key` | as `PUT /api/game/:game/:key`, 409 included |
 
-All three: an adult's session with `playingAs` null only (403 otherwise), 404 for a child who isn't theirs, the usual CORS, Origin and rate-limit rules. `shared/tests/fake-account.js` has them.
+All three: 401 signed out; 403 `adult-session-required` for a child's session or an adult playing as a child; 404 `no-such-child` for anyone who isn't theirs. `shared/tests/fake-account.js` follows them.
 
 ## Audio
 

@@ -14,6 +14,10 @@
 //     until it's done. Jobs not reached by then are passed over.
 import * as W from './words-doc.js';
 
+export const DAILY_TIME = 'about 15–20 minutes a day';
+export const DAILY_TIME_CAP = 'About 15–20 minutes a day';
+export const ROW_LINE = 'Each word is spelled 3 times in a row before it counts.';
+
 export const BEFORE_TEST = ['hello', 'fix', 'games', 'story', 'practice'];
 export const STEPS = [...BEFORE_TEST, 'test', 'mend'];
 export const MEND_WAIT = 7; // Mend and keep is on offer this many days after its date

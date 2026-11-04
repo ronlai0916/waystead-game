@@ -8,7 +8,7 @@ import { esc, ICON, picture, chunked, chunkText, boldWord, redact, shuffle, toas
 import { dayStyleHtml, wireDayStyle } from './daystyle.js';
 import { burstHtml, placeBursts } from './celebrate.js';
 import { todayLine, backAgainFor, hiddenToday } from './words-views.js';
-import { withoutHidden } from './study-doc.js';
+import { withoutHidden, DAILY_TIME, DAILY_TIME_CAP, ROW_LINE } from './study-doc.js';
 
 const MAX_PICK = 30;
 
@@ -554,11 +554,11 @@ export function about(main) {
     + '<p>My words is a weekly list. Your child picks up to ten words and a test date, then practises a little each day: the word is spoken and hidden, and they spell it letter by letter. The day before the test is the last practice day. On test day there is no help and no checking until the end, and the day after, any words that slipped come back as fix-ups.</p>'
     + '<p>A word counts as remembered once it is spelled with no help, at the first go of the day, on three different days at least a week apart from first to last. Words not yet remembered come back in later lists. The numbers are for your child and you only: there are no leagues and no comparing with anyone else.</p>'
     + '<h2>Study mode and Game mode</h2>'
-    + '<p>Each word group comes with a guided week, one job a day of about ten to fifteen minutes: meet the words, fix them in with look, say, cover, write and check, play four games, see the words at work and write sentences, a round of the practice grid, the test, then mend anything that slipped. A missed day simply waits, and a short week fits the jobs into the days there are. In Fix it in, the practice grid and Mend and keep, a word comes straight back after a mistake or a peek, and is done once it has been spelled 3 times in a row. A word can be skipped for now, but the day\'s job stays open until it\'s done. The three dots show those three spellings. The games don\'t earn dots; a wrong answer there simply comes back until it\'s right. Game mode has the same four games with the same words at any time, except while a test is due: until it\'s done, its words are kept off every page.</p>'
+    + '<p>Each word group comes with a guided week, one job each day, ' + DAILY_TIME + ': meet the words, fix them in with look, say, cover, write and check, play four games, see the words at work and write sentences, a round of the practice grid, the test, then mend anything that slipped. A missed day simply waits, and a short week fits the jobs into the days there are. In Fix it in, the practice grid and Mend and keep, a word comes straight back after a mistake or a peek, and is done once it has been spelled 3 times in a row. A word can be skipped for now, but the day\'s job stays open until it\'s done. ' + ROW_LINE + ' The three dots show those three spellings. The games don\'t earn dots; a wrong answer there simply comes back until it\'s right. Game mode has the same four games with the same words at any time, except while a test is due: until it\'s done, its words are kept off every page.</p>'
     + '<h2>Grown-ups</h2>'
-    + '<p>Signed in as yourself, you\'ll find Grown-ups on the first page. Planning a week and the dashboard open with the next Waystead account update. What a child writes (sentences and memory clues) can be seen only by that child and their own parent. The spelling patterns follow English Appendix 1, under the Open Government Licence v3.0.</p>'
+    + '<p>Signed in as yourself, you\'ll find Grown-ups on the first page. There you can plan a week for your child and see how it\'s going, word by word. What a child writes (sentences and memory clues) can be seen only by that child and their own parent. The spelling patterns follow English Appendix 1, under the Open Government Licence v3.0.</p>'
     + '<h2>Little and often</h2>'
-    + '<p>Ten to fifteen minutes, three or four times a week, works better than one long session. Start each session with a few tricky words before moving on.</p>'
+    + '<p>' + DAILY_TIME_CAP + ' works better than one long session. Start each session with a few tricky words before moving on.</p>'
     + '<h2>How it looks</h2>'
     + '<p>The look menu at the top (the sun or moon button) switches between Day · Sunny garden, Day · Paint box, Night and Match device (which follows this device\'s light or dark setting). The choice is shared with Wordbright, our word-tile game, which uses the same three styles. You can also pick the day style here:</p>'
     + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })

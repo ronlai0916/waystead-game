@@ -26,7 +26,7 @@ export function room(main) {
   const day = W.localDay(Date.now());
   const r = St.roomState(d, day);
   const g = r.group;
-  const button = r.status === 'job' ? '<a class="btn btn--primary btn--big" href="' + stepHref(d, g, r.step.id, day) + '" data-job>' + esc(r.step.title) + ICON.arrow + '</a><p class="muted">' + esc(r.step.line) + '</p>'
+  const button = r.status === 'job' ? '<a class="btn btn--primary btn--big" href="' + stepHref(d, g, r.step.id, day) + '" data-job>' + esc(r.step.title) + ICON.arrow + '</a><p class="muted">' + esc(r.step.line) + '</p><p class="muted small">' + esc(St.DAILY_TIME_CAP) + '</p>'
     : r.status === 'none' ? '<a class="btn btn--primary btn--big" href="#/words">My words' + ICON.arrow + '</a>'
       : r.status === 'finished' ? '<a class="btn btn--primary btn--big" href="#/words/new">New word group' + ICON.arrow + '</a>'
         : '<a class="btn btn--primary btn--big" href="../wordbright/" data-wordbright>Play Wordbright' + ICON.arrow + '</a>';

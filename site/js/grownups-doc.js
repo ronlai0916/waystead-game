@@ -5,9 +5,24 @@
 import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import { trickyWords } from './progress-doc.js';
+import { switchUrl } from './account/config.js';
 
 /** Only an adult playing as themselves. A child, or an adult playing as one, never. */
 export const canSeeGrownups = (kind) => kind === 'adult';
+
+/** The account's "Who's playing?", coming back to this page. */
+export const switchBackHref = (origin, here) => switchUrl(origin, here);
+export const playingLine = (name) => 'You\'re playing as ' + (name || 'a child') + '. Switch back to yourself to plan and see progress.';
+
+/** What each problem (grownups-data.js) says. */
+export const PROBLEM_TEXT = {
+  network: 'We can\'t reach Waystead just now. Check your connection, then try again.',
+  busy: 'Waystead is busy just now. Please wait a moment, then try again.',
+  'too-big': 'This child\'s saved words are full. Please try a shorter plan, or ask us for help.',
+  'signed-out': 'You\'ve been signed out. Please sign in again.',
+  'no-child': 'That child isn\'t on your account.',
+  other: 'Something went wrong on our side. Please try again.',
+};
 
 /** What a plan will do, before it's saved. */
 export function preview(d, { name, test, words }, today) {
@@ -26,6 +41,8 @@ export const childTricky = (progress) => trickyWords(progress).map((t) => t.word
 function groupReport(d, g, today) {
   const p = W.groupProgress(d, g);
   const dots = new Map(W.allDots(d, g, today).map((x) => [x.word, x.dots]));
+  const comeBack = W.comeBack(d, g, today).map((x) => x.word);
+  const inARow = (w) => Math.max(...['p', 'x', 'f'].map((flow) => W.sessionCount(d, g, w, today, flow))); // today, in any flow
   const s = St.studyState(d, g, today);
   const test = W.testResults(d, g).filter((x) => x.result);
   return {
@@ -33,7 +50,8 @@ function groupReport(d, g, today) {
     status: s.status, job: s.job ? St.STEP_TEXT[s.job].title : '',
     steps: s.steps,
     ready: W.readyForTest(d, g),
-    words: p.words.map((x) => ({ word: x.word, back: x.back, status: x.status, tries: x.tries, peeks: x.peeks, dots: dots.get(x.word) })),
+    words: p.words.map((x) => ({ word: x.word, back: x.back, status: x.status, tries: x.tries, peeks: x.peeks, dots: dots.get(x.word), today: inARow(x.word), comeBack: comeBack.includes(x.word) })),
+    comeBack,
     test: { taken: test.length, right: test.filter((x) => x.result.right).length, of: g.words.length, rows: test.map((x) => ({ word: x.word, right: x.result.right })) },
     stars: p.stars, of: p.of,
     sentences: W.notesFor(d, g).map((x) => ({ word: x.w, text: x.x, day: x.d })),
