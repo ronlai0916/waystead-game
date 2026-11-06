@@ -103,6 +103,8 @@ bitching	form of "bitch"
 bitchy	own list
 blackamoor	own list
 blackamoors	own list
+blockhead	own list
+blockheads	own list
 blowjob	open blocklist
 blowjobs	strong root
 boche	every WordNet sense offensive
@@ -118,6 +120,8 @@ bollox	own list
 bolloxed	own list
 bolloxes	own list
 bolloxing	own list
+bonehead	own list
+boneheads	own list
 boner	open blocklist
 boners	form of "boner"
 bonk	own list
@@ -302,6 +306,8 @@ dicks	form of "dick"
 dildo	open blocklist
 dildoe	strong root
 dildos	strong root
+dimwit	own list
+dimwits	own list
 dingleberries	open blocklist
 dingleberry	open blocklist
 dink	own list
@@ -310,6 +316,8 @@ dipshit	strong root
 dipshits	strong root
 dm	2-letter word not in our short list
 dominatrix	open blocklist
+doofus	own list
+doofuses	own list
 dopehead	own list
 dopeheads	own list
 douche	own list
@@ -318,6 +326,13 @@ druggie	own list
 druggier	own list
 druggies	own list
 druggiest	own list
+dufus	own list
+dummkopf	own list
+dummkopfs	own list
+dunce	own list
+dunces	own list
+dunderhead	own list
+dunderheads	own list
 dyke	own list
 dyked	form of "dyke"
 dykes	form of "dyke"
@@ -398,6 +413,8 @@ fagoting	own list
 fags	own list
 fannies	own list
 fanny	own list
+featherhead	own list
+featherheads	own list
 fellate	strong root
 fellated	strong root
 fellates	strong root
@@ -450,6 +467,8 @@ fuckoffs	strong root
 fucks	strong root
 fuckup	strong root
 fuckups	strong root
+gabies	own list
+gaby	own list
 gamin	every WordNet sense offensive
 gamins	every WordNet sense offensive
 gangbang	open blocklist
@@ -584,6 +603,10 @@ jigaboos	form of "jigaboo"
 jism	own list
 jisms	own list
 jo	2-letter word not in our short list
+juggins	own list
+jugginses	own list
+jughead	own list
+jugheads	own list
 junkie	own list
 junkies	own list
 junky	own list
@@ -604,6 +627,8 @@ kinkier	own list
 kinkiest	own list
 kinky	open blocklist
 km	2-letter word not in our short list
+knucklehead	own list
+knuckleheads	own list
 kraut	every WordNet sense offensive
 krauts	every WordNet sense offensive
 la	2-letter word not in our short list
@@ -661,6 +686,10 @@ lowlife	own list
 lowlifes	own list
 lubra	own list
 lubras	own list
+lummox	own list
+lummoxes	own list
+lunkhead	own list
+lunkheads	own list
 lustful	own list
 lustfully	own list
 lustfulness	own list
@@ -670,6 +699,7 @@ magdalen	own list
 magdalens	own list
 mammies	own list
 mammy	own list
+mampara	own list
 marijuana	own list
 marrano	own list
 marranos	own list
@@ -716,6 +746,7 @@ molester	own list
 molesters	own list
 molesting	own list
 molests	own list
+mompara	own list
 mong	open blocklist
 mongol	own list
 mongolism	every WordNet sense offensive
@@ -735,9 +766,13 @@ motherfucker	open blocklist
 motherfuckers	strong root
 motherfucking	strong root
 mu	2-letter word not in our short list
+muddlehead	own list
+muddleheads	own list
 mulatto	own list
 mulattoes	own list
 multiorgasmic	strong root
+muttonhead	own list
+muttonheads	own list
 na	2-letter word not in our short list
 nance	every WordNet sense offensive
 nances	every WordNet sense offensive
@@ -792,8 +827,18 @@ niggles	strong root
 niggling	strong root
 nigglingly	strong root
 niggly	strong root
+nincompoop	own list
+nincompooperies	own list
+nincompoopery	own list
+nincompoops	own list
+ninnies	own list
+ninny	own list
+ninnyhammer	own list
+ninnyhammers	own list
 nipple	open blocklist
 nipples	open blocklist
+nitwit	own list
+nitwits	own list
 nonorgasmic	strong root
 nookie	every WordNet sense offensive
 nooky	every WordNet sense offensive
@@ -814,6 +859,8 @@ nymphomaniac	own list
 nymphomaniacal	own list
 nymphomaniacs	own list
 nymphos	form of "nympho"
+oaf	own list
+oafs	own list
 octoroon	own list
 octoroons	own list
 od	2-letter word not in our short list
@@ -1239,6 +1286,8 @@ sodomitic	strong root
 sodomitical	strong root
 sodoms	strong root
 sodomy	open blocklist
+softhead	own list
+softheads	own list
 sonofabitch	own list
 spastic	open blocklist
 spastics	form of "spastic"
@@ -1423,6 +1472,8 @@ womanises	own list
 womanishness	every WordNet sense offensive
 womanishnesses	every WordNet sense offensive
 womanising	own list
+woodenhead	own list
+woodenheads	own list
 wop	every WordNet sense offensive
 wops	every WordNet sense offensive
 xi	2-letter word not in our short list

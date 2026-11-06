@@ -15908,8 +15908,6 @@ blockchains
 blocked
 blocker
 blockers
-blockhead
-blockheads
 blockhouse
 blockhouses
 blockier
@@ -16767,11 +16765,9 @@ bonefish
 bonefishes
 bonefishing
 bonefishings
-bonehead
 boneheaded
 boneheadedness
 boneheadednesses
-boneheads
 boneless
 bonemeal
 bones
@@ -42227,8 +42223,6 @@ dimpling
 dimply
 dims
 dimunitional
-dimwit
-dimwits
 dimwitted
 dimwittedly
 dimwittedness
@@ -45220,8 +45214,6 @@ doodoos
 doody
 doofer
 doofers
-doofus
-doofuses
 doohickey
 doohickeys
 doohickies
@@ -46602,7 +46594,6 @@ duffers
 duffle
 duffles
 duffs
-dufus
 dufuses
 dug
 dugong
@@ -46692,8 +46683,6 @@ dumka
 dumkas
 dumky
 dummies
-dummkopf
-dummkopfs
 dummy
 dumortierite
 dumortierites
@@ -46721,15 +46710,11 @@ dumpy
 dun
 dunam
 dunams
-dunce
-dunces
 duncical
 duncish
-dunderhead
 dunderheaded
 dunderheadedness
 dunderheadednesses
-dunderheads
 dundrearies
 dune
 duneland
@@ -55389,9 +55374,7 @@ feathercuts
 feathered
 featheredge
 featheredges
-featherhead
 featherheaded
-featherheads
 featherier
 featheriest
 featheriness
@@ -61134,7 +61117,6 @@ gaberlunzie
 gaberlunzies
 gabfest
 gabfests
-gabies
 gabion
 gabionade
 gabionades
@@ -61148,7 +61130,6 @@ gabling
 gaboon
 gaboons
 gabs
-gaby
 gad
 gadabout
 gadabouts
@@ -81823,8 +81804,6 @@ jugged
 juggernaut
 juggernauts
 jugging
-juggins
-jugginses
 juggle
 juggled
 juggler
@@ -81833,8 +81812,6 @@ jugglery
 juggles
 juggling
 jugglings
-jughead
-jugheads
 juglandaceous
 jugs
 jugular
@@ -83506,9 +83483,7 @@ knucklebones
 knuckled
 knuckleduster
 knuckledusters
-knucklehead
 knuckleheaded
-knuckleheads
 knuckler
 knucklers
 knuckles
@@ -88425,8 +88400,6 @@ luminously
 luminousness
 luminousnesses
 lumma
-lummox
-lummoxes
 lump
 lumpectomies
 lumpectomy
@@ -88523,9 +88496,7 @@ lunitidal
 lunk
 lunker
 lunkers
-lunkhead
 lunkheaded
-lunkheads
 lunks
 lunt
 lunted
@@ -89827,7 +89798,6 @@ mammoplasties
 mammoplasty
 mammoth
 mammoths
-mampara
 mams
 mamzer
 mamzerim
@@ -95774,7 +95744,6 @@ mommucked
 mommucking
 mommucks
 mommy
-mompara
 momser
 momsers
 momzer
@@ -97269,12 +97238,10 @@ muddily
 muddiness
 muddle
 muddled
-muddlehead
 muddleheaded
 muddleheadedly
 muddleheadedness
 muddleheadednesses
-muddleheads
 muddler
 muddlers
 muddles
@@ -98175,9 +98142,7 @@ mutton
 muttonchops
 muttonfish
 muttonfishes
-muttonhead
 muttonheaded
-muttonheads
 muttony
 mutts
 mutual
@@ -100346,10 +100311,6 @@ nimiety
 nimrod
 nimrods
 nims
-nincompoop
-nincompooperies
-nincompoopery
-nincompoops
 nine
 ninebark
 ninebarks
@@ -100371,10 +100332,6 @@ ninja
 ninjas
 ninjitsu
 ninjitsus
-ninnies
-ninny
-ninnyhammer
-ninnyhammers
 ninnyish
 ninon
 ninons
@@ -100493,8 +100450,6 @@ nits
 nittier
 nittiest
 nitty
-nitwit
-nitwits
 nival
 niveous
 nix
@@ -103226,11 +103181,9 @@ nystagmus
 nystagmuses
 nystatin
 nystatins
-oaf
 oafish
 oafishly
 oafishness
-oafs
 oak
 oaken
 oaklike
@@ -144651,12 +144604,10 @@ softening
 softens
 softer
 softest
-softhead
 softheaded
 softheadedly
 softheadedness
 softheadednesses
-softheads
 softhearted
 softheartedly
 softheartedness
@@ -174790,11 +174741,9 @@ wooded
 wooden
 woodener
 woodenest
-woodenhead
 woodenheaded
 woodenheadedness
 woodenheadednesses
-woodenheads
 woodenly
 woodenness
 woodenware

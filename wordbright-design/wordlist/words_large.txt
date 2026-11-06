@@ -11299,8 +11299,6 @@ blockchains
 blocked
 blocker
 blockers
-blockhead
-blockheads
 blockhouse
 blockhouses
 blocking
@@ -11939,11 +11937,9 @@ boneblack
 boneblacks
 boned
 bonefish
-bonehead
 boneheaded
 boneheadedness
 boneheadednesses
-boneheads
 boneless
 bonemeal
 bones
@@ -30503,8 +30499,6 @@ dimples
 dimpling
 dimply
 dims
-dimwit
-dimwits
 dimwitted
 din
 dinar
@@ -32694,8 +32688,6 @@ doodler
 doodlers
 doodles
 doodling
-doofus
-doofuses
 doohickey
 doohickeys
 doolally
@@ -33824,10 +33816,6 @@ dumpster
 dumpsters
 dumpy
 dun
-dunce
-dunces
-dunderhead
-dunderheads
 dune
 dunes
 dung
@@ -40190,8 +40178,6 @@ feathercuts
 feathered
 featheredge
 featheredges
-featherhead
-featherheads
 featherier
 featheriest
 feathering
@@ -44488,7 +44474,6 @@ gaberlunzie
 gaberlunzies
 gabfest
 gabfests
-gabies
 gabion
 gabionade
 gabionades
@@ -44501,7 +44486,6 @@ gablets
 gaboon
 gaboons
 gabs
-gaby
 gad
 gadabout
 gadabouts
@@ -59114,8 +59098,6 @@ jugged
 juggernaut
 juggernauts
 jugging
-juggins
-jugginses
 juggle
 juggled
 juggler
@@ -59124,8 +59106,6 @@ jugglery
 juggles
 juggling
 jugglings
-jughead
-jugheads
 juglandaceous
 jugs
 jugular
@@ -60331,8 +60311,6 @@ knucklebones
 knuckled
 knuckleduster
 knuckledusters
-knucklehead
-knuckleheads
 knuckler
 knucklers
 knuckles
@@ -63907,8 +63885,6 @@ luminous
 luminously
 luminousness
 luminousnesses
-lummox
-lummoxes
 lump
 lumpectomies
 lumpectomy
@@ -63983,8 +63959,6 @@ lungworts
 lunisolar
 lunitidal
 lunk
-lunkhead
-lunkheads
 lunks
 lunula
 lunulae
@@ -64864,7 +64838,6 @@ mammonist
 mammonists
 mammoth
 mammoths
-mampara
 mams
 man
 mana
@@ -68923,7 +68896,6 @@ momism
 momisms
 mommies
 mommy
-mompara
 monachal
 monachism
 monachisms
@@ -69938,9 +69910,7 @@ muddily
 muddiness
 muddle
 muddled
-muddlehead
 muddleheaded
-muddleheads
 muddler
 muddlers
 muddles
@@ -70530,8 +70500,6 @@ mutterings
 mutters
 mutton
 muttonchops
-muttonhead
-muttonheads
 muttony
 mutts
 mutual
@@ -71925,8 +71893,6 @@ nimiety
 nimrod
 nimrods
 nims
-nincompoop
-nincompoops
 nine
 ninebark
 ninebarks
@@ -71944,10 +71910,6 @@ ninetieths
 ninety
 ninja
 ninjas
-ninnies
-ninny
-ninnyhammer
-ninnyhammers
 ninon
 ninons
 ninth
@@ -72030,8 +71992,6 @@ nits
 nittier
 nittiest
 nitty
-nitwit
-nitwits
 nival
 niveous
 nix
@@ -73368,11 +73328,9 @@ nystagmus
 nystagmuses
 nystatin
 nystatins
-oaf
 oafish
 oafishly
 oafishness
-oafs
 oak
 oaken
 oaks
@@ -122042,8 +122000,6 @@ wooded
 wooden
 woodener
 woodenest
-woodenhead
-woodenheads
 woodenly
 woodenness
 woodenware

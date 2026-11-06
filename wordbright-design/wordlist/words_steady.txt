@@ -5230,8 +5230,6 @@ blockbusters
 blockchain
 blockchains
 blocked
-blockhead
-blockheads
 blockhouse
 blockhouses
 blocking
@@ -5574,8 +5572,6 @@ bondsman
 bondsmen
 bone
 boned
-bonehead
-boneheads
 boneless
 bones
 bonfire
@@ -14679,8 +14675,6 @@ dimpled
 dimples
 dimpling
 dims
-dimwit
-dimwits
 din
 dine
 dined
@@ -16501,8 +16495,6 @@ dumpster
 dumpsters
 dumpy
 dun
-dunce
-dunces
 dune
 dunes
 dung
@@ -29412,8 +29404,6 @@ known
 knows
 knuckle
 knuckled
-knucklehead
-knuckleheads
 knuckles
 knuckling
 koala
@@ -31167,8 +31157,6 @@ luminescent
 luminosity
 luminous
 luminously
-lummox
-lummoxes
 lump
 lumped
 lumpier
@@ -34947,8 +34935,6 @@ nimbler
 nimblest
 nimbly
 nimbus
-nincompoop
-nincompoops
 nine
 ninepins
 nines
@@ -34962,8 +34948,6 @@ ninetieths
 ninety
 ninja
 ninjas
-ninnies
-ninny
 ninth
 ninths
 nip
@@ -34992,8 +34976,6 @@ nitrogen
 nitrogenous
 nitroglycerine
 nits
-nitwit
-nitwits
 nix
 nixed
 nixes
@@ -35470,9 +35452,7 @@ nylon
 nylons
 nymph
 nymphs
-oaf
 oafish
-oafs
 oak
 oaken
 oaks

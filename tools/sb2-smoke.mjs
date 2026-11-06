@@ -37,7 +37,7 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
 
 let flagOn = true;
 let netDown = false;
-let storiesLive = false;
+let storiesHidden = false; // the stories are approved in the repo: some scenes need them waiting
 const site = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, SITE).pathname);
   const m = /^\/(spellbright|wordbright)\/(.*)$/.exec(path);
@@ -47,7 +47,7 @@ const site = createServer((req, res) => {
   if (!file || !existsSync(file)) { res.writeHead(404, { 'Content-Security-Policy': csp }); res.end('not here'); return; }
   let body = readFileSync(file);
   if (file.endsWith('grownups-data.js') && !flagOn) body = String(body).replace('CHILD_DATA_API = true', 'CHILD_DATA_API = false');
-  if (file.endsWith('stories.json') && storiesLive) body = String(body).replaceAll('"reviewed": false', '"reviewed": true');
+  if (file.endsWith('stories.json') && storiesHidden) body = String(body).replaceAll('"reviewed": true', '"reviewed": false');
   res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Content-Security-Policy': csp, 'Cache-Control': 'no-store' });
   res.end(body);
 });
@@ -325,6 +325,10 @@ async function hearTheFlower(w) {
 }
 
 scene('week', async () => {
+  storiesHidden = true; // the examples path; the story itself has its own scene
+  try { await week(); } finally { storiesHidden = false; }
+});
+async function week() {
   await seedChild(weekDoc());
   await open(MON, '#/');
   await until('document.querySelector("[data-room=job]")', 'My room');
@@ -495,7 +499,7 @@ scene('week', async () => {
   await sleep(1800); // the debounced save
   const saved = readDoc();
   ok(saved && saved.results.length >= 20, 'the week reached the account: ' + (saved && saved.results.length));
-});
+}
 
 scene('each game once, in Game mode', async () => {
   const doc = weekDoc(['build', 'earth', 'fruit'], plus(7));
@@ -766,8 +770,7 @@ scene('games: the same word back, and skip', async () => {
 });
 
 scene('a reviewed story', async () => {
-  storiesLive = true;
-  try { await reviewedStory(); } finally { storiesLive = false; }
+  await reviewedStory();
 });
 async function reviewedStory() {
   let doc = weekDoc();
@@ -973,6 +976,10 @@ scene('grown-ups: when things go wrong', async () => {
 });
 
 scene('story review', async () => {
+  storiesHidden = true;
+  try { await storyReview(); } finally { storiesHidden = false; }
+});
+async function storyReview() {
   await seedAdult();
   await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'home');
   await go('#/grownups/stories');
@@ -986,7 +993,7 @@ scene('story review', async () => {
   await sleep(300);
   await until('document.querySelector("[data-approve=\\"y34-ch01\\"]")', 'the page again');
   ok(await ev('document.querySelector("[data-approve=\\"y34-ch01\\"]").checked'), 'the mark stays on this device');
-});
+}
 
 scene('permissions', async () => {
   await seedChild(weekDoc());

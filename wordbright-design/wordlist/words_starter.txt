@@ -3262,8 +3262,6 @@ blockage
 blockbuster
 blockbusters
 blocked
-blockhead
-blockheads
 blocking
 blocks
 blocs
@@ -10578,8 +10576,6 @@ dumpling
 dumplings
 dumps
 dumpy
-dunce
-dunces
 dune
 dunes
 dung
@@ -22502,8 +22498,6 @@ nimble
 nimbler
 nimblest
 nimbly
-nincompoop
-nincompoops
 nine
 nines
 nineteen
@@ -22514,8 +22508,6 @@ nineties
 ninetieth
 ninetieths
 ninety
-ninnies
-ninny
 ninth
 ninths
 nip
@@ -22532,8 +22524,6 @@ nitrates
 nitrating
 nitrogen
 nits
-nitwit
-nitwits
 no
 nobility
 noble
@@ -22796,8 +22786,6 @@ nuzzling
 nylon
 nymph
 nymphs
-oaf
-oafs
 oak
 oaks
 oar

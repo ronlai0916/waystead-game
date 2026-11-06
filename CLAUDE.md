@@ -53,6 +53,13 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - Stories: `site/data/stories.json`. Children see a story only with `"reviewed": true`, set by `node tools/approve-stories.mjs` (then bump VERSION, deploy). The review page's switches are one device's notes and release nothing. Sentences read with the device's voice until `tools/generate-story-audio.py` has made the MP3s: the account's voice speaks single words only.
 - Smoke test: `node tools/sb2-smoke.mjs <folder>` (real Chrome, fake clock, fake account on :3000, nginx's CSP).
 
+## Composition (compose/site/)
+- A static site at `/compose/`, its CSS and shell copied from Spellbright; `--sb` is the home page's Terracotta (no new colour). Copies of shared code as the other sites (`tools/sync-shared.mjs`). CSP is in nginx AND `compose/site/index.html`. Bump `VERSION` in `compose/site/sw.js` on every Composition release.
+- Rules, all pure: `checks.js` (word count, hint words, slips, capitals), `writing-doc.js` (pieces, merge, trim, marks). A final is never dropped; merging never loses a child's words (`other`). Checks speak kindly: nothing is called wrong.
+- `marks` and `settings` are a parent's: written only through `/api/children`. This device only ever reads them. Consent for AI feedback is `settings.aiFeedback`, off by default.
+- Tasks: children see only `"reviewed": true` (`visibleTo`). `TASK_TITLES` in waystead-account `src/lib/compose-feedback.ts` must match; a test compares them.
+- "Real word" in the slip check means Wordbright's two smallest tiers (`COMMON_TIER`): the full list has rarities like "kyte". A task's own names are never slips.
+
 ## Waystead account (B4b)
 - The client is `shared/account/` (API, player, session, sync, prefs, merge, chip, import question, boot). Each site serves a COPY (`site/js/account/`, `wordbright/site/js/account/`, `hub/site/home-assets/js/account/`): edit `shared/account/`, then `node tools/sync-shared.mjs`. `shared/tests/copies.test.js` fails on a stale copy.
 - Fetch with `credentials: 'include'` only. Never store, log or read a token, email or session id; the device keeps only `wa.player` = {id, name, avatar URL}.

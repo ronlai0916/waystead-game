@@ -44,7 +44,7 @@ export function fakeAccount() {
     if (!pid) return json(401, { signedIn: false });
     const body = init.body ? JSON.parse(init.body) : undefined;
     // /api/children (waystead-account src/lib/data-api.ts): an adult playing as themselves, their own children only.
-    const kids = /^\/api\/children(?:\/([^/]+)\/game\/(spellbright|wordbright)(?:\/([A-Za-z0-9._:-]{1,64}))?)?$/.exec(u.pathname);
+    const kids = /^\/api\/children(?:\/([^/]+)\/game\/(spellbright|wordbright|compose)(?:\/([A-Za-z0-9._:-]{1,64}))?)?$/.exec(u.pathname);
     if (kids) {
       const me = acct.who;
       if (me.kind !== 'parent' || me.playingAs) return json(403, { error: 'adult-session-required' });
@@ -76,9 +76,11 @@ export function fakeAccount() {
       acct.prefs.set(pid, next);
       return json(200, next);
     }
-    const m = /^\/api\/game\/(spellbright|wordbright)(?:\/([A-Za-z0-9._:-]{1,64}))?$/.exec(u.pathname);
+    const m = /^\/api\/game\/(spellbright|wordbright|compose)(?:\/([A-Za-z0-9._:-]{1,64}))?$/.exec(u.pathname);
     if (!m) return json(404, { error: 'unknown-game' });
     const [, game, key] = m;
+    // A parent's values: only through /api/children (waystead-account src/lib/data-api.ts).
+    if (game === 'compose' && ['settings', 'marks'].includes(key) && method !== 'GET') return json(403, { error: 'parent-only-key' });
     if (!acct.data.has(pid)) acct.data.set(pid, new Map());
     const rows = acct.data.get(pid);
     if (!key && method === 'GET') {

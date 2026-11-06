@@ -108,6 +108,18 @@ Each word group has a guided week (Study mode): Hello words, Fix it in, Game day
 
 All three: 401 signed out; 403 `adult-session-required` for a child's session or an adult playing as a child; 404 `no-such-child` for anyone who isn't theirs. `shared/tests/fake-account.js` follows them.
 
+## Composition
+
+Picture composition practice at `/compose/` (`compose/site/`, a static site like Wordbright, with the shared account, voice and top bar). Twelve tasks in `compose/site/data/tasks.json`: four pictures, a background, hint words, a planner, success criteria and a model answer for grown-ups. A child goes through Look, Plan, Write, Check, then hands it in for the automatic checks and, with a parent's consent, AI feedback; one go at making it better; Final. Year 3 has a box per picture.
+
+Saved per player in the account game `compose`: `writing` (the child's), and `marks` and `settings` (a parent's, through `/api/children` only: the account refuses them on the child's own routes). AI feedback is off by default, per child, in Grown-ups.
+
+**Tasks.** Every task starts `"reviewed": false`, visible to an adult signed in as themselves but not to children (nor an adult playing as a child). Read them at `#/grownups/tasks`, run the command the page shows (`node tools/approve-tasks.mjs <ids>`), bump `VERSION` in `compose/site/sw.js`, deploy.
+
+**Pictures.** `python3 tools/compose-art.py plan|make|redo` (prompts in `tools/compose-art.json`; the key is read from the Keychain inside the script; at most 60 calls, counted in `compose-design/assets-raw/calls.json`). Log: `compose-design/assets-raw/ASSETS.md`.
+
+**Tests.** `node --test compose/tests/`, and `node tools/compose-smoke.mjs <folder>`.
+
 ## Audio
 
 `tools/generate-audio.py` makes 213 word MP3s and 26 letter MP3s with Google

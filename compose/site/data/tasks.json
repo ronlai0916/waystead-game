@@ -1,0 +1,645 @@
+{
+ "_meta": {
+  "note": "Original Waystead tasks. A task reaches children only with reviewed: true, set by tools/approve-tasks.mjs. compose/tests/tasks.test.js checks the shape, the word lists and the lengths. Pictures: compose-design/assets-raw/ASSETS.md."
+ },
+ "tasks": [
+  {
+   "id": "lost-kite",
+   "level": 3,
+   "title": "The Lost Kite",
+   "reviewed": false,
+   "background": "Maya and her little brother Sam are at the park. It is a very windy day.",
+   "pictures": [
+    {
+     "file": "assets/stories/lost-kite-1",
+     "alt": "A girl in a yellow raincoat flies a red kite in a park. Her little brother points up at it."
+    },
+    {
+     "file": "assets/stories/lost-kite-2",
+     "alt": "The kite is stuck in a tall tree. The girl looks up sadly and her brother holds the broken string."
+    },
+    {
+     "file": "assets/stories/lost-kite-3",
+     "alt": "A park keeper climbs a ladder to reach the kite while the children watch."
+    },
+    {
+     "file": "assets/stories/lost-kite-4",
+     "alt": "The park keeper gives the kite back. The children smile and wave."
+    }
+   ],
+   "hints": [
+    "kite",
+    "wind",
+    "string",
+    "tree",
+    "stuck",
+    "ladder",
+    "climb",
+    "sad",
+    "happy",
+    "thank"
+   ],
+   "opening": "Maya had a bright red kite.",
+   "planner": [
+    "What is happening in picture 1?",
+    "What goes wrong in picture 2?",
+    "What happens next in picture 3?",
+    "How does it end in picture 4?"
+   ],
+   "criteria": [
+    "I used capital letters to start my sentences.",
+    "I put a full stop at the end of each sentence.",
+    "I joined ideas with and or because.",
+    "I used a describing word.",
+    "I said how someone felt."
+   ],
+   "model": "Maya had a bright red kite. She took it to the park with her little brother Sam. The wind was strong and the kite flew up high. Sam clapped because he was so happy.\n\nThen the string snapped! The kite flew into a tall tree and it got stuck. Maya felt very sad.\n\nA kind park keeper saw them. He got a long ladder and he climbed up the tree. He reached out and he got the kite.\n\nHe gave the kite back to Maya. She said thank you and she gave a big smile. Sam waved at the park keeper. It was a good day after all."
+  },
+  {
+   "id": "muddy-dog",
+   "level": 3,
+   "title": "The Muddy Dog",
+   "reviewed": false,
+   "background": "Ben and his mum are having a picnic in a field. Their big dog, Honey, loves puddles.",
+   "pictures": [
+    {
+     "file": "assets/stories/muddy-dog-1",
+     "alt": "A mum, a boy and a big golden dog at a picnic on a checked blanket. The dog looks at a muddy puddle."
+    },
+    {
+     "file": "assets/stories/muddy-dog-2",
+     "alt": "The dog rolls in the muddy puddle. The boy points and laughs."
+    },
+    {
+     "file": "assets/stories/muddy-dog-3",
+     "alt": "The muddy dog shakes itself on the blanket and mud flies on to the food."
+    },
+    {
+     "file": "assets/stories/muddy-dog-4",
+     "alt": "The boy and his mum wash the dog in a tub of soapy water. Everyone is laughing."
+    }
+   ],
+   "hints": [
+    "picnic",
+    "dog",
+    "mud",
+    "puddle",
+    "blanket",
+    "sandwich",
+    "wash",
+    "soap",
+    "wet",
+    "laugh"
+   ],
+   "opening": "It was a sunny day for a picnic.",
+   "planner": [
+    "What is happening in picture 1?",
+    "What goes wrong in picture 2?",
+    "What happens next in picture 3?",
+    "How does it end in picture 4?"
+   ],
+   "criteria": [
+    "I used capital letters to start my sentences.",
+    "I put a full stop at the end of each sentence.",
+    "I joined ideas with and or because.",
+    "I used a describing word.",
+    "I said how someone felt."
+   ],
+   "model": "It was a sunny day for a picnic. Ben and Mum sat on a big blanket. They had sandwiches and cake. Honey the dog looked at a muddy puddle.\n\nHoney ran to the puddle and she jumped in! She rolled in the mud and she got very dirty. Ben laughed because she looked so funny.\n\nThen Honey ran back to the blanket. She shook her wet fur and mud went on the sandwiches. Mum was cross, but not for long.\n\nThey got a big tub of soapy water. Ben and Mum washed Honey until she was clean. Honey was happy and so was Ben."
+  },
+  {
+   "id": "surprise-cake",
+   "level": 3,
+   "title": "The Surprise Cake",
+   "reviewed": false,
+   "background": "It is Gran's birthday. Amir and Zara want to make her a cake, and it is a secret.",
+   "pictures": [
+    {
+     "file": "assets/stories/surprise-cake-1",
+     "alt": "A brother and sister in aprons mix cake batter in a kitchen. There is flour on their noses."
+    },
+    {
+     "file": "assets/stories/surprise-cake-2",
+     "alt": "The children spread pink icing on a round cake and add candles."
+    },
+    {
+     "file": "assets/stories/surprise-cake-3",
+     "alt": "The children crouch by the sofa with the cake, keeping very quiet, while their grandmother comes in behind them."
+    },
+    {
+     "file": "assets/stories/surprise-cake-4",
+     "alt": "The children jump out with the lit cake. Grandmother claps and smiles."
+    }
+   ],
+   "hints": [
+    "cake",
+    "bake",
+    "birthday",
+    "icing",
+    "candle",
+    "hide",
+    "surprise",
+    "sofa",
+    "door",
+    "happy"
+   ],
+   "opening": "Today was a very special day.",
+   "planner": [
+    "What is happening in picture 1?",
+    "What goes wrong in picture 2?",
+    "What happens next in picture 3?",
+    "How does it end in picture 4?"
+   ],
+   "criteria": [
+    "I used capital letters to start my sentences.",
+    "I put a full stop at the end of each sentence.",
+    "I joined ideas with and or because.",
+    "I used a describing word.",
+    "I said how someone felt."
+   ],
+   "model": "Today was a very special day. It was Gran's birthday. Amir and Zara wanted to bake a cake. They mixed the eggs and flour in a big bowl. There was flour on their noses!\n\nNext they put pink icing on the cake. Zara added the candles very carefully. It looked lovely.\n\nThen they heard the door. Gran was home! Amir and Zara crouched by the sofa because it was a secret. They tried not to laugh.\n\nThey jumped up and shouted, \"Surprise!\" Gran clapped her hands. She was so happy that she gave them a big hug. The cake was delicious."
+  },
+  {
+   "id": "rainy-match",
+   "level": 3,
+   "title": "The Rainy Match",
+   "reviewed": false,
+   "background": "The Blue Team are playing football at school. The sun is out, but not for long.",
+   "pictures": [
+    {
+     "file": "assets/stories/rainy-match-1",
+     "alt": "Children in blue football shirts run after a ball on a sunny pitch."
+    },
+    {
+     "file": "assets/stories/rainy-match-2",
+     "alt": "Dark clouds come and heavy rain falls. The children keep playing in the puddles."
+    },
+    {
+     "file": "assets/stories/rainy-match-3",
+     "alt": "A girl slides through the mud and kicks the ball into the goal. Her team cheer."
+    },
+    {
+     "file": "assets/stories/rainy-match-4",
+     "alt": "The muddy team sit in towels, drinking hot chocolate and laughing."
+    }
+   ],
+   "hints": [
+    "football",
+    "team",
+    "rain",
+    "mud",
+    "goal",
+    "cheer",
+    "wet",
+    "towel",
+    "warm",
+    "proud"
+   ],
+   "opening": "The Blue Team ran on to the pitch.",
+   "planner": [
+    "What is happening in picture 1?",
+    "What goes wrong in picture 2?",
+    "What happens next in picture 3?",
+    "How does it end in picture 4?"
+   ],
+   "criteria": [
+    "I used capital letters to start my sentences.",
+    "I put a full stop at the end of each sentence.",
+    "I joined ideas with and or because.",
+    "I used a describing word.",
+    "I said how someone felt."
+   ],
+   "model": "The Blue Team ran on to the pitch. The sun was out and everyone was happy. They kicked the ball and they ran very fast.\n\nThen big grey clouds came. It began to rain and the pitch got wet. There were puddles everywhere, but nobody stopped.\n\nLily ran with the ball. She slid in the mud and she kicked it hard. It went in the goal! The team gave a loud cheer because they had won.\n\nAfter the game they were cold and muddy. They sat in warm towels and they had hot chocolate. Lily felt very proud."
+  },
+  {
+   "id": "snowman-contest",
+   "level": 3,
+   "title": "The Snowman Contest",
+   "reviewed": false,
+   "background": "It has snowed in the village. Ella and Kofi are in the snowman contest.",
+   "pictures": [
+    {
+     "file": "assets/stories/snowman-contest-1",
+     "alt": "Two friends in warm coats roll a huge snowball on a snowy village green."
+    },
+    {
+     "file": "assets/stories/snowman-contest-2",
+     "alt": "The friends add a carrot nose, buttons and stick arms to their snowman."
+    },
+    {
+     "file": "assets/stories/snowman-contest-3",
+     "alt": "The wind blows the snowman's hat and scarf away. The friends run after them, laughing."
+    },
+    {
+     "file": "assets/stories/snowman-contest-4",
+     "alt": "A teacher pins a blue ribbon on the snowman and the friends jump for joy."
+    }
+   ],
+   "hints": [
+    "snow",
+    "snowman",
+    "carrot",
+    "scarf",
+    "hat",
+    "wind",
+    "chase",
+    "win",
+    "ribbon",
+    "cold"
+   ],
+   "opening": "Snow covered the whole village.",
+   "planner": [
+    "What is happening in picture 1?",
+    "What goes wrong in picture 2?",
+    "What happens next in picture 3?",
+    "How does it end in picture 4?"
+   ],
+   "criteria": [
+    "I used capital letters to start my sentences.",
+    "I put a full stop at the end of each sentence.",
+    "I joined ideas with and or because.",
+    "I used a describing word.",
+    "I said how someone felt."
+   ],
+   "model": "Snow covered the whole village. Ella and Kofi wanted to win the snowman contest. They rolled a huge snowball across the green. It was hard work and their hands were cold.\n\nThey put a small snowball on top. Kofi added a carrot for the nose and Ella found two sticks for the arms.\n\nThen the wind blew! It took the hat and the scarf. Ella and Kofi had to chase them because the snowman looked sad without them. They laughed all the way.\n\nAt last the snowman was ready. The teacher pinned a blue ribbon on him. They had won! Ella and Kofi jumped up and down."
+  },
+  {
+   "id": "lost-teddy",
+   "level": 3,
+   "title": "The Lost Teddy",
+   "reviewed": false,
+   "background": "Leo goes everywhere with his teddy bear, Bobby. Today he is on the bus with Dad.",
+   "pictures": [
+    {
+     "file": "assets/stories/lost-teddy-1",
+     "alt": "A boy and his dad sit on a red bus. The boy holds a small teddy bear."
+    },
+    {
+     "file": "assets/stories/lost-teddy-2",
+     "alt": "The boy and his dad get off the bus. The teddy is left on the seat as the bus drives away."
+    },
+    {
+     "file": "assets/stories/lost-teddy-3",
+     "alt": "At bedtime the boy is crying on his bed and his dad talks to him kindly."
+    },
+    {
+     "file": "assets/stories/lost-teddy-4",
+     "alt": "The next morning a bus driver hands the teddy back. The boy hugs it."
+    }
+   ],
+   "hints": [
+    "bus",
+    "teddy",
+    "seat",
+    "window",
+    "bedtime",
+    "cry",
+    "driver",
+    "hug",
+    "glad",
+    "morning"
+   ],
+   "opening": "Leo and Dad got on the red bus.",
+   "planner": [
+    "What is happening in picture 1?",
+    "What goes wrong in picture 2?",
+    "What happens next in picture 3?",
+    "How does it end in picture 4?"
+   ],
+   "criteria": [
+    "I used capital letters to start my sentences.",
+    "I put a full stop at the end of each sentence.",
+    "I joined ideas with and or because.",
+    "I used a describing word.",
+    "I said how someone felt."
+   ],
+   "model": "Leo and Dad got on the red bus. Leo sat by the window and he held Bobby on his knee. He liked to look at the shops.\n\nSoon it was time to get off. Leo jumped down the steps, but Bobby stayed on the seat! The bus drove away.\n\nAt bedtime Leo looked in his bag. Bobby was not there. Leo began to cry because he missed his teddy. Dad gave him a hug and said they would look in the morning.\n\nThe next morning they went to the bus stop. The kind driver had Bobby! Leo gave his teddy a big hug. He was so glad."
+  },
+  {
+   "id": "market-mixup",
+   "level": 4,
+   "title": "The Market Mix-Up",
+   "reviewed": false,
+   "background": "Every Saturday, Nell buys apples from Mr Potts at the market. Today the stall is very busy, and two paper bags look exactly the same.",
+   "pictures": [
+    {
+     "file": "assets/stories/market-mixup-1",
+     "alt": "A girl with a basket buys apples at a busy market stall. Two brown paper bags sit on the counter."
+    },
+    {
+     "file": "assets/stories/market-mixup-2",
+     "alt": "The stallholder looks away and hands her one of the paper bags."
+    },
+    {
+     "file": "assets/stories/market-mixup-3",
+     "alt": "At home, the girl opens the bag and finds a surprised white rabbit inside."
+    },
+    {
+     "file": "assets/stories/market-mixup-4",
+     "alt": "She runs back with the rabbit. The stallholder laughs and a little boy hugs his rabbit."
+    }
+   ],
+   "hints": [
+    "market",
+    "stall",
+    "apple",
+    "paper",
+    "rabbit",
+    "surprise",
+    "mistake",
+    "basket",
+    "customer",
+    "laughed",
+    "return"
+   ],
+   "opening": "Mr Potts was the loudest man at the market.",
+   "planner": [
+    "Who is at the market, and what do they want?",
+    "What small mistake happens?",
+    "What does Nell find at home? How does she feel?",
+    "How is the mix-up put right?"
+   ],
+   "criteria": [
+    "I used capitals and full stops.",
+    "I wrote a new paragraph for each picture.",
+    "I used time words like First, Next and Later.",
+    "I used speech marks at least once.",
+    "I used describing words.",
+    "I showed how someone felt."
+   ],
+   "model": "Mr Potts was the loudest man at the market. Every Saturday, Nell bought apples from his stall.\n\nFirst, she waited in the long queue. Two brown paper bags sat on the counter. \"Here you are, love!\" said Mr Potts, but he was looking at another customer. Nell took a bag and skipped home.\n\nLater, she put the bag on the kitchen table. It wobbled. Nell frowned and opened it slowly. A small white rabbit stared back at her! \"You are definitely not an apple,\" she whispered.\n\nStraight away, Nell ran back with the rabbit tucked gently in her coat. A little boy was crying at the stall. When he saw his pet, he gave a huge smile. Mr Potts laughed until his moustache shook, and he filled Nell's basket with free apples."
+  },
+  {
+   "id": "hamster-escape",
+   "level": 4,
+   "title": "The Great Hamster Escape",
+   "reviewed": false,
+   "background": "Class 4 look after a ginger hamster called Biscuit. This morning, somebody has not shut the cage door properly.",
+   "pictures": [
+    {
+     "file": "assets/stories/hamster-escape-1",
+     "alt": "Children gather round a hamster cage in a classroom. The cage door is slightly open."
+    },
+    {
+     "file": "assets/stories/hamster-escape-2",
+     "alt": "The children find the cage empty. Their teacher looks under a table."
+    },
+    {
+     "file": "assets/stories/hamster-escape-3",
+     "alt": "The children search with torches while the hamster peeps out of a school bag behind them."
+    },
+    {
+     "file": "assets/stories/hamster-escape-4",
+     "alt": "A girl gently lifts the hamster out of a lunchbox, and everyone laughs."
+    }
+   ],
+   "hints": [
+    "hamster",
+    "cage",
+    "escape",
+    "classroom",
+    "search",
+    "torch",
+    "cupboard",
+    "lunchbox",
+    "crumbs",
+    "relieved",
+    "teacher"
+   ],
+   "opening": "Nobody noticed the little door.",
+   "planner": [
+    "What are the class doing at the start?",
+    "What do they discover?",
+    "How do they search? Where is Biscuit really?",
+    "Where is Biscuit found, and how does everyone feel?"
+   ],
+   "criteria": [
+    "I used capitals and full stops.",
+    "I wrote a new paragraph for each picture.",
+    "I used time words like First, Next and Later.",
+    "I used speech marks at least once.",
+    "I used describing words.",
+    "I showed how someone felt."
+   ],
+   "model": "Nobody noticed the little door. Class 4 were all watching Biscuit run round and round on his wheel.\n\nAfter lunch, Tia went to fill his water bottle. \"Mr Reed!\" she shouted. \"The cage is empty!\" Everyone rushed over. Books slid off the table and Mr Reed crawled underneath it.\n\nNext, the search began. The children took torches and shone them into every dark cupboard. Sam looked behind the radiator. Nobody looked behind them, where two bright eyes were peeping out of a school bag.\n\nFinally, Tia heard a tiny crunching noise. She followed it to an open lunchbox. There sat Biscuit, stuffing crumbs into his fat cheeks! Tia lifted him out gently and everyone cheered. Mr Reed was so relieved that he mended the cage door straight away."
+  },
+  {
+   "id": "tent-trouble",
+   "level": 4,
+   "title": "Tent Trouble",
+   "reviewed": false,
+   "background": "The Hall family have never been camping before. Dad says putting up a tent is easy. The clouds say otherwise.",
+   "pictures": [
+    {
+     "file": "assets/stories/tent-trouble-1",
+     "alt": "A family try to put up a blue tent at sunset, with poles and pegs on the grass."
+    },
+    {
+     "file": "assets/stories/tent-trouble-2",
+     "alt": "The tent is up but leaning to one side as dark clouds gather."
+    },
+    {
+     "file": "assets/stories/tent-trouble-3",
+     "alt": "In the rainy night the tent has fallen down on the family. Their heads poke out and they are laughing."
+    },
+    {
+     "file": "assets/stories/tent-trouble-4",
+     "alt": "In the morning sunshine they eat breakfast while a kind neighbour helps with the tent."
+    }
+   ],
+   "hints": [
+    "camping",
+    "tent",
+    "pegs",
+    "instructions",
+    "wonky",
+    "storm",
+    "collapsed",
+    "neighbour",
+    "breakfast",
+    "sunshine",
+    "embarrassed"
+   ],
+   "opening": "\"How hard can it be?\" said Dad.",
+   "planner": [
+    "How does the family feel when they arrive? What are they doing?",
+    "What is wrong with the tent?",
+    "What happens in the night?",
+    "Who helps them in the morning?"
+   ],
+   "criteria": [
+    "I used capitals and full stops.",
+    "I wrote a new paragraph for each picture.",
+    "I used time words like First, Next and Later.",
+    "I used speech marks at least once.",
+    "I used describing words.",
+    "I showed how someone felt."
+   ],
+   "model": "\"How hard can it be?\" said Dad. The poles and pegs lay all over the grass, and he was scratching his head at the instructions.\n\nAn hour later, the tent was finally up. It leaned to one side like a tired old horse. \"It's a bit wonky,\" said Ruby. Dad pretended not to hear. Meanwhile, the wind was growing stronger and dark clouds rolled in.\n\nThat night, the rain began. Suddenly there was a loud whoosh, and the whole tent collapsed on top of them! Ruby, Dad and little Jack poked out their heads and laughed until their sides hurt.\n\nThe next morning, the sunshine was warm. Their kind neighbour made them all breakfast and put up the tent properly. Dad looked embarrassed. \"Next time,\" he said, \"we're staying in a hotel.\""
+  },
+  {
+   "id": "seal-pup",
+   "level": 5,
+   "title": "The Seal on the Sand",
+   "reviewed": false,
+   "background": "Rosa and her cousin Finn are collecting shells on a quiet winter beach. They know that wild animals should be left alone, but this morning something is wrong. A small white shape on the sand is not moving much.",
+   "pictures": [
+    {
+     "file": "assets/stories/seal-pup-1",
+     "alt": "Two children with buckets walk along a grey beach. A very small white shape lies far away on the sand."
+    },
+    {
+     "file": "assets/stories/seal-pup-2",
+     "alt": "The children stand back from a white seal pup tangled in old green fishing net. The girl uses a phone."
+    },
+    {
+     "file": "assets/stories/seal-pup-3",
+     "alt": "A rescuer in a bright jacket gently cuts the net away while the children watch from behind a rope."
+    },
+    {
+     "file": "assets/stories/seal-pup-4",
+     "alt": "Weeks later, beside an open carrier, the healthy seal slides towards the waves. The children wave goodbye."
+    }
+   ],
+   "hints": [
+    "beach",
+    "shore",
+    "seal",
+    "tangled",
+    "distance",
+    "rescuer",
+    "gently",
+    "recover",
+    "released",
+    "waves",
+    "anxious"
+   ],
+   "opening": "The beach was empty, or so they thought.",
+   "planner": [
+    "Set the scene: what can Rosa and Finn see, hear and feel?",
+    "What do they find? What do they decide to do, and why?",
+    "How does the rescuer help? How do the children feel as they watch?",
+    "What happens weeks later? What has changed?"
+   ],
+   "criteria": [
+    "I wrote in paragraphs.",
+    "I used speech marks and the right punctuation.",
+    "I started my sentences in different ways.",
+    "I used time connectives to move the story on.",
+    "I showed feelings through what people do and say.",
+    "I gave my story a strong ending."
+   ],
+   "model": "The beach was empty, or so they thought. Grey waves rolled up the shore as Rosa and Finn wandered along the tide line, their buckets rattling with shells.\n\n\"What's that?\" asked Finn, pointing. Far ahead, something small and white lay on the sand. As they crept closer, Rosa's heart sank. It was a seal pup, tangled in a piece of green fishing net.\n\n\"We have to help it!\" said Finn, stepping forward.\n\n\"No,\" Rosa replied firmly, pulling him back. \"We keep our distance and call the rescue team.\" Her fingers trembled as she dialled.\n\nWithin half an hour, a rescuer in a bright jacket had arrived. Speaking softly, she cut away the net, strand by strand, while the anxious children watched from behind a rope. The pup blinked its huge dark eyes and lay still.\n\nThree weeks later, they stood on the same beach. The sun was shining this time. The rescuer opened the carrier and, without a backward glance, the seal slid into the waves.\n\n\"Goodbye,\" whispered Rosa, waving until her arm ached. She had never felt so proud of doing so little."
+  },
+  {
+   "id": "attic-letters",
+   "level": 5,
+   "title": "The Box in the Attic",
+   "reviewed": false,
+   "background": "Jay is staying with his great-aunt Vera while his parents are away. One afternoon he helps her look for a suitcase in the attic. Under an old blanket is something she has not seen for sixty years.",
+   "pictures": [
+    {
+     "file": "assets/stories/attic-letters-1",
+     "alt": "A boy finds an old wooden box under a blanket in a dusty attic, while his great-aunt stands nearby."
+    },
+    {
+     "file": "assets/stories/attic-letters-2",
+     "alt": "He opens the box and finds letters tied with ribbon and an old photograph. His great-aunt leans in to look."
+    },
+    {
+     "file": "assets/stories/attic-letters-3",
+     "alt": "At the kitchen table his great-aunt looks at the letters, with one hand on her heart and happy tears in her eyes."
+    },
+    {
+     "file": "assets/stories/attic-letters-4",
+     "alt": "The boy and his great-aunt hug a very old man at the door of a cottage."
+    }
+   ],
+   "hints": [
+    "attic",
+    "dusty",
+    "ribbon",
+    "letters",
+    "photograph",
+    "curious",
+    "memories",
+    "friend",
+    "cottage",
+    "reunited",
+    "tears"
+   ],
+   "opening": "Dust danced in the single beam of light.",
+   "planner": [
+    "Describe the attic. Why is Jay there?",
+    "What does he find? What questions does it make him ask?",
+    "How does Vera react? What does she explain?",
+    "Who do they visit? How does the story end?"
+   ],
+   "criteria": [
+    "I wrote in paragraphs.",
+    "I used speech marks and the right punctuation.",
+    "I started my sentences in different ways.",
+    "I used time connectives to move the story on.",
+    "I showed feelings through what people do and say.",
+    "I gave my story a strong ending."
+   ],
+   "model": "Dust danced in the single beam of light. Jay climbed the last step into the attic behind Great-Aunt Vera, wrinkling his nose at the smell of old paper. The suitcases were exactly where she had said, but behind them, half hidden by a blanket, sat a small wooden box.\n\nCurious, he lifted the lid. Inside lay a bundle of letters tied with faded ribbon and a photograph of two children laughing on a wall.\n\n\"Aunt Vera,\" he said, \"who's this?\"\n\nShe took the photograph in both hands. Downstairs at the kitchen table, for a long moment she said nothing. Then, with tears shining in her eyes, she smiled. \"That's Arthur,\" she said softly. \"My best friend. His family moved away when I was twelve, and I thought I had lost his address for ever.\"\n\nJay turned over the top envelope. \"It's on here,\" he said.\n\nA week later, they stood outside a tiny cottage by the sea. The door creaked open, and a very old man with a walking stick stared at them. \"Vera?\" he said.\n\nSixty years melted away in a single hug."
+  },
+  {
+   "id": "science-fair",
+   "level": 6,
+   "title": "The Runaway Robot",
+   "reviewed": false,
+   "background": "Asha and Tom have spent six weeks building a robot out of cardboard, a toy motor and a great deal of sticky tape. Today it faces the judges at the school science fair. It has passed every test at home, but it has never been in a room this big, or this noisy.",
+   "pictures": [
+    {
+     "file": "assets/stories/science-fair-1",
+     "alt": "Two friends stand proudly beside a small cardboard robot at a school science fair as judges walk towards them."
+    },
+    {
+     "file": "assets/stories/science-fair-2",
+     "alt": "The robot rolls off the table and speeds across the hall. The friends chase it and projects wobble."
+    },
+    {
+     "file": "assets/stories/science-fair-3",
+     "alt": "The robot bumps a tall tower of paper cups, which fall around a surprised judge. The friends cover their mouths."
+    },
+    {
+     "file": "assets/stories/science-fair-4",
+     "alt": "Everyone rebuilds the cup tower together and the laughing judge gives them a gold star."
+    }
+   ],
+   "hints": [
+    "science",
+    "judges",
+    "robot",
+    "cardboard",
+    "motor",
+    "hurtled",
+    "pandemonium",
+    "collapse",
+    "embarrassed",
+    "determined",
+    "rebuild",
+    "applause"
+   ],
+   "opening": "Six weeks of work sat on one small table.",
+   "planner": [
+    "Show how Asha and Tom feel before the judges arrive. What is at stake?",
+    "What goes wrong? Build the tension as the robot escapes.",
+    "What is the worst moment? Slow it down.",
+    "How do they respond? What do they learn, or win, in the end?"
+   ],
+   "criteria": [
+    "I wrote in well-organised paragraphs.",
+    "I mixed short and long sentences for effect.",
+    "I punctuated speech correctly.",
+    "I used commas to make my meaning clear.",
+    "I chose ambitious words.",
+    "I varied my sentence openers and connectives.",
+    "My ending links back to the start."
+   ],
+   "model": "Six weeks of work sat on one small table. It was made of cardboard, a toy motor and more sticky tape than anyone would care to admit, but to Asha and Tom it was the finest robot in England.\n\n\"Don't touch anything,\" Asha muttered, as the judges drew closer. Her hands, she noticed, were not quite steady.\n\nWhat happened next was nobody's fault. Perhaps it was the vibration from the stage; perhaps it was fate. With a tiny click, the motor whirred into life. The robot rolled forward, tipped over the edge of the table and landed, miraculously, on its wheels.\n\nThen it hurtled across the hall.\n\n\"Stop it!\" yelled Tom, sprinting after it. Volcanoes wobbled. A model of the solar system lost two planets. Everywhere the robot went, pandemonium followed, until, directly ahead, Asha saw the tallest tower of paper cups the school had ever seen.\n\nTime seemed to slow. The robot nudged the bottom row. For one long second, nothing moved. Then, cup by cup, the whole tower began to collapse around a very surprised judge.\n\nSilence.\n\nAsha wanted the floor to swallow her. Instead, she took a deep breath, picked up a cup and started to rebuild. Tom joined her, then the tower's owner, then half the hall.\n\nThe judge, still wearing a cup on her shoulder, began to laugh. She peeled a gold star from her sheet and stuck it firmly on the robot's dented head.\n\n\"For teamwork,\" she said, over the applause. \"And for the best demonstration of motion I've ever seen.\""
+  }
+ ]
+}

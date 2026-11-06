@@ -2,7 +2,8 @@
 // their class are blocked (wordbright-design/wordlist/review-2026-11-02.md).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { isWord } from '../site/js/engine/words.js';
 import { newGame, act, play } from '../site/js/engine/game.js';
@@ -140,4 +141,64 @@ test('G9: Star words are never blocked; the groups Ron kept (2 Nov) and kept wor
   assert.ok(existsSync(WORDLIST + 'review-2026-11-02-adult.md'));
   const review = readFileSync(WORDLIST + 'review-2026-11-02-adult.md', 'utf8');
   for (const h of ['## Blocked (419 words', '## Ron decides — decided by Ron, 2 Nov', '## Kept (with reasons)']) assert.ok(review.includes(h), h);
+});
+
+// ---- the insult sweep (review-2026-11-05-insults.md) and circular meanings -------------------
+const SHARD_DIR = fileURLToPath(new URL('../site/data/meanings/', import.meta.url));
+function allMeanings() {
+  const out = new Map();
+  for (const dir of [SHARD_DIR, SHARD_DIR + 'wikt/']) {
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && x !== 'index.json')) {
+      for (const [w, e] of Object.entries(JSON.parse(readFileSync(dir + f, 'utf8')))) if (w !== '~' && e && e.m) out.set(w, e.m);
+    }
+  }
+  return out;
+}
+const SWEPT = ['dimwit', 'nincompoop', 'ninny', 'nitwit', 'oaf', 'dunce', 'lummox', 'knucklehead', 'doofus', 'blockhead', 'bonehead'];
+test('insult sweep: the words whose only sense is an insult are gone from every list and the graph', () => {
+  for (const w of SWEPT) {
+    assert.equal(isWord(w, words), false, w);
+    for (const n of ['starter', 'steady', 'full', 'large', 'xlarge']) assert.ok(!readFileSync(WORDLIST + 'words_' + n + '.txt', 'utf8').split('\n').includes(w), n + ': ' + w);
+  }
+});
+test('insult sweep: no meaning left that calls someone stupid', () => {
+  const re = /\b(?:stupid|foolish|idiotic|contemptible)\b(?:[ ,]+(?:(?:and|or) )?[a-z-]+){0,3}?[ ,]+(?:person|man|woman|fellow|one)\b|\bterm of abuse\b/i;
+  const hits = [...allMeanings()].filter(([, m]) => re.test(m)).map(([w]) => w);
+  assert.deepEqual(hits, []);
+});
+test('insult sweep: a word with another sense stays, with that sense', () => {
+  const m = allMeanings();
+  assert.equal(isWord('booby', words), true);
+  assert.match(m.get('booby'), /gannet/);
+  assert.match(m.get('loggerhead'), /turtle/);
+  assert.match(m.get('hammerhead'), /hammer/);
+  assert.equal(m.get('twonk'), 'Nonsense.');
+});
+test('the sweep left the tiles, boards and Star words byte-identical', () => {
+  const sha = (p) => createHash('sha1').update(readFileSync(fileURLToPath(new URL('../../' + p, import.meta.url)))).digest('hex');
+  const want = {
+    "wordbright/site/data/tiles.json": "097261be5cd835904bad1ccfe0423d5be3e5e9f8",
+    "wordbright/site/data/board_junior.json": "876b33551928cdaa5f879c347870c4640edf65e9",
+    "wordbright/site/data/board_large.json": "e08392512ccf62a2a1ce3876ea043d37ef63628f",
+    "wordbright/site/data/board_standard.json": "728ae6ba690258f2466058f34b07fe5019d93aae",
+    "wordbright/site/data/star_words.json": "ec1b1c095b6236f6c766c8a5f88d33274600c8b8",
+    "wordbright-design/wordlist/tiles.json": "097261be5cd835904bad1ccfe0423d5be3e5e9f8",
+    "wordbright-design/wordlist/star_words.json": "13c949915628c42534fba433a7d7e56ef4f0df05"
+  };
+  for (const [p, h] of Object.entries(want)) assert.equal(sha(p), h, p);
+});
+test('circular meanings: the reflexive pronouns say something', () => {
+  const m = allMeanings();
+  for (const w of ['oneself', 'himself', 'herself', 'itself', 'myself', 'ourselves', 'themselves', 'yourself']) {
+    assert.ok(m.get(w).split(' ').length >= 5, w + ': ' + m.get(w));
+    assert.doesNotMatch(m.get(w), /^(A form of|Him|Her|It|Us)\b/, w);
+  }
+});
+test('circular meanings: nothing says only the word again', () => {
+  const m = allMeanings();
+  for (const [w, text] of [['agonise', /worry/], ['open', /operate/], ['attempt', /activity/], ['clank', /noise/]]) assert.match(m.get(w), text, w);
+  const bare = [...m].filter(([w, t]) => t.replace(/[.\s]/g, '').toLowerCase() === w);
+  assert.deepEqual(bare, []);
+  assert.equal(m.get('centillion'), '10³⁰³.', 'a number is a meaning');
+  assert.equal(m.get('wets'), 'Makes something wet.');
 });

@@ -144,6 +144,14 @@ RON_APPROVED_STARTER_STEADY |= set('''clitoral douche douches fetish fetishes ge
 suicidal suicide suicides testicle testicles vaginae vaginal vulvae'''.split())
 OWN_BLOCK |= RON_APPROVED_STARTER_STEADY
 
+# The insult sweep (review-2026-11-05-insults.md): words whose only sense is a mild insult
+# ("a stupid person"), which no usage tag marks. Overnight 4 Nov, Ron approved sweep.
+INSULT_SWEEP = set('''blockhead blockheads bonehead boneheads dimwit dimwits doofus doofuses dufus dummkopf dummkopfs dunce dunces dunderhead dunderheads featherhead featherheads gabies gaby juggins jugginses jughead jugheads knucklehead knuckleheads lummox lummoxes lunkhead lunkheads mampara mompara muddlehead muddleheads muttonhead muttonheads nincompoop nincompooperies nincompoopery nincompoops ninnies ninny ninnyhammer ninnyhammers nitwit nitwits oaf oafs softhead softheads woodenhead woodenheads'''.split())
+OWN_BLOCK |= INSULT_SWEEP
+# Those in the starter and steady lists, overnight 4 Nov, Ron approved sweep.
+RON_APPROVED_STARTER_STEADY |= set('''blockhead blockheads bonehead boneheads dimwit dimwits dunce dunces knucklehead knuckleheads lummox lummoxes nincompoop nincompoops ninnies ninny nitwit nitwits oaf oafs'''.split())
+OWN_BLOCK |= RON_APPROVED_STARTER_STEADY
+
 # Words whose every WordNet sense is offensive, found by tools/build-meanings.py --prune-lists.
 _WN_BLOCK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'wordnet_block.txt')
 if os.path.exists(_WN_BLOCK):

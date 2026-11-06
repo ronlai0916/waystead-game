@@ -6601,8 +6601,6 @@ blockchains
 blocked
 blocker
 blockers
-blockhead
-blockheads
 blockhouse
 blockhouses
 blocking
@@ -7060,9 +7058,7 @@ bondwoman
 bondwomen
 bone
 boned
-bonehead
 boneheaded
-boneheads
 boneless
 bones
 boneshaker
@@ -18522,8 +18518,6 @@ dimples
 dimpling
 dimply
 dims
-dimwit
-dimwits
 dimwitted
 din
 dinar
@@ -20759,10 +20753,6 @@ dumpster
 dumpsters
 dumpy
 dun
-dunce
-dunces
-dunderhead
-dunderheads
 dune
 dunes
 dung
@@ -36752,8 +36742,6 @@ knuckle
 knuckled
 knuckleduster
 knuckledusters
-knucklehead
-knuckleheads
 knuckles
 knuckling
 knurl
@@ -38898,8 +38886,6 @@ luminescent
 luminosity
 luminous
 luminously
-lummox
-lummoxes
 lump
 lumpectomies
 lumpectomy
@@ -38942,8 +38928,6 @@ lungful
 lungfuls
 lunging
 lungs
-lunkhead
-lunkheads
 lupin
 lupine
 lupins
@@ -43667,8 +43651,6 @@ nimbus
 nimby
 nimrod
 nimrods
-nincompoop
-nincompoops
 nine
 ninepin
 ninepins
@@ -43683,8 +43665,6 @@ ninetieths
 ninety
 ninja
 ninjas
-ninnies
-ninny
 ninth
 ninths
 niobium
@@ -43723,8 +43703,6 @@ nitrogen
 nitrogenous
 nitroglycerine
 nits
-nitwit
-nitwits
 nix
 nixed
 nixes
@@ -44529,11 +44507,9 @@ nylon
 nylons
 nymph
 nymphs
-oaf
 oafish
 oafishly
 oafishness
-oafs
 oak
 oaken
 oaks

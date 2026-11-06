@@ -29,7 +29,7 @@ for (const s of data.stories) {
     assert.ok(n >= 120 && n <= 200, n + ' words');
   });
 }
-test('stories are as written: no straight-to-children flag, plain safe text', () => {
+test('stories are plain safe text, with a yes-or-no review flag', () => {
   for (const s of data.stories) {
     assert.equal(typeof s.reviewed, 'boolean');
     assert.ok(s.sentences.every((x) => typeof x === 'string' && x.trim() && !/[<>]/.test(x)), s.title);
@@ -65,9 +65,9 @@ test('only reviewed: true will do', () => {
 test('a group not from a chapter never gets a story', () => {
   assert.equal(T.storyFor([shown], g(['tractor']), chs), null);
 });
-test('as shipped, no story is live: all 20 wait for review', () => {
-  assert.equal(data.stories.filter((s) => s.reviewed).length, 0);
-  for (const c of chapters) assert.equal(T.storyFor(data.stories, g(c.words.map((w) => w.word).slice(0, 10)), chs), null, c.id);
+test('all 20 stories are approved (Ron, 4 Nov), and each chapter\'s group finds its own', () => {
+  assert.equal(data.stories.filter((s) => s.reviewed).length, 20);
+  for (const c of chapters) assert.equal(T.storyFor(data.stories, g(c.words.map((w) => w.word).slice(0, 10)), chs).chapter, c.id);
 });
 test('the review page\'s switch can\'t release a story: Story day reads only the data file', () => {
   const src = readFileSync(file('site/js/study-views.js'), 'utf8');

@@ -146,6 +146,47 @@ SAFE_SEX = re.compile(r"\b(?:either|both|each|one|opposite|same|other|male|femal
 MEANING_PHRASES = re.compile(r"\b(offensive (term|name|word)|term of (abuse|contempt)|used as a term|ethnic slur|"
                              r"informal term for (a|the) (penis|breast|buttocks)|street name for|make love|making love|made love|lovemaking)\b")
 
+# Senses that are mild insults, which no usage tag marks (review-2026-11-05-insults.md):
+# "a stupid person", "term of abuse". A word with another sense shows that instead; a
+# word with no other sense has no meaning left, and is blocked by name in OWN_BLOCK.
+INSULT_ADJ = r"(?:stupid|foolish|idiotic|contemptible|despicable|dim-?witted|dull-?witted|brainless|moronic|imbecilic|half-?witted|unintelligent|thick-?skulled|puny)"
+INSULT_NOUN = r"(?:person|people|man|woman|fellow|individual|guy|boy|girl|one)"
+MEANING_INSULT = re.compile(r"\b" + INSULT_ADJ + r"\b(?:[ ,]+(?:(?:and|or) )?[a-z-]+){0,3}?[ ,]+" + INSULT_NOUN + r"\b"
+                            r"|\b(?:a|an) (?:fool|idiot|moron|simpleton|imbecile|nitwit|twit|dolt|dunce|halfwit|numskull|nincompoop)\b"
+                            r"|\bterm of (?:abuse|contempt|insult)\b|\b(?:used )?as an insult\b"
+                            r"|\bin the manner of a (?:dork|fool|idiot)\b|\bweak or soft person\b")
+
+# A meaning that says nothing but the word again ("Cause to agonise.", "Anywhere."), or a
+# form pointing at a bare pronoun ("himself: him."). "One who wheezes" and "Relating to
+# ponds" do explain something, so they stay. Skipped for the next sense; with none left,
+# the word has no meaning rather than an empty one.
+FILLER = set("""a an the of to or and in for form forms cause be being become make do have with any as by on at
+from it its one some kind type sort spelling spelt alternative another other word words non oxford british english
+standard american variant credit effort""".split())
+DEFINES_BY_USE = re.compile(r"^(?:one|someone|something|that|those|the (?:act|art|state|quality|process|condition|fact|study)|act|of|relating|"
+                            r"pertaining|having|in an?|like|resembling|containing|characterised|made|without)\b", re.I)
+PRONOUNS = set("him her them me us it you i he she they we".split())
+
+
+def same_word(t, w):
+    return t == w or t + "s" == w or w + "s" == t or t + "es" == w or w + "es" == t
+
+
+def circular(w, text):
+    """Does this meaning say nothing but the word (or, for a derived one, a bare pronoun)?"""
+    head = re.match(r"^.*?\. ([a-z' -]+): (.+)$", text, re.S)
+    base, body = (head.group(1), head.group(2)) if head else (None, text)
+    toks = re.findall(r"[a-z'-]+", body.lower())
+    if not toks:
+        return False  # "10³⁰³" says something
+    if head and all(t in PRONOUNS for t in toks):
+        return True
+    if DEFINES_BY_USE.match(body.strip()):
+        return False
+    itself = lambda t: same_word(t, w) or (base and same_word(t, base))
+    return any(itself(t) for t in toks) and all(t in FILLER or itself(t) for t in toks)
+
+
 # Our own meanings for little words WordNet has no (or no fitting) sense for.
 # They win over WordNet. Part of speech, meaning, example.
 OWN_MEANINGS = {
@@ -206,6 +247,28 @@ OWN_MEANINGS = {
     "will": ("verb", "Used to talk about the future.", "I will see you tomorrow."),
     # Forms of "be" (WordNet's sense is grammar talk).
     "be": ("verb", "To exist, or to say what someone or something is like.", "I want to be a vet."),
+    "agonise": ("verb", "To worry or struggle over something for a long time.", "She agonised over which book to choose."),
+    "agonises": ("verb", "Worries or struggles over something for a long time.", "He agonises over every answer."),
+    "bicep": ("noun", "The big muscle at the front of your upper arm.", "He tensed his bicep."),
+    "tricep": ("noun", "The big muscle at the back of your upper arm.", "Press-ups work your tricep."),
+    "leftwards": ("adverb", "Towards the left.", "The path turns leftwards."),
+    "rightwards": ("adverb", "Towards the right.", "The arrow points rightwards."),
+    "bored": ("adjective", "Tired of something, or with nothing interesting to do.", "I was bored on the long journey."),
+    "surprised": ("adjective", "Feeling shock at something you did not expect.", "She was surprised by the party."),
+    "wets": ("verb", "Makes something wet.", "The rain wets the grass."),
+    "cannot": ("verb", "Is not able to.", "I cannot reach the top shelf."),
+    "whichever": ("determiner", "Any one of a group: it does not matter which.", "Take whichever seat you like."),
+    "seedcorn": ("noun", "Grain kept back to plant next year.", "The farmer saved the seedcorn."),
+    "twerp": ("noun", "A playful word for someone being a bit silly.", "Don't be a twerp!"),
+    "myself": ("pronoun", "The person speaking, when the same person did the action.", "I made it myself."),
+    "yourself": ("pronoun", "The person you are talking to, when they did the action.", "Did you hurt yourself?"),
+    "yourselves": ("pronoun", "The people you are talking to, when they did the action.", "You can help yourselves."),
+    "himself": ("pronoun", "A boy or man, when he did the action to himself.", "He dried himself with a towel."),
+    "herself": ("pronoun", "A girl or woman, when she did the action to herself.", "She taught herself to swim."),
+    "itself": ("pronoun", "An animal or thing, when it did the action to itself.", "The cat washed itself."),
+    "oneself": ("pronoun", "Any person, when that person did the action.", "It is nice to make something by oneself."),
+    "ourselves": ("pronoun", "The people speaking, when they did the action.", "We built it ourselves."),
+    "themselves": ("pronoun", "The people or things talked about, when they did the action.", "They enjoyed themselves."),
     "am": ("verb", "A form of \u201cbe\u201d used with \u201cI\u201d.", "I am nine years old."),
     "is": ("verb", "A form of \u201cbe\u201d used with he, she or it.", "The sky is blue."),
     "are": ("verb", "A form of \u201cbe\u201d used with you, we or they.", "We are friends."),
@@ -804,7 +867,7 @@ def main():
 
     def unsafe(text):
         low = text.lower()
-        if MEANING_PHRASES.search(low):
+        if MEANING_PHRASES.search(low) or MEANING_INSULT.search(low):
             return True
         low = SAFE_SEX.sub(" ", low)
         for tok in re.findall(r"[a-z]+", low):
@@ -829,6 +892,8 @@ def main():
             meaning, examples = split_gloss(gloss)
             if not meaning or unsafe(meaning):
                 unsafe_seen.add(w)
+                continue
+            if circular(w, meaning):
                 continue
             examples = [e for e in examples if not unsafe(e)]
             return POS[ss_type], meaning, examples
@@ -1022,6 +1087,16 @@ def main():
                 break
         wstats["unsafe_words"] -= set(wikt)
     after_wikt = {n: sum(1 for w in lst if "m" not in out.get(w, {}) and w not in stars and w not in wikt) for n, lst in lists.items()}
+
+    # G-tidy: an empty meaning is worse than none. Any left from a later step go here.
+    no_use = [w for w, e in out.items() if e.get("m") and w not in OWN_MEANINGS and w not in stars and circular(w, e["m"])]
+    for w in no_use:
+        for k in ("m", "p", "e", "l", "d"):
+            out[w].pop(k, None)
+    for w in [w for w, e in wikt.items() if circular(w, e["m"])]:
+        no_use.append(w)
+        del wikt[w]
+    print(f"circular meanings dropped: {len(no_use)} (" + ", ".join(sorted(no_use)[:12]) + "…)")
 
     # Spellbright's IPA for its own words (the game prefers it for Star words anyway).
     cur = json.load(open(CURRICULUM, encoding="utf-8"))
