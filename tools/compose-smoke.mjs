@@ -31,8 +31,12 @@ const csp = /add_header Content-Security-Policy "([^"]+)"/.exec(readFileSync(ROO
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.dawg': 'application/octet-stream' };
 
 let tasksLive = false;
+let comicsLive = false; // C2: the comic tiles' own review flag (with tasksLive)
+let ownLive = false; // C2-2: My own story's review flag
 let netDown = false;
 let storiesLive = false;
+const TASKS = JSON.parse(readFileSync(ROOT + 'compose/site/data/tasks.json', 'utf8')).tasks;
+const SHARED = JSON.parse(readFileSync(ROOT + 'compose/site/data/comic.json', 'utf8'));
 const site = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, SITE).pathname);
   const m = /^\/(spellbright|wordbright|compose)\/(.*)$/.exec(path);
@@ -42,7 +46,10 @@ const site = createServer((req, res) => {
   if (!file || !existsSync(file)) { res.writeHead(404, { 'Content-Security-Policy': csp }); res.end('not here'); return; }
   let body = readFileSync(file);
   if (file.endsWith('.html')) body = String(body).replaceAll('https://account.waystead.co.uk', ACCOUNT); // the page's own CSP
-  if (file.endsWith('tasks.json') && tasksLive) body = String(body).replaceAll('"reviewed": false', '"reviewed": true');
+  // tasks.json: a task's own flag is at 3 spaces, its comic's at 4 (indent 1).
+  if (file.endsWith('tasks.json') && tasksLive) body = String(body).replace(/^ {3}"reviewed": false/gm, '   "reviewed": true');
+  if (file.endsWith('tasks.json') && comicsLive) body = String(body).replace(/^ {4}"reviewed": false/gm, '    "reviewed": true');
+  if (file.endsWith('comic.json') && ownLive) body = String(body).replace('"reviewed": false', '"reviewed": true');
   res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Content-Security-Policy': csp, 'Cache-Control': 'no-store' });
   res.end(body);
 });
@@ -137,13 +144,51 @@ async function until(expr, what = expr, ms = 6000) {
 const q = (s) => JSON.stringify(s);
 const has = (s) => ev('!!document.querySelector(' + q(s) + ')');
 const text = (s = 'main') => ev('(document.querySelector(' + q(s) + ')||{}).innerText||""');
-async function click(s) { await until('document.querySelector(' + q(s) + ')', s); await ev('document.querySelector(' + q(s) + ').click()'); await sleep(30); }
+// Taps and typed characters, counted for the report (C2: a Year 3 comic needs no typing).
+const count = { taps: 0, typed: 0 };
+async function click(s) { await until('document.querySelector(' + q(s) + ')', s); await ev('document.querySelector(' + q(s) + ').click()'); count.taps += 1; await sleep(30); }
+/** Tap the button whose attribute is exactly this value (tile text can hold any character). */
+async function tapBy(attr, value) {
+  const expr = '[...document.querySelectorAll("[' + attr + ']")].find((b) => b.getAttribute(' + q(attr) + ') === ' + q(String(value)) + ')';
+  await until(expr, attr + '=' + value);
+  await ev('(' + expr + ').click()');
+  count.taps += 1;
+  await sleep(30);
+}
 async function key(k) {
   const code = k.length === 1 ? 'Key' + k.toUpperCase() : k;
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code, text: k.length === 1 ? k : k === 'Enter' ? '\r' : undefined, windowsVirtualKeyCode: k === 'Enter' ? 13 : k === 'Backspace' ? 8 : k.toUpperCase().charCodeAt(0) });
   await send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code });
 }
 async function keys(s) { for (const c of s) await key(c); }
+/** Keyboard only: Tab until this element has the focus, then press Enter. */
+async function tabTo(sel, max = 80) {
+  for (let i = 0; i < max; i += 1) {
+    if (await ev('!!document.activeElement && document.activeElement.matches(' + q(sel) + ')')) return;
+    await key('Tab');
+  }
+  throw new Error('Tab never reached ' + sel + ' (at ' + await ev('document.activeElement && document.activeElement.outerHTML.slice(0,120)') + ')');
+}
+async function press(k) { await key(k); count.taps += 1; await sleep(40); }
+/** A real mouse drag (pointer events) from one element's centre to another's. */
+async function drag(fromSel, toSel) {
+  await ev('document.querySelector(' + q(toSel) + ').scrollIntoView({block:"center"})');
+  const box = (s2) => ev('(()=>{const r=document.querySelector(' + q(s2) + ').getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]})()');
+  const [x0, y0] = await box(fromSel);
+  const [x1, y1] = await box(toSel);
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: x0, y: y0, button: 'left', clickCount: 1 });
+  for (let k = 1; k <= 6; k += 1) await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0 + ((x1 - x0) * k) / 6, y: y0 + ((y1 - y0) * k) / 6, button: 'left' });
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 });
+  await sleep(80);
+}
+async function tapAt(sel, fx, fy) {
+  await ev('document.querySelector(' + q(sel) + ').scrollIntoView({block:"center"})');
+  const [x, y] = await ev('(()=>{const r=document.querySelector(' + q(sel) + ').getBoundingClientRect();return [r.left+r.width*' + fx + ',r.top+r.height*' + fy + ']})()');
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 });
+  count.taps += 1;
+  await sleep(80);
+}
 async function go(hash) { await ev('location.hash=' + q(hash)); await sleep(60); }
 const step = (n) => console.log('  · ' + n);
 function ok(cond, what) { if (!cond) throw new Error('FAILED: ' + what); }
@@ -178,6 +223,7 @@ async function open(day, hash = '#/') {
 }
 
 async function shot(name) {
+  await ev('window.scrollTo(0, 0)');
   await sleep(60);
   const r = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
   const { writeFileSync } = await import('node:fs');
@@ -224,7 +270,7 @@ async function blank() {
   acct.calls.length = 0;
   feedbackCalls.length = 0;
 }
-const fill = (sel, value) => ev('(()=>{const n=document.querySelector(' + q(sel) + ');n.value=' + q(value) + ';n.dispatchEvent(new Event("input",{bubbles:true}))})()');
+const fill = (sel, value) => { count.typed += value.length; return ev('(()=>{const n=document.querySelector(' + q(sel) + ');n.value=' + q(value) + ';n.dispatchEvent(new Event("input",{bubbles:true}))})()'); };
 const STORY = ['Maya had a bright red kyte and she was happy.', 'The string broke and the kite got stuck in a tree', 'A man got a ladder because he wanted to help.', 'he gave the kite back. Maya said thank you.'];
 const writing = () => acct.data.get(CHILD)?.get('compose/writing')?.value;
 const onePiece = () => Object.values(writing()?.pieces || {})[0];
@@ -264,6 +310,11 @@ scene('grown-ups: review and consent', async () => {
   await allViews('task-review');
   await click('[data-approve="lost-kite"]');
   ok(/approve-tasks\.mjs lost-kite/.test(await text('[data-command]')), 'the command');
+  await click('[data-approvecomic="seal-pup"]');
+  ok(/approve-tasks\.mjs --comic seal-pup/.test(await text('[data-comiccommand]')), 'the comic command');
+  ok(/approve-tasks\.mjs --own/.test(await text('[data-summary]')), 'and the own-story command');
+  await ev('document.querySelector("[data-review=\\"lost-kite\\"] details").open = true');
+  ok(/Maya\|?.*flew|Maya flew her kite/.test(await text('[data-review="lost-kite"]')), 'the comic tiles to read');
   await go('#/grownups');
   await until('document.querySelector("[data-child]")', 'the children');
   await click('[data-child="' + CHILD + '"]');
@@ -420,6 +471,332 @@ scene('a Year 5 task: one box, offline drafts', async () => {
     await sleep(200);
     netDown = false;
   } finally { tasksLive = false; }
+});
+
+// ---- Comic Studio (C2) ----------------------------------------------------------------------
+const comics = () => acct.data.get(CHILD)?.get('compose/comics')?.value;
+const theComic = (kindOf = 'task') => Object.values(comics()?.comics || {}).find((c) => c.kind === kindOf);
+const taskOf = (id) => TASKS.find((t) => t.id === id);
+const fits = (t, q2) => t.comic[q2].findIndex((o) => o.fits);
+async function next() { await click('[data-welldone] [data-next]'); }
+async function moveIs(m) { await until('document.querySelector("[data-move=\\"' + m + '\\"]")', 'the ' + m + ' move'); }
+/** Order it, with no mistakes: tap each picture, then its box. */
+async function orderByTaps() {
+  await moveIs('order');
+  for (let k = 0; k < 4; k += 1) { await click('[data-card="' + k + '"]'); await click('[data-slot="' + k + '"]'); }
+  await click('[data-check]');
+  await until('document.querySelector("[data-welldone]")', 'well done after the order');
+  await next();
+}
+async function wheelByTaps(t) {
+  for (const q2 of ['who', 'where', 'when']) { await moveIs('wheel'); await click('[data-choice="' + fits(t, q2) + '"]'); }
+  await until('document.querySelector("[data-welldone]")', 'the opening');
+  ok(/One windy afternoon|One |Early|On /.test(await text('[data-welldone]')), 'the opening caption is shown');
+  await next();
+}
+async function joinByTaps() {
+  await moveIs('join');
+  for (let n = 0; n < 4 && await has('[data-up]'); n += 1) { await click('[data-up]'); await sleep(40); }
+  await click('[data-end="0"]');
+  await until('document.querySelector("[data-welldone]")', 'joined up');
+  await next();
+}
+
+scene('Comic Studio: a full Year 3 comic, taps only', async () => {
+  tasksLive = true; comicsLive = true;
+  try {
+    await blank();
+    acct.who = childMe;
+    await open(DAY, '#/');
+    await until('document.querySelector("[data-task=\\"lost-kite\\"][data-comic-task]")', 'the comic task');
+    await allViews('c-home');
+    const t = taskOf('lost-kite');
+    count.taps = 0; count.typed = 0;
+    await click('[data-task="lost-kite"]');
+    await until('document.querySelector("[data-start]")', 'the studio');
+    await allViews('c-start');
+    await click('[data-start]');
+    await moveIs('order');
+    await allViews('c1-order');
+    await orderByTaps();
+    await moveIs('wheel');
+    await allViews('c2-wheel');
+    await wheelByTaps(t);
+    for (let i = 0; i < 4; i += 1) {
+      const spec = t.comic.panels[i];
+      await until('document.querySelector("[data-op]")', 'the starters, panel ' + (i + 1));
+      if (i === 0) await allViews('c3-panel-opener');
+      await click('[data-op="0"]');
+      const path = spec.paths[0].split('|');
+      for (let k = 0; k < path.length; k += 1) {
+        if (i === 0 && k === 1) await allViews('c3-panel-tiles');
+        await tapBy('data-tile', path[k]);
+      }
+      await until('document.querySelector("[data-face]")', 'the faces');
+      if (i === 0) await allViews('c3-panel-face');
+      await click('[data-face="' + spec.feel.fits[0] + '"]');
+      await until('document.querySelector("[data-feel]")', 'the feeling words');
+      if (i === 0) await allViews('c3-panel-feeling');
+      await click('[data-feel]');
+      await until('document.querySelector("[data-say]")', 'the speech');
+      if (i === 0) await allViews('c3-panel-speech');
+      await click('[data-say="0"]');
+      await until('document.querySelector("[data-welldone]")', 'panel done');
+      if (i === 0) await allViews('c3-panel-welldone');
+      await next();
+    }
+    await moveIs('join');
+    await allViews('c4-join');
+    await joinByTaps();
+    await moveIs('read');
+    await allViews('c5-read');
+    const before = { ...count };
+    await click('[data-readall]');
+    await until('document.querySelector(".is-reading")', 'a line lit while it is read');
+    await until('!document.querySelector(".is-reading")', 'reading ends', 15000);
+    count.taps = before.taps; // listening is optional: not in the count
+    await click('[data-finish]');
+    await until('document.querySelector("[data-final]")', 'the finished comic');
+    ok(count.typed === 0, 'no typing at all: ' + count.typed);
+    console.log('    Year 3 comic: ' + count.taps + ' taps, ' + count.typed + ' typed characters');
+    ok(await has('.cover .stamp') && await has('.comic--big .bubble'), 'a cover with a stamp, and speech bubbles');
+    ok(/One windy afternoon, Maya and her little brother Sam were at the park\./.test(await text()), 'the opening caption');
+    await allViews('c7-finished');
+    await sleep(1900);
+    const c = theComic();
+    ok(c && c.stage === 'done' && c.panels.every((p) => p.done) && c.order.done, 'saved to the account, finished');
+    await go('#/comics');
+    await until('document.querySelector("[data-comic]")', 'My comics');
+    ok(/1 stamp/.test(await text()), 'one stamp');
+    await allViews('c8-shelf');
+    await send('Emulation.setEmulatedMedia', { media: 'print' });
+    await go('#/comics/' + c.id);
+    await until('document.querySelector("[data-final]")', 'the comic again');
+    await width(1280);
+    await shot('c7-finished-print');
+    await send('Emulation.setEmulatedMedia', { media: '' });
+    await width(390);
+  } finally { tasksLive = false; comicsLive = false; }
+});
+
+scene('Comic Studio: keyboard only, a drag, and kind answers', async () => {
+  tasksLive = true; comicsLive = true;
+  try {
+    await blank();
+    acct.who = childMe;
+    await open(DAY, '#/c/muddy-dog');
+    await until('document.querySelector("[data-start]")', 'the studio');
+    await width(1280);
+    await tabTo('[data-start]'); await press('Enter');
+    await moveIs('order');
+    step('a drag puts picture 1 in box 1');
+    await drag('[data-card="0"]', '[data-slot="0"]');
+    ok(await has('[data-slot="0"].is-full'), 'dropped in the box');
+    step('the rest by keyboard: two swapped on purpose');
+    const put = async (card, slot) => { await tabTo('[data-card="' + card + '"]'); await press('Enter'); await tabTo('[data-slot="' + slot + '"]'); await press('Enter'); };
+    await put(1, 2); await put(2, 1); await put(3, 3);
+    await tabTo('[data-check]'); await press('Enter');
+    await until('/Nearly/.test(document.querySelector("[data-gentle]").innerText)', 'a kind answer, no cross');
+    ok(!/wrong|incorrect/i.test(await text()), 'never "wrong"');
+    await allViews('c1-order-nearly');
+    await put(1, 1); await put(2, 2);
+    await tabTo('[data-check]'); await press('Enter');
+    await until('document.querySelector("[data-welldone]")', 'in order');
+    ok((await text('[data-welldone]')).length > 0 && await ev('document.querySelectorAll("[data-welldone] .stars .is-on").length') === 2, 'two stars after one try back');
+    await tabTo('[data-next]'); await press('Enter');
+    const t = taskOf('muddy-dog');
+    for (const q2 of ['who', 'where', 'when']) {
+      await moveIs('wheel');
+      const wrongOne = t.comic[q2].findIndex((o) => !o.fits);
+      if (q2 === 'who') { await tabTo('[data-choice="' + wrongOne + '"]'); await press('Enter'); await until('/look at the pictures again/i.test(document.querySelector("[data-gentle]").innerText)', 'a kind answer'); }
+      await tabTo('[data-choice="' + fits(t, q2) + '"]'); await press('Enter');
+    }
+    await tabTo('[data-next]'); await press('Enter');
+    await until('document.querySelector("[data-op]")', 'the starters');
+    await tabTo('[data-op="1"]'); await press('Enter');
+    await until('document.querySelector("[data-tile]")', 'the tiles');
+    await tabTo('[data-tile="a penguin"]'); await press('Enter');
+    await until('/Try another word/.test(document.querySelector("[data-gentle]").innerText)', 'try another word');
+    await tabTo('[data-tile="Honey"]'); await press('Enter');
+    await until('document.querySelector("[data-undo=\\"0\\"]")', 'placed');
+    await tabTo('[data-undo="0"]'); await press('Enter');
+    await until('!document.querySelector("[data-undo]")', 'taken back');
+    ok(await ev('document.activeElement && document.activeElement.matches("[data-focus], body, main")') !== null, 'focus is somewhere sensible');
+    await width(390);
+  } finally { tasksLive = false; comicsLive = false; }
+});
+
+scene('Comic Studio: a Year 5 comic with the challenge, and Grown-ups', async () => {
+  tasksLive = true; comicsLive = true;
+  try {
+    await blank();
+    acct.who = childMe;
+    const t = taskOf('seal-pup');
+    await open(DAY, '#/c/seal-pup');
+    await until('document.querySelector("[data-start]")', 'the studio');
+    ok(/Level: Year 5/.test(await text()), 'starts at the task\'s level');
+    count.taps = 0; count.typed = 0;
+    await click('[data-start]');
+    await orderByTaps();
+    await wheelByTaps(t);
+    for (let i = 0; i < 4; i += 1) {
+      const spec = t.comic.panels[i];
+      await until('document.querySelector("[data-op]")', 'the starters');
+      await click('[data-op="1"]');
+      await until('document.querySelector("[data-typed]")', 'the typing box');
+      if (i === 0) {
+        await click('[data-add]');
+        ok(/ $/.test(await ev('document.querySelector("[data-typed]").value')), 'a tapped word goes in the box');
+        await fill('[data-typed]', SHARED.openers['5'][0][1] + ' my frend found shells');
+        await click('[data-done]');
+        await until('/We don.t know the word "frend"/.test(document.querySelector("[data-gentle]").innerText)', 'the filter, kindly');
+        await allViews('c5y-type');
+      }
+      await fill('[data-typed]', SHARED.openers['5'][i][1] + ' ' + spec.paths[0].split('|').join(' '));
+      await click('[data-done]');
+      await until('document.querySelector("[data-face]")', 'the faces');
+      await click('[data-face="' + spec.feel.fits[0] + '"]');
+      await click('[data-feel]');
+      await until('document.querySelector("[data-why]")', 'why');
+      if (i === 0) {
+        await click('[data-join="so"]');
+        await fill('[data-why]', 'she called for help');
+        await allViews('c5y-why');
+        await click('[data-done]');
+      } else await click('[data-skip]');
+      await until('document.querySelector("[data-say]")', 'speech');
+      if (i === 1) {
+        await click('.ownbubble summary');
+        await fill('[data-bubble]', 'We need help');
+        await allViews('c5y-ownbubble');
+        await click('[data-ownsay]');
+      } else await click('[data-say="1"]');
+      await until('document.querySelector("[data-welldone]")', 'panel done');
+      await next();
+    }
+    await joinByTaps();
+    await moveIs('read');
+    ok(/she called for help/.test(await text()), 'the reason is in the caption');
+    await click('[data-challenge]');
+    await until('document.querySelector("[data-story]")', 'Write it yourself');
+    await allViews('c6-challenge');
+    await fill('[data-story]', 'The beach was empty, or so they thought. Rosa and Finn collected shells along the shore.\n\nA seal was tangled in an old net. Rosa felt anxious, so she phoned the rescue team.\n\n"You did the right thing," said the rescuer. She gently cut the net away.\n\nFinally, the seal slid into the waves. They waved goodbye.');
+    await click('[data-done]');
+    await until('document.querySelector("[data-checks]")', 'the checks');
+    await allViews('c6-challenge-done');
+    await click('[data-finish]');
+    await until('document.querySelector("[data-final]")', 'finished');
+    ok(/In my own words/.test(await text()), 'the challenge is with the comic');
+    console.log('    Year 5 comic with the challenge: ' + count.taps + ' taps, ' + count.typed + ' typed characters');
+    await sleep(1900);
+    const c = theComic();
+    ok(c && c.stage === 'done' && c.challenge.done && c.challenge.checks.length >= 5, 'saved with the checks');
+    step('the parent sees the comic, the challenge, the stars, and marks it');
+    acct.who = null;
+    await open(DAY, '#/about');
+    const before2 = acct.data.get(CHILD);
+    await ev('localStorage.clear()');
+    acct.data.set(CHILD, before2);
+    acct.who = adultMe;
+    await open(DAY, '#/grownups/child/' + CHILD);
+    await until('document.querySelector("[data-comicrow]")', 'the comic in the list');
+    await allViews('g-child-comics');
+    await click('[data-comicrow="' + c.id + '"]');
+    await until('document.querySelector("[data-mark]")', 'the comic page');
+    const page = await text();
+    for (const want of ['Stars:', 'Write it yourself', 'Automatic checks', 'The comic as a story', 'Only you and your child']) ok(page.includes(want), 'the parent sees: ' + want);
+    await allViews('g-comic');
+    for (const k of ['ideas', 'order', 'words', 'sentences', 'spelling']) await click('[name="r-' + k + '"][value="3"]');
+    await click('[data-save]');
+    await until('/Mark saved/.test(document.querySelector("[data-note]").innerText)', 'the mark saved');
+    ok(acct.data.get(CHILD).get('compose/marks').value.marks[c.id].ideas === 3, 'the mark, by the comic\'s id');
+  } finally { tasksLive = false; comicsLive = false; }
+});
+
+scene('My own story: stickers, sparks, captions, a finished comic', async () => {
+  ownLive = true;
+  try {
+    await blank();
+    acct.who = childMe;
+    await open(DAY, '#/');
+    await until('document.querySelector("[data-ownlink]")', 'the own-story card');
+    await click('[data-ownlink]');
+    await until('document.querySelector("[data-new]")', 'the start');
+    await allViews('o0-start');
+    count.taps = 0; count.typed = 0;
+    await click('[data-new]');
+    await until('document.querySelector("[data-bg]")', 'places');
+    await allViews('o1-setting');
+    await click('[data-bg="park"]');
+    await until('document.querySelector("[data-pick]")', 'characters');
+    await click('[data-pick="amara"]'); await click('[data-pick="biscuit"]');
+    await allViews('o2-cast');
+    await click('[data-next]');
+    await until('document.querySelector("[data-pick=\\"kite\\"]")', 'things');
+    await click('[data-pick="kite"]');
+    await allViews('o3-props');
+    await click('[data-next]');
+    await until('document.querySelector("[data-spark]")', 'problems');
+    await allViews('o4-problem');
+    await click('[data-spark="0"]');
+    await until('/The problem/.test(document.querySelector("main").innerText)', 'solutions');
+    await click('[data-spark="2"]');
+    await until('document.querySelector("[data-add]")', 'the sticker stage');
+    await click('[data-add="amara.a"]');
+    await click('[data-add="biscuit.b"]');
+    await click('[data-add="kite"]');
+    step('tap the picture: the chosen sticker moves there');
+    await width(1280);
+    await tapAt('[data-stagebox] [data-stage]', 0.8, 0.3);
+    let st = await ev('[...document.querySelectorAll(".sticker")].map((e) => [e.dataset.x, e.dataset.y].join(","))');
+    ok(st[2] === '80,30', 'the kite went where the picture was tapped: ' + st);
+    step('drag a sticker');
+    await drag('[data-stagebox] .sticker[data-st="1"]', '[data-stagebox] [data-stage]'); // Biscuit, on top of Amara
+    st = await ev('[...document.querySelectorAll(".sticker")].map((e) => [e.dataset.x, e.dataset.y].join(","))');
+    ok(/^(4\d|5\d|60),(4\d|5\d|60)$/.test(st[1]) && st[1] !== '50,62', 'Biscuit was dragged to the middle: ' + st);
+    step('bigger, flip, keyboard nudge, take one out');
+    await click('[data-choose="1"]');
+    await click('[data-tool="bigger"]');
+    await click('[data-tool="flip"]');
+    await ev('document.querySelector("[data-stagebox]").focus()');
+    await press('ArrowRight');
+    await click('[data-choose="2"]');
+    await click('[data-tool="delete"]');
+    await width(390);
+    await allViews('o5-stickers');
+    await click('[data-stdone]');
+    await until('document.querySelector("[data-tile]")', 'caption tiles');
+    for (let k = 0; k < 4; k += 1) { await click('.ctiles [data-tile]'); await sleep(30); }
+    await until('document.querySelector("[data-endhere]")', 'where, or finish here');
+    await allViews('o6-caption');
+    await click('.ctiles [data-tile]');
+    await until('document.querySelector("[data-sayline]")', 'the bubble');
+    await allViews('o7-bubble');
+    await click('[data-sayline]');
+    await next();
+    for (let i = 1; i < 4; i += 1) {
+      await until('document.querySelector("[data-stdone]")', 'panel ' + (i + 1));
+      await click('[data-add="amara.b"]');
+      await click('[data-stdone]');
+      await until('document.querySelector("[data-quick]")', 'the quick caption');
+      await click('[data-quick]');
+      await until('document.querySelector("[data-nosay]")', 'the bubble');
+      await click('[data-nosay]');
+      await next();
+    }
+    await until('document.querySelector("[data-title]")', 'titles');
+    await allViews('o8-title');
+    await click('[data-title]');
+    await until('document.querySelector("[data-final]")', 'the finished comic');
+    console.log('    Own story: ' + count.taps + ' taps, ' + count.typed + ' typed characters');
+    await allViews('o9-finished');
+    await sleep(1900);
+    const c = theComic('own');
+    ok(c && c.stage === 'done' && c.title && c.panels[0].st.length === 2, 'saved: ' + JSON.stringify(c && c.panels[0].st));
+    ok(c.panels[0].st.every((x) => typeof x.x === 'number' && typeof x.y === 'number' && typeof x.s === 'number' && /^[a-z.]+$/.test(x.k)), 'stickers are data, not pictures');
+    ok(c.panels[0].st.some((x) => x.s === 1.2 && x.f === 1), 'resized and flipped');
+    ok(!JSON.stringify(c).includes('data:image'), 'no pictures saved');
+  } finally { ownLive = false; }
 });
 
 scene('playing as a child', async () => {

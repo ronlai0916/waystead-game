@@ -2,7 +2,8 @@
 import * as S from './store.js';
 import * as W from './writing-doc.js';
 import * as C from './checks.js';
-import { allTasks, taskById, visibleTo, LEVELS } from './tasks.js';
+import { allTasks, taskById, visibleTo, comicVisible, ownVisible, LEVELS } from './tasks.js';
+import * as K from './comic-doc.js';
 import { speak, stop } from './speech.js';
 import { askFeedback } from './feedback.js';
 import { loadRealWords } from './wordcheck.js';
@@ -38,17 +39,24 @@ function pieceFor(t) {
 
 /* ------------------------------------------------------------------ tasks --- */
 export function home(main) {
-  const list = visibleTo(allTasks(), kind());
+  const who = kind();
+  const list = visibleTo(allTasks(), who);
   const d = S.readWriting();
+  const comics = S.readComics();
   const card = (t) => {
-    const open = W.openPiece(d, t.id);
-    const done = W.finals(d).some((p) => p.task === t.id);
-    return '<a class="card taskcard" href="' + taskHref(t, 'look') + '" data-task="' + esc(t.id) + '">' + imgHtml(t.pictures[0], '(min-width: 720px) 33vw, 100vw') + '<strong>' + esc(t.title) + '</strong>'
-      + '<span class="btnrow">' + (t.reviewed ? '' : '<span class="pill pill--warm">Not reviewed yet</span>') + (open ? '<span class="pill">Carry on</span>' : '') + (done ? '<span class="pill pill--done">Finished</span>' : '') + '</span></a>';
+    const comic = comicVisible(t, who);
+    const open = comic ? K.openComic(comics, t.id) : W.openPiece(d, t.id);
+    const done = comic ? K.finished(comics).some((c) => c.task === t.id) : W.finals(d).some((p) => p.task === t.id);
+    const waiting = !t.reviewed || (comic && !t.comic.reviewed);
+    return '<a class="card taskcard" href="' + (comic ? '#/c/' + t.id : taskHref(t, 'look')) + '" data-task="' + esc(t.id) + '"' + (comic ? ' data-comic-task' : '') + '>' + imgHtml(t.pictures[0], '(min-width: 720px) 33vw, 100vw') + '<strong>' + esc(t.title) + '</strong>'
+      + '<span class="btnrow">' + (waiting ? '<span class="pill pill--warm">Not reviewed yet</span>' : '') + (comic ? '<span class="pill">Comic</span>' : '') + (open ? '<span class="pill">Carry on</span>' : '') + (done ? '<span class="pill pill--done">Finished</span>' : '') + '</span></a>';
   };
-  main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">Composition</span><h1>' + (playerName() ? 'Hello, ' + esc(playerName()) : 'Picture stories') + '</h1>'
-    + '<p class="muted">Look at four pictures, plan your story, then write it.</p></div>'
-    + (isAdult() ? '<div class="shortcuts"><a class="card shortcut" href="#/grownups"><span><strong>Grown-ups</strong><br><span class="muted small">See each child\'s writing and mark it</span></span>' + ICON.arrow + '</a></div>' : '')
+  const own = ownVisible(who);
+  main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">Composition · Comic Studio</span><h1>' + (playerName() ? 'Hello, ' + esc(playerName()) : 'Picture stories') + '</h1>'
+    + '<p class="muted">Choose a picture story and turn it into a comic, one small step at a time.</p></div>'
+    + '<div class="shortcuts">' + (isAdult() ? '<a class="card shortcut" href="#/grownups"><span><strong>Grown-ups</strong><br><span class="muted small">See each child\'s writing and comics, and mark them</span></span>' + ICON.arrow + '</a>' : '')
+    + '<a class="card shortcut" href="#/comics" data-shelflink><span><strong>My comics</strong><br><span class="muted small">' + K.finished(comics).length + ' finished</span></span>' + ICON.arrow + '</a>'
+    + (own ? '<a class="card shortcut" href="#/own" data-ownlink><span><strong>My own story</strong><br><span class="muted small">Make a comic with stickers' + (isAdult() && !ownVisible('child') ? ' · not reviewed yet' : '') + '</span></span>' + ICON.arrow + '</a>' : '') + '</div>'
     + (list.length ? LEVELS.filter((n) => list.some((t) => t.level === n)).map((n) => '<h2 class="levelhead">Year ' + n + '</h2><div class="taskgrid">' + list.filter((t) => t.level === n).map(card).join('') + '</div>').join('')
       : '<div class="card empty" data-notasks><h2>New stories are on their way</h2><p class="muted">Ask a grown-up to check back soon.</p></div>')
     + '</section>';

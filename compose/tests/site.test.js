@@ -183,7 +183,8 @@ test('a parent reads the child\'s plan, draft, final, checks and feedback', asyn
 test('nothing about a child is kept on the adult\'s device', () => {
   assert.doesNotMatch(text('compose/site/js/grownups-data.js'), /localStorage|sessionStorage/);
   const v = text('compose/site/js/grownups-views.js');
-  assert.equal(v.match(/localStorage/g).length, 2, 'only the task review\'s own switches');
+  assert.equal(v.match(/localStorage/g).length, 4, 'only the task review\'s own switches (tasks and comics)');
+  assert.equal(v.match(/localStorage\.(get|set)Item\((REVIEW_KEY|COMIC_KEY)/g).length, 4, 'and only under the review keys');
 });
 
 // ---- feedback ----------------------------------------------------------------------------

@@ -1,9 +1,9 @@
-// Offline support for Composition (scope /compose/). The app shell and the tasks are
-// cached on install; pictures and fonts the first time they're used. A new version
+// Offline support for Composition (scope /compose/). The app shell, the tasks and the
+// comic data are cached on install; pictures, stickers and fonts the first time they're used. A new version
 // takes over at once and the page reloads itself then (update.js). Bump VERSION on
 // every release. Only "compose-…" caches are ever deleted. Account calls are never
 // cached, apart from the Waystead voice's MP3s (the shared "voice" cache).
-const VERSION = 'compose-2026-11-05a';
+const VERSION = 'compose-2026-11-08a';
 
 const SHELL = [
   './',
@@ -14,6 +14,8 @@ const SHELL = [
   'css/styles/paint.css',
   'css/styles/night.css',
   'data/tasks.json',
+  'data/comic.json',
+  'data/stickers.json',
   'assets/icons/favicon.svg',
   'assets/icons/apple-touch-icon.png',
   'js/account/api.js',
@@ -31,12 +33,17 @@ const SHELL = [
   'js/app.js',
   'js/celebrate.js',
   'js/checks.js',
+  'js/comic-doc.js',
+  'js/comic-render.js',
+  'js/comic-views.js',
   'js/daystyle.js',
   'js/feedback.js',
   'js/gate.js',
   'js/grownups-data.js',
   'js/grownups-views.js',
   'js/nav/nav.js',
+  'js/own-views.js',
+  'js/safe-text.js',
   'js/speech.js',
   'js/store.js',
   'js/tasks.js',

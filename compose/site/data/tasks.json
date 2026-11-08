@@ -53,7 +53,311 @@
     "I used a describing word.",
     "I said how someone felt."
    ],
-   "model": "Maya had a bright red kite. She took it to the park with her little brother Sam. The wind was strong and the kite flew up high. Sam clapped because he was so happy.\n\nThen the string snapped! The kite flew into a tall tree and it got stuck. Maya felt very sad.\n\nA kind park keeper saw them. He got a long ladder and he climbed up the tree. He reached out and he got the kite.\n\nHe gave the kite back to Maya. She said thank you and she gave a big smile. Sam waved at the park keeper. It was a good day after all."
+   "model": "Maya had a bright red kite. She took it to the park with her little brother Sam. The wind was strong and the kite flew up high. Sam clapped because he was so happy.\n\nThen the string snapped! The kite flew into a tall tree and it got stuck. Maya felt very sad.\n\nA kind park keeper saw them. He got a long ladder and he climbed up the tree. He reached out and he got the kite.\n\nHe gave the kite back to Maya. She said thank you and she gave a big smile. Sam waved at the park keeper. It was a good day after all.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Maya and her little brother Sam",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "Maya",
+      "be": "was",
+      "icon": "person",
+      "fits": true
+     },
+     {
+      "text": "two penguins",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "at the park",
+      "icon": "tree",
+      "fits": true
+     },
+     {
+      "text": "at the seaside",
+      "icon": "wave",
+      "fits": false
+     },
+     {
+      "text": "in a busy kitchen",
+      "icon": "house",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One windy afternoon",
+      "icon": "wind",
+      "fits": true
+     },
+     {
+      "text": "One sunny, windy day",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One snowy night",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Maya|flew|her kite|in the park",
+       "Maya|flew|her kite|high in the sky",
+       "Sam|watched|the kite|high in the sky"
+      ],
+      "wrong": [
+       [
+        "the park keeper"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "a sandwich"
+       ],
+       [
+        "under the sea"
+       ]
+      ],
+      "describe": {
+       "noun": "kite",
+       "ideas": [
+        "red",
+        "bright",
+        "diamond"
+       ]
+      },
+      "feel": {
+       "who": "Sam",
+       "fits": [
+        "happy",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Sam",
+        "says": "Look how high it is!"
+       },
+       {
+        "who": "Maya",
+        "says": "The wind is so strong!"
+       },
+       {
+        "who": "Sam",
+        "says": "Can I have a go?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "What?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "the kite|got stuck|in a tree",
+       "the kite|flew|into a tree",
+       "the kite|got caught|in a tree"
+      ],
+      "wrong": [
+       [
+        "the cake"
+       ],
+       [
+        "swam"
+       ],
+       [
+        "in the bath"
+       ]
+      ],
+      "describe": {
+       "noun": "tree",
+       "ideas": [
+        "tall",
+        "leafy",
+        "enormous"
+       ]
+      },
+      "feel": {
+       "who": "Maya",
+       "fits": [
+        "sad",
+        "worried",
+        "surprised"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Maya",
+        "says": "Oh no, my kite!"
+       },
+       {
+        "who": "Sam",
+        "says": "It's stuck!"
+       },
+       {
+        "who": "Maya",
+        "says": "How will we get it down?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Why?"
+      ],
+      "paths": [
+       "a park keeper|climbed|a ladder|to reach the kite",
+       "a park keeper|brought|a ladder|to reach the kite",
+       "a kind park keeper|climbed up|a ladder|to reach the kite"
+      ],
+      "wrong": [
+       [
+        "a dinosaur"
+       ],
+       [
+        "painted"
+       ],
+       [
+        "a bucket"
+       ],
+       [
+        "to find a sandwich"
+       ]
+      ],
+      "describe": {
+       "noun": "ladder",
+       "ideas": [
+        "long",
+        "wooden",
+        "tall"
+       ]
+      },
+      "feel": {
+       "who": "Maya",
+       "fits": [
+        "worried",
+        "excited",
+        "surprised"
+       ]
+      },
+      "speech": [
+       {
+        "who": "the park keeper",
+        "says": "Don't worry, I'll get it!"
+       },
+       {
+        "who": "Sam",
+        "says": "Be careful up there!"
+       },
+       {
+        "who": "Maya",
+        "says": "Can you reach it?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Who to?"
+      ],
+      "paths": [
+       "the park keeper|gave|the kite|back to Maya",
+       "the park keeper|handed|the kite|back to Maya",
+       "he|gave|the kite|back to Maya"
+      ],
+      "wrong": [
+       [
+        "a seagull"
+       ],
+       [
+        "threw"
+       ],
+       [
+        "a cake"
+       ],
+       [
+        "back to the shop"
+       ]
+      ],
+      "describe": {
+       "noun": "kite",
+       "ideas": [
+        "precious",
+        "red",
+        "lovely"
+       ]
+      },
+      "feel": {
+       "who": "Maya",
+       "fits": [
+        "happy",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Maya",
+        "says": "Thank you so much!"
+       },
+       {
+        "who": "Sam",
+        "says": "Hooray!"
+       },
+       {
+        "who": "the park keeper",
+        "says": "Hold on tight this time!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "flew": [
+      "soared",
+      "zoomed"
+     ],
+     "climbed": [
+      "scrambled",
+      "clambered"
+     ],
+     "gave": [
+      "handed",
+      "passed"
+     ],
+     "watched": [
+      "gazed at",
+      "stared at"
+     ]
+    },
+    "endings": [
+     "It was a good day after all.",
+     "Maya held her kite tight all the way home.",
+     "They waved goodbye to the kind park keeper."
+    ]
+   }
   },
   {
    "id": "muddy-dog",
@@ -105,7 +409,313 @@
     "I used a describing word.",
     "I said how someone felt."
    ],
-   "model": "It was a sunny day for a picnic. Ben and Mum sat on a big blanket. They had sandwiches and cake. Honey the dog looked at a muddy puddle.\n\nHoney ran to the puddle and she jumped in! She rolled in the mud and she got very dirty. Ben laughed because she looked so funny.\n\nThen Honey ran back to the blanket. She shook her wet fur and mud went on the sandwiches. Mum was cross, but not for long.\n\nThey got a big tub of soapy water. Ben and Mum washed Honey until she was clean. Honey was happy and so was Ben."
+   "model": "It was a sunny day for a picnic. Ben and Mum sat on a big blanket. They had sandwiches and cake. Honey the dog looked at a muddy puddle.\n\nHoney ran to the puddle and she jumped in! She rolled in the mud and she got very dirty. Ben laughed because she looked so funny.\n\nThen Honey ran back to the blanket. She shook her wet fur and mud went on the sandwiches. Mum was cross, but not for long.\n\nThey got a big tub of soapy water. Ben and Mum washed Honey until she was clean. Honey was happy and so was Ben.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Ben, his mum and their dog Honey",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "Ben and Honey the dog",
+      "be": "were",
+      "icon": "dog",
+      "fits": true
+     },
+     {
+      "text": "a team of footballers",
+      "be": "were",
+      "icon": "ball",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "at a picnic in a field",
+      "icon": "tree",
+      "fits": true
+     },
+     {
+      "text": "in a sunny field",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "on a bus",
+      "icon": "bus",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One sunny day",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One warm summer morning",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One dark, stormy night",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Ben and Mum|ate|their sandwiches|on a blanket",
+       "Ben and Mum|had|a picnic|on a blanket",
+       "Honey|stared at|a puddle|by the blanket"
+      ],
+      "wrong": [
+       [
+        "a penguin"
+       ],
+       [
+        "swam in"
+       ],
+       [
+        "a snowman"
+       ],
+       [
+        "at the bus stop"
+       ]
+      ],
+      "describe": {
+       "noun": "blanket",
+       "ideas": [
+        "checked",
+        "soft",
+        "picnic"
+       ]
+      },
+      "feel": {
+       "who": "Ben",
+       "fits": [
+        "happy",
+        "calm",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Ben",
+        "says": "These sandwiches are tasty!"
+       },
+       {
+        "who": "Mum",
+        "says": "What a lovely day!"
+       },
+       {
+        "who": "Ben",
+        "says": "Honey, stay here!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "Honey|rolled|in the puddle",
+       "Honey|jumped|into the puddle",
+       "Honey|splashed|in the puddle"
+      ],
+      "wrong": [
+       [
+        "the sandwich"
+       ],
+       [
+        "slept"
+       ],
+       [
+        "on the moon"
+       ]
+      ],
+      "describe": {
+       "noun": "puddle",
+       "ideas": [
+        "deep",
+        "brown",
+        "huge"
+       ]
+      },
+      "feel": {
+       "who": "Ben",
+       "fits": [
+        "surprised",
+        "excited",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Ben",
+        "says": "Honey, come back!"
+       },
+       {
+        "who": "Mum",
+        "says": "Oh no, not the puddle!"
+       },
+       {
+        "who": "Ben",
+        "says": "Look at Honey!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "Honey|shook herself|on the blanket",
+       "Honey|ran|on to the blanket",
+       "mud|flew|on to the blanket"
+      ],
+      "wrong": [
+       [
+        "a fish"
+       ],
+       [
+        "sang"
+       ],
+       [
+        "up a tree"
+       ]
+      ],
+      "describe": {
+       "noun": "blanket",
+       "ideas": [
+        "clean",
+        "checked",
+        "picnic"
+       ]
+      },
+      "feel": {
+       "who": "Mum",
+       "fits": [
+        "surprised",
+        "cross",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Mum",
+        "says": "Stop, Honey!"
+       },
+       {
+        "who": "Ben",
+        "says": "Our lunch!"
+       },
+       {
+        "who": "Mum",
+        "says": "What a mess!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Who?",
+       "Where?"
+      ],
+      "paths": [
+       "Ben and Mum|washed|Honey|in a tub",
+       "Ben and Mum|scrubbed|Honey|in a tub",
+       "Ben|bathed|Honey|in a tub"
+      ],
+      "wrong": [
+       [
+        "the teacher"
+       ],
+       [
+        "painted"
+       ],
+       [
+        "the moon"
+       ],
+       [
+        "in the oven"
+       ]
+      ],
+      "describe": {
+       "noun": "tub",
+       "ideas": [
+        "big",
+        "soapy",
+        "metal"
+       ]
+      },
+      "feel": {
+       "who": "Ben",
+       "fits": [
+        "happy",
+        "calm",
+        "proud"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Ben",
+        "says": "Now you're clean!"
+       },
+       {
+        "who": "Mum",
+        "says": "Good girl, Honey!"
+       },
+       {
+        "who": "Ben",
+        "says": "Don't shake again!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "ran": [
+      "dashed",
+      "raced"
+     ],
+     "flew": [
+      "sprayed",
+      "shot"
+     ],
+     "washed": [
+      "scrubbed",
+      "cleaned"
+     ],
+     "ate": [
+      "munched",
+      "nibbled"
+     ],
+     "jumped": [
+      "leapt",
+      "bounced"
+     ]
+    },
+    "endings": [
+     "Honey was clean, but not for long!",
+     "It was a messy picnic, but a happy one.",
+     "Next time, they will leave the puddles alone."
+    ]
+   }
   },
   {
    "id": "surprise-cake",
@@ -157,7 +767,306 @@
     "I used a describing word.",
     "I said how someone felt."
    ],
-   "model": "Today was a very special day. It was Gran's birthday. Amir and Zara wanted to bake a cake. They mixed the eggs and flour in a big bowl. There was flour on their noses!\n\nNext they put pink icing on the cake. Zara added the candles very carefully. It looked lovely.\n\nThen they heard the door. Gran was home! Amir and Zara crouched by the sofa because it was a secret. They tried not to laugh.\n\nThey jumped up and shouted, \"Surprise!\" Gran clapped her hands. She was so happy that she gave them a big hug. The cake was delicious."
+   "model": "Today was a very special day. It was Gran's birthday. Amir and Zara wanted to bake a cake. They mixed the eggs and flour in a big bowl. There was flour on their noses!\n\nNext they put pink icing on the cake. Zara added the candles very carefully. It looked lovely.\n\nThen they heard the door. Gran was home! Amir and Zara crouched by the sofa because it was a secret. They tried not to laugh.\n\nThey jumped up and shouted, \"Surprise!\" Gran clapped her hands. She was so happy that she gave them a big hug. The cake was delicious.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Amir and his sister Zara",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "Amir and Zara",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "three hungry bears",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "in the kitchen",
+      "icon": "house",
+      "fits": true
+     },
+     {
+      "text": "at home",
+      "icon": "house",
+      "fits": true
+     },
+     {
+      "text": "on a mountain",
+      "icon": "tree",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "On Gran's birthday",
+      "icon": "cake",
+      "fits": true
+     },
+     {
+      "text": "One special morning",
+      "icon": "star",
+      "fits": true
+     },
+     {
+      "text": "One night by the sea",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Amir and Zara|mixed|the cake mixture|in a bowl",
+       "Amir and Zara|stirred|the cake mixture|in a bowl",
+       "Zara|poured|the flour|into a bowl"
+      ],
+      "wrong": [
+       [
+        "the dog"
+       ],
+       [
+        "drove"
+       ],
+       [
+        "a bus"
+       ],
+       [
+        "in the bath"
+       ]
+      ],
+      "describe": {
+       "noun": "bowl",
+       "ideas": [
+        "mixing",
+        "huge",
+        "yellow"
+       ]
+      },
+      "feel": {
+       "who": "Zara",
+       "fits": [
+        "excited",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Zara",
+        "says": "Gran will love this!"
+       },
+       {
+        "who": "Amir",
+        "says": "Shh, it's a secret!"
+       },
+       {
+        "who": "Zara",
+        "says": "Pass me the eggs, please."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "they|spread|pink icing|on the cake",
+       "Amir|added|the candles|to the cake",
+       "Zara|put|sprinkles|on the cake"
+      ],
+      "wrong": [
+       [
+        "the cat"
+       ],
+       [
+        "kicked"
+       ],
+       [
+        "a football"
+       ],
+       [
+        "on the roof"
+       ]
+      ],
+      "describe": {
+       "noun": "cake",
+       "ideas": [
+        "round",
+        "delicious",
+        "beautiful"
+       ]
+      },
+      "feel": {
+       "who": "Amir",
+       "fits": [
+        "proud",
+        "happy",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Amir",
+        "says": "It looks delicious!"
+       },
+       {
+        "who": "Zara",
+        "says": "Careful with the candles!"
+       },
+       {
+        "who": "Amir",
+        "says": "Just one more sprinkle."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "Amir and Zara|hid|behind the sofa",
+       "the children|crouched|behind the sofa",
+       "they|waited quietly|behind the sofa"
+      ],
+      "wrong": [
+       [
+        "the postman"
+       ],
+       [
+        "danced"
+       ],
+       [
+        "on the beach"
+       ]
+      ],
+      "describe": {
+       "noun": "sofa",
+       "ideas": [
+        "comfy",
+        "big",
+        "squashy"
+       ]
+      },
+      "feel": {
+       "who": "Zara",
+       "fits": [
+        "excited",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Zara",
+        "says": "Shh! Here she comes!"
+       },
+       {
+        "who": "Amir",
+        "says": "Don't giggle!"
+       },
+       {
+        "who": "Zara",
+        "says": "Keep the cake still!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "How?"
+      ],
+      "paths": [
+       "Amir and Zara|jumped out|with the cake",
+       "the children|leapt up|with the cake",
+       "they|ran over|with the cake"
+      ],
+      "wrong": [
+       [
+        "a bus driver"
+       ],
+       [
+        "fell asleep"
+       ],
+       [
+        "with a spade"
+       ]
+      ],
+      "describe": {
+       "noun": "cake",
+       "ideas": [
+        "glowing",
+        "pink",
+        "special"
+       ]
+      },
+      "feel": {
+       "who": "Gran",
+       "fits": [
+        "surprised",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "the children",
+        "says": "Surprise!"
+       },
+       {
+        "who": "Gran",
+        "says": "What a wonderful cake!"
+       },
+       {
+        "who": "Zara",
+        "says": "Happy birthday, Gran!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "mixed": [
+      "whisked",
+      "beat"
+     ],
+     "put": [
+      "sprinkled",
+      "scattered"
+     ],
+     "hid": [
+      "crouched",
+      "ducked"
+     ],
+     "jumped": [
+      "leapt",
+      "sprang"
+     ]
+    },
+    "endings": [
+     "It was Gran's best birthday ever.",
+     "Gran gave them both a big hug.",
+     "Everyone shared the cake, and there was not a crumb left."
+    ]
+   }
   },
   {
    "id": "rainy-match",
@@ -209,7 +1118,308 @@
     "I used a describing word.",
     "I said how someone felt."
    ],
-   "model": "The Blue Team ran on to the pitch. The sun was out and everyone was happy. They kicked the ball and they ran very fast.\n\nThen big grey clouds came. It began to rain and the pitch got wet. There were puddles everywhere, but nobody stopped.\n\nLily ran with the ball. She slid in the mud and she kicked it hard. It went in the goal! The team gave a loud cheer because they had won.\n\nAfter the game they were cold and muddy. They sat in warm towels and they had hot chocolate. Lily felt very proud."
+   "model": "The Blue Team ran on to the pitch. The sun was out and everyone was happy. They kicked the ball and they ran very fast.\n\nThen big grey clouds came. It began to rain and the pitch got wet. There were puddles everywhere, but nobody stopped.\n\nLily ran with the ball. She slid in the mud and she kicked it hard. It went in the goal! The team gave a loud cheer because they had won.\n\nAfter the game they were cold and muddy. They sat in warm towels and they had hot chocolate. Lily felt very proud.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "the Blue Team",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "the children in blue shirts",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "a family of ducks",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "on the school field",
+      "icon": "ball",
+      "fits": true
+     },
+     {
+      "text": "on the football pitch",
+      "icon": "ball",
+      "fits": true
+     },
+     {
+      "text": "in the library",
+      "icon": "book",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One sunny afternoon",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One bright morning",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One frosty night",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "the Blue Team|chased|the ball|across the pitch",
+       "the players|kicked|the ball|across the pitch",
+       "the Blue Team|passed|the ball|across the pitch"
+      ],
+      "wrong": [
+       [
+        "a giraffe"
+       ],
+       [
+        "baked"
+       ],
+       [
+        "a sandwich"
+       ],
+       [
+        "across the sea"
+       ]
+      ],
+      "describe": {
+       "noun": "ball",
+       "ideas": [
+        "bouncy",
+        "white",
+        "new"
+       ]
+      },
+      "feel": {
+       "who": "the players",
+       "fits": [
+        "excited",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a boy",
+        "says": "Pass it to me!"
+       },
+       {
+        "who": "a girl",
+        "says": "Come on, Blue Team!"
+       },
+       {
+        "who": "a boy",
+        "says": "What a lovely day!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "What?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "heavy rain|fell|on the pitch",
+       "dark clouds|rolled|over the pitch",
+       "the rain|poured down|on the pitch"
+      ],
+      "wrong": [
+       [
+        "hot soup"
+       ],
+       [
+        "sang"
+       ],
+       [
+        "in the kitchen"
+       ]
+      ],
+      "describe": {
+       "noun": "pitch",
+       "ideas": [
+        "muddy",
+        "soggy",
+        "slippery"
+       ]
+      },
+      "feel": {
+       "who": "the players",
+       "fits": [
+        "surprised",
+        "worried",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a boy",
+        "says": "It's pouring!"
+       },
+       {
+        "who": "a girl",
+        "says": "Keep playing!"
+       },
+       {
+        "who": "the team",
+        "says": "We don't mind the rain!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "a girl|slid|through the mud",
+       "a girl|skidded|through the mud",
+       "the girl|splashed|through the mud"
+      ],
+      "wrong": [
+       [
+        "a teapot"
+       ],
+       [
+        "flew"
+       ],
+       [
+        "over the moon"
+       ]
+      ],
+      "describe": {
+       "noun": "mud",
+       "ideas": [
+        "thick",
+        "squelchy",
+        "sticky"
+       ]
+      },
+      "feel": {
+       "who": "the team",
+       "fits": [
+        "excited",
+        "proud",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a girl",
+        "says": "Goal!"
+       },
+       {
+        "who": "the team",
+        "says": "Hooray!"
+       },
+       {
+        "who": "a boy",
+        "says": "What a shot!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "the team|sat|in their towels",
+       "the players|cuddled up|in their towels",
+       "the Blue Team|wrapped up|in their towels"
+      ],
+      "wrong": [
+       [
+        "a crocodile"
+       ],
+       [
+        "swam"
+       ],
+       [
+        "in the oven"
+       ]
+      ],
+      "describe": {
+       "noun": "towels",
+       "ideas": [
+        "warm",
+        "fluffy",
+        "dry"
+       ]
+      },
+      "feel": {
+       "who": "the team",
+       "fits": [
+        "proud",
+        "happy",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a boy",
+        "says": "That was the best match ever!"
+       },
+       {
+        "who": "a girl",
+        "says": "I'm so muddy!"
+       },
+       {
+        "who": "the team",
+        "says": "What a game!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "kicked": [
+      "booted",
+      "struck"
+     ],
+     "fell": [
+      "poured",
+      "lashed"
+     ],
+     "slid": [
+      "skidded",
+      "slipped"
+     ],
+     "sat": [
+      "huddled",
+      "snuggled"
+     ],
+     "chased": [
+      "raced after",
+      "dashed after"
+     ]
+    },
+    "endings": [
+     "They drank hot chocolate and laughed about the mud.",
+     "It was the muddiest match ever.",
+     "Everyone felt proud of the Blue Team."
+    ]
+   }
   },
   {
    "id": "snowman-contest",
@@ -261,7 +1471,320 @@
     "I used a describing word.",
     "I said how someone felt."
    ],
-   "model": "Snow covered the whole village. Ella and Kofi wanted to win the snowman contest. They rolled a huge snowball across the green. It was hard work and their hands were cold.\n\nThey put a small snowball on top. Kofi added a carrot for the nose and Ella found two sticks for the arms.\n\nThen the wind blew! It took the hat and the scarf. Ella and Kofi had to chase them because the snowman looked sad without them. They laughed all the way.\n\nAt last the snowman was ready. The teacher pinned a blue ribbon on him. They had won! Ella and Kofi jumped up and down."
+   "model": "Snow covered the whole village. Ella and Kofi wanted to win the snowman contest. They rolled a huge snowball across the green. It was hard work and their hands were cold.\n\nThey put a small snowball on top. Kofi added a carrot for the nose and Ella found two sticks for the arms.\n\nThen the wind blew! It took the hat and the scarf. Ella and Kofi had to chase them because the snowman looked sad without them. They laughed all the way.\n\nAt last the snowman was ready. The teacher pinned a blue ribbon on him. They had won! Ella and Kofi jumped up and down.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Ella and Kofi",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "two friends, Ella and Kofi,",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "a group of seals",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "on the village green",
+      "icon": "tree",
+      "fits": true
+     },
+     {
+      "text": "in the snowy village",
+      "icon": "snow",
+      "fits": true
+     },
+     {
+      "text": "on a hot beach",
+      "icon": "wave",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One snowy morning",
+      "icon": "snow",
+      "fits": true
+     },
+     {
+      "text": "One cold winter day",
+      "icon": "snow",
+      "fits": true
+     },
+     {
+      "text": "One hot summer day",
+      "icon": "sun",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Ella and Kofi|rolled|a snowball|across the green",
+       "the friends|pushed|a snowball|across the green",
+       "Ella and Kofi|made|a snowball|on the green"
+      ],
+      "wrong": [
+       [
+        "a lion"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "a banana"
+       ],
+       [
+        "in the classroom"
+       ]
+      ],
+      "describe": {
+       "noun": "snowball",
+       "ideas": [
+        "huge",
+        "giant",
+        "round"
+       ]
+      },
+      "feel": {
+       "who": "Kofi",
+       "fits": [
+        "excited",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Kofi",
+        "says": "It's getting bigger!"
+       },
+       {
+        "who": "Ella",
+        "says": "Push harder!"
+       },
+       {
+        "who": "Kofi",
+        "says": "We can win this!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Ella|put|a carrot|on the snowman",
+       "Kofi|added|stick arms|to the snowman",
+       "they|pressed|buttons|into the snowman"
+      ],
+      "wrong": [
+       [
+        "a robot"
+       ],
+       [
+        "licked"
+       ],
+       [
+        "a sock"
+       ],
+       [
+        "on the bus"
+       ]
+      ],
+      "describe": {
+       "noun": "snowman",
+       "ideas": [
+        "smiling",
+        "tall",
+        "friendly"
+       ]
+      },
+      "feel": {
+       "who": "Ella",
+       "fits": [
+        "proud",
+        "happy",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Ella",
+        "says": "He needs a nose!"
+       },
+       {
+        "who": "Kofi",
+        "says": "He looks friendly!"
+       },
+       {
+        "who": "Ella",
+        "says": "Now for the scarf."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "the wind|blew|the scarf|across the green",
+       "the wind|whisked|the hat|across the green",
+       "Ella and Kofi|chased|the hat|across the green"
+      ],
+      "wrong": [
+       [
+        "a cow"
+       ],
+       [
+        "baked"
+       ],
+       [
+        "a pie"
+       ],
+       [
+        "into the sea"
+       ]
+      ],
+      "describe": {
+       "noun": "green",
+       "ideas": [
+        "snowy",
+        "white",
+        "village"
+       ]
+      },
+      "feel": {
+       "who": "Kofi",
+       "fits": [
+        "surprised",
+        "worried",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Kofi",
+        "says": "Come back, hat!"
+       },
+       {
+        "who": "Ella",
+        "says": "Catch the scarf!"
+       },
+       {
+        "who": "Kofi",
+        "says": "The wind is too strong!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "a teacher|pinned|a ribbon|on the snowman",
+       "the teacher|fixed|a ribbon|on the snowman",
+       "the judge|gave|a ribbon|to the snowman"
+      ],
+      "wrong": [
+       [
+        "a hamster"
+       ],
+       [
+        "sneezed"
+       ],
+       [
+        "a toothbrush"
+       ],
+       [
+        "on the moon"
+       ]
+      ],
+      "describe": {
+       "noun": "ribbon",
+       "ideas": [
+        "shiny",
+        "blue",
+        "prize"
+       ]
+      },
+      "feel": {
+       "who": "Ella",
+       "fits": [
+        "proud",
+        "happy",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Ella",
+        "says": "We won!"
+       },
+       {
+        "who": "Kofi",
+        "says": "Hooray for our snowman!"
+       },
+       {
+        "who": "the teacher",
+        "says": "Well done, you two!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "rolled": [
+      "heaved",
+      "pushed"
+     ],
+     "blew": [
+      "swept",
+      "whisked"
+     ],
+     "chased": [
+      "raced after",
+      "dashed after"
+     ],
+     "put": [
+      "placed",
+      "pressed"
+     ],
+     "gave": [
+      "awarded",
+      "presented"
+     ]
+    },
+    "endings": [
+     "Their snowman was the best in the village.",
+     "They went home with cold toes and big smiles.",
+     "They could not wait for the next snowy day."
+    ]
+   }
   },
   {
    "id": "lost-teddy",
@@ -313,7 +1836,306 @@
     "I used a describing word.",
     "I said how someone felt."
    ],
-   "model": "Leo and Dad got on the red bus. Leo sat by the window and he held Bobby on his knee. He liked to look at the shops.\n\nSoon it was time to get off. Leo jumped down the steps, but Bobby stayed on the seat! The bus drove away.\n\nAt bedtime Leo looked in his bag. Bobby was not there. Leo began to cry because he missed his teddy. Dad gave him a hug and said they would look in the morning.\n\nThe next morning they went to the bus stop. The kind driver had Bobby! Leo gave his teddy a big hug. He was so glad."
+   "model": "Leo and Dad got on the red bus. Leo sat by the window and he held Bobby on his knee. He liked to look at the shops.\n\nSoon it was time to get off. Leo jumped down the steps, but Bobby stayed on the seat! The bus drove away.\n\nAt bedtime Leo looked in his bag. Bobby was not there. Leo began to cry because he missed his teddy. Dad gave him a hug and said they would look in the morning.\n\nThe next morning they went to the bus stop. The kind driver had Bobby! Leo gave his teddy a big hug. He was so glad.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Leo and his dad",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "Leo and his teddy, Bobby,",
+      "be": "were",
+      "icon": "person",
+      "fits": true
+     },
+     {
+      "text": "a farmer and his sheep",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "on the red bus",
+      "icon": "bus",
+      "fits": true
+     },
+     {
+      "text": "on the way home",
+      "icon": "bus",
+      "fits": true
+     },
+     {
+      "text": "at the swimming pool",
+      "icon": "wave",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One busy afternoon",
+      "icon": "clock",
+      "fits": true
+     },
+     {
+      "text": "One sunny day",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One stormy night",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Leo|held|his teddy|on the bus",
+       "Leo|cuddled|his teddy|on the bus",
+       "Leo|hugged|his teddy|by the window"
+      ],
+      "wrong": [
+       [
+        "the driver"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "a carrot"
+       ],
+       [
+        "on a boat"
+       ]
+      ],
+      "describe": {
+       "noun": "teddy",
+       "ideas": [
+        "little",
+        "soft",
+        "old"
+       ]
+      },
+      "feel": {
+       "who": "Leo",
+       "fits": [
+        "happy",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Leo",
+        "says": "Look, Bobby, a park!"
+       },
+       {
+        "who": "Dad",
+        "says": "This is our stop soon."
+       },
+       {
+        "who": "Leo",
+        "says": "Bobby loves the bus."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "What?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "the teddy|was left|on the seat",
+       "Bobby|stayed|on the seat",
+       "the teddy|was forgotten|on the seat"
+      ],
+      "wrong": [
+       [
+        "a parrot"
+       ],
+       [
+        "danced"
+       ],
+       [
+        "in the garden"
+       ]
+      ],
+      "describe": {
+       "noun": "seat",
+       "ideas": [
+        "empty",
+        "red",
+        "bus"
+       ]
+      },
+      "feel": {
+       "who": "Bobby",
+       "fits": [
+        "sad",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Dad",
+        "says": "Come on, Leo, this is our stop!"
+       },
+       {
+        "who": "Leo",
+        "says": "Bye, bus!"
+       },
+       {
+        "who": "Dad",
+        "says": "Mind the step!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "Leo|cried|in his bed",
+       "Leo|sobbed|in his bed",
+       "Leo|could not sleep|in his bed"
+      ],
+      "wrong": [
+       [
+        "the bus"
+       ],
+       [
+        "laughed"
+       ],
+       [
+        "at the zoo"
+       ]
+      ],
+      "describe": {
+       "noun": "bed",
+       "ideas": [
+        "cosy",
+        "dark",
+        "warm"
+       ]
+      },
+      "feel": {
+       "who": "Leo",
+       "fits": [
+        "sad",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Leo",
+        "says": "Where is Bobby?"
+       },
+       {
+        "who": "Dad",
+        "says": "We will find him in the morning."
+       },
+       {
+        "who": "Leo",
+        "says": "I miss Bobby!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Who to?"
+      ],
+      "paths": [
+       "the bus driver|gave|the teddy|back to Leo",
+       "the driver|handed|the teddy|back to Leo",
+       "a kind driver|returned|the teddy|to Leo"
+      ],
+      "wrong": [
+       [
+        "a goat"
+       ],
+       [
+        "threw"
+       ],
+       [
+        "a pancake"
+       ],
+       [
+        "to the shop"
+       ]
+      ],
+      "describe": {
+       "noun": "teddy",
+       "ideas": [
+        "precious",
+        "little",
+        "lost"
+       ]
+      },
+      "feel": {
+       "who": "Leo",
+       "fits": [
+        "happy",
+        "surprised",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Leo",
+        "says": "Bobby! You're safe!"
+       },
+       {
+        "who": "the driver",
+        "says": "I kept him safe for you."
+       },
+       {
+        "who": "Dad",
+        "says": "Thank you so much!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "held": [
+      "clutched",
+      "gripped"
+     ],
+     "cried": [
+      "sobbed",
+      "wept"
+     ],
+     "gave": [
+      "handed",
+      "passed"
+     ],
+     "stayed": [
+      "sat",
+      "waited"
+     ]
+    },
+    "endings": [
+     "Leo never left Bobby behind again.",
+     "Leo gave Bobby the biggest hug.",
+     "That night, Leo and Bobby slept soundly."
+    ]
+   }
   },
   {
    "id": "market-mixup",
@@ -367,7 +2189,315 @@
     "I used describing words.",
     "I showed how someone felt."
    ],
-   "model": "Mr Potts was the loudest man at the market. Every Saturday, Nell bought apples from his stall.\n\nFirst, she waited in the long queue. Two brown paper bags sat on the counter. \"Here you are, love!\" said Mr Potts, but he was looking at another customer. Nell took a bag and skipped home.\n\nLater, she put the bag on the kitchen table. It wobbled. Nell frowned and opened it slowly. A small white rabbit stared back at her! \"You are definitely not an apple,\" she whispered.\n\nStraight away, Nell ran back with the rabbit tucked gently in her coat. A little boy was crying at the stall. When he saw his pet, he gave a huge smile. Mr Potts laughed until his moustache shook, and he filled Nell's basket with free apples."
+   "model": "Mr Potts was the loudest man at the market. Every Saturday, Nell bought apples from his stall.\n\nFirst, she waited in the long queue. Two brown paper bags sat on the counter. \"Here you are, love!\" said Mr Potts, but he was looking at another customer. Nell took a bag and skipped home.\n\nLater, she put the bag on the kitchen table. It wobbled. Nell frowned and opened it slowly. A small white rabbit stared back at her! \"You are definitely not an apple,\" she whispered.\n\nStraight away, Nell ran back with the rabbit tucked gently in her coat. A little boy was crying at the stall. When he saw his pet, he gave a huge smile. Mr Potts laughed until his moustache shook, and he filled Nell's basket with free apples.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Nell and Mr Potts",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "Nell",
+      "be": "was",
+      "icon": "person",
+      "fits": true
+     },
+     {
+      "text": "a family of hedgehogs",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "at the busy market",
+      "icon": "shop",
+      "fits": true
+     },
+     {
+      "text": "at the market stall",
+      "icon": "shop",
+      "fits": true
+     },
+     {
+      "text": "in a quiet library",
+      "icon": "book",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One busy Saturday",
+      "icon": "clock",
+      "fits": true
+     },
+     {
+      "text": "Early one Saturday morning",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One snowy night",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Nell|bought|some apples|from Mr Potts",
+       "Nell|chose|some apples|from the stall",
+       "Mr Potts|sold|some apples|to Nell"
+      ],
+      "wrong": [
+       [
+        "a penguin"
+       ],
+       [
+        "painted"
+       ],
+       [
+        "a bicycle"
+       ],
+       [
+        "to the moon"
+       ]
+      ],
+      "describe": {
+       "noun": "apples",
+       "ideas": [
+        "shiny",
+        "juicy",
+        "crunchy"
+       ]
+      },
+      "feel": {
+       "who": "Nell",
+       "fits": [
+        "happy",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Mr Potts",
+        "says": "Lovely apples here!"
+       },
+       {
+        "who": "Nell",
+        "says": "Six apples, please."
+       },
+       {
+        "who": "Mr Potts",
+        "says": "Busy day today!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Mr Potts|handed|the wrong bag|to Nell",
+       "Mr Potts|gave|the wrong bag|to Nell",
+       "Mr Potts|picked up|the wrong bag|by mistake"
+      ],
+      "wrong": [
+       [
+        "a monkey"
+       ],
+       [
+        "sang"
+       ],
+       [
+        "a teapot"
+       ],
+       [
+        "to the bus"
+       ]
+      ],
+      "describe": {
+       "noun": "bag",
+       "ideas": [
+        "paper",
+        "brown",
+        "heavy"
+       ]
+      },
+      "feel": {
+       "who": "Nell",
+       "fits": [
+        "happy",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Mr Potts",
+        "says": "Here you go!"
+       },
+       {
+        "who": "Nell",
+        "says": "Thank you, Mr Potts!"
+       },
+       {
+        "who": "Mr Potts",
+        "says": "Who's next?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Nell|found|a rabbit|in the bag",
+       "Nell|discovered|a rabbit|in the bag",
+       "a rabbit|looked up|at Nell|from the bag"
+      ],
+      "wrong": [
+       [
+        "the teacher"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "a sock"
+       ],
+       [
+        "in the oven"
+       ]
+      ],
+      "describe": {
+       "noun": "rabbit",
+       "ideas": [
+        "fluffy",
+        "white",
+        "tiny"
+       ]
+      },
+      "feel": {
+       "who": "Nell",
+       "fits": [
+        "surprised",
+        "worried",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Nell",
+        "says": "That's not an apple!"
+       },
+       {
+        "who": "Nell",
+        "says": "Hello, little rabbit!"
+       },
+       {
+        "who": "Nell",
+        "says": "Where did you come from?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Nell|took|the rabbit|back to the market",
+       "Nell|carried|the rabbit|back to the stall",
+       "Nell|returned|the rabbit|to its owner"
+      ],
+      "wrong": [
+       [
+        "a crocodile"
+       ],
+       [
+        "kicked"
+       ],
+       [
+        "a cake"
+       ],
+       [
+        "to the library"
+       ]
+      ],
+      "describe": {
+       "noun": "rabbit",
+       "ideas": [
+        "fluffy",
+        "white",
+        "lost"
+       ]
+      },
+      "feel": {
+       "who": "the little boy",
+       "fits": [
+        "happy",
+        "calm",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Mr Potts",
+        "says": "What a mix-up!"
+       },
+       {
+        "who": "the little boy",
+        "says": "My rabbit!"
+       },
+       {
+        "who": "Nell",
+        "says": "I think this is yours!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "took": [
+      "carried",
+      "brought"
+     ],
+     "carried": [
+      "cradled",
+      "hugged"
+     ],
+     "found": [
+      "discovered",
+      "spotted"
+     ],
+     "gave": [
+      "passed",
+      "handed"
+     ]
+    },
+    "endings": [
+     "Mr Potts laughed so much that he gave Nell an extra apple.",
+     "From then on, Mr Potts checked every bag twice.",
+     "Nell never forgot the day she bought a rabbit."
+    ]
+   }
   },
   {
    "id": "hamster-escape",
@@ -421,7 +2551,311 @@
     "I used describing words.",
     "I showed how someone felt."
    ],
-   "model": "Nobody noticed the little door. Class 4 were all watching Biscuit run round and round on his wheel.\n\nAfter lunch, Tia went to fill his water bottle. \"Mr Reed!\" she shouted. \"The cage is empty!\" Everyone rushed over. Books slid off the table and Mr Reed crawled underneath it.\n\nNext, the search began. The children took torches and shone them into every dark cupboard. Sam looked behind the radiator. Nobody looked behind them, where two bright eyes were peeping out of a school bag.\n\nFinally, Tia heard a tiny crunching noise. She followed it to an open lunchbox. There sat Biscuit, stuffing crumbs into his fat cheeks! Tia lifted him out gently and everyone cheered. Mr Reed was so relieved that he mended the cage door straight away."
+   "model": "Nobody noticed the little door. Class 4 were all watching Biscuit run round and round on his wheel.\n\nAfter lunch, Tia went to fill his water bottle. \"Mr Reed!\" she shouted. \"The cage is empty!\" Everyone rushed over. Books slid off the table and Mr Reed crawled underneath it.\n\nNext, the search began. The children took torches and shone them into every dark cupboard. Sam looked behind the radiator. Nobody looked behind them, where two bright eyes were peeping out of a school bag.\n\nFinally, Tia heard a tiny crunching noise. She followed it to an open lunchbox. There sat Biscuit, stuffing crumbs into his fat cheeks! Tia lifted him out gently and everyone cheered. Mr Reed was so relieved that he mended the cage door straight away.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "the children in Class 4",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "a ginger hamster called Biscuit",
+      "be": "was",
+      "icon": "dog",
+      "fits": true
+     },
+     {
+      "text": "a herd of cows",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "in the classroom",
+      "icon": "school",
+      "fits": true
+     },
+     {
+      "text": "at school",
+      "icon": "school",
+      "fits": true
+     },
+     {
+      "text": "on a pirate ship",
+      "icon": "wave",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One busy morning",
+      "icon": "clock",
+      "fits": true
+     },
+     {
+      "text": "Early one school day",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One summer holiday",
+      "icon": "star",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "the children|gathered round|the cage|in the classroom",
+       "the children|looked at|Biscuit|in his cage",
+       "the class|crowded round|the cage|by the window"
+      ],
+      "wrong": [
+       [
+        "a whale"
+       ],
+       [
+        "juggled"
+       ],
+       [
+        "a pizza"
+       ],
+       [
+        "on the beach"
+       ]
+      ],
+      "describe": {
+       "noun": "cage",
+       "ideas": [
+        "little",
+        "wire",
+        "open"
+       ]
+      },
+      "feel": {
+       "who": "the children",
+       "fits": [
+        "happy",
+        "excited",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a boy",
+        "says": "Biscuit looks hungry!"
+       },
+       {
+        "who": "a girl",
+        "says": "Look, he's so cute!"
+       },
+       {
+        "who": "the teacher",
+        "says": "Gently, everyone."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "Biscuit|had escaped|from his cage",
+       "Biscuit|had vanished|from his cage",
+       "the hamster|had gone|from his cage"
+      ],
+      "wrong": [
+       [
+        "the bus"
+       ],
+       [
+        "sang"
+       ],
+       [
+        "from the moon"
+       ]
+      ],
+      "describe": {
+       "noun": "cage",
+       "ideas": [
+        "empty",
+        "open",
+        "little"
+       ]
+      },
+      "feel": {
+       "who": "the teacher",
+       "fits": [
+        "worried",
+        "surprised"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a girl",
+        "says": "Biscuit has gone!"
+       },
+       {
+        "who": "the teacher",
+        "says": "Don't panic, everyone."
+       },
+       {
+        "who": "a boy",
+        "says": "Where can he be?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "How?",
+       "Where?"
+      ],
+      "paths": [
+       "the children|searched|with torches|under the cupboards",
+       "the class|looked|with torches|under the tables",
+       "the children|hunted|with torches|around the classroom"
+      ],
+      "wrong": [
+       [
+        "a giant"
+       ],
+       [
+        "slept"
+       ],
+       [
+        "with spoons"
+       ],
+       [
+        "in the swimming pool"
+       ]
+      ],
+      "describe": {
+       "noun": "torches",
+       "ideas": [
+        "bright",
+        "little",
+        "small"
+       ]
+      },
+      "feel": {
+       "who": "the children",
+       "fits": [
+        "worried",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a boy",
+        "says": "Biscuit, where are you?"
+       },
+       {
+        "who": "a girl",
+        "says": "Shine the torch over here!"
+       },
+       {
+        "who": "the teacher",
+        "says": "Look in every corner."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "a girl|found|Biscuit|in a lunchbox",
+       "a girl|lifted|Biscuit|out of a lunchbox",
+       "a girl|spotted|Biscuit|in a lunchbox"
+      ],
+      "wrong": [
+       [
+        "a pirate"
+       ],
+       [
+        "painted"
+       ],
+       [
+        "a snowman"
+       ],
+       [
+        "in a rocket"
+       ]
+      ],
+      "describe": {
+       "noun": "lunchbox",
+       "ideas": [
+        "open",
+        "blue",
+        "crumbly"
+       ]
+      },
+      "feel": {
+       "who": "everyone",
+       "fits": [
+        "calm",
+        "happy",
+        "surprised"
+       ]
+      },
+      "speech": [
+       {
+        "who": "a girl",
+        "says": "Found him!"
+       },
+       {
+        "who": "the teacher",
+        "says": "Well done!"
+       },
+       {
+        "who": "a boy",
+        "says": "He was eating my crumbs!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "looked": [
+      "peered",
+      "searched"
+     ],
+     "found": [
+      "discovered",
+      "spotted"
+     ],
+     "lifted": [
+      "scooped",
+      "raised"
+     ],
+     "searched": [
+      "hunted",
+      "rummaged"
+     ]
+    },
+    "endings": [
+     "From that day on, everyone checked the cage door twice.",
+     "Biscuit went back to his cage with a full tummy.",
+     "It was the most exciting morning Class 4 had ever had."
+    ]
+   }
   },
   {
    "id": "tent-trouble",
@@ -475,7 +2909,312 @@
     "I used describing words.",
     "I showed how someone felt."
    ],
-   "model": "\"How hard can it be?\" said Dad. The poles and pegs lay all over the grass, and he was scratching his head at the instructions.\n\nAn hour later, the tent was finally up. It leaned to one side like a tired old horse. \"It's a bit wonky,\" said Ruby. Dad pretended not to hear. Meanwhile, the wind was growing stronger and dark clouds rolled in.\n\nThat night, the rain began. Suddenly there was a loud whoosh, and the whole tent collapsed on top of them! Ruby, Dad and little Jack poked out their heads and laughed until their sides hurt.\n\nThe next morning, the sunshine was warm. Their kind neighbour made them all breakfast and put up the tent properly. Dad looked embarrassed. \"Next time,\" he said, \"we're staying in a hotel.\""
+   "model": "\"How hard can it be?\" said Dad. The poles and pegs lay all over the grass, and he was scratching his head at the instructions.\n\nAn hour later, the tent was finally up. It leaned to one side like a tired old horse. \"It's a bit wonky,\" said Ruby. Dad pretended not to hear. Meanwhile, the wind was growing stronger and dark clouds rolled in.\n\nThat night, the rain began. Suddenly there was a loud whoosh, and the whole tent collapsed on top of them! Ruby, Dad and little Jack poked out their heads and laughed until their sides hurt.\n\nThe next morning, the sunshine was warm. Their kind neighbour made them all breakfast and put up the tent properly. Dad looked embarrassed. \"Next time,\" he said, \"we're staying in a hotel.\"",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "the Hall family",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "Dad, Mum and the children",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "a team of astronauts",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "at the campsite",
+      "icon": "tent",
+      "fits": true
+     },
+     {
+      "text": "in a green field",
+      "icon": "tree",
+      "fits": true
+     },
+     {
+      "text": "in a busy shop",
+      "icon": "shop",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One summer evening",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "As the sun began to set",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "One frosty morning",
+      "icon": "snow",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Dad|tried to put up|the tent|in the field",
+       "the family|unpacked|the tent|in the field",
+       "Dad|unrolled|the tent|on the grass"
+      ],
+      "wrong": [
+       [
+        "a shark"
+       ],
+       [
+        "baked"
+       ],
+       [
+        "a birthday cake"
+       ],
+       [
+        "on the roof"
+       ]
+      ],
+      "describe": {
+       "noun": "tent",
+       "ideas": [
+        "blue",
+        "new",
+        "huge"
+       ]
+      },
+      "feel": {
+       "who": "Dad",
+       "fits": [
+        "happy",
+        "proud",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Dad",
+        "says": "How hard can it be?"
+       },
+       {
+        "who": "Mum",
+        "says": "Where are the instructions?"
+       },
+       {
+        "who": "a child",
+        "says": "Can I help with the pegs?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "What?",
+       "Did what?",
+       "How?"
+      ],
+      "paths": [
+       "the tent|leaned|to one side",
+       "the tent|wobbled|in the wind",
+       "dark clouds|gathered|over the tent"
+      ],
+      "wrong": [
+       [
+        "a bus"
+       ],
+       [
+        "giggled"
+       ],
+       [
+        "under the sea"
+       ]
+      ],
+      "describe": {
+       "noun": "tent",
+       "ideas": [
+        "wonky",
+        "floppy",
+        "new"
+       ]
+      },
+      "feel": {
+       "who": "Mum",
+       "fits": [
+        "worried",
+        "surprised"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Mum",
+        "says": "It looks a bit wonky."
+       },
+       {
+        "who": "Dad",
+        "says": "It's fine!"
+       },
+       {
+        "who": "a child",
+        "says": "Is it meant to lean?"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "What?",
+       "Did what?",
+       "Who on?",
+       "When?"
+      ],
+      "paths": [
+       "the tent|collapsed|on top of them|in the storm",
+       "the tent|fell down|on top of them|in the storm",
+       "the tent|flopped|on top of them|in the storm"
+      ],
+      "wrong": [
+       [
+        "a cake"
+       ],
+       [
+        "danced"
+       ],
+       [
+        "on the teacher"
+       ],
+       [
+        "at the zoo"
+       ]
+      ],
+      "describe": {
+       "noun": "tent",
+       "ideas": [
+        "soggy",
+        "wet",
+        "wonky"
+       ]
+      },
+      "feel": {
+       "who": "the family",
+       "fits": [
+        "surprised",
+        "happy",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Dad",
+        "says": "Oops!"
+       },
+       {
+        "who": "Mum",
+        "says": "So much for easy!"
+       },
+       {
+        "who": "a child",
+        "says": "This is the best camping trip ever!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "When?"
+      ],
+      "paths": [
+       "a kind neighbour|helped|Dad|with the tent",
+       "a neighbour|fixed|the tent|in the sunshine",
+       "a kind neighbour|put up|the tent|in the sunshine"
+      ],
+      "wrong": [
+       [
+        "a giraffe"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "a carrot"
+       ],
+       [
+        "on the moon"
+       ]
+      ],
+      "describe": {
+       "noun": "neighbour",
+       "ideas": [
+        "kind",
+        "friendly",
+        "helpful"
+       ]
+      },
+      "feel": {
+       "who": "Dad",
+       "fits": [
+        "shy",
+        "happy",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "the neighbour",
+        "says": "Let me give you a hand."
+       },
+       {
+        "who": "Dad",
+        "says": "Thank you so much!"
+       },
+       {
+        "who": "Mum",
+        "says": "Breakfast, everyone!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "fell": [
+      "tumbled",
+      "flopped"
+     ],
+     "leaned": [
+      "tilted",
+      "drooped"
+     ],
+     "fixed": [
+      "mended",
+      "repaired"
+     ],
+     "helped": [
+      "rescued",
+      "assisted"
+     ]
+    },
+    "endings": [
+     "Next time, Dad promised to read the instructions.",
+     "They ate breakfast in the warm sunshine.",
+     "It was the funniest camping trip ever."
+    ]
+   }
   },
   {
    "id": "seal-pup",
@@ -529,7 +3268,311 @@
     "I showed feelings through what people do and say.",
     "I gave my story a strong ending."
    ],
-   "model": "The beach was empty, or so they thought. Grey waves rolled up the shore as Rosa and Finn wandered along the tide line, their buckets rattling with shells.\n\n\"What's that?\" asked Finn, pointing. Far ahead, something small and white lay on the sand. As they crept closer, Rosa's heart sank. It was a seal pup, tangled in a piece of green fishing net.\n\n\"We have to help it!\" said Finn, stepping forward.\n\n\"No,\" Rosa replied firmly, pulling him back. \"We keep our distance and call the rescue team.\" Her fingers trembled as she dialled.\n\nWithin half an hour, a rescuer in a bright jacket had arrived. Speaking softly, she cut away the net, strand by strand, while the anxious children watched from behind a rope. The pup blinked its huge dark eyes and lay still.\n\nThree weeks later, they stood on the same beach. The sun was shining this time. The rescuer opened the carrier and, without a backward glance, the seal slid into the waves.\n\n\"Goodbye,\" whispered Rosa, waving until her arm ached. She had never felt so proud of doing so little."
+   "model": "The beach was empty, or so they thought. Grey waves rolled up the shore as Rosa and Finn wandered along the tide line, their buckets rattling with shells.\n\n\"What's that?\" asked Finn, pointing. Far ahead, something small and white lay on the sand. As they crept closer, Rosa's heart sank. It was a seal pup, tangled in a piece of green fishing net.\n\n\"We have to help it!\" said Finn, stepping forward.\n\n\"No,\" Rosa replied firmly, pulling him back. \"We keep our distance and call the rescue team.\" Her fingers trembled as she dialled.\n\nWithin half an hour, a rescuer in a bright jacket had arrived. Speaking softly, she cut away the net, strand by strand, while the anxious children watched from behind a rope. The pup blinked its huge dark eyes and lay still.\n\nThree weeks later, they stood on the same beach. The sun was shining this time. The rescuer opened the carrier and, without a backward glance, the seal slid into the waves.\n\n\"Goodbye,\" whispered Rosa, waving until her arm ached. She had never felt so proud of doing so little.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Rosa and her cousin Finn",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "two cousins, Rosa and Finn,",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "a pair of pirates",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "on a quiet winter beach",
+      "icon": "wave",
+      "fits": true
+     },
+     {
+      "text": "on the shore",
+      "icon": "wave",
+      "fits": true
+     },
+     {
+      "text": "in a busy city",
+      "icon": "house",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One grey winter morning",
+      "icon": "rain",
+      "fits": true
+     },
+     {
+      "text": "Early one cold morning",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "On a hot summer afternoon",
+      "icon": "sun",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Rosa and Finn|collected|shells|along the shore",
+       "the cousins|searched for|shells|along the shore",
+       "Rosa|spotted|a white shape|far down the shore"
+      ],
+      "wrong": [
+       [
+        "a polar bear"
+       ],
+       [
+        "baked"
+       ],
+       [
+        "a pizza"
+       ],
+       [
+        "in the playground"
+       ]
+      ],
+      "describe": {
+       "noun": "shore",
+       "ideas": [
+        "empty",
+        "rocky",
+        "quiet"
+       ]
+      },
+      "feel": {
+       "who": "Rosa",
+       "fits": [
+        "calm",
+        "surprised",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Finn",
+        "says": "Look at this shell!"
+       },
+       {
+        "who": "Rosa",
+        "says": "What's that on the sand?"
+       },
+       {
+        "who": "Finn",
+        "says": "It's so quiet today."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "a seal pup|was tangled|in an old net",
+       "a baby seal|was caught|in an old net",
+       "the seal|was trapped|in an old net"
+      ],
+      "wrong": [
+       [
+        "a lorry"
+       ],
+       [
+        "was singing"
+       ],
+       [
+        "in a teacup"
+       ]
+      ],
+      "describe": {
+       "noun": "net",
+       "ideas": [
+        "green",
+        "fishing",
+        "tangled"
+       ]
+      },
+      "feel": {
+       "who": "Rosa",
+       "fits": [
+        "worried",
+        "sad"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Rosa",
+        "says": "Stay back, Finn."
+       },
+       {
+        "who": "Finn",
+        "says": "Poor thing!"
+       },
+       {
+        "who": "Rosa",
+        "says": "I'll phone the rescue team."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "How?"
+      ],
+      "paths": [
+       "a rescuer|cut away|the net|very gently",
+       "a rescuer|removed|the net|very carefully",
+       "the rescuer|cut|the net|with great care"
+      ],
+      "wrong": [
+       [
+        "a clown"
+       ],
+       [
+        "kicked"
+       ],
+       [
+        "a sandwich"
+       ],
+       [
+        "very loudly"
+       ]
+      ],
+      "describe": {
+       "noun": "net",
+       "ideas": [
+        "tangled",
+        "green",
+        "old"
+       ]
+      },
+      "feel": {
+       "who": "Finn",
+       "fits": [
+        "worried",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "the rescuer",
+        "says": "You did the right thing."
+       },
+       {
+        "who": "Finn",
+        "says": "Will it be all right?"
+       },
+       {
+        "who": "Rosa",
+        "says": "Gently does it."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "the seal|slid|into the waves",
+       "the seal|wriggled|towards the waves",
+       "the seal|swam|into the sea"
+      ],
+      "wrong": [
+       [
+        "a tractor"
+       ],
+       [
+        "climbed"
+       ],
+       [
+        "into the oven"
+       ]
+      ],
+      "describe": {
+       "noun": "seal",
+       "ideas": [
+        "healthy",
+        "happy",
+        "little"
+       ]
+      },
+      "feel": {
+       "who": "Rosa",
+       "fits": [
+        "happy",
+        "calm",
+        "proud"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Rosa",
+        "says": "Goodbye, little seal!"
+       },
+       {
+        "who": "Finn",
+        "says": "Swim safely!"
+       },
+       {
+        "who": "the rescuer",
+        "says": "Thanks to you two."
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "collected": [
+      "gathered",
+      "hunted for"
+     ],
+     "cut": [
+      "snipped",
+      "sliced"
+     ],
+     "slid": [
+      "glided",
+      "slithered"
+     ],
+     "spotted": [
+      "noticed",
+      "glimpsed"
+     ],
+     "swam": [
+      "paddled",
+      "splashed"
+     ]
+    },
+    "endings": [
+     "Rosa and Finn would never forget their seal.",
+     "They walked home feeling proud and happy.",
+     "Somewhere out at sea, a young seal was safe."
+    ]
+   }
   },
   {
    "id": "attic-letters",
@@ -583,7 +3626,316 @@
     "I showed feelings through what people do and say.",
     "I gave my story a strong ending."
    ],
-   "model": "Dust danced in the single beam of light. Jay climbed the last step into the attic behind Great-Aunt Vera, wrinkling his nose at the smell of old paper. The suitcases were exactly where she had said, but behind them, half hidden by a blanket, sat a small wooden box.\n\nCurious, he lifted the lid. Inside lay a bundle of letters tied with faded ribbon and a photograph of two children laughing on a wall.\n\n\"Aunt Vera,\" he said, \"who's this?\"\n\nShe took the photograph in both hands. Downstairs at the kitchen table, for a long moment she said nothing. Then, with tears shining in her eyes, she smiled. \"That's Arthur,\" she said softly. \"My best friend. His family moved away when I was twelve, and I thought I had lost his address for ever.\"\n\nJay turned over the top envelope. \"It's on here,\" he said.\n\nA week later, they stood outside a tiny cottage by the sea. The door creaked open, and a very old man with a walking stick stared at them. \"Vera?\" he said.\n\nSixty years melted away in a single hug."
+   "model": "Dust danced in the single beam of light. Jay climbed the last step into the attic behind Great-Aunt Vera, wrinkling his nose at the smell of old paper. The suitcases were exactly where she had said, but behind them, half hidden by a blanket, sat a small wooden box.\n\nCurious, he lifted the lid. Inside lay a bundle of letters tied with faded ribbon and a photograph of two children laughing on a wall.\n\n\"Aunt Vera,\" he said, \"who's this?\"\n\nShe took the photograph in both hands. Downstairs at the kitchen table, for a long moment she said nothing. Then, with tears shining in her eyes, she smiled. \"That's Arthur,\" she said softly. \"My best friend. His family moved away when I was twelve, and I thought I had lost his address for ever.\"\n\nJay turned over the top envelope. \"It's on here,\" he said.\n\nA week later, they stood outside a tiny cottage by the sea. The door creaked open, and a very old man with a walking stick stared at them. \"Vera?\" he said.\n\nSixty years melted away in a single hug.",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Jay and his great-aunt Vera",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "Jay",
+      "be": "was",
+      "icon": "person",
+      "fits": true
+     },
+     {
+      "text": "a team of firefighters",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "in the dusty attic",
+      "icon": "house",
+      "fits": true
+     },
+     {
+      "text": "at Vera's house",
+      "icon": "house",
+      "fits": true
+     },
+     {
+      "text": "at a fairground",
+      "icon": "star",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One quiet afternoon",
+      "icon": "clock",
+      "fits": true
+     },
+     {
+      "text": "One afternoon",
+      "icon": "clock",
+      "fits": true
+     },
+     {
+      "text": "One snowy night",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Jay|found|a box|under a blanket",
+       "Jay|uncovered|a box|under a blanket",
+       "Jay|spotted|a box|in the corner"
+      ],
+      "wrong": [
+       [
+        "a kangaroo"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "a rocket"
+       ],
+       [
+        "on the beach"
+       ]
+      ],
+      "describe": {
+       "noun": "box",
+       "ideas": [
+        "dusty",
+        "wooden",
+        "mysterious"
+       ]
+      },
+      "feel": {
+       "who": "Jay",
+       "fits": [
+        "surprised",
+        "excited"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Jay",
+        "says": "What's in here?"
+       },
+       {
+        "who": "Vera",
+        "says": "I haven't seen that for years!"
+       },
+       {
+        "who": "Jay",
+        "says": "It's so dusty!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Jay|found|letters|inside the box",
+       "Jay|discovered|a photograph|inside the box",
+       "Vera|looked at|the letters|inside the box"
+      ],
+      "wrong": [
+       [
+        "a goat"
+       ],
+       [
+        "kicked"
+       ],
+       [
+        "a banana"
+       ],
+       [
+        "under the sea"
+       ]
+      ],
+      "describe": {
+       "noun": "box",
+       "ideas": [
+        "old",
+        "wooden",
+        "secret"
+       ]
+      },
+      "feel": {
+       "who": "Vera",
+       "fits": [
+        "surprised",
+        "sad",
+        "happy"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Vera",
+        "says": "My old letters!"
+       },
+       {
+        "who": "Jay",
+        "says": "Who is in the photograph?"
+       },
+       {
+        "who": "Vera",
+        "says": "That's my best friend."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Vera|read|the letters|at the table",
+       "Vera|held|the photograph|at the table",
+       "Vera|cried|happy tears|at the table"
+      ],
+      "wrong": [
+       [
+        "a robot"
+       ],
+       [
+        "juggled"
+       ],
+       [
+        "a football"
+       ],
+       [
+        "on the roof"
+       ]
+      ],
+      "describe": {
+       "noun": "table",
+       "ideas": [
+        "kitchen",
+        "old",
+        "wooden"
+       ]
+      },
+      "feel": {
+       "who": "Vera",
+       "fits": [
+        "happy",
+        "sad",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Vera",
+        "says": "We were best friends."
+       },
+       {
+        "who": "Jay",
+        "says": "Can we find him?"
+       },
+       {
+        "who": "Vera",
+        "says": "It's been sixty years."
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Jay and Vera|visited|her old friend|at his cottage",
+       "Jay and Vera|hugged|her old friend|at his cottage",
+       "Vera|met|her old friend|at his cottage"
+      ],
+      "wrong": [
+       [
+        "a polar bear"
+       ],
+       [
+        "painted"
+       ],
+       [
+        "a lorry"
+       ],
+       [
+        "at the zoo"
+       ]
+      ],
+      "describe": {
+       "noun": "cottage",
+       "ideas": [
+        "little",
+        "pretty",
+        "thatched"
+       ]
+      },
+      "feel": {
+       "who": "Vera",
+       "fits": [
+        "happy",
+        "excited",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Vera",
+        "says": "Hello, old friend."
+       },
+       {
+        "who": "the old man",
+        "says": "Vera, is it really you?"
+       },
+       {
+        "who": "Jay",
+        "says": "This is the best day!"
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "found": [
+      "discovered",
+      "uncovered"
+     ],
+     "held": [
+      "clutched",
+      "cradled"
+     ],
+     "looked": [
+      "gazed",
+      "peered"
+     ],
+     "visited": [
+      "surprised",
+      "greeted"
+     ]
+    },
+    "endings": [
+     "After sixty years, the two old friends were together again.",
+     "Jay was glad he had helped in the attic.",
+     "They talked and laughed until the sun went down."
+    ]
+   }
   },
   {
    "id": "science-fair",
@@ -639,7 +3991,312 @@
     "I varied my sentence openers and connectives.",
     "My ending links back to the start."
    ],
-   "model": "Six weeks of work sat on one small table. It was made of cardboard, a toy motor and more sticky tape than anyone would care to admit, but to Asha and Tom it was the finest robot in England.\n\n\"Don't touch anything,\" Asha muttered, as the judges drew closer. Her hands, she noticed, were not quite steady.\n\nWhat happened next was nobody's fault. Perhaps it was the vibration from the stage; perhaps it was fate. With a tiny click, the motor whirred into life. The robot rolled forward, tipped over the edge of the table and landed, miraculously, on its wheels.\n\nThen it hurtled across the hall.\n\n\"Stop it!\" yelled Tom, sprinting after it. Volcanoes wobbled. A model of the solar system lost two planets. Everywhere the robot went, pandemonium followed, until, directly ahead, Asha saw the tallest tower of paper cups the school had ever seen.\n\nTime seemed to slow. The robot nudged the bottom row. For one long second, nothing moved. Then, cup by cup, the whole tower began to collapse around a very surprised judge.\n\nSilence.\n\nAsha wanted the floor to swallow her. Instead, she took a deep breath, picked up a cup and started to rebuild. Tom joined her, then the tower's owner, then half the hall.\n\nThe judge, still wearing a cup on her shoulder, began to laugh. She peeled a gold star from her sheet and stuck it firmly on the robot's dented head.\n\n\"For teamwork,\" she said, over the applause. \"And for the best demonstration of motion I've ever seen.\""
+   "model": "Six weeks of work sat on one small table. It was made of cardboard, a toy motor and more sticky tape than anyone would care to admit, but to Asha and Tom it was the finest robot in England.\n\n\"Don't touch anything,\" Asha muttered, as the judges drew closer. Her hands, she noticed, were not quite steady.\n\nWhat happened next was nobody's fault. Perhaps it was the vibration from the stage; perhaps it was fate. With a tiny click, the motor whirred into life. The robot rolled forward, tipped over the edge of the table and landed, miraculously, on its wheels.\n\nThen it hurtled across the hall.\n\n\"Stop it!\" yelled Tom, sprinting after it. Volcanoes wobbled. A model of the solar system lost two planets. Everywhere the robot went, pandemonium followed, until, directly ahead, Asha saw the tallest tower of paper cups the school had ever seen.\n\nTime seemed to slow. The robot nudged the bottom row. For one long second, nothing moved. Then, cup by cup, the whole tower began to collapse around a very surprised judge.\n\nSilence.\n\nAsha wanted the floor to swallow her. Instead, she took a deep breath, picked up a cup and started to rebuild. Tom joined her, then the tower's owner, then half the hall.\n\nThe judge, still wearing a cup on her shoulder, began to laugh. She peeled a gold star from her sheet and stuck it firmly on the robot's dented head.\n\n\"For teamwork,\" she said, over the applause. \"And for the best demonstration of motion I've ever seen.\"",
+   "comic": {
+    "reviewed": false,
+    "who": [
+     {
+      "text": "Asha and Tom",
+      "be": "were",
+      "icon": "people",
+      "fits": true
+     },
+     {
+      "text": "two friends and their robot",
+      "be": "were",
+      "icon": "robot",
+      "fits": true
+     },
+     {
+      "text": "a pair of chefs",
+      "be": "were",
+      "icon": "people",
+      "fits": false
+     }
+    ],
+    "where": [
+     {
+      "text": "at the school science fair",
+      "icon": "school",
+      "fits": true
+     },
+     {
+      "text": "in the busy school hall",
+      "icon": "school",
+      "fits": true
+     },
+     {
+      "text": "on a farm",
+      "icon": "tree",
+      "fits": false
+     }
+    ],
+    "when": [
+     {
+      "text": "One exciting morning",
+      "icon": "sun",
+      "fits": true
+     },
+     {
+      "text": "On the big day",
+      "icon": "star",
+      "fits": true
+     },
+     {
+      "text": "One sleepy weekend",
+      "icon": "moon",
+      "fits": false
+     }
+    ],
+    "panels": [
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "Where?"
+      ],
+      "paths": [
+       "Asha and Tom|showed|their robot|to the judges",
+       "the friends|presented|their robot|to the judges",
+       "Asha|switched on|the robot|for the judges"
+      ],
+      "wrong": [
+       [
+        "a pirate"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "a sandwich"
+       ],
+       [
+        "to the ducks"
+       ]
+      ],
+      "describe": {
+       "noun": "robot",
+       "ideas": [
+        "cardboard",
+        "clever",
+        "little"
+       ]
+      },
+      "feel": {
+       "who": "Asha",
+       "fits": [
+        "proud",
+        "excited",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Tom",
+        "says": "Six weeks of work!"
+       },
+       {
+        "who": "Asha",
+        "says": "Here come the judges!"
+       },
+       {
+        "who": "Tom",
+        "says": "Fingers crossed!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "Where?"
+      ],
+      "paths": [
+       "the robot|zoomed|off the table",
+       "the robot|rolled|off the table",
+       "the robot|sped|across the hall"
+      ],
+      "wrong": [
+       [
+        "the teacher"
+       ],
+       [
+        "fell asleep"
+       ],
+       [
+        "into the sea"
+       ]
+      ],
+      "describe": {
+       "noun": "robot",
+       "ideas": [
+        "runaway",
+        "speedy",
+        "noisy"
+       ]
+      },
+      "feel": {
+       "who": "Tom",
+       "fits": [
+        "surprised",
+        "worried"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Tom",
+        "says": "Stop, robot!"
+       },
+       {
+        "who": "Asha",
+        "says": "Come back!"
+       },
+       {
+        "who": "a judge",
+        "says": "Goodness me!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?"
+      ],
+      "paths": [
+       "the robot|crashed into|a tower of cups",
+       "the robot|bumped into|a tower of cups",
+       "the robot|knocked over|a tower of cups"
+      ],
+      "wrong": [
+       [
+        "a lion"
+       ],
+       [
+        "sang to"
+       ],
+       [
+        "a bowl of soup"
+       ]
+      ],
+      "describe": {
+       "noun": "cups",
+       "ideas": [
+        "paper",
+        "plastic",
+        "wobbly"
+       ]
+      },
+      "feel": {
+       "who": "Asha",
+       "fits": [
+        "shy",
+        "worried",
+        "surprised"
+       ]
+      },
+      "speech": [
+       {
+        "who": "Asha",
+        "says": "Oh no!"
+       },
+       {
+        "who": "Tom",
+        "says": "Sorry!"
+       },
+       {
+        "who": "a judge",
+        "says": "Well, that was a surprise!"
+       }
+      ]
+     },
+     {
+      "slots": [
+       "Who?",
+       "Did what?",
+       "What?",
+       "How?"
+      ],
+      "paths": [
+       "everyone|rebuilt|the tower|together",
+       "the friends|rebuilt|the tower|with the judge",
+       "everyone|fixed|the tower|together"
+      ],
+      "wrong": [
+       [
+        "a giraffe"
+       ],
+       [
+        "ate"
+       ],
+       [
+        "the moon"
+       ],
+       [
+        "with a hammer"
+       ]
+      ],
+      "describe": {
+       "noun": "tower",
+       "ideas": [
+        "tall",
+        "wobbly",
+        "paper"
+       ]
+      },
+      "feel": {
+       "who": "Tom",
+       "fits": [
+        "proud",
+        "happy",
+        "calm"
+       ]
+      },
+      "speech": [
+       {
+        "who": "the judge",
+        "says": "A gold star for teamwork!"
+       },
+       {
+        "who": "Tom",
+        "says": "We did it!"
+       },
+       {
+        "who": "Asha",
+        "says": "Let's rebuild the robot too."
+       }
+      ]
+     }
+    ],
+    "upgrades": {
+     "showed": [
+      "presented",
+      "displayed"
+     ],
+     "rolled": [
+      "hurtled",
+      "trundled"
+     ],
+     "crashed": [
+      "smashed",
+      "ploughed"
+     ],
+     "zoomed": [
+      "hurtled",
+      "raced"
+     ],
+     "bumped": [
+      "thumped",
+      "crashed"
+     ]
+    },
+    "endings": [
+     "The judge gave them a gold star for teamwork.",
+     "Their robot was the talk of the whole school.",
+     "Asha and Tom were already planning their next invention."
+    ]
+   }
   }
  ]
 }

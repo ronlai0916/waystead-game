@@ -17,3 +17,20 @@ export function loadRealWords() {
   }
   return list.catch(() => () => false);
 }
+
+// The child-safe check on typed comic words (safe-text.js): any word on the list,
+// every tier (children play the whole list). Blocked words were never in it. If
+// it doesn't load, only the comic's own words pass, so nothing unchecked gets in.
+let all = null;
+export function loadKnownWords() {
+  if (!all) {
+    all = (async () => {
+      const [{ loadWordGraph, isWord }, res] = await Promise.all([import('../../wordbright/js/engine/words.js'), fetch('../wordbright/data/words_all.dawg')]);
+      if (!res.ok) throw new Error('No word list');
+      const graph = loadWordGraph(await res.arrayBuffer());
+      return (w) => isWord(w, graph);
+    })();
+    all.catch(() => { all = null; });
+  }
+  return all.catch(() => () => false);
+}

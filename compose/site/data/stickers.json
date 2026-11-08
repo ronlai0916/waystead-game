@@ -1,0 +1,253 @@
+{
+ "_meta": {
+  "note": "Written by tools/compose-stickers.py data: never edit by hand. Names are what the game says aloud. Placed stickers are saved as data (id, x, y, size), never as pictures."
+ },
+ "backgrounds": [
+  {
+   "id": "park",
+   "name": "the park",
+   "src": {
+    "600": "assets/stickers/bg-park.svg",
+    "1200": "assets/stickers/bg-park.svg"
+   }
+  },
+  {
+   "id": "kitchen",
+   "name": "the kitchen",
+   "src": {
+    "600": "assets/stickers/bg-kitchen.svg",
+    "1200": "assets/stickers/bg-kitchen.svg"
+   }
+  },
+  {
+   "id": "classroom",
+   "name": "the classroom",
+   "src": {
+    "600": "assets/stickers/bg-classroom.svg",
+    "1200": "assets/stickers/bg-classroom.svg"
+   }
+  },
+  {
+   "id": "beach",
+   "name": "the beach",
+   "src": {
+    "600": "assets/stickers/bg-beach.svg",
+    "1200": "assets/stickers/bg-beach.svg"
+   }
+  },
+  {
+   "id": "forest-path",
+   "name": "the woods",
+   "src": {
+    "600": "assets/stickers/bg-forest-path.svg",
+    "1200": "assets/stickers/bg-forest-path.svg"
+   }
+  },
+  {
+   "id": "market",
+   "name": "the market",
+   "src": {
+    "600": "assets/stickers/bg-market.svg",
+    "1200": "assets/stickers/bg-market.svg"
+   }
+  },
+  {
+   "id": "snowy-garden",
+   "name": "the snowy garden",
+   "src": {
+    "600": "assets/stickers/bg-snowy-garden.svg",
+    "1200": "assets/stickers/bg-snowy-garden.svg"
+   }
+  },
+  {
+   "id": "bedroom",
+   "name": "the bedroom",
+   "src": {
+    "600": "assets/stickers/bg-bedroom.svg",
+    "1200": "assets/stickers/bg-bedroom.svg"
+   }
+  }
+ ],
+ "characters": [
+  {
+   "id": "amara",
+   "name": "Amara",
+   "poses": {
+    "a": "assets/stickers/char-amara-a.svg",
+    "b": "assets/stickers/char-amara-b.svg"
+   }
+  },
+  {
+   "id": "finn",
+   "name": "Finn",
+   "poses": {
+    "a": "assets/stickers/char-finn-a.svg",
+    "b": "assets/stickers/char-finn-b.svg"
+   }
+  },
+  {
+   "id": "mei",
+   "name": "Mei",
+   "poses": {
+    "a": "assets/stickers/char-mei-a.svg",
+    "b": "assets/stickers/char-mei-b.svg"
+   }
+  },
+  {
+   "id": "arjun",
+   "name": "Arjun",
+   "poses": {
+    "a": "assets/stickers/char-arjun-a.svg",
+    "b": "assets/stickers/char-arjun-b.svg"
+   }
+  },
+  {
+   "id": "ruby",
+   "name": "Ruby",
+   "poses": {
+    "a": "assets/stickers/char-ruby-a.svg",
+    "b": "assets/stickers/char-ruby-b.svg"
+   }
+  },
+  {
+   "id": "kofi",
+   "name": "Kofi",
+   "poses": {
+    "a": "assets/stickers/char-kofi-a.svg",
+    "b": "assets/stickers/char-kofi-b.svg"
+   }
+  },
+  {
+   "id": "grandad",
+   "name": "Grandad",
+   "poses": {
+    "a": "assets/stickers/char-grandad-a.svg",
+    "b": "assets/stickers/char-grandad-b.svg"
+   }
+  },
+  {
+   "id": "mum",
+   "name": "Mum",
+   "poses": {
+    "a": "assets/stickers/char-mum-a.svg",
+    "b": "assets/stickers/char-mum-b.svg"
+   }
+  },
+  {
+   "id": "dad",
+   "name": "Dad",
+   "poses": {
+    "a": "assets/stickers/char-dad-a.svg",
+    "b": "assets/stickers/char-dad-b.svg"
+   }
+  },
+  {
+   "id": "nana",
+   "name": "Nana",
+   "poses": {
+    "a": "assets/stickers/char-nana-a.svg",
+    "b": "assets/stickers/char-nana-b.svg"
+   }
+  },
+  {
+   "id": "biscuit",
+   "name": "Biscuit",
+   "kind": "dog",
+   "poses": {
+    "a": "assets/stickers/char-biscuit-a.svg",
+    "b": "assets/stickers/char-biscuit-b.svg"
+   }
+  },
+  {
+   "id": "marmalade",
+   "name": "Marmalade",
+   "kind": "cat",
+   "poses": {
+    "a": "assets/stickers/char-marmalade-a.svg",
+    "b": "assets/stickers/char-marmalade-b.svg"
+   }
+  }
+ ],
+ "objects": [
+  {
+   "id": "kite",
+   "name": "the kite",
+   "src": "assets/stickers/obj-kite.svg"
+  },
+  {
+   "id": "ball",
+   "name": "the ball",
+   "src": "assets/stickers/obj-ball.svg"
+  },
+  {
+   "id": "cake",
+   "name": "the cake",
+   "src": "assets/stickers/obj-cake.svg"
+  },
+  {
+   "id": "map",
+   "name": "the map",
+   "src": "assets/stickers/obj-map.svg"
+  },
+  {
+   "id": "torch",
+   "name": "the torch",
+   "src": "assets/stickers/obj-torch.svg"
+  },
+  {
+   "id": "umbrella",
+   "name": "the umbrella",
+   "src": "assets/stickers/obj-umbrella.svg"
+  },
+  {
+   "id": "teddy",
+   "name": "the teddy",
+   "src": "assets/stickers/obj-teddy.svg"
+  },
+  {
+   "id": "bike",
+   "name": "the bike",
+   "src": "assets/stickers/obj-bike.svg"
+  },
+  {
+   "id": "boat",
+   "name": "the boat",
+   "src": "assets/stickers/obj-boat.svg"
+  },
+  {
+   "id": "key",
+   "name": "the key",
+   "src": "assets/stickers/obj-key.svg"
+  },
+  {
+   "id": "box",
+   "name": "the present",
+   "src": "assets/stickers/obj-box.svg"
+  },
+  {
+   "id": "book",
+   "name": "the book",
+   "src": "assets/stickers/obj-book.svg"
+  },
+  {
+   "id": "basket",
+   "name": "the basket",
+   "src": "assets/stickers/obj-basket.svg"
+  },
+  {
+   "id": "bucket",
+   "name": "the bucket",
+   "src": "assets/stickers/obj-bucket.svg"
+  },
+  {
+   "id": "balloon",
+   "name": "the balloon",
+   "src": "assets/stickers/obj-balloon.svg"
+  },
+  {
+   "id": "snowman",
+   "name": "the snowman",
+   "src": "assets/stickers/obj-snowman.svg"
+  }
+ ]
+}

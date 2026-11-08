@@ -1,9 +1,12 @@
 // Entry point: load the tasks, route by the URL hash, wire the top bar.
-import { loadTasks } from './tasks.js';
+import { loadTasks, loadComicData } from './tasks.js';
 import { wireThemeMenu } from './thememenu.js';
 import { stop, getSpeaker, hearSample, useVoiceAccount } from './speech.js';
 import * as V from './views.js';
 import * as G from './grownups-views.js';
+import * as CV from './comic-views.js';
+import * as OV from './own-views.js';
+import * as K from './comic-doc.js';
 import * as S from './store.js';
 import * as W from './writing-doc.js';
 import { wireVoiceMenu } from './voice/menu.js';
@@ -28,6 +31,13 @@ const ROUTES = [
   ['about', V.about],
   ['writing', V.writing],
   ['writing/:pid', V.piece],
+  ['c/:id', CV.studio],
+  ['c/:id/go', CV.go],
+  ['c/:id/challenge', CV.challenge],
+  ['comics', CV.shelf],
+  ['comics/:cid', CV.view],
+  ['own', OV.start],
+  ['own/:cid', OV.step],
   ['t/:id/look', V.look],
   ['t/:id/plan', V.plan],
   ['t/:id/write', V.write],
@@ -38,6 +48,7 @@ const ROUTES = [
   ['grownups/tasks', G.taskReview],
   ['grownups/child/:cid', G.childPage],
   ['grownups/child/:cid/p/:pid', G.piecePage],
+  ['grownups/child/:cid/c/:comicId', G.comicPage],
 ];
 function match(path) {
   const parts = path.split('/').filter(Boolean);
@@ -52,6 +63,8 @@ function match(path) {
 function parentOf(path) {
   const parts = path.split('/').filter(Boolean);
   if (parts[0] === 't') return parts[2] === 'look' ? '#/' : '#/t/' + parts[1] + '/look';
+  if (parts[0] === 'c') return parts.length > 2 ? '#/c/' + parts[1] : '#/';
+  if (parts[0] === 'own') return parts.length > 1 ? '#/own' : '#/comics';
   if (parts[0] === 'grownups') return parts.length > 3 ? '#/grownups/child/' + parts[2] : parts.length > 1 ? '#/grownups' : '#/';
   parts.pop();
   return '#/' + parts.join('/');
@@ -121,6 +134,13 @@ function wireAccount() {
         merge: W.merge,
         prepare: (v) => W.trim(W.normalise(v), Date.now()),
       },
+      // Comic Studio's comics (C2): the same rules as the writing (comic-doc.js).
+      [K.COMICS_KEY]: {
+        read: () => (S.has('comics', id) ? S.readComics(id) : undefined),
+        write: (v) => S.writeComics(K.normaliseComics(v), id),
+        merge: K.mergeComics,
+        prepare: (v) => K.trimComics(K.normaliseComics(v), Date.now()),
+      },
       // A parent's values: this device only ever reads them, and the account refuses a child's write.
       [W.MARKS_KEY]: { read: () => (S.has('marks', id) ? S.readMarks(id) : undefined), write: (v) => S.writeMarks(W.normaliseMarks(v), id), merge: (_, remote) => W.normaliseMarks(remote) },
       [W.SETTINGS_KEY]: { read: () => (S.has('settings', id) ? S.readSettings(id) : undefined), write: (v) => S.writeSettings(W.normaliseSettings(v), id), merge: (_, remote) => W.normaliseSettings(remote) },
@@ -152,7 +172,7 @@ async function start() {
   wireTheme();
   wireAccount();
   try {
-    await loadTasks();
+    await Promise.all([loadTasks(), loadComicData()]);
   } catch (e) {
     main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>The stories didn\'t load</h1><p class="muted">Check your connection, then reload the page.</p></div></section>';
     console.error(e);

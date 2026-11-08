@@ -1,8 +1,9 @@
-// A player's writing on this device: "cp.writing:<player id>", which account/sync.js
+// A player's writing on this device: "cp.writing:<player id>" and "cp.comics:<player id>", which account/sync.js
 // also saves to the Waystead account. Marks and settings come from a parent and
 // are only ever read here. The look is shared with the other games (sb.theme,
 // sb.dayStyle, sb.voice).
 import * as W from './writing-doc.js';
+import * as K from './comic-doc.js';
 
 let player = null;
 let changed = null;
@@ -22,6 +23,13 @@ export const writeWriting = (d, id = player) => write(keyOf('writing', id), d);
 export function updateWriting(fn) {
   writeWriting(fn(readWriting()));
   if (changed) changed(W.DOC_KEY);
+}
+// Comic Studio's comics (comic-doc.js): "cp.comics:<player id>", synced as the account key "comics".
+export const readComics = (id = player) => K.normaliseComics(read(keyOf('comics', id), null));
+export const writeComics = (d, id = player) => write(keyOf('comics', id), d);
+export function updateComics(fn) {
+  writeComics(fn(readComics()));
+  if (changed) changed(K.COMICS_KEY);
 }
 export const readMarks = (id = player) => W.normaliseMarks(read(keyOf('marks', id), null));
 export const writeMarks = (d, id = player) => write(keyOf('marks', id), d);

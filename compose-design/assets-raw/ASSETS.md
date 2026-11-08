@@ -63,3 +63,13 @@ xAI terms for commercial use: see wordbright-design/assets-raw/ASSETS.md (custom
 | seal-pup-1.png | Children's picture-book illustration, flat shapes with soft gentle grain, thick clean rounded outlines, warm friendly faces, natural everyday colours, a full simple background scene, wide landscape picture. Everyday British setting. Original characters, not based on any existing character. No text, no letters, no numbers, no signs with writing, no logos, no brands, no watermark. Gentle, safe and cheerful: nothing scary or violent. Keep exactly the same characters, faces, hair, skin, clothes, drawing style and colours as this picture. No text, no letters, no numbers. Now show the next moment of the story, a new scene: A girl of about ten with short black hair and an orange waterproof, her older cousin, a boy with red hair and a navy jumper, and a small white fluffy seal pup. On a wide British beach on a grey morning, the two children walk with buckets collecting shells. There is no seal near them: the only sign is one very small white shape lying far away in the distance on the sand. | 2026-11-04 | grok-imagine-image-2.0 | 0.04 | remade |
 
 Total: 57 calls (48 first made, 9 remade after review), $2.02. See calls.json.
+
+
+## Sticker library (Composition 2, "My own story")
+
+Made by tools/compose-stickers.py from tools/compose-stickers.json (8 places, 12 characters in 2 poses, 16 things; cap 80 calls / US$5, its own ledger sticker-calls.json).
+
+**8 Nov 2026: not made.** The first call was refused: HTTP 403 `team:ip-range-ic-exclusion`, "User IP disallowed by team policy" (the xAI team's IP allow-list does not include this machine's address). 1 call counted, $0.00 spent. Placeholder SVGs drawn by tools/compose-sticker-placeholders.py are used meanwhile (no text in any). To make the real art once the allow-list is changed: `python3 tools/compose-stickers.py make` (makes what is missing, cuts the white away, writes the WebP files and data/stickers.json), then bump VERSION in compose/site/sw.js.
+
+| File | Prompt | Date | Model | Cost (USD) | Notes |
+|---|---|---|---|---|---|

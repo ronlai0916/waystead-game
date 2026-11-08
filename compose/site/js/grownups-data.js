@@ -3,6 +3,7 @@
 // for a child's session or an adult playing as a child; 404 no-such-child.
 // Nothing here is kept on the adult's device.
 import * as W from './writing-doc.js';
+import * as K from './comic-doc.js';
 
 const GAME = 'compose';
 
@@ -44,14 +45,14 @@ export async function listChildren(api) {
   const r = await api.children();
   return r.ok && r.data && Array.isArray(r.data.children) ? { children: r.data.children } : { problem: problemOf(r) };
 }
-/** { writing, marks, settings, versions } or { problem }. */
+/** { writing, comics, marks, settings, versions } or { problem }. */
 export async function readChild(api, id) {
   const r = await api.game(id);
   if (!r.ok || !r.data || typeof r.data.items !== 'object') return { problem: problemOf(r) };
   const it = r.data.items;
   const v = (k) => (it[k] ? it[k].value : null);
   return {
-    writing: W.normalise(v(W.DOC_KEY)), marks: W.normaliseMarks(v(W.MARKS_KEY)), settings: W.normaliseSettings(v(W.SETTINGS_KEY)),
+    writing: W.normalise(v(W.DOC_KEY)), comics: K.normaliseComics(v(K.COMICS_KEY)), marks: W.normaliseMarks(v(W.MARKS_KEY)), settings: W.normaliseSettings(v(W.SETTINGS_KEY)),
     versions: Object.fromEntries(Object.entries(it).map(([k, x]) => [k, x.version])),
   };
 }

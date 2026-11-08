@@ -88,6 +88,9 @@
   --flower-face: var(--ink);
   --flower-ground: var(--line);
   --petal-glow: none;
+  /* Comic Studio: the ink round panels and bubbles (each style may change it). */
+  --panel-edge: var(--text);
+  --gutter: 10px;
 
   --r-sm: 8px;
   --r: 14px;
@@ -726,4 +729,206 @@ ul.report__list.card { padding-left: 34px; }
   html, body, main { background: var(--paper); }
   body::before, body::after { display: none !important; }
   .card { box-shadow: none; border: 1px solid var(--line); break-inside: avoid; }
+}
+
+/* ---- Comic Studio (C2) -----------------------------------------------------------
+   The comic devices are plain CSS in the style's own tokens: panels with an ink
+   edge and gutters, a caption box under each picture, a speech bubble over it.
+   Stickers are placed from data: --x, --y (% of the panel), --s (size) and --flip,
+   set from JS with el.style.setProperty (CSP: no style attributes). */
+.studio .pagehead { margin-bottom: 6px; }
+.studio__top { display: grid; gap: 16px; align-items: start; }
+@media (min-width: 720px) { .studio__top { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+.studio__body { display: grid; gap: 12px; margin-top: 14px; }
+.movebar li.is-done { color: var(--text); }
+.backrow { margin-top: 16px; }
+.instruct { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.12rem; font-weight: 700; }
+.instruct > svg { flex: none; width: 28px; height: 28px; fill: none; stroke: var(--sb); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.instruct:focus { outline: none; }
+.instruct:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+.hearbtn { flex: none; width: 48px; height: 48px; display: inline-grid; place-items: center; border-radius: 50%; border: 2px solid var(--line); background: var(--surface-2); color: var(--text); cursor: pointer; }
+.hearbtn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.hearbtn:hover { border-color: var(--muted); }
+.gentle { min-height: 1.5em; margin: 0; font-weight: 700; color: var(--text); }
+.bigline { font-size: 1.25rem; line-height: 1.6; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.bigline mark { background: var(--sb-soft); color: var(--text); box-shadow: inset 0 -3px 0 var(--sb); padding: 0 3px; border-radius: 4px; }
+
+/* Tiles and choices: big, round, every one at least 48px. */
+.ctiles { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.tilewrap { display: inline-flex; align-items: center; gap: 4px; }
+.ctile { min-height: 52px; padding: 8px 16px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--text); font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; cursor: pointer; box-shadow: 0 3px 0 var(--line); }
+.ctile:hover { border-color: var(--sb); }
+.ctile[aria-checked="true"], .ctile[aria-pressed="true"] { border-color: var(--sb); background: var(--sb-soft); }
+.ctile--small { min-height: 48px; font-size: 1rem; padding: 6px 12px; }
+.ctile--placed { background: var(--sb-soft); border-color: var(--sb); box-shadow: none; }
+.ctile--placed:disabled { opacity: 1; cursor: default; }
+.ctile--keep { font-family: var(--f-body); font-size: 1rem; background: var(--surface-2); }
+.ctile.is-tried, .choice.is-tried, .facebtn.is-tried { opacity: 0.55; }
+.is-nope { animation: nope 360ms ease; }
+@keyframes nope { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.choices { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.choices .tilewrap { display: flex; }
+.choice { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface); color: var(--text); font-size: 1.08rem; font-weight: 700; text-align: left; cursor: pointer; box-shadow: 0 3px 0 var(--line); }
+.choice:hover { border-color: var(--sb); }
+.choice > svg { flex: none; width: 30px; height: 30px; fill: none; stroke: var(--sb); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.choice--speech { font-weight: 600; }
+.ownbubble > summary { list-style: none; display: inline-flex; }
+.ownbubble > summary::-webkit-details-marker { display: none; }
+.ownbubble[open] > summary { margin-bottom: 8px; }
+.typed { font-size: 1.15rem; line-height: 1.5; }
+.typed--word { max-width: 320px; }
+.buildline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--r); background: var(--surface-2); font-size: 1.1rem; }
+.buildline__op { font-family: var(--f-display); font-weight: 600; }
+.slot { display: inline-flex; align-items: center; min-height: 48px; padding: 4px 12px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); font-weight: 700; font-size: 0.95rem; }
+.slot.is-next { border-color: var(--sb); color: var(--text); background: var(--surface); }
+
+/* The comic: an ink-edged page of panels with gutters. */
+.comic { display: grid; gap: var(--gutter); grid-template-columns: repeat(2, minmax(0, 1fr)); padding: var(--gutter); border: 3px solid var(--panel-edge); border-radius: var(--r); background: var(--surface); }
+.panel { position: relative; margin: 0; display: flex; flex-direction: column; min-width: 0; border: 3px solid var(--panel-edge); border-radius: 6px; background: var(--surface); overflow: hidden; }
+.panel.is-on { box-shadow: 0 0 0 3px var(--surface), 0 0 0 6px var(--sb); }
+.panel__art { position: relative; aspect-ratio: 4 / 3; background: var(--surface-2); overflow: hidden; }
+.panel__art > img:not(.sticker), .panel__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; }
+.panel__n { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 2.2rem; color: var(--muted); }
+.caption { padding: 8px 10px; border-top: 3px solid var(--panel-edge); background: var(--sb-soft); color: var(--text); font-size: 1rem; line-height: 1.45; flex: 1; overflow-wrap: anywhere; }
+.caption__empty { color: var(--muted); font-style: italic; }
+.caption__line, .bubble { border-radius: 4px; transition: background-color 150ms ease; }
+.caption__line.is-reading, .bubble.is-reading { background: var(--accent-soft); box-shadow: 0 0 0 2px var(--sb); }
+.bubble { position: absolute; z-index: 2; right: 8px; top: 8px; max-width: 72%; margin: 0; padding: 6px 12px; border: 2.5px solid var(--panel-edge); border-radius: 18px; background: var(--surface); color: var(--text); font-weight: 700; font-size: 0.98rem; line-height: 1.35; overflow-wrap: anywhere; }
+.bubble::before { content: "“"; }
+.bubble::after { content: ""; position: absolute; left: 22px; bottom: -11px; width: 16px; height: 16px; background: var(--surface); border-right: 2.5px solid var(--panel-edge); border-bottom: 2.5px solid var(--panel-edge); transform: skewX(-25deg) rotate(45deg); }
+.bubble .sr + * { display: inline; }
+.panel__fix { margin: 8px; align-self: flex-start; }
+/* Small, always on show while making: four in a row, captions only when there is room. */
+.comic--strip { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 6px; margin-bottom: 4px; }
+.comic--strip .panel { border-width: 2px; }
+.comic--strip .caption { font-size: 0.72rem; line-height: 1.3; padding: 4px 6px; border-top-width: 2px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.comic--strip .bubble { display: none; }
+.comic--strip .panel__n { font-size: 1.3rem; }
+@media (max-width: 599.98px) { .comic--strip .caption { display: none; } .comic--strip .panel.is-done .panel__art::after { content: ""; position: absolute; right: 4px; bottom: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--sb); box-shadow: 0 0 0 2px var(--surface); } }
+.comic--big { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 720px) { .comic--big { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.comic--guide .caption { font-size: 0.9rem; }
+.comic--guide .bubble { font-size: 0.85rem; }
+.stage { max-width: 600px; width: 100%; margin: 0 auto; }
+.stage .panel { border-width: 3px; }
+.stage .caption { font-size: 1.1rem; }
+
+/* Stickers (My own story) */
+.panel__art--stage { touch-action: none; }
+.sticker { position: absolute; left: calc(var(--x, 50) * 1%); top: calc(var(--y, 50) * 1%); width: calc(var(--s, 1) * 15%); height: auto; transform: translate(-50%, -50%) scaleX(var(--flip, 1)); user-select: none; -webkit-user-drag: none; }
+.sticker--char { width: calc(var(--s, 1) * 20%); }
+.stage--edit .sticker { cursor: grab; }
+.stage--edit .sticker.is-sel { outline: 3px dashed var(--sb); outline-offset: 2px; border-radius: 6px; }
+.stage--edit:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 8px; }
+.stickerwrap { display: grid; gap: 10px; }
+.stickertools { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; min-height: 52px; }
+.stickertools .iconbtn { width: 52px; height: 52px; }
+.stickertools .iconbtn svg { width: 24px; height: 24px; }
+.stickertools__name { font-weight: 700; margin-right: 4px; }
+.stickertray { display: flex; flex-wrap: wrap; gap: 8px; }
+.traybtn { width: 76px; height: 76px; padding: 4px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; }
+.traybtn img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.traybtn:hover { border-color: var(--sb); }
+.bgrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.bgbtn { width: 92px; aspect-ratio: 4 / 3; padding: 0; border: 3px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface-2); cursor: pointer; }
+.bgbtn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bgbtn[aria-pressed="true"], .pick[aria-pressed="true"] { border-color: var(--sb); box-shadow: 0 0 0 3px var(--sb-soft); }
+.pickgrid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); }
+.pickgrid--wide { grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+.pickgrid .tilewrap { display: flex; flex-direction: column; align-items: stretch; }
+.pickgrid .hearbtn { align-self: center; margin-top: -6px; }
+.pick { display: grid; gap: 6px; justify-items: center; padding: 8px; border: 3px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); font-weight: 700; cursor: pointer; }
+.pick img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; }
+.pick--sticker img { aspect-ratio: 1; object-fit: contain; height: 110px; }
+.pick:disabled { opacity: 0.45; cursor: not-allowed; }
+.panelguide { margin: 0; }
+
+/* Order it */
+.ordertray { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 720px) { .ordertray { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ordercard { display: grid; gap: 4px; justify-items: center; min-width: 0; }
+.ordercard__btn { width: 100%; padding: 0; border: 3px solid var(--line); border-radius: 12px; background: var(--surface); cursor: pointer; overflow: hidden; touch-action: none; }
+.ordercard__btn img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; user-select: none; }
+.ordercard__btn[aria-pressed="true"] { border-color: var(--sb); box-shadow: 0 0 0 4px var(--sb-soft); transform: translateY(-3px); }
+.ordertray > .muted { grid-column: 1 / -1; }
+.orderslots { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 720px) { .orderslots { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.orderslot { position: relative; width: 100%; aspect-ratio: 4 / 3; padding: 0; border: 3px dashed var(--muted); border-radius: 12px; background: var(--surface-2); cursor: pointer; overflow: hidden; }
+.orderslot.is-full { border-style: solid; border-color: var(--panel-edge); }
+.orderslot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.orderslot__n { position: absolute; z-index: 1; left: 6px; top: 6px; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--surface); color: var(--text); font-weight: 800; box-shadow: 0 0 0 2px var(--panel-edge); }
+.dragghost { position: fixed; z-index: 60; left: 0; top: 0; width: 150px; height: auto; border-radius: 10px; border: 3px solid var(--sb); pointer-events: none; opacity: 0.9; transform: translate(calc(var(--gx, -999px) - 50%), calc(var(--gy, -999px) - 50%)); }
+
+/* Story wheel: three parts, filling as they're chosen */
+.wheelrow { display: grid; gap: 14px; align-items: center; grid-template-columns: auto minmax(0, 1fr); }
+.wheel { position: relative; width: 132px; height: 132px; border-radius: 50%; overflow: hidden; border: 3px solid var(--panel-edge); background: var(--surface-2); }
+.wheel__seg { position: absolute; inset: 0; display: flex; font-weight: 800; font-size: 0.85rem; color: var(--text); background: var(--surface-2); }
+.wheel__seg--who { clip-path: polygon(50% 50%, 100% 21%, 100% 0, 0 0, 0 21%); justify-content: center; align-items: flex-start; padding-top: 16%; }
+.wheel__seg--where { clip-path: polygon(50% 50%, 100% 21%, 100% 100%, 50% 100%); justify-content: flex-end; align-items: flex-end; padding: 0 9% 24% 0; }
+.wheel__seg--when { clip-path: polygon(50% 50%, 50% 100%, 0 100%, 0 21%); justify-content: flex-start; align-items: flex-end; padding: 0 0 24% 9%; }
+.wheel__seg.is-set { background: var(--accent-soft); }
+.wheel__seg.is-on { background: var(--sb-soft); text-decoration: underline; text-underline-offset: 3px; }
+.wheelchosen { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+@media (max-width: 420px) { .wheel { width: 96px; height: 96px; } .wheel__seg { font-size: 0.7rem; } }
+
+/* Feelings: faces */
+.faces { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.facebtn { display: grid; gap: 4px; justify-items: center; min-height: 96px; padding: 8px; border: 2px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); font-weight: 700; cursor: pointer; }
+.facebtn:hover { border-color: var(--sb); }
+.face { width: 52px; height: 52px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.face > circle:first-child { fill: var(--sb-soft); }
+.face .fill { fill: currentColor; stroke: none; }
+.face .blush { fill: var(--sb); opacity: 0.5; }
+
+/* Stars and stamps (never a leaderboard) */
+.stars { display: inline-flex; gap: 4px; vertical-align: middle; }
+.stars i svg { width: 30px; height: 30px; fill: none; stroke: var(--line); stroke-width: 2; stroke-linejoin: round; }
+.stars i.is-on svg { fill: var(--sb); stroke: var(--sb); }
+.welldone { padding: 22px 18px; display: grid; gap: 10px; justify-items: center; text-align: center; }
+.welldone h2 { font-size: 1.5rem; }
+.welldone h2:focus { outline: none; }
+.welldone .stars i svg { width: 42px; height: 42px; }
+.stamp { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--sb); color: var(--sb); background: var(--surface); transform: rotate(-12deg); }
+.stamp svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.stamp--small { width: 36px; height: 36px; border-width: 2px; }
+.stamp--small svg { width: 22px; height: 22px; }
+.stamprow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.starlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.starlist li { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.starlist .stars i svg { width: 20px; height: 20px; }
+.welcome { font-size: 1.15rem; font-weight: 700; }
+.welcome:focus { outline: none; }
+
+/* The cover and the shelf */
+.cover { position: relative; display: grid; border: 3px solid var(--panel-edge); border-radius: var(--r); overflow: hidden; background: var(--surface); margin-bottom: 12px; }
+.cover__art { aspect-ratio: 4 / 3; overflow: hidden; }
+.cover__art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cover__words { padding: 12px 14px; display: grid; gap: 2px; border-top: 3px solid var(--panel-edge); background: var(--sb-soft); }
+.cover--blank .cover__words { border-top: 0; min-height: 180px; align-content: center; text-align: center; background: var(--sb-soft) radial-gradient(circle, var(--line) 1.5px, transparent 2px) 0 0 / 16px 16px; }
+.cover__kicker { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text); }
+.cover__title { font-size: clamp(1.5rem, 5vw, 2.2rem); margin: 0; overflow-wrap: anywhere; }
+.cover__by { margin: 0; font-weight: 700; }
+.cover .stamp { position: absolute; right: 10px; top: 10px; }
+.comicpage .cover { max-width: 560px; }
+.shelf { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
+.shelfitem { display: grid; gap: 6px; padding: 10px; text-decoration: none; color: inherit; }
+.shelfitem .cover { margin: 0; }
+.shelfitem .cover__title { font-size: 1.2rem; }
+.shelfitem .stamp { width: 44px; height: 44px; }
+.shelfitem .stamp svg { width: 26px; height: 26px; }
+.levelcard { padding: 12px 14px; display: grid; gap: 8px; }
+.levelcard p { margin: 0; }
+.finishcard { justify-items: center; text-align: center; margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) {
+  .is-nope { animation: none; }
+  .ordercard__btn[aria-pressed="true"] { transform: none; }
+  .caption__line, .bubble { transition: none; }
+}
+@media print {
+  .studio__body .btnrow, .panel__fix, .hearbtn, .stepbar { display: none !important; }
+  .comic--print { grid-template-columns: repeat(2, minmax(0, 1fr)); border-color: var(--ink); }
+  .comic--print .panel, .cover { break-inside: avoid; border-color: var(--ink); }
+  .caption { background: var(--paper); }
+  .bubble { background: var(--paper); color: var(--ink); border-color: var(--ink); }
+  .bubble::after { background: var(--paper); }
 }

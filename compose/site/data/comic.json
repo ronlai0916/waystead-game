@@ -1,0 +1,342 @@
+{
+ "_meta": {
+  "note": "Comic Studio's shared tiles (C2): openers by level and panel, feelings, connectives, and My own story's parts. Every word must be on our lists (compose/tests/comic.test.js). Original to Waystead."
+ },
+ "openers": {
+  "3": [
+   [
+    "First,",
+    "To start with,",
+    "At first,"
+   ],
+   [
+    "Then",
+    "Next,",
+    "Suddenly,"
+   ],
+   [
+    "After that,",
+    "Soon",
+    "Next,"
+   ],
+   [
+    "In the end,",
+    "Finally,",
+    "At last,"
+   ]
+  ],
+  "4": [
+   [
+    "First,",
+    "At first,",
+    "To begin with,"
+   ],
+   [
+    "Suddenly,",
+    "Then",
+    "A moment later,"
+   ],
+   [
+    "Soon",
+    "After a while,",
+    "Luckily,"
+   ],
+   [
+    "Finally,",
+    "In the end,",
+    "Later that day,"
+   ]
+  ],
+  "5": [
+   [
+    "As soon as",
+    "At first,",
+    "To begin with,"
+   ],
+   [
+    "Without warning,",
+    "Moments later,",
+    "Just then,"
+   ],
+   [
+    "Although",
+    "Before long,",
+    "Meanwhile,"
+   ],
+   [
+    "Eventually,",
+    "By the end of the day,",
+    "When it was all over,"
+   ]
+  ]
+ },
+ "feelings": [
+  {
+   "id": "happy",
+   "words": {
+    "3": [
+     "happy",
+     "glad"
+    ],
+    "4": [
+     "cheerful",
+     "delighted"
+    ],
+    "5": [
+     "overjoyed",
+     "elated"
+    ]
+   }
+  },
+  {
+   "id": "excited",
+   "words": {
+    "3": [
+     "excited",
+     "keen"
+    ],
+    "4": [
+     "thrilled",
+     "eager"
+    ],
+    "5": [
+     "exhilarated",
+     "thrilled"
+    ]
+   }
+  },
+  {
+   "id": "sad",
+   "words": {
+    "3": [
+     "sad",
+     "upset"
+    ],
+    "4": [
+     "unhappy",
+     "miserable"
+    ],
+    "5": [
+     "heartbroken",
+     "dejected"
+    ]
+   }
+  },
+  {
+   "id": "worried",
+   "words": {
+    "3": [
+     "worried",
+     "scared"
+    ],
+    "4": [
+     "nervous",
+     "uneasy"
+    ],
+    "5": [
+     "anxious",
+     "apprehensive"
+    ]
+   }
+  },
+  {
+   "id": "surprised",
+   "words": {
+    "3": [
+     "surprised",
+     "amazed"
+    ],
+    "4": [
+     "astonished",
+     "startled"
+    ],
+    "5": [
+     "astounded",
+     "bewildered"
+    ]
+   }
+  },
+  {
+   "id": "cross",
+   "words": {
+    "3": [
+     "cross",
+     "fed up"
+    ],
+    "4": [
+     "annoyed",
+     "grumpy"
+    ],
+    "5": [
+     "frustrated",
+     "exasperated"
+    ]
+   }
+  },
+  {
+   "id": "proud",
+   "words": {
+    "3": [
+     "proud",
+     "pleased"
+    ],
+    "4": [
+     "proud",
+     "satisfied"
+    ],
+    "5": [
+     "triumphant",
+     "proud"
+    ]
+   }
+  },
+  {
+   "id": "calm",
+   "words": {
+    "3": [
+     "calm",
+     "safe"
+    ],
+    "4": [
+     "relieved",
+     "peaceful"
+    ],
+    "5": [
+     "relieved",
+     "content"
+    ]
+   }
+  },
+  {
+   "id": "shy",
+   "words": {
+    "3": [
+     "shy",
+     "silly"
+    ],
+    "4": [
+     "embarrassed",
+     "awkward"
+    ],
+    "5": [
+     "embarrassed",
+     "sheepish"
+    ]
+   }
+  }
+ ],
+ "why": [
+  "because",
+  "so",
+  "when"
+ ],
+ "own": {
+  "reviewed": false,
+  "did": [
+   "found",
+   "lost",
+   "carried",
+   "chased",
+   "looked for",
+   "shared",
+   "fixed",
+   "dropped",
+   "hid",
+   "held",
+   "played with",
+   "waved at"
+  ],
+  "where": {
+   "park": "in the park",
+   "kitchen": "in the kitchen",
+   "classroom": "in the classroom",
+   "beach": "on the beach",
+   "forest-path": "in the woods",
+   "market": "at the market",
+   "snowy-garden": "in the snowy garden",
+   "bedroom": "in the bedroom"
+  },
+  "problems": [
+   {
+    "id": "lost",
+    "icon": "search",
+    "text": "{who} lost {thing}."
+   },
+   {
+    "id": "away",
+    "icon": "wind",
+    "text": "{thing} blew far away."
+   },
+   {
+    "id": "stuck",
+    "icon": "stuck",
+    "text": "{thing} got stuck up high."
+   },
+   {
+    "id": "rain",
+    "icon": "rain",
+    "text": "It started to pour with rain."
+   },
+   {
+    "id": "broke",
+    "icon": "broken",
+    "text": "{thing} broke into pieces."
+   },
+   {
+    "id": "way",
+    "icon": "path",
+    "text": "{who} could not find the way home."
+   }
+  ],
+  "solutions": [
+   {
+    "id": "friend",
+    "icon": "hands",
+    "text": "A friend helped to look."
+   },
+   {
+    "id": "idea",
+    "icon": "idea",
+    "text": "{who} had a clever idea."
+   },
+   {
+    "id": "together",
+    "icon": "hands",
+    "text": "Everyone worked together."
+   },
+   {
+    "id": "grownup",
+    "icon": "help",
+    "text": "They asked a grown-up for help."
+   },
+   {
+    "id": "found",
+    "icon": "search",
+    "text": "{thing} turned up in a surprising place."
+   },
+   {
+    "id": "fixed",
+    "icon": "fix",
+    "text": "They fixed it with tape and string."
+   }
+  ],
+  "speech": [
+   "Oh no!",
+   "Look at that!",
+   "Can you help me?",
+   "Hooray!",
+   "Let's go!",
+   "I have an idea!",
+   "Thank you!",
+   "Where is it?",
+   "Wait for me!",
+   "We did it!"
+  ],
+  "endings": [
+   "It was the best day ever.",
+   "Everyone went home smiling.",
+   "They never forgot that day.",
+   "What an adventure!"
+  ]
+ }
+}

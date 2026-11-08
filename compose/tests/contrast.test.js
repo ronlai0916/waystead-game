@@ -72,10 +72,14 @@ const TEXT = [
   ['--wb', '--surface'], ['--wb', '--bg'],
   // The Waystead Learning panel (its heading, text and Teal button)
   ['--learning', '--learning-soft'], ['--text', '--learning-soft'], ['#FFFFFF', '--learning-btn'],
+  // Comic Studio: captions, bubbles, tiles, the line being read aloud, the wheel
+  ['--text', '--sb-soft'], ['--text', '--surface-2'], ['--text', '--accent-soft'], ['--muted', '--surface-2'],
 ];
 // Icons and outlines: 3:1 (WCAG 1.4.11). --sb is the spelling-part rail;
 // --petal-edge colours the lives dots.
-const UI = [['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface']];
+const UI = [['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface'],
+  // Comic Studio: the ink round panels and bubbles, the stars and stamps, a chosen tile's edge
+  ['--panel-edge', '--surface'], ['--panel-edge', '--sb-soft'], ['--sb', '--sb-soft'], ['--sb', '--surface-2']];
 // The "Best 7/11" pill: dark amber by day, Amber at night.
 const WARM = { garden: ['--amber-700', '--warm-soft'], paint: ['--amber-700', '--warm-soft'], night: ['--amber', '--warm-soft'] };
 

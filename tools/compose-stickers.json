@@ -1,0 +1,218 @@
+{
+  "style": "Children's picture-book illustration, flat shapes with soft gentle grain, thick clean rounded outlines, warm friendly faces, natural everyday colours. Original, not based on any existing character. No text, no letters, no numbers, no signs with writing, no logos, no brands, no watermark. Gentle, safe and cheerful: nothing scary or violent.",
+  "background": "A full simple background scene, wide landscape picture, everyday British setting. The scene is empty: no people and no animals. Leave open space in the lower middle for characters to stand.",
+  "cutout": "One single sticker, the whole figure shown from head to toe, centred, isolated on a plain flat pure white background. No ground, no shadow, no scenery, nothing else in the picture.",
+  "keep": "Keep exactly the same character, face, hair, skin, clothes, drawing style and colours as this picture, on the same plain flat pure white background with no ground and no shadow. No text, no letters, no numbers. Now show them in a new pose:",
+  "backgrounds": [
+    {
+      "id": "park",
+      "name": "the park",
+      "scene": "A green town park on a sunny day: grass, a winding path, a few round trees, a wooden bench and a pond in the distance."
+    },
+    {
+      "id": "kitchen",
+      "name": "the kitchen",
+      "scene": "A bright cosy family kitchen: wooden table in the middle, cupboards, a window with plants, a kettle and a fruit bowl."
+    },
+    {
+      "id": "classroom",
+      "name": "the classroom",
+      "scene": "A friendly primary school classroom: small tables and chairs, a blank empty whiteboard with nothing on it, plants on the window sill, coloured paper shapes on the wall with no writing."
+    },
+    {
+      "id": "beach",
+      "name": "the beach",
+      "scene": "A wide sandy British beach on a fine day: gentle waves, rock pools, colourful beach huts with no writing, a pale blue sky."
+    },
+    {
+      "id": "forest-path",
+      "name": "the woods",
+      "scene": "A sunny woodland path winding between tall friendly trees, ferns, bluebells and soft dappled light."
+    },
+    {
+      "id": "market",
+      "name": "the market",
+      "scene": "A cheerful outdoor town market: stalls with striped awnings, crates of fruit and vegetables, bunting, with no signs or writing anywhere."
+    },
+    {
+      "id": "snowy-garden",
+      "name": "the snowy garden",
+      "scene": "A back garden covered in soft white snow on a bright winter day: a fence, a snowy shed, a bird table and frosty bushes."
+    },
+    {
+      "id": "bedroom",
+      "name": "the bedroom",
+      "scene": "A child's tidy bedroom: a bed with a patterned quilt, a bookshelf with plain coloured books, a rug, a window with curtains and a toy box."
+    }
+  ],
+  "characters": [
+    {
+      "id": "amara",
+      "name": "Amara",
+      "who": "A girl of about eight with brown skin and a big round puff of curly black hair, wearing a yellow raincoat, jeans and red trainers.",
+      "a": "standing and smiling, waving one hand",
+      "b": "running happily with both arms out"
+    },
+    {
+      "id": "finn",
+      "name": "Finn",
+      "who": "A boy of about eight with pale freckled skin, ginger hair and round glasses, wearing a green jumper, blue shorts and white trainers.",
+      "a": "standing and smiling with hands by his sides",
+      "b": "pointing at something with a surprised open-mouthed face"
+    },
+    {
+      "id": "mei",
+      "name": "Mei",
+      "who": "A girl of about nine with light brown skin and a straight black bob, wearing red dungarees over a white T-shirt and yellow shoes.",
+      "a": "standing and smiling, holding her hands together",
+      "b": "jumping for joy with both arms up"
+    },
+    {
+      "id": "arjun",
+      "name": "Arjun",
+      "who": "A boy of about seven with brown skin and short black hair, wearing a blue hoodie, grey joggers and orange trainers.",
+      "a": "standing and smiling, giving a little wave",
+      "b": "sitting cross-legged on the floor, thinking, with one hand on his chin"
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "who": "A girl of about eight with pale skin and a blonde ponytail, sitting in a bright purple wheelchair, wearing a pink jumper and jeans.",
+      "a": "smiling and waving from her wheelchair",
+      "b": "laughing in her wheelchair with both hands raised in delight"
+    },
+    {
+      "id": "kofi",
+      "name": "Kofi",
+      "who": "A boy of about nine with dark brown skin and short black hair, wearing an orange T-shirt, navy shorts and green trainers.",
+      "a": "standing and smiling with his arms folded",
+      "b": "walking along, looking worried, with one hand on his head"
+    },
+    {
+      "id": "grandad",
+      "name": "Grandad",
+      "who": "A kind grandad with pale skin, a short white beard and a flat cap, wearing a brown cardigan, a checked shirt and corduroy trousers.",
+      "a": "standing and smiling, leaning on a walking stick",
+      "b": "laughing with one hand raised in a wave"
+    },
+    {
+      "id": "mum",
+      "name": "Mum",
+      "who": "A friendly mum with light brown skin wearing a navy headscarf, a mustard yellow coat, dark trousers and boots.",
+      "a": "standing and smiling, holding a shopping bag",
+      "b": "crouching down kindly and holding out one hand"
+    },
+    {
+      "id": "dad",
+      "name": "Dad",
+      "who": "A cheerful dad with dark brown skin, short hair and a neat beard, wearing a red checked shirt, jeans and trainers.",
+      "a": "standing and smiling with his hands on his hips",
+      "b": "looking surprised with both hands up by his face"
+    },
+    {
+      "id": "nana",
+      "name": "Nana",
+      "who": "A smiling grandma with East Asian features, short grey curly hair and glasses, wearing a lilac jumper, a long green skirt and comfy shoes.",
+      "a": "standing and smiling, holding a book",
+      "b": "clapping her hands happily"
+    },
+    {
+      "id": "biscuit",
+      "name": "Biscuit",
+      "kind": "dog",
+      "who": "A small friendly scruffy dog with brown and white fur, floppy ears and a red collar with no tag writing.",
+      "a": "sitting and looking up, wagging its tail",
+      "b": "running and leaping playfully with its ears flying"
+    },
+    {
+      "id": "marmalade",
+      "name": "Marmalade",
+      "kind": "cat",
+      "who": "A fluffy ginger cat with white paws and green eyes.",
+      "a": "sitting neatly with its tail curled round",
+      "b": "stretching and pouncing playfully"
+    }
+  ],
+  "objects": [
+    {
+      "id": "kite",
+      "name": "the kite",
+      "what": "A bright red diamond-shaped kite with a long tail of little bows."
+    },
+    {
+      "id": "ball",
+      "name": "the ball",
+      "what": "A colourful bouncy beach ball with blue, yellow and red stripes."
+    },
+    {
+      "id": "cake",
+      "name": "the cake",
+      "what": "A round birthday cake with pink icing, sprinkles and three candles."
+    },
+    {
+      "id": "map",
+      "name": "the map",
+      "what": "An unfolded paper treasure map with a dotted path, hills and trees drawn on it, no writing and no letters."
+    },
+    {
+      "id": "torch",
+      "name": "the torch",
+      "what": "A modern electric pocket torch with a yellow plastic handle and a soft pale beam of light. No fire, no flames."
+    },
+    {
+      "id": "umbrella",
+      "name": "the umbrella",
+      "what": "An open umbrella with blue and white panels and a curved handle."
+    },
+    {
+      "id": "teddy",
+      "name": "the teddy",
+      "what": "A soft brown teddy bear with a blue bow, sitting."
+    },
+    {
+      "id": "bike",
+      "name": "the bike",
+      "what": "A child's green bicycle with a basket on the front, seen from the side."
+    },
+    {
+      "id": "boat",
+      "name": "the boat",
+      "what": "A small wooden rowing boat painted blue and white, with two oars, seen from the side."
+    },
+    {
+      "id": "key",
+      "name": "the key",
+      "what": "A large old-fashioned golden key with a round loop."
+    },
+    {
+      "id": "box",
+      "name": "the present",
+      "what": "A present box wrapped in purple paper with a big yellow ribbon and bow."
+    },
+    {
+      "id": "book",
+      "name": "the book",
+      "what": "An open picture book with plain coloured pages and no writing."
+    },
+    {
+      "id": "basket",
+      "name": "the basket",
+      "what": "A wicker picnic basket with a red and white checked cloth peeping out."
+    },
+    {
+      "id": "bucket",
+      "name": "the bucket",
+      "what": "A red seaside bucket with a yellow spade standing in it."
+    },
+    {
+      "id": "balloon",
+      "name": "the balloon",
+      "what": "A shiny round orange balloon on a curly string."
+    },
+    {
+      "id": "snowman",
+      "name": "the snowman",
+      "what": "A friendly snowman with a carrot nose, a striped scarf and stick arms."
+    }
+  ]
+}

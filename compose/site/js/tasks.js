@@ -11,10 +11,29 @@ export async function loadTasks() {
   }
   return loaded;
 }
+// Comic Studio's shared tiles and the sticker list (data/comic.json, data/stickers.json).
+let comicData = null;
+let stickerData = null;
+export async function loadComicData() {
+  const get = (f) => fetch(f).then((r) => { if (!r.ok) throw new Error('No ' + f); return r.json(); });
+  [comicData, stickerData] = await Promise.all([get('data/comic.json'), get('data/stickers.json')]);
+  return comicData;
+}
+export const comicShared = () => comicData;
+export const stickers = () => stickerData;
+export const useComicData = (c, s) => { comicData = c; stickerData = s; };
 export const taskById = (id) => list.find((t) => t.id === id) || null;
 export const allTasks = () => list;
 /** The tasks this person may see. kind: 'adult', 'child', 'unknown'. */
 export const visibleTo = (tasks, kind) => tasks.filter((t) => t.reviewed === true || kind === 'adult');
+/**
+ * Is this task a comic for this person? Its comic tiles need their own review
+ * (comic.reviewed, set by tools/approve-tasks.mjs --comic) as well as the task's.
+ * Until then a child gets the classic Look, Plan, Write pages for a live task.
+ */
+export const comicVisible = (t, kind) => !!t && !!t.comic && (kind === 'adult' || (t.reviewed === true && t.comic.reviewed === true));
+/** My own story's cards and lines have their own review too (comic.json own.reviewed, --own). */
+export const ownVisible = (kind) => kind === 'adult' || (!!comicData && !!comicData.own && comicData.own.reviewed === true);
 export const LEVELS = [3, 4, 5, 6];
 export const REVIEW_KEY = 'cp.taskReview';
-export const approveCommand = (ids) => (ids.length ? 'node tools/approve-tasks.mjs ' + ids.join(' ') : '');
+export const approveCommand = (ids, flag = '') => (ids.length ? 'node tools/approve-tasks.mjs ' + (flag ? flag + ' ' : '') + ids.join(' ') : '');
