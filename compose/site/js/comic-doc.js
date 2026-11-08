@@ -226,6 +226,40 @@ export function feelSentence(p, spec) {
   const why = str(f.why).trim().replace(/[.!?]+$/, '');
   return cap(spec.feel.who) + ' felt ' + f.word + (why ? ' ' + (f.join || 'because') + ' ' + why : '') + '.';
 }
+/** The reason step (Y5–6): the box starts "Maya felt heartbroken because ", the panel's feeling sentence without its full stop. */
+export const whyBase = (p, spec) => feelSentence({ feel: { word: p.feel && p.feel.word } }, spec).replace(/[.!?]+$/, '');
+export const whyStart = (base, join) => base + ' ' + join + ' ';
+/**
+ * Tapping a joining word: an empty box (or one that is only the start) gets the
+ * start; a box that already starts "<base> <join>" swaps that word, keeping what
+ * was typed after it; anything else keeps the child's words and puts the start
+ * in front. Returns the new box text.
+ */
+export function swapJoin(value, base, joins, join) {
+  const v = str(value);
+  const parts = splitWhy(v, base, joins);
+  if (parts && parts.join) return whyStart(base, join) + parts.why.replace(/^\s+/, '');
+  if (!v.trim() || v.trim().toLowerCase() === base.toLowerCase()) return whyStart(base, join);
+  return whyStart(base, join) + v.replace(/^\s+/, '');
+}
+/** { join, why } from the box, or null when it doesn't start with the base; join is '' if no joining word follows it. */
+export function splitWhy(value, base, joins) {
+  const v = str(value);
+  if (v.slice(0, base.length).toLowerCase() !== base.toLowerCase()) return null;
+  const rest = v.slice(base.length);
+  const m = /^\s+([A-Za-z]+)(?=\s|$)(.*)$/s.exec(rest);
+  if (m && joins.includes(m[1].toLowerCase())) return { join: m[1].toLowerCase(), why: m[2].trim() };
+  return { join: '', why: rest.trim() };
+}
+/** What to save from the box: { join, why }. Without the start, the whole box is the reason (with the last tapped word, or "because"). */
+export function readWhy(value, base, joins, tapped = '') {
+  const p = splitWhy(value, base, joins);
+  if (p) return { join: p.join || tapped || 'because', why: p.why.replace(/[.!?]+$/, '').trim() };
+  let v = str(value).trim().replace(/[.!?]+$/, '');
+  const m = /^([A-Za-z]+)\s+(.*)$/s.exec(v);
+  if (m && joins.includes(m[1].toLowerCase())) return { join: m[1].toLowerCase(), why: m[2].trim() };
+  return { join: tapped || 'because', why: v };
+}
 /** { who, says } or null. */
 export function speechOf(p, spec) {
   const s = p.say;
@@ -359,6 +393,11 @@ export function sparkText(template, { who = 'Someone', thing = 'something' } = {
   const out = template.replace(/\{who\}/g, who).replace(/\{thing\}/g, thing);
   return cap(out);
 }
+/** Title ideas for an own story, from its first character, first thing and place. */
+export function ownTitleIdeas(who, thing, place) {
+  const title = (x) => x.replace(/(^|\s)([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(And|The|At|Of)\b(?!$)/g, (m, w, i) => (i === 0 ? w : w.toLowerCase()));
+  return [...new Set([thing && title(who + ' and ' + thing), thing && title(thing.replace(/^the /, 'The Missing ')), title('A Day at ' + str(place).replace(/^the /, 'the ')), title(who + '\'s Big Adventure')].filter(Boolean))];
+}
 /** Own-story caption: { op, tiles } built from tiles, or { text } typed. */
 export function ownCaption(capt) {
   if (!capt) return '';
@@ -406,6 +445,30 @@ export function typedOf(c) {
   if (c.spark) bits.push(str(c.spark.problem), str(c.spark.solution));
   bits.push(str(c.title));
   return bits.filter((s) => s.trim()).join('\n');
+}
+const seqOf = (s) => str(s).toLowerCase().replace(/[’‘]/g, "'").match(/[a-z0-9]+(?:'[a-z0-9]+)*/g) || [];
+/**
+ * The child's own typed words in a comic, as word runs ("my kite flew away"),
+ * for speech.js: a line holding one is never sent to the voice server. Lines
+ * the child picked from our cards (`fixed`) don't count: a task comic's chosen
+ * bubble is saved by its number, an own story's by its text.
+ */
+export function typedBits(c, fixed = new Set()) {
+  const own = [];
+  for (const p of (c && c.panels) || []) {
+    own.push(str(p.text), str(p.word), str(p.feel && p.feel.why));
+    if (p.say && !Number.isInteger(p.say.i)) own.push(str(p.say.text));
+    if (p.cap) own.push(str(p.cap.text));
+  }
+  if (c && c.spark) own.push(str(c.spark.problem), str(c.spark.solution));
+  if (c) own.push(str(c.title));
+  return [...new Set(own.map((s) => s.trim()).filter((s) => s && !fixed.has(s)).map((s) => seqOf(s).join(' ')).filter(Boolean))];
+}
+/** True when `text` holds one of `bits` as whole words. */
+export function hasTyped(text, bits = []) {
+  if (!bits.length) return false;
+  const t = ' ' + seqOf(text).join(' ') + ' ';
+  return bits.some((b) => t.includes(' ' + b + ' '));
 }
 function pick(a, b) {
   if (isDone(a) !== isDone(b)) return isDone(a) ? [a, b] : [b, a];

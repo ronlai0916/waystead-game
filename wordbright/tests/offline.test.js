@@ -22,9 +22,10 @@ function shell() {
   return new Function(body + '; return SHELL;')();
 }
 
+// voice-allow.txt and voice-names.txt are for the account's voice server, never the game.
 test('the shell lists every script, style sheet, data file, icon and character picture', () => {
   const list = new Set(shell());
-  const needed = [...files('js'), ...files('css'), ...files('data').filter((f) => !f.startsWith('data/meanings/') && f !== 'data/voice-allow.txt'), ...files('assets/icons'), ...files('assets/characters'),
+  const needed = [...files('js'), ...files('css'), ...files('data').filter((f) => !f.startsWith('data/meanings/') && f !== 'data/voice-allow.txt' && f !== 'data/voice-names.txt'), ...files('assets/icons'), ...files('assets/characters'),
     'index.html', 'manifest.webmanifest'];
   assert.deepEqual(needed.filter((f) => !list.has(f)), []);
   for (const f of list) if (f !== './') assert.ok(existsSync(SITE + f), `${f} is in the shell but not on disk`);

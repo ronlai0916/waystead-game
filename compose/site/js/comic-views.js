@@ -12,7 +12,7 @@ import * as W from './writing-doc.js';
 import * as K from './comic-doc.js';
 import * as C from './checks.js';
 import { taskById, comicVisible, ownVisible, comicShared } from './tasks.js';
-import { speakLine, speakLines, stop } from './speech.js';
+import { speakLine, speakLines, stop, useOwnWords } from './speech.js';
 import { loadRealWords, loadKnownWords } from './wordcheck.js';
 import { checkTyped, typedNote, wordsOf } from './safe-text.js';
 import { kind, playerName } from './who.js';
@@ -106,6 +106,7 @@ function frame(main, t, c, { move, title, panel = -1 }) {
     + '<ol class="stepbar movebar" aria-label="Moves">' + MOVES.map(([m, label], k) => '<li class="' + (k < at ? 'is-done' : '') + (k === at ? ' is-on' : '') + '"' + (k === at ? ' aria-current="step"' : '') + '>' + label + '</li>').join('') + '</ol>'
     + R.comicHtml(c, t, { cls: 'comic--strip', on: panel, label: 'My comic so far' })
     + '<div class="studio__body" data-body></div></section>';
+  useOwnWords(R.ownWordsOf(c));
   return main.querySelector('[data-body]');
 }
 const save = (fn) => S.updateComics((d) => fn(d, Date.now()));
@@ -295,8 +296,8 @@ function panelMove(main, t, c, i, redraw) {
       + gentleSlot() + '<div class="btnrow"><button type="button" class="btn btn--primary" data-done>Done' + ICON.arrow + '</button>' + R.hearBtn('', 'Hear what I wrote').replace('data-hear=""', 'data-hearbox') + '</div>';
     const box = body.querySelector('[data-typed]');
     wireHear(body);
-    body.querySelector('[data-hearbox]').addEventListener('click', () => speakLine(box.value));
-    body.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => { speakLine(b.dataset.add); box.value = box.value.replace(/\s*$/, ' ') + b.dataset.add + ' '; box.focus(); }));
+    body.querySelector('[data-hearbox]').addEventListener('click', () => speakLine(box.value, { own: true }));
+    body.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => { speakLine(b.dataset.add); box.value = box.value.replace(/\s*$/, ' ') + b.dataset.add + ' '; box.focus(); box.setSelectionRange(box.value.length, box.value.length); }));
     body.querySelector('[data-done]').addEventListener('click', async () => {
       const isKnown = await loadKnownWords();
       const r = checkTyped(box.value, isKnown, { extra: comicWords(t), max: K.LIMITS.sentence, minWords: 3 });
@@ -358,20 +359,41 @@ function panelMove(main, t, c, i, redraw) {
     return;
   }
   if (step === 'why') {
-    let join = 'because';
-    body.innerHTML = stage + instruct('Why did ' + who + ' feel ' + p.feel.word + '? You can skip this.', 'idea')
-      + '<div class="ctiles" role="radiogroup" aria-label="Joining word">' + shared.why.map((w) => '<button type="button" class="ctile" role="radio" aria-checked="' + (w === join) + '" data-join="' + w + '">' + w + '</button>').join('') + '</div>'
-      + '<label class="sr" for="why">Why</label><input id="why" class="field typed" maxlength="' + K.LIMITS.why + '" autocomplete="off" spellcheck="false" data-why>'
-      + gentleSlot() + '<div class="btnrow"><button type="button" class="btn btn--primary" data-done>Add it' + ICON.arrow + '</button><button type="button" class="btn btn--quiet" data-skip>Skip</button></div>';
-    body.querySelectorAll('[data-join]').forEach((b) => b.addEventListener('click', () => { join = b.dataset.join; speakLine(join); body.querySelectorAll('[data-join]').forEach((x) => x.setAttribute('aria-checked', String(x === b))); }));
-    body.querySelector('[data-done]').addEventListener('click', async () => {
-      const v = body.querySelector('[data-why]').value.trim();
+    // Tap a joining word: the box gets "Maya felt heartbroken because ", caret at the end, ready to type the reason.
+    const base = K.whyBase(p, spec);
+    const joins = shared.why.map((w) => w.toLowerCase());
+    body.innerHTML = stage + instruct('Why did ' + who + ' feel ' + p.feel.word + '? Tap a joining word, then finish the sentence. You can skip this.', 'idea')
+      + '<div class="ctiles" role="radiogroup" aria-label="Joining word">' + shared.why.map((w) => '<button type="button" class="ctile" role="radio" aria-checked="false" data-join="' + esc(w) + '">' + esc(w) + '</button>').join('') + '</div>'
+      + '<label class="sr" for="why">' + esc(base) + ', and why</label><textarea id="why" class="field typed" rows="2" maxlength="' + (base.length + 12 + K.LIMITS.why) + '" autocomplete="off" spellcheck="false" data-why></textarea>'
+      + gentleSlot() + '<div class="btnrow"><button type="button" class="btn btn--primary" data-done>Add it' + ICON.arrow + '</button>' + R.hearBtn('', 'Hear what I wrote').replace('data-hear=""', 'data-hearbox') + '<button type="button" class="btn btn--quiet" data-skip>Skip</button></div>';
+    wireHear(body);
+    const box = body.querySelector('[data-why]');
+    let tapped = '';
+    const ticks = () => {
+      const now = K.splitWhy(box.value, base, joins);
+      const on = (now && now.join) || '';
+      body.querySelectorAll('[data-join]').forEach((x) => x.setAttribute('aria-checked', String(x.dataset.join.toLowerCase() === on)));
+    };
+    body.querySelectorAll('[data-join]').forEach((b) => b.addEventListener('click', () => {
+      tapped = b.dataset.join.toLowerCase();
+      box.value = K.swapJoin(box.value, base, joins, tapped);
+      speakLine(K.whyStart(base, tapped).trim());
+      ticks();
+      box.focus();
+      box.setSelectionRange(box.value.length, box.value.length);
+    }));
+    box.addEventListener('input', ticks);
+    body.querySelector('[data-hearbox]').addEventListener('click', () => speakLine(box.value, { own: true }));
+    const done = async () => {
+      const { join, why } = K.readWhy(box.value, base, joins, tapped);
       const isKnown = await loadKnownWords();
-      const r = checkTyped(v, isKnown, { extra: comicWords(t), max: K.LIMITS.why, minWords: 2 });
-      if (!r.ok) { gentle(body, typedNote(r, { minWords: 2 })); return; }
-      setP({ feel: { ...p.feel, join, why: v } });
+      const r = checkTyped(why, isKnown, { extra: comicWords(t), max: K.LIMITS.why, minWords: 2 });
+      if (!r.ok) { gentle(body, why ? typedNote(r, { minWords: 2 }) : 'Tap a joining word, then type why. Or tap Skip.'); return; }
+      setP({ feel: { ...p.feel, join, why } });
       redraw();
-    });
+    };
+    body.querySelector('[data-done]').addEventListener('click', done);
+    box.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); done(); } });
     body.querySelector('[data-skip]').addEventListener('click', () => { setP({ feel: { ...p.feel, why: '' } }); redraw(); });
     return;
   }
@@ -562,6 +584,7 @@ export function view(main, { cid }) {
   const m = S.readMarks().marks[cid];
   const nameOf = (x) => R.stickerName(x + '.a') || x;
   const lines = R.comicLines(c, t, nameOf);
+  useOwnWords(R.ownWordsOf(c));
   main.innerHTML = '<section class="wrap page comicpage"><div class="pagehead noprint"><span class="eyebrow">My comics</span><h1 data-final>' + esc(c.kind === 'own' ? c.title || 'My comic' : t.title) + '</h1>'
     + (fresh_ ? '<span class="celebrate"><span class="passmark__badge">' + ICON.tick + '</span>' + burstHtml(14, 1.6) + '</span>' : '') + '</div>'
     + (fresh_ ? '<p class="welcome" data-focus tabindex="-1">Your comic is finished, and it has earned a stamp!</p>' : '')

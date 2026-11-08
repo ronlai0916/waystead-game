@@ -11,7 +11,7 @@
 import * as S from './store.js';
 import * as K from './comic-doc.js';
 import { comicShared, stickers, ownVisible } from './tasks.js';
-import { speakLine, stop } from './speech.js';
+import { speakLine, stop, useOwnWords } from './speech.js';
 import { loadKnownWords } from './wordcheck.js';
 import { checkTyped, typedNote } from './safe-text.js';
 import { kind, playerName } from './who.js';
@@ -74,6 +74,7 @@ function frame(main, c, { step, title, panel = -1 }) {
     + '<div class="studio__body" data-body></div>'
     + '<div class="btnrow backrow"><button type="button" class="btn btn--quiet btn--small" data-back>' + R.ICONS.back + 'Back a step</button></div></section>';
   R.placeStickers(main);
+  useOwnWords(R.ownWordsOf(c));
   return main.querySelector('[data-body]');
 }
 
@@ -137,8 +138,7 @@ export function step(main, { cid }) {
     const who = charName(c.cast[0]);
     const thing = c.props[0] ? thingName(c.props[0]) : '';
     const place = R.bgOf(c.setting).name;
-    const title = (s) => s.replace(/(^|\s)([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(And|The|At|Of)\b(?!$)/g, (m, w, i) => (i === 0 ? w : w.toLowerCase()));
-    const ideas = [...new Set([thing && title(who + ' and ' + thing), thing && title(thing.replace(/^the /, 'The Missing ')), title('A Day at ' + place.replace(/^the /, 'the ')), title(who + '\'s Big Adventure')].filter(Boolean))];
+    const ideas = K.ownTitleIdeas(who, thing, place);
     const body = frame(main, c, { step: 'title', title: 'Give it a title' });
     body.innerHTML = instruct('Every comic needs a title. Tap one you like.', 'book') + '<div class="ctiles">' + ideas.map((x) => tileBtn(x, 'data-title="' + esc(x) + '"')).join('') + '</div>'
       + (sc.typeOwn ? '<details class="ownbubble"><summary class="btn btn--quiet btn--small">Type my own</summary><div class="stack"><label class="sr" for="title">My title</label><input id="title" class="field typed" maxlength="' + K.LIMITS.title + '" autocomplete="off" spellcheck="false" data-titletext><button type="button" class="btn btn--ghost btn--small" data-titleown>Use my title</button></div></details>' : '') + gentleSlot();

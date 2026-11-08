@@ -55,13 +55,20 @@ const site = createServer((req, res) => {
 });
 
 const feedbackCalls = [];
+const voiceAsks = [];
 const AI_REPLY = { stars: ['You chose the word bright well.', 'Your ending is clear.'], wish: 'Try saying how Maya felt in picture 2.', spellings: [{ word: 'kyte', suggestion: 'kite' }] };
 const acct = fakeAccount();
 acct.children = (id) => (id === ADULT ? [{ id: CHILD, nickname: 'Robin', year: 4, avatar: null }, { id: CHILD2, nickname: 'Wren', year: 6, avatar: null }] : []);
 const account = createServer(async (req, res) => {
-  const cors = { 'Access-Control-Allow-Origin': SITE, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS', Vary: 'Origin' };
+  const cors = { 'Access-Control-Allow-Origin': SITE, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS', Vary: 'Origin' };
   if (req.method === 'OPTIONS') { res.writeHead(204, cors); res.end(); return; }
   if (acct.offline) { req.socket.destroy(); return; } // the network gone, as the browser sees it
+  if (req.method === 'POST' && /^\/api\/voice\/[^/]+\/s$/.test(req.url)) { // a sentence (C2-1b): kept to check what was asked; 404, so the device speaks
+    const parts = [];
+    for await (const c of req) parts.push(c);
+    try { voiceAsks.push(JSON.parse(Buffer.concat(parts).toString()).text); } catch (e) { voiceAsks.push('(not JSON)'); }
+    res.writeHead(404, { ...cors, 'Content-Type': 'application/json' }); res.end('{"error":"not-found"}'); return;
+  }
   if (req.url.startsWith('/api/voice/')) { res.writeHead(404, cors); res.end(); return; }
   if (req.url === '/api/compose/feedback') { // the real rules are tested in waystead-account
     const chunks0 = [];
@@ -659,9 +666,31 @@ scene('Comic Studio: a Year 5 comic with the challenge, and Grown-ups', async ()
       await click('[data-feel]');
       await until('document.querySelector("[data-why]")', 'why');
       if (i === 0) {
-        await click('[data-join="so"]');
-        await fill('[data-why]', 'she called for help');
+        step('the reason: tap "because", type the reason, swap the joining word, backspace');
+        const base = await ev('document.querySelector("[data-why]").labels[0].innerText.replace(/, and why$/, "")');
+        ok(/ felt [a-z]+$/.test(base), 'the box is for "' + base + ' …"');
+        voiceAsks.length = 0;
+        await click('.instruct [data-hear]'); count.taps -= 1; // listening isn't counted
+        await until('document.querySelector("[data-why]")', 'still on why');
+        await sleep(300);
+        ok(voiceAsks.some((x) => /^Why did [A-Z][a-z]+ feel [a-z]+\?/.test(x)), 'the prompt is asked of the Waystead voice: ' + JSON.stringify(voiceAsks));
+        await click('[data-join="because"]');
+        ok(await ev('document.querySelector("[data-why]").value') === base + ' because ', 'tapping "because" puts the start in the box');
+        ok(await ev('(()=>{const b=document.querySelector("[data-why]");return document.activeElement===b&&b.selectionStart===b.value.length})()'), 'the caret is at the end, ready to type');
+        ok(await ev('document.querySelector("[data-join=because]").getAttribute("aria-checked")') === 'true', '"because" is ticked');
+        await keys('she saw a seal stuck');
+        count.typed += 'she saw a seal stuck in a net'.length; // the shortest path; the swap and backspace below are extra checks
+        await click('[data-join="when"]'); count.taps -= 1;
+        ok(await ev('document.querySelector("[data-why]").value') === base + ' when she saw a seal stuck', 'another tile swaps the joining word, keeping the reason');
+        await click('[data-join="because"]'); count.taps -= 1;
+        await key('Backspace'); await key('Backspace');
+        await keys('ck in a net');
+        ok(await ev('document.querySelector("[data-why]").value') === base + ' because she saw a seal stuck in a net', 'backspace and typing work as usual');
         await allViews('c5y-why');
+        voiceAsks.length = 0;
+        await click('[data-hearbox]'); count.taps -= 1;
+        await sleep(300);
+        ok(voiceAsks.length === 0, 'what the child typed is never sent for a recording');
         await click('[data-done]');
       } else await click('[data-skip]');
       await until('document.querySelector("[data-say]")', 'speech');
@@ -676,7 +705,12 @@ scene('Comic Studio: a Year 5 comic with the challenge, and Grown-ups', async ()
     }
     await joinByTaps();
     await moveIs('read');
-    ok(/she called for help/.test(await text()), 'the reason is in the caption');
+    ok(/felt [a-z]+ because she saw a seal stuck in a net\./.test(await text()), 'the reason is in the caption');
+    voiceAsks.length = 0;
+    await click('[data-readall]'); count.taps -= 1;
+    await sleep(800);
+    await click('[data-readall]'); count.taps -= 1;
+    ok(voiceAsks.length >= 1 && voiceAsks.every((x) => !/seal stuck|frend|We need help/.test(x)), 'Read it to me asks the voice for our lines, never the typed ones: ' + JSON.stringify(voiceAsks.slice(0, 3)));
     await click('[data-challenge]');
     await until('document.querySelector("[data-story]")', 'Write it yourself');
     await allViews('c6-challenge');

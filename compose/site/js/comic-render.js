@@ -5,7 +5,7 @@
 // turned into CSS custom properties by placeStickers() with el.style.setProperty.
 import * as K from './comic-doc.js';
 import { esc } from './ui.js';
-import { stickers } from './tasks.js';
+import { stickers, comicShared } from './tasks.js';
 
 const pic = (file, w) => file + '-' + w + '.webp';
 const svg = (body, cls = '') => '<svg viewBox="0 0 24 24" aria-hidden="true"' + (cls ? ' class="' + cls + '"' : '') + '>' + body + '</svg>';
@@ -149,3 +149,25 @@ export function coverHtml(c, task, { name = '', stamp = false } = {}) {
 }
 export const starsHtml = (n, max = 3, label = '') => '<span class="stars" aria-label="' + esc(label || n + ' of ' + max + ' stars') + '">' + Array.from({ length: max }, (_, k) => '<i class="' + (k < n ? 'is-on' : '') + '">' + ICONS.star + '</i>').join('') + '</span>';
 export const comicLines = linesFor;
+
+/**
+ * The child's own typed words in this comic (K.typedBits), for speech.js. An
+ * own story saves a chosen card by its text, so every line our cards and title
+ * ideas can make for this story is left out.
+ */
+export function ownWordsOf(c) {
+  if (!c || c.kind !== 'own') return K.typedBits(c);
+  const st = stickers() || {};
+  const own = (comicShared() || {}).own || {};
+  const charName = (id) => { const x = (st.characters || []).find((y) => y.id === id); return x ? x.name : ''; };
+  const thingName = (id) => { const x = (st.objects || []).find((y) => y.id === id); return x ? x.name : ''; };
+  const who = charName(c.cast && c.cast[0]) || 'Someone';
+  const thing = c.props && c.props[0] ? thingName(c.props[0]) : '';
+  const fill = { who, thing: thing || 'something' };
+  const fixed = new Set([
+    ...(own.speech || []), ...(own.endings || []),
+    ...[...(own.problems || []), ...(own.solutions || [])].map((x) => K.sparkText(x.text, fill)),
+    ...K.ownTitleIdeas(who, thing, (bgOf(c.setting) || {}).name || ''),
+  ]);
+  return K.typedBits(c, fixed);
+}
