@@ -4,6 +4,7 @@
 // Nothing here is kept on the adult's device.
 import * as W from './writing-doc.js';
 import * as K from './comic-doc.js';
+import * as AD from './adventure-doc.js';
 
 const GAME = 'compose';
 
@@ -52,7 +53,7 @@ export async function readChild(api, id) {
   const it = r.data.items;
   const v = (k) => (it[k] ? it[k].value : null);
   return {
-    writing: W.normalise(v(W.DOC_KEY)), comics: K.normaliseComics(v(K.COMICS_KEY)), marks: W.normaliseMarks(v(W.MARKS_KEY)), settings: W.normaliseSettings(v(W.SETTINGS_KEY)),
+    writing: W.normalise(v(W.DOC_KEY)), comics: K.normaliseComics(v(K.COMICS_KEY)), adventures: AD.normaliseAdventures(v(AD.ADVENTURES_KEY)), marks: W.normaliseMarks(v(W.MARKS_KEY)), settings: W.normaliseSettings(v(W.SETTINGS_KEY)),
     versions: Object.fromEntries(Object.entries(it).map(([k, x]) => [k, x.version])),
   };
 }
@@ -74,7 +75,12 @@ export async function changeValue(api, id, key, change, { tries = 4 } = {}) {
   }
   return { problem: 'busy' };
 }
-export const setAiFeedback = (api, id, on, now) => changeValue(api, id, W.SETTINGS_KEY, () => ({ v: 1, aiFeedback: !!on, at: now }));
+// Each switch changes only itself: the other parent switches in settings are kept.
+export const setAiFeedback = (api, id, on, now) => changeValue(api, id, W.SETTINGS_KEY, (c) => ({ ...c.settings, aiFeedback: !!on, at: now }));
+/** Story Adventure (C2-3): the per-child consent the account checks before drawing a picture. */
+export const setStoryAdventure = (api, id, on, now) => changeValue(api, id, W.SETTINGS_KEY, (c) => ({ ...c.settings, storyAdventure: !!on, at: now }));
+/** A grown-up deleted a story: a tombstone in the child's save, so no device brings it back. */
+export const forgetAdventure = (api, id, storyId, now) => changeValue(api, id, AD.ADVENTURES_KEY, (c) => AD.forget(c.adventures, storyId, now));
 export function saveMark(api, id, pieceId, fields, now) {
   return changeValue(api, id, W.MARKS_KEY, (c) => { const r = W.setMark(c.marks, pieceId, fields, now); return r.error ? r : r.doc; });
 }

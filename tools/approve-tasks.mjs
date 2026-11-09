@@ -8,6 +8,8 @@
 //   node tools/approve-tasks.mjs --comic --off lost-kite take them back
 //   node tools/approve-tasks.mjs --own                   approve My own story's cards and lines (data/comic.json)
 //   node tools/approve-tasks.mjs --own --off             take them back
+//   node tools/approve-tasks.mjs --adventure             open Story Adventure (data/adventure.json; C2-3)
+//   node tools/approve-tasks.mjs --adventure --off       close it again
 //   node tools/approve-tasks.mjs --list                  what's live
 //
 // A comic reaches a child only when its task is live as well.
@@ -16,17 +18,27 @@ import { fileURLToPath } from 'node:url';
 
 const FILE = fileURLToPath(new URL('../compose/site/data/tasks.json', import.meta.url));
 const SHARED = fileURLToPath(new URL('../compose/site/data/comic.json', import.meta.url));
+const ADVENTURE = fileURLToPath(new URL('../compose/site/data/adventure.json', import.meta.url));
 let args = process.argv.slice(2);
 const data = JSON.parse(readFileSync(FILE, 'utf8'));
 if (args[0] === '--list' || !args.length) {
   for (const t of data.tasks) console.log((t.reviewed ? 'live    ' : 'waiting ') + (t.comic ? (t.comic.reviewed ? 'comic live    ' : 'comic waiting ') : '') + 'Y' + t.level + '  ' + t.id + '  ' + t.title);
   try { console.log('My own story: ' + (JSON.parse(readFileSync(SHARED, 'utf8')).own.reviewed ? 'live' : 'waiting')); } catch (e) { /* no comic.json */ }
+  try { console.log('Story Adventure: ' + (JSON.parse(readFileSync(ADVENTURE, 'utf8')).reviewed ? 'live' : 'waiting')); } catch (e) { /* no adventure.json */ }
   process.exit(0);
 }
 const comic = args.includes('--comic');
 const own = args.includes('--own');
+const adv = args.includes('--adventure');
 const on = !args.includes('--off');
-args = args.filter((a) => !['--comic', '--own', '--off'].includes(a));
+args = args.filter((a) => !['--comic', '--own', '--adventure', '--off'].includes(a));
+if (adv) {
+  const a = JSON.parse(readFileSync(ADVENTURE, 'utf8'));
+  a.reviewed = on;
+  writeFileSync(ADVENTURE, JSON.stringify(a, null, 1) + '\n');
+  console.log((on ? 'Opened' : 'Closed') + ' Story Adventure. Children also need the account\'s STORY_IMAGES_ENABLED and a parent\'s switch. Now bump VERSION in compose/site/sw.js and deploy.');
+  process.exit(0);
+}
 if (own) {
   const shared = JSON.parse(readFileSync(SHARED, 'utf8'));
   shared.own.reviewed = on;

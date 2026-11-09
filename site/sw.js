@@ -2,12 +2,12 @@
 // and audio are cached the first time they're used, and fetched in the
 // background once the new version is active.
 // Bump VERSION on every deploy so phones pick up the new files. A new version
-// takes over at once and the page reloads itself then (update.js).
+// takes over at once and the page reloads itself then (update/update.js).
 // Account calls (account.waystead.co.uk) are never cached, apart from the
 // Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-05a';
+const VERSION = 'spellbright-2026-11-09a';
 
 const SHELL = [
   './',
@@ -47,7 +47,7 @@ const SHELL = [
   'js/wordcheck.js',
   'js/progress-doc.js',
   'js/gate.js',
-  'js/update.js',
+  'js/update/update.js',
   'js/nav/nav.js',
   'js/account/api.js',
   'js/account/boot.js',
@@ -84,6 +84,12 @@ self.addEventListener('install', (event) => {
     await cache.addAll(SHELL);
     await self.skipWaiting();
   })());
+});
+
+// A page that finds this worker waiting asks it to take over (update/update.js):
+// WebKit has not always honoured skipWaiting() during install.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'skip-waiting') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {

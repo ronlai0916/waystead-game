@@ -1,0 +1,1485 @@
+{
+ "_meta": {
+  "note": "Story Adventure (C2-3). Children see it only when \"reviewed\" is true (tools/approve-tasks.mjs --adventure), the account's STORY_IMAGES_ENABLED is on, and a parent has switched it on for them. Every id here must be in waystead-account src/lib/story-vocab.ts (compose/tests/adventure.test.js checks): only ids ever reach the picture server, never a child's words."
+ },
+ "reviewed": false,
+ "names": [
+  "Amara",
+  "Kofi",
+  "Zara",
+  "Leo",
+  "Mei",
+  "Asha",
+  "Finn",
+  "Rosa",
+  "Sam",
+  "Ella"
+ ],
+ "kinds": [
+  {
+   "id": "girl",
+   "label": "a girl",
+   "icon": "person",
+   "person": true
+  },
+  {
+   "id": "boy",
+   "label": "a boy",
+   "icon": "person",
+   "person": true
+  },
+  {
+   "id": "child",
+   "label": "a child",
+   "icon": "person",
+   "person": true
+  },
+  {
+   "id": "fox",
+   "label": "a fox",
+   "icon": "dog",
+   "person": false
+  },
+  {
+   "id": "rabbit",
+   "label": "a rabbit",
+   "icon": "dog",
+   "person": false
+  },
+  {
+   "id": "cat",
+   "label": "a cat",
+   "icon": "dog",
+   "person": false
+  },
+  {
+   "id": "dog",
+   "label": "a dog",
+   "icon": "dog",
+   "person": false
+  },
+  {
+   "id": "bear",
+   "label": "a bear cub",
+   "icon": "dog",
+   "person": false
+  },
+  {
+   "id": "owl",
+   "label": "an owl",
+   "icon": "tree",
+   "person": false
+  },
+  {
+   "id": "dragon",
+   "label": "a friendly dragon",
+   "icon": "star",
+   "person": false
+  },
+  {
+   "id": "robot",
+   "label": "a robot",
+   "icon": "star",
+   "person": false
+  }
+ ],
+ "hair": [
+  {
+   "id": "short",
+   "label": "short"
+  },
+  {
+   "id": "long",
+   "label": "long"
+  },
+  {
+   "id": "curly",
+   "label": "curly"
+  },
+  {
+   "id": "plaits",
+   "label": "plaits"
+  },
+  {
+   "id": "ponytail",
+   "label": "a ponytail"
+  },
+  {
+   "id": "bun",
+   "label": "a bun"
+  },
+  {
+   "id": "afro",
+   "label": "an afro"
+  },
+  {
+   "id": "short-twists",
+   "label": "short twists"
+  }
+ ],
+ "hairColours": [
+  {
+   "id": "black",
+   "label": "black"
+  },
+  {
+   "id": "dark-brown",
+   "label": "dark brown"
+  },
+  {
+   "id": "light-brown",
+   "label": "light brown"
+  },
+  {
+   "id": "blonde",
+   "label": "blonde"
+  },
+  {
+   "id": "ginger",
+   "label": "ginger"
+  }
+ ],
+ "skin": [
+  {
+   "id": "pale",
+   "label": "pale",
+   "swatch": "#f6dcc6"
+  },
+  {
+   "id": "light",
+   "label": "light",
+   "swatch": "#eac3a2"
+  },
+  {
+   "id": "light-brown",
+   "label": "light brown",
+   "swatch": "#c98e63"
+  },
+  {
+   "id": "brown",
+   "label": "brown",
+   "swatch": "#97603a"
+  },
+  {
+   "id": "dark-brown",
+   "label": "dark brown",
+   "swatch": "#5c3a22"
+  }
+ ],
+ "colours": [
+  {
+   "id": "red",
+   "label": "red",
+   "swatch": "#d64045"
+  },
+  {
+   "id": "orange",
+   "label": "orange",
+   "swatch": "#f08a24"
+  },
+  {
+   "id": "yellow",
+   "label": "yellow",
+   "swatch": "#f5c518"
+  },
+  {
+   "id": "green",
+   "label": "green",
+   "swatch": "#3a9d4f"
+  },
+  {
+   "id": "blue",
+   "label": "blue",
+   "swatch": "#2f6fd6"
+  },
+  {
+   "id": "purple",
+   "label": "purple",
+   "swatch": "#7b4bb7"
+  },
+  {
+   "id": "pink",
+   "label": "pink",
+   "swatch": "#ef7fb3"
+  },
+  {
+   "id": "white",
+   "label": "white",
+   "swatch": "#ffffff"
+  },
+  {
+   "id": "black",
+   "label": "black",
+   "swatch": "#1b1a20"
+  },
+  {
+   "id": "grey",
+   "label": "grey",
+   "swatch": "#8a8a8f"
+  },
+  {
+   "id": "brown",
+   "label": "brown",
+   "swatch": "#7a4a2a"
+  },
+  {
+   "id": "golden",
+   "label": "golden",
+   "swatch": "#d9a520"
+  }
+ ],
+ "places": [
+  {
+   "id": "park",
+   "label": "the park",
+   "icon": "tree",
+   "bg": "park"
+  },
+  {
+   "id": "kitchen",
+   "label": "the kitchen",
+   "icon": "house",
+   "bg": "kitchen"
+  },
+  {
+   "id": "classroom",
+   "label": "the classroom",
+   "icon": "school",
+   "bg": "classroom"
+  },
+  {
+   "id": "beach",
+   "label": "the beach",
+   "icon": "wave",
+   "bg": "beach"
+  },
+  {
+   "id": "forest-path",
+   "label": "the woods",
+   "icon": "tree",
+   "bg": "forest-path"
+  },
+  {
+   "id": "market",
+   "label": "the market",
+   "icon": "shop",
+   "bg": "market"
+  },
+  {
+   "id": "snowy-garden",
+   "label": "the snowy garden",
+   "icon": "snow",
+   "bg": "snowy-garden"
+  },
+  {
+   "id": "bedroom",
+   "label": "the bedroom",
+   "icon": "house",
+   "bg": "bedroom"
+  },
+  {
+   "id": "castle",
+   "label": "the castle",
+   "icon": "house"
+  },
+  {
+   "id": "island",
+   "label": "the island",
+   "icon": "wave"
+  },
+  {
+   "id": "mountain",
+   "label": "the mountain",
+   "icon": "tree"
+  },
+  {
+   "id": "space",
+   "label": "the space station",
+   "icon": "moon"
+  }
+ ],
+ "goals": [
+  {
+   "id": "lost-pet",
+   "label": "find a lost pet",
+   "icon": "dog"
+  },
+  {
+   "id": "treasure",
+   "label": "find hidden treasure",
+   "icon": "star"
+  },
+  {
+   "id": "treehouse",
+   "label": "build a treehouse",
+   "icon": "tree"
+  },
+  {
+   "id": "friend",
+   "label": "make a new friend",
+   "icon": "people"
+  },
+  {
+   "id": "show",
+   "label": "put on a show",
+   "icon": "star"
+  },
+  {
+   "id": "kite",
+   "label": "get a kite out of a tree",
+   "icon": "tree"
+  },
+  {
+   "id": "garden",
+   "label": "grow the biggest sunflower",
+   "icon": "sun"
+  },
+  {
+   "id": "party",
+   "label": "plan a surprise party",
+   "icon": "people"
+  }
+ ],
+ "styles": [
+  {
+   "id": "comic",
+   "label": "Comic"
+  },
+  {
+   "id": "manga",
+   "label": "Manga"
+  }
+ ],
+ "actions": {
+  "find": {
+   "do": "find",
+   "did": "found",
+   "words": [
+    "find",
+    "finds",
+    "found",
+    "finding",
+    "discover",
+    "discovers",
+    "discovered",
+    "spot",
+    "spots",
+    "spotted",
+    "see",
+    "sees",
+    "saw"
+   ],
+   "objects": [
+    "kite",
+    "ball",
+    "map",
+    "key",
+    "box",
+    "book",
+    "shell",
+    "chest",
+    "puppy",
+    "teddy",
+    "torch",
+    "seeds",
+    "lantern",
+    "hammer",
+    "rope",
+    "balloon"
+   ]
+  },
+  "carry": {
+   "do": "carry",
+   "did": "carried",
+   "words": [
+    "carry",
+    "carries",
+    "carried",
+    "carrying",
+    "bring",
+    "brings",
+    "brought",
+    "take",
+    "takes",
+    "took"
+   ],
+   "objects": [
+    "kite",
+    "ball",
+    "cake",
+    "basket",
+    "bucket",
+    "box",
+    "ladder",
+    "rope",
+    "lantern",
+    "teddy",
+    "puppy",
+    "flower",
+    "paint",
+    "seeds",
+    "torch",
+    "hammer"
+   ]
+  },
+  "climb": {
+   "do": "climb up",
+   "did": "climbed up",
+   "words": [
+    "climb",
+    "climbs",
+    "climbed",
+    "climbing"
+   ],
+   "objects": [
+    "ladder",
+    "rope",
+    "bridge"
+   ]
+  },
+  "cross": {
+   "do": "walk across",
+   "did": "walked across",
+   "words": [
+    "cross",
+    "crosses",
+    "crossed",
+    "walk",
+    "walks",
+    "walked"
+   ],
+   "objects": [
+    "bridge"
+   ]
+  },
+  "build": {
+   "do": "build with",
+   "did": "built something with",
+   "words": [
+    "build",
+    "builds",
+    "built",
+    "building",
+    "make",
+    "makes",
+    "made"
+   ],
+   "objects": [
+    "hammer",
+    "rope",
+    "ladder",
+    "box"
+   ]
+  },
+  "open": {
+   "do": "open",
+   "did": "opened",
+   "words": [
+    "open",
+    "opens",
+    "opened",
+    "opening",
+    "unlock",
+    "unlocks",
+    "unlocked"
+   ],
+   "objects": [
+    "box",
+    "chest",
+    "book",
+    "map",
+    "basket",
+    "umbrella"
+   ]
+  },
+  "follow": {
+   "do": "follow",
+   "did": "followed",
+   "words": [
+    "follow",
+    "follows",
+    "followed",
+    "following",
+    "chase",
+    "chases",
+    "chased"
+   ],
+   "objects": [
+    "map",
+    "puppy",
+    "balloon",
+    "kite"
+   ]
+  },
+  "share": {
+   "do": "share",
+   "did": "shared",
+   "words": [
+    "share",
+    "shares",
+    "shared",
+    "sharing",
+    "give",
+    "gives",
+    "gave"
+   ],
+   "objects": [
+    "cake",
+    "basket",
+    "ball",
+    "book",
+    "umbrella"
+   ]
+  },
+  "fix": {
+   "do": "fix",
+   "did": "fixed",
+   "words": [
+    "fix",
+    "fixes",
+    "fixed",
+    "fixing",
+    "mend",
+    "mends",
+    "mended",
+    "repair",
+    "repaired"
+   ],
+   "objects": [
+    "kite",
+    "bike",
+    "boat",
+    "lantern",
+    "torch"
+   ]
+  },
+  "plant": {
+   "do": "plant",
+   "did": "planted",
+   "words": [
+    "plant",
+    "plants",
+    "planted",
+    "planting",
+    "grow",
+    "grows",
+    "grew"
+   ],
+   "objects": [
+    "seeds",
+    "flower"
+   ]
+  },
+  "paint": {
+   "do": "paint with",
+   "did": "painted with",
+   "words": [
+    "paint",
+    "paints",
+    "painted",
+    "painting"
+   ],
+   "objects": [
+    "paint"
+   ]
+  },
+  "row": {
+   "do": "row",
+   "did": "rowed",
+   "words": [
+    "row",
+    "rows",
+    "rowed",
+    "rowing",
+    "sail",
+    "sails",
+    "sailed"
+   ],
+   "objects": [
+    "boat"
+   ]
+  },
+  "ride": {
+   "do": "ride",
+   "did": "rode",
+   "words": [
+    "ride",
+    "rides",
+    "rode",
+    "riding",
+    "cycle",
+    "cycled"
+   ],
+   "objects": [
+    "bike"
+   ]
+  },
+  "hold": {
+   "do": "hold up",
+   "did": "held up",
+   "words": [
+    "hold",
+    "holds",
+    "held",
+    "holding",
+    "lift",
+    "lifts",
+    "lifted"
+   ],
+   "objects": [
+    "kite",
+    "balloon",
+    "lantern",
+    "torch",
+    "umbrella",
+    "flower",
+    "map",
+    "key",
+    "shell",
+    "teddy",
+    "cake",
+    "puppy"
+   ]
+  },
+  "wave": {
+   "do": "wave",
+   "did": "waved",
+   "words": [
+    "wave",
+    "waves",
+    "waved",
+    "waving"
+   ],
+   "objects": [
+    "balloon",
+    "flower",
+    "torch",
+    "map",
+    "key"
+   ]
+  },
+  "make": {
+   "do": "make",
+   "did": "made",
+   "words": [
+    "make",
+    "makes",
+    "made",
+    "making",
+    "build",
+    "built"
+   ],
+   "objects": [
+    "snowman"
+   ]
+  }
+ },
+ "objects": {
+  "kite": {
+   "label": "the kite",
+   "words": [
+    "kite",
+    "kites"
+   ]
+  },
+  "ball": {
+   "label": "the ball",
+   "words": [
+    "ball",
+    "balls"
+   ]
+  },
+  "cake": {
+   "label": "the cake",
+   "words": [
+    "cake",
+    "cakes"
+   ]
+  },
+  "map": {
+   "label": "the map",
+   "words": [
+    "map",
+    "maps"
+   ]
+  },
+  "torch": {
+   "label": "the torch",
+   "words": [
+    "torch",
+    "torches",
+    "light"
+   ]
+  },
+  "umbrella": {
+   "label": "the umbrella",
+   "words": [
+    "umbrella",
+    "umbrellas"
+   ]
+  },
+  "teddy": {
+   "label": "the teddy",
+   "words": [
+    "teddy",
+    "bear"
+   ]
+  },
+  "bike": {
+   "label": "the bike",
+   "words": [
+    "bike",
+    "bikes",
+    "bicycle"
+   ]
+  },
+  "boat": {
+   "label": "the boat",
+   "words": [
+    "boat",
+    "boats"
+   ]
+  },
+  "key": {
+   "label": "the key",
+   "words": [
+    "key",
+    "keys"
+   ]
+  },
+  "box": {
+   "label": "the present",
+   "words": [
+    "present",
+    "presents",
+    "box",
+    "gift"
+   ]
+  },
+  "book": {
+   "label": "the book",
+   "words": [
+    "book",
+    "books"
+   ]
+  },
+  "basket": {
+   "label": "the basket",
+   "words": [
+    "basket",
+    "picnic"
+   ]
+  },
+  "bucket": {
+   "label": "the bucket",
+   "words": [
+    "bucket",
+    "spade"
+   ]
+  },
+  "balloon": {
+   "label": "the balloon",
+   "words": [
+    "balloon",
+    "balloons"
+   ]
+  },
+  "snowman": {
+   "label": "a snowman",
+   "words": [
+    "snowman",
+    "snowmen"
+   ]
+  },
+  "ladder": {
+   "label": "the ladder",
+   "words": [
+    "ladder",
+    "ladders"
+   ]
+  },
+  "rope": {
+   "label": "the rope",
+   "words": [
+    "rope",
+    "ropes"
+   ]
+  },
+  "lantern": {
+   "label": "the lantern",
+   "words": [
+    "lantern",
+    "lanterns",
+    "lamp"
+   ]
+  },
+  "shell": {
+   "label": "the shell",
+   "words": [
+    "shell",
+    "shells"
+   ]
+  },
+  "flower": {
+   "label": "the sunflower",
+   "words": [
+    "sunflower",
+    "flower",
+    "flowers"
+   ]
+  },
+  "bridge": {
+   "label": "the bridge",
+   "words": [
+    "bridge",
+    "bridges"
+   ]
+  },
+  "chest": {
+   "label": "the treasure chest",
+   "words": [
+    "chest",
+    "treasure"
+   ]
+  },
+  "puppy": {
+   "label": "the puppy",
+   "words": [
+    "puppy",
+    "puppies",
+    "pet",
+    "dog"
+   ]
+  },
+  "seeds": {
+   "label": "the seeds",
+   "words": [
+    "seed",
+    "seeds"
+   ]
+  },
+  "paint": {
+   "label": "the paints",
+   "words": [
+    "paints",
+    "brushes"
+   ]
+  },
+  "hammer": {
+   "label": "the hammer",
+   "words": [
+    "hammer",
+    "planks",
+    "wood"
+   ]
+  }
+ },
+ "openers": {
+  "1": "One day,",
+  "2": "Then",
+  "3": "Suddenly,",
+  "4": "Next,",
+  "5": "After that,",
+  "6": "In the end,",
+  "7": "Instead,",
+  "8": "In the end,"
+ },
+ "times": {
+  "1": "morning",
+  "2": "morning",
+  "3": "afternoon",
+  "4": "afternoon",
+  "5": "evening",
+  "6": "evening",
+  "7": "afternoon",
+  "8": "evening"
+ },
+ "speech": [
+  "Look at this!",
+  "We can do it!",
+  "Oh no!",
+  "Hooray!",
+  "Follow me!",
+  "What is that?",
+  "Let's try again.",
+  "I'm so happy!"
+ ],
+ "paths": {
+  "lost-pet": {
+   "start": [
+    [
+     "follow",
+     "puppy"
+    ],
+    [
+     "find",
+     "map"
+    ],
+    [
+     "carry",
+     "torch"
+    ],
+    [
+     "hold",
+     "lantern"
+    ],
+    [
+     "cross",
+     "bridge"
+    ]
+   ],
+   "middle": [
+    [
+     "climb",
+     "ladder"
+    ],
+    [
+     "find",
+     "puppy"
+    ],
+    [
+     "follow",
+     "map"
+    ],
+    [
+     "carry",
+     "basket"
+    ],
+    [
+     "open",
+     "box"
+    ],
+    [
+     "cross",
+     "bridge"
+    ]
+   ],
+   "end": [
+    [
+     "carry",
+     "puppy"
+    ],
+    [
+     "share",
+     "basket"
+    ],
+    [
+     "hold",
+     "puppy"
+    ],
+    [
+     "wave",
+     "balloon"
+    ],
+    [
+     "share",
+     "cake"
+    ]
+   ]
+  },
+  "treasure": {
+   "start": [
+    [
+     "find",
+     "map"
+    ],
+    [
+     "open",
+     "book"
+    ],
+    [
+     "carry",
+     "bucket"
+    ],
+    [
+     "follow",
+     "map"
+    ],
+    [
+     "hold",
+     "torch"
+    ]
+   ],
+   "middle": [
+    [
+     "row",
+     "boat"
+    ],
+    [
+     "climb",
+     "rope"
+    ],
+    [
+     "cross",
+     "bridge"
+    ],
+    [
+     "find",
+     "key"
+    ],
+    [
+     "follow",
+     "map"
+    ],
+    [
+     "carry",
+     "lantern"
+    ]
+   ],
+   "end": [
+    [
+     "open",
+     "chest"
+    ],
+    [
+     "find",
+     "chest"
+    ],
+    [
+     "share",
+     "cake"
+    ],
+    [
+     "hold",
+     "key"
+    ],
+    [
+     "wave",
+     "map"
+    ]
+   ]
+  },
+  "treehouse": {
+   "start": [
+    [
+     "find",
+     "hammer"
+    ],
+    [
+     "carry",
+     "ladder"
+    ],
+    [
+     "open",
+     "book"
+    ],
+    [
+     "carry",
+     "rope"
+    ],
+    [
+     "find",
+     "map"
+    ]
+   ],
+   "middle": [
+    [
+     "climb",
+     "ladder"
+    ],
+    [
+     "build",
+     "hammer"
+    ],
+    [
+     "build",
+     "rope"
+    ],
+    [
+     "paint",
+     "paint"
+    ],
+    [
+     "carry",
+     "basket"
+    ],
+    [
+     "fix",
+     "lantern"
+    ]
+   ],
+   "end": [
+    [
+     "share",
+     "cake"
+    ],
+    [
+     "hold",
+     "lantern"
+    ],
+    [
+     "wave",
+     "flower"
+    ],
+    [
+     "share",
+     "basket"
+    ],
+    [
+     "paint",
+     "paint"
+    ]
+   ]
+  },
+  "friend": {
+   "start": [
+    [
+     "carry",
+     "ball"
+    ],
+    [
+     "ride",
+     "bike"
+    ],
+    [
+     "hold",
+     "kite"
+    ],
+    [
+     "find",
+     "shell"
+    ],
+    [
+     "carry",
+     "basket"
+    ]
+   ],
+   "middle": [
+    [
+     "share",
+     "ball"
+    ],
+    [
+     "fix",
+     "bike"
+    ],
+    [
+     "follow",
+     "balloon"
+    ],
+    [
+     "share",
+     "umbrella"
+    ],
+    [
+     "find",
+     "book"
+    ],
+    [
+     "open",
+     "box"
+    ]
+   ],
+   "end": [
+    [
+     "share",
+     "cake"
+    ],
+    [
+     "share",
+     "basket"
+    ],
+    [
+     "hold",
+     "flower"
+    ],
+    [
+     "wave",
+     "balloon"
+    ],
+    [
+     "share",
+     "book"
+    ]
+   ]
+  },
+  "show": {
+   "start": [
+    [
+     "open",
+     "box"
+    ],
+    [
+     "find",
+     "lantern"
+    ],
+    [
+     "paint",
+     "paint"
+    ],
+    [
+     "carry",
+     "bucket"
+    ],
+    [
+     "find",
+     "book"
+    ]
+   ],
+   "middle": [
+    [
+     "build",
+     "hammer"
+    ],
+    [
+     "paint",
+     "paint"
+    ],
+    [
+     "hold",
+     "torch"
+    ],
+    [
+     "fix",
+     "lantern"
+    ],
+    [
+     "carry",
+     "ladder"
+    ],
+    [
+     "open",
+     "book"
+    ]
+   ],
+   "end": [
+    [
+     "wave",
+     "flower"
+    ],
+    [
+     "hold",
+     "balloon"
+    ],
+    [
+     "share",
+     "cake"
+    ],
+    [
+     "hold",
+     "lantern"
+    ],
+    [
+     "wave",
+     "balloon"
+    ]
+   ]
+  },
+  "kite": {
+   "start": [
+    [
+     "hold",
+     "kite"
+    ],
+    [
+     "follow",
+     "kite"
+    ],
+    [
+     "fix",
+     "kite"
+    ],
+    [
+     "ride",
+     "bike"
+    ],
+    [
+     "carry",
+     "ball"
+    ]
+   ],
+   "middle": [
+    [
+     "climb",
+     "ladder"
+    ],
+    [
+     "carry",
+     "ladder"
+    ],
+    [
+     "climb",
+     "rope"
+    ],
+    [
+     "find",
+     "rope"
+    ],
+    [
+     "build",
+     "hammer"
+    ],
+    [
+     "follow",
+     "balloon"
+    ]
+   ],
+   "end": [
+    [
+     "hold",
+     "kite"
+    ],
+    [
+     "fix",
+     "kite"
+    ],
+    [
+     "share",
+     "basket"
+    ],
+    [
+     "wave",
+     "balloon"
+    ],
+    [
+     "follow",
+     "kite"
+    ]
+   ]
+  },
+  "garden": {
+   "start": [
+    [
+     "find",
+     "seeds"
+    ],
+    [
+     "plant",
+     "seeds"
+    ],
+    [
+     "carry",
+     "bucket"
+    ],
+    [
+     "open",
+     "book"
+    ],
+    [
+     "carry",
+     "basket"
+    ]
+   ],
+   "middle": [
+    [
+     "carry",
+     "bucket"
+    ],
+    [
+     "build",
+     "hammer"
+    ],
+    [
+     "plant",
+     "flower"
+    ],
+    [
+     "hold",
+     "umbrella"
+    ],
+    [
+     "fix",
+     "lantern"
+    ],
+    [
+     "climb",
+     "ladder"
+    ]
+   ],
+   "end": [
+    [
+     "hold",
+     "flower"
+    ],
+    [
+     "share",
+     "basket"
+    ],
+    [
+     "wave",
+     "flower"
+    ],
+    [
+     "share",
+     "cake"
+    ],
+    [
+     "climb",
+     "ladder"
+    ]
+   ]
+  },
+  "party": {
+   "start": [
+    [
+     "open",
+     "book"
+    ],
+    [
+     "carry",
+     "box"
+    ],
+    [
+     "find",
+     "balloon"
+    ],
+    [
+     "carry",
+     "cake"
+    ],
+    [
+     "paint",
+     "paint"
+    ]
+   ],
+   "middle": [
+    [
+     "hold",
+     "balloon"
+    ],
+    [
+     "carry",
+     "cake"
+    ],
+    [
+     "build",
+     "hammer"
+    ],
+    [
+     "open",
+     "box"
+    ],
+    [
+     "hold",
+     "lantern"
+    ],
+    [
+     "find",
+     "key"
+    ]
+   ],
+   "end": [
+    [
+     "share",
+     "cake"
+    ],
+    [
+     "open",
+     "box"
+    ],
+    [
+     "wave",
+     "balloon"
+    ],
+    [
+     "hold",
+     "lantern"
+    ],
+    [
+     "share",
+     "basket"
+    ]
+   ]
+  }
+ }
+}

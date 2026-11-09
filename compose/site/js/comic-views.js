@@ -19,6 +19,7 @@ import { kind, playerName } from './who.js';
 import { burstHtml, placeBursts } from './celebrate.js';
 import { esc, ICON, toast } from './ui.js';
 import * as R from './comic-render.js';
+import { safePoint } from './update/update.js';
 
 const MOVES = [['order', 'Order'], ['wheel', 'Wheel'], ['panel', 'Panels'], ['join', 'Join'], ['read', 'Read']];
 const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -112,12 +113,25 @@ function frame(main, t, c, { move, title, panel = -1 }) {
 const save = (fn) => S.updateComics((d) => fn(d, Date.now()));
 const fresh = (cid) => S.readComics().comics[cid];
 
+/**
+ * A comic move (or an own-story step) has just finished and been saved: a new
+ * version waiting for that moment loads now (update/update.js), never in the
+ * middle of a move. Not on the first drawing of a page.
+ */
+let lastMove = '';
+export function moveFinished(key) {
+  const was = lastMove;
+  lastMove = key;
+  if (was && was !== key) safePoint();
+}
+
 export function go(main, { id }) {
   const t = comicTask(id);
   if (!t) return undefined;
   const c = K.openComic(S.readComics(), t.id);
   if (!c) { location.replace('#/c/' + t.id); return undefined; }
   const next = K.nextMove(c);
+  moveFinished(c.id + ':' + next.move + ':' + (next.panel ?? ''));
   const redraw = () => { stop(); go(main, { id }); focusStep(main); };
   if (next.move === 'order') orderMove(main, t, c, redraw);
   else if (next.move === 'wheel') wheelMove(main, t, c, redraw);

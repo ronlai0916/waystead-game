@@ -17,7 +17,7 @@ import { checkTyped, typedNote } from './safe-text.js';
 import { kind, playerName } from './who.js';
 import { esc, ICON } from './ui.js';
 import * as R from './comic-render.js';
-import { instruct, wireHear, gentle, gentleSlot, focusStep, tileBtn, wellDone, wireLevel } from './comic-views.js';
+import { instruct, wireHear, gentle, gentleSlot, focusStep, tileBtn, wellDone, wireLevel, moveFinished } from './comic-views.js';
 
 const STEPS = [['setting', 'Place'], ['cast', 'Characters'], ['props', 'Things'], ['problem', 'Problem'], ['panel', 'Panels'], ['title', 'Title']];
 const PANEL_JOB = ['how the story starts', 'the problem', 'how it is solved', 'how it ends'];
@@ -85,6 +85,7 @@ export function step(main, { cid }) {
   if (K.isDone(c)) { location.replace('#/comics/' + cid); return undefined; }
   const redraw = () => { stop(); step(main, { cid }); focusStep(main); };
   const next = K.nextMove(c);
+  moveFinished(cid + ':' + next.move + ':' + (next.panel ?? ''));
   const sc = K.scaffold(c.level);
   const data = comicShared().own;
   const st = stickers();

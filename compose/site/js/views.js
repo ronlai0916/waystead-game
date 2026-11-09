@@ -2,7 +2,7 @@
 import * as S from './store.js';
 import * as W from './writing-doc.js';
 import * as C from './checks.js';
-import { allTasks, taskById, visibleTo, comicVisible, ownVisible, LEVELS } from './tasks.js';
+import { allTasks, taskById, visibleTo, comicVisible, ownVisible, adventureVisible, LEVELS } from './tasks.js';
 import * as K from './comic-doc.js';
 import { speak, stop } from './speech.js';
 import { askFeedback } from './feedback.js';
@@ -56,7 +56,8 @@ export function home(main) {
     + '<p class="muted">Choose a picture story and turn it into a comic, one small step at a time.</p></div>'
     + '<div class="shortcuts">' + (isAdult() ? '<a class="card shortcut" href="#/grownups"><span><strong>Grown-ups</strong><br><span class="muted small">See each child\'s writing and comics, and mark them</span></span>' + ICON.arrow + '</a>' : '')
     + '<a class="card shortcut" href="#/comics" data-shelflink><span><strong>My comics</strong><br><span class="muted small">' + K.finished(comics).length + ' finished</span></span>' + ICON.arrow + '</a>'
-    + (own ? '<a class="card shortcut" href="#/own" data-ownlink><span><strong>My own story</strong><br><span class="muted small">Make a comic with stickers' + (isAdult() && !ownVisible('child') ? ' · not reviewed yet' : '') + '</span></span>' + ICON.arrow + '</a>' : '') + '</div>'
+    + (own ? '<a class="card shortcut" href="#/own" data-ownlink><span><strong>My own story</strong><br><span class="muted small">Make a comic with stickers' + (isAdult() && !ownVisible('child') ? ' · not reviewed yet' : '') + '</span></span>' + ICON.arrow + '</a>' : '')
+    + (adventureVisible(who) ? '<a class="card shortcut" href="#/adv" data-advlink><span><strong>Story Adventure</strong><br><span class="muted small">Your own story, with pictures drawn for you' + (isAdult() && !adventureVisible('child') ? ' · not reviewed yet' : '') + '</span></span>' + ICON.arrow + '</a>' : '') + '</div>'
     + (list.length ? LEVELS.filter((n) => list.some((t) => t.level === n)).map((n) => '<h2 class="levelhead">Year ' + n + '</h2><div class="taskgrid">' + list.filter((t) => t.level === n).map(card).join('') + '</div>').join('')
       : '<div class="card empty" data-notasks><h2>New stories are on their way</h2><p class="muted">Ask a grown-up to check back soon.</p></div>')
     + '</section>';

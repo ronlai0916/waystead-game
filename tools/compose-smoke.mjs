@@ -35,6 +35,8 @@ let comicsLive = false; // C2: the comic tiles' own review flag (with tasksLive)
 let ownLive = false; // C2-2: My own story's review flag
 let netDown = false;
 let storiesLive = false;
+let build = '';
+let adventureLive = false; // C2-3: Story Adventure's own review flag (data/adventure.json) // Part 0: '' serves the real files; 'A', 'B', 'C' serve that release (its own VERSION and a marker)
 const TASKS = JSON.parse(readFileSync(ROOT + 'compose/site/data/tasks.json', 'utf8')).tasks;
 const SHARED = JSON.parse(readFileSync(ROOT + 'compose/site/data/comic.json', 'utf8'));
 const site = createServer((req, res) => {
@@ -49,6 +51,9 @@ const site = createServer((req, res) => {
   // tasks.json: a task's own flag is at 3 spaces, its comic's at 4 (indent 1).
   if (file.endsWith('tasks.json') && tasksLive) body = String(body).replace(/^ {3}"reviewed": false/gm, '   "reviewed": true');
   if (file.endsWith('tasks.json') && comicsLive) body = String(body).replace(/^ {4}"reviewed": false/gm, '    "reviewed": true');
+  if (build && file.endsWith('compose/site/sw.js')) body = String(body).replace(/const VERSION = '[^']+';/, "const VERSION = 'compose-smoke-" + build + "';");
+  if (build && file.endsWith('compose/site/js/app.js')) body = String(body) + "\nglobalThis.__build = '" + build + "';\n";
+  if (file.endsWith('adventure.json') && adventureLive) body = String(body).replace('"reviewed": false', '"reviewed": true');
   if (file.endsWith('comic.json') && ownLive) body = String(body).replace('"reviewed": false', '"reviewed": true');
   res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Content-Security-Policy': csp, 'Cache-Control': 'no-store' });
   res.end(body);
@@ -56,6 +61,64 @@ const site = createServer((req, res) => {
 
 const feedbackCalls = [];
 const voiceAsks = [];
+// C2-3: a fake Story Adventure server (the real rules are tested in waystead-account). Pictures are the
+// task pictures, standing in for AI ones; every request body is kept, to check only ids were sent.
+const story = { credits: 0, stories: new Map(), images: new Map(), asks: [], delay: 0, block: new Set(), ledger: [] };
+const PICS = TASKS.flatMap((t) => t.pictures.map((p) => p.file + '-600.webp'));
+const uuid = () => crypto.randomUUID();
+const storyConsent = () => acct.get(CHILD, 'compose', 'settings')?.storyAdventure === true;
+async function storyRoute(req, res, cors) {
+  const url = new URL(req.url, ACCOUNT);
+  const send = (status, body) => { res.writeHead(status, { ...cors, 'Content-Type': 'application/json' }); res.end(JSON.stringify(body)); };
+  const who = acct.who;
+  if (url.pathname.startsWith('/api/story/image/')) {
+    const file = story.images.get(url.pathname.split('/').pop());
+    if (!who || !file) { res.writeHead(404, cors); res.end(); return; }
+    res.writeHead(200, { ...cors, 'Content-Type': 'image/webp', 'Cache-Control': 'private, max-age=31536000, immutable' });
+    res.end(readFileSync(ROOT + 'compose/site/' + file));
+    return;
+  }
+  if (!who) { send(401, { signedIn: false }); return; }
+  const adult = who.kind === 'parent' && !who.playingAs;
+  if (url.pathname === '/api/story/status') { send(200, adult ? { adult: true, enabled: true } : { enabled: true, consent: storyConsent(), canStart: storyConsent() && story.credits > 0 }); return; }
+  if (url.pathname === '/api/story/family') {
+    if (!adult) { send(403, { error: 'adult-session-required' }); return; }
+    send(200, { enabled: true, credits: { available: story.credits, held: 0, expiring: [] }, ledger: [...story.ledger].reverse(), stories: [...story.stories.values()].map((x) => ({ storyId: x.id, childId: CHILD, state: 'open', credit: x.spent ? 'spent' : 'none', createdAt: new Date().toISOString(), style: 'comic', images: x.images.map((i) => ({ imageId: i.id, sceneNo: i.no })) })) });
+    return;
+  }
+  const chunks = [];
+  for await (const c of req) chunks.push(c);
+  const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString()) : {};
+  if (url.pathname === '/api/story/redeem') {
+    if (!adult) { send(403, { error: 'adult-session-required' }); return; }
+    if (String(body.code).toUpperCase().replace(/[\s-]/g, '') === 'SMKE23456789') { story.credits += 3; story.ledger.push({ at: new Date().toISOString(), kind: 'grant', amount: 3, reason: 'code' }); send(200, { ok: true, credits: 3 }); return; }
+    send(400, { error: 'code-not-accepted', message: "That code didn't work. Check it and try again, or ask whoever gave it to you." });
+    return;
+  }
+  if (req.method === 'DELETE') {
+    if (!adult) { send(403, { error: 'adult-session-required' }); return; }
+    const id = url.pathname.split('/').pop();
+    if (!story.stories.delete(id)) { send(404, { error: 'no-such-story' }); return; }
+    send(200, { deleted: true });
+    return;
+  }
+  if (url.pathname === '/api/story/scene-image') {
+    story.asks.push(body);
+    if (adult) { send(403, { error: 'child-session-required' }); return; }
+    if (!storyConsent()) { send(403, { error: 'story-adventure-off' }); return; }
+    let x = story.stories.get(body.storyId);
+    if (!x) { x = { id: body.storyId, held: false, spent: false, images: [], tries: {} }; story.stories.set(body.storyId, x); }
+    if (!x.held) { if (story.credits <= 0) { send(402, { error: 'no-credits' }); return; } story.credits -= 1; x.held = true; }
+    x.tries[body.sceneNo] = (x.tries[body.sceneNo] || 0) + 1;
+    if (story.delay) await new Promise((r) => setTimeout(r, story.delay));
+    if (story.block.has(body.sceneNo) && x.tries[body.sceneNo] === 1) { send(200, { blocked: true, attemptsLeft: 3, failed: false }); return; }
+    const id = uuid();
+    story.images.set(id, PICS[(body.sceneNo * 5) % PICS.length]);
+    x.images.push({ id, no: body.sceneNo });
+    if (!x.spent) { x.spent = true; story.ledger.push({ at: new Date().toISOString(), kind: 'spend', amount: -1, reason: 'story', storyId: x.id }); }
+    send(200, { imageId: id, sceneNo: body.sceneNo, attemptsLeft: 4 - x.tries[body.sceneNo] });
+  }
+}
 const AI_REPLY = { stars: ['You chose the word bright well.', 'Your ending is clear.'], wish: 'Try saying how Maya felt in picture 2.', spellings: [{ word: 'kyte', suggestion: 'kite' }] };
 const acct = fakeAccount();
 acct.children = (id) => (id === ADULT ? [{ id: CHILD, nickname: 'Robin', year: 4, avatar: null }, { id: CHILD2, nickname: 'Wren', year: 6, avatar: null }] : []);
@@ -70,6 +133,7 @@ const account = createServer(async (req, res) => {
     res.writeHead(404, { ...cors, 'Content-Type': 'application/json' }); res.end('{"error":"not-found"}'); return;
   }
   if (req.url.startsWith('/api/voice/')) { res.writeHead(404, cors); res.end(); return; }
+  if (req.url.startsWith('/api/story/')) { await storyRoute(req, res, cors); return; }
   if (req.url === '/api/compose/feedback') { // the real rules are tested in waystead-account
     const chunks0 = [];
     for await (const c of req) chunks0.push(c);
@@ -845,6 +909,167 @@ scene('playing as a child', async () => {
 
 // ---- run ------------------------------------------------------------------------------------
 let failed = 0;
+scene('a new version takes over after one reload, and never mid-move', async () => {
+  // Part 0: release A, then B: one reload and B runs. Then C arrives mid-comic:
+  // it waits for the end of the move, then loads, and the comic carries on.
+  tasksLive = true; comicsLive = true;
+  try {
+    await blank();
+    acct.who = childMe;
+    build = 'A';
+    await ev('localStorage.setItem("sb.swTest", "1")');
+    await open(DAY, '#/');
+    await until('navigator.serviceWorker.controller', 'release A\'s worker', 15000);
+    await open(DAY, '#/');
+    ok(await ev('globalThis.__build') === 'A', 'release A runs');
+    step('release B is deployed; the child reloads once');
+    build = 'B';
+    await send('Page.reload');
+    await until('globalThis.__build === "B"', 'release B after one reload', 15000);
+    const caches_ = await ev('caches.keys()');
+    ok(caches_.includes('compose-smoke-B') && !caches_.includes('compose-smoke-A'), 'only B\'s cache is left: ' + caches_.join(', '));
+    step('release C arrives in the middle of a move: it waits for the move to end');
+    await open(DAY, '#/c/lost-kite');
+    await click('[data-start]');
+    await moveIs('order');
+    await click('[data-card="0"]'); await click('[data-slot="0"]');
+    build = 'C';
+    await ev('document.dispatchEvent(new Event("visibilitychange"))'); // the tab comes back into view: look for a new version
+    await until('navigator.serviceWorker.controller && navigator.serviceWorker.controller.scriptURL && caches.keys().then((k) => k.includes("compose-smoke-C"))', 'release C installed', 15000);
+    await sleep(800);
+    ok(await ev('globalThis.__build') === 'B', 'not mid-move: still B');
+    ok(await has('[data-move="order"] [data-slot="0"] img, [data-move="order"] [data-slot="0"] .ordercard__btn, [data-move="order"]'), 'the move is untouched');
+    for (let k = 1; k < 4; k += 1) { await click('[data-card="' + k + '"]'); await click('[data-slot="' + k + '"]'); }
+    await click('[data-check]');
+    await until('document.querySelector("[data-welldone]")', 'well done after the order');
+    ok(await ev('globalThis.__build') === 'B', 'the well-done screen is still B');
+    await next();
+    await until('globalThis.__build === "C"', 'release C at the end of the move', 15000);
+    await moveIs('wheel');
+    ok(true, 'C runs, on the next move, with the order saved');
+  } finally {
+    build = '';
+    await ev('Promise.all([navigator.serviceWorker.getRegistrations().then((rs) => Promise.all(rs.map((r) => r.unregister()))), caches.keys().then((ks) => Promise.all(ks.map((k) => caches.delete(k))))]).then(() => localStorage.removeItem("sb.swTest"))').catch(() => {});
+    tasksLive = false; comicsLive = false;
+  }
+});
+
+scene('Story Adventure: a 6-scene adventure, comic and manga, play it, Grown-ups', async () => {
+  adventureLive = true;
+  try {
+    await blank();
+    acct.who = childMe;
+    story.credits = 1; story.stories.clear(); story.asks.length = 0; story.ledger.length = 0; story.block = new Set([3]); story.delay = 0;
+    step('a child with no consent is asked to ask a grown-up');
+    await open(DAY, '#/adv');
+    await until('document.querySelector("[data-advnote]")', 'the note');
+    ok(/Ask a grown-up to switch on Story Adventure/.test(await text()), 'no consent: ask a grown-up');
+    acct.put(CHILD, 'compose', 'settings', { v: 1, aiFeedback: false, storyAdventure: true, at: 2 });
+    await open(DAY, '#/adv');
+    await until('document.querySelector("[data-new]")', 'start');
+    ok(!/credit/i.test(await text()), 'a child never sees credits');
+    await allViews('a0-adventure-start');
+    count.taps = 0; count.typed = 0;
+    await click('[data-new]');
+    await allViews('a1-hero');
+    await click('[data-hero="amara"]');
+    await click('[data-place="park"]');
+    await click('[data-goal="kite"]');
+    await click('[data-style="comic"]');
+    step('six scenes, two readers\' choices, the other paths, by taps');
+    let shotScene = false;
+    let shotWait = false;
+    let shotBlocked = false;
+    let shotFeel = false;
+    for (let i = 0; i < 200; i += 1) {
+      if (await ev('location.hash.endsWith("/read")')) break;
+      const has_ = async (s) => ev('!!document.querySelector(' + q('main ' + s) + ')');
+      if (await has_('[data-choice]')) {
+        if (!shotScene) { shotScene = true; await allViews('a2-scene-what'); }
+        if (i === 0) { await tabTo('main [data-choice]'); await press('Enter'); await until('!document.querySelector("main [data-choice]")', 'the choice, by keyboard'); } // the first by keyboard
+        else await click('main [data-choice="0"]');
+      } else if (await has_('[data-face]')) { if (!shotFeel) { shotFeel = true; await allViews('a3-feel'); } await click('[data-face="happy"]'); }
+      else if (await has_('[data-say]')) await click('[data-say="' + (i % 2 ? 'Hooray!' : 'Look at this!') + '"]');
+      else if (await has_('[data-draw]')) {
+        if (!shotWait) {
+          shotWait = true; story.delay = 2500;
+          await click('[data-draw]');
+          await until('document.querySelector("[data-drawing]")', 'the waiting screen');
+          await allViews('a4-waiting');
+          story.delay = 0;
+        } else await click('[data-draw]');
+        await until('document.querySelector("[data-welldone], [data-advresult], [data-draw]")', 'a picture or a kind word', 20000);
+        if (await has_('[data-advresult]')) {
+          ok(/Let's try a different idea/.test(await text()), 'blocked: a kind word, no red cross');
+          if (!shotBlocked) { shotBlocked = true; await allViews('a5-blocked'); }
+          await click('[data-again]');
+          await until('document.querySelector("[data-welldone]")', 'the redraw', 20000);
+        }
+        await until('document.querySelector("[data-welldone] img")', 'the picture', 10000);
+        if (!shotBlocked || i < 12) { if (!(await ev('!!window.__pictureShot'))) { await ev('window.__pictureShot = true'); await allViews('a5-picture'); } }
+        await click('[data-welldone] [data-next]');
+      } else if (await has_('[data-fork]')) { await allViews('a6-readers-choice'); await click('[data-fork="0"]'); }
+      else if (await has_('[data-title]')) await click('[data-title]');
+      else await sleep(80);
+    }
+    await until('document.querySelector("[data-advread]")', 'the finished adventure');
+    console.log('    Story Adventure (Year 3): ' + count.taps + ' taps, ' + count.typed + ' typed characters');
+    const local = JSON.parse(await ev('localStorage.getItem(Object.keys(localStorage).find((k) => k.startsWith("cp.adventures:")))'));
+    const s0 = Object.values(local.stories)[0];
+    ok(s0.stage === 'done' && Object.keys(s0.scenes).length === 8 && Object.values(s0.scenes).every((x) => x.image), 'eight scenes, each with its picture: ' + Object.keys(s0.scenes).join(','));
+    ok(story.credits === 0 && story.ledger.filter((l) => l.kind === 'spend').length === 1, 'one credit for the whole story, redraws free');
+    ok(story.asks.every((a) => JSON.stringify(Object.keys(a).sort()) === '["scene","sceneNo","start","storyId"]' && Object.keys(a.scene).length === 5 && !/Amara|Hooray|Look at this/.test(JSON.stringify(a))), 'only ids went to the picture server: ' + JSON.stringify(story.asks[0]));
+    await allViews('a7-finished-comic');
+    await click('[data-layout="manga"]');
+    ok(await has('.adv-comic--manga'), 'the manga layout');
+    await allViews('a8-finished-manga');
+    await click('[data-layout="comic"]');
+    step('Play my adventure: the readers\' choices');
+    await click('[data-play]');
+    await until('document.querySelector("[data-advplay]")', 'the replay');
+    for (let k = 0; k < 2; k += 1) await click('[data-go]');
+    await until('document.querySelectorAll("[data-go]").length === 2', 'the first choice');
+    await allViews('a9-play-choice');
+    await click('[data-go="7"]');
+    ok(await ev('document.querySelector("[data-advplay]").dataset.advplay') === '7', 'the other path');
+    await click('[data-go]');
+    await until('document.querySelectorAll("[data-go]").length === 2', 'the second choice');
+    await click('[data-go="8"]');
+    await until('/The end/.test(document.querySelector("main").innerText)', 'the end');
+    await allViews('a9-play-end');
+    step('a second story with no credits left: ask a grown-up');
+    await open(DAY, '#/adv');
+    await until('document.querySelector("[data-advnote]")', 'the note');
+    ok(/Ask a grown-up to add story credits/.test(await text()), 'no credits: ask a grown-up, and no buying');
+    ok(!/[0-9]+ credit|buy|£/.test(await text()), 'no numbers, no buying');
+    step('Grown-ups: credits, a redeem code, the consent switch, every story and picture, delete');
+    acct.who = adultMe;
+    await open(DAY, '#/grownups');
+    await until('document.querySelector("[data-credits]")', 'the credits');
+    await fill('[data-code]', 'smke-2345-6789');
+    await click('[data-redeem] button');
+    await until('/3 credits added/.test(document.querySelector("[data-redeemnote]").innerText)', 'redeemed');
+    await until('document.querySelector("[data-balance]") && document.querySelector("[data-balance]").textContent === "3"', 'the new balance');
+    await allViews('g-adv-credits');
+    await open(DAY, '#/grownups/child/' + CHILD);
+    await until('document.querySelector("[data-story]") && document.querySelector("[data-advrow]")', 'the consent switch and the stories');
+    ok(await ev('document.querySelector("[data-story]").checked'), 'consent shows as on');
+    ok(await ev('document.querySelectorAll("[data-advrow] .advthumbs img").length') === 8, 'every picture');
+    await allViews('g-adv-child');
+    await click('[data-story]');
+    await until('/Story Adventure is off/.test(document.querySelector("[data-storynote]").innerText)', 'consent off');
+    ok(acct.get(CHILD, 'compose', 'settings').storyAdventure === false && acct.get(CHILD, 'compose', 'settings').aiFeedback === false, 'only that switch changed');
+    await click('[data-advdelete]');
+    await click('[data-advyes]');
+    await until('!document.querySelector("[data-advrow]")', 'deleted');
+    const tomb = acct.get(CHILD, 'compose', 'adventures');
+    ok(tomb && Object.keys(tomb.deleted).length === 1 && !Object.keys(tomb.stories).length && story.stories.size === 0, 'deleted on the server, and a tombstone in the child\'s save');
+  } finally {
+    adventureLive = false;
+    acct.who = null;
+  }
+});
+
 async function main() {
   await new Promise((r) => site.listen(PORT, r));
   await new Promise((r) => account.listen(3000, r));

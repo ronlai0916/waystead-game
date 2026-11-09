@@ -136,5 +136,5 @@ export function setMark(d, pieceId, fields, now) {
   }
   return { doc: { ...d, marks: { ...d.marks, [pieceId]: m } } };
 }
-export const normaliseSettings = (d) => ({ v: 1, aiFeedback: isObj(d) && d.aiFeedback === true, at: isObj(d) ? num(d.at) : 0 });
+export const normaliseSettings = (d) => ({ v: 1, aiFeedback: isObj(d) && d.aiFeedback === true, storyAdventure: isObj(d) && d.storyAdventure === true, at: isObj(d) ? num(d.at) : 0 });
 export const mergeSettings = (a, b) => { const x = normaliseSettings(a); const y = normaliseSettings(b); return y.at > x.at ? y : x; };

@@ -10,6 +10,9 @@ import { checksHtml, feedbackHtml } from './views.js';
 import { isAdult, kind, playingAsChild, playerName, recheckWho } from './who.js';
 import { accountOrigin, switchUrl } from './account/config.js';
 import { esc, ICON, stripHtml, wireStrip, toast } from './ui.js';
+import * as AD from './adventure-doc.js';
+import { createStoryApi } from './adventure-api.js';
+import { adventure } from './tasks.js';
 
 const PRIVACY = 'Only you and your child can see this.';
 const childHref = (id) => '#/grownups/child/' + encodeURIComponent(id);
@@ -22,6 +25,35 @@ const TEXT = {
 };
 let api = null;
 const childApi = () => { if (!api) api = A.createChildApi({ origin: accountOrigin(location) }); return api; };
+let sApi = null;
+const storyApi = () => { if (!sApi) sApi = createStoryApi({ origin: accountOrigin(location), timeoutMs: 20000 }); return sApi; };
+export const useGrownupStoryApi = (a) => { sApi = a; };
+
+// ---- Story Adventure (C2-3): the family's credits, for grown-ups only ------------------------------------
+const REASONS = { pack: 'Credit pack', code: 'Redeem code', plan: 'Monthly plan', admin: 'From Waystead', story: 'A story', 'story-failed': 'Story refunded (pictures couldn\'t be drawn)', expired: 'Plan stories ran out' };
+const when = (t) => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+function creditsHtml(f) {
+  const c = f.credits;
+  const rows = f.ledger.map((l) => '<tr><td>' + esc(when(l.at)) + '</td><td>' + esc(REASONS[l.reason] || l.reason) + '</td><td class="num">' + (l.amount > 0 ? '+' : '') + esc(l.amount) + '</td></tr>').join('');
+  return '<div class="card setting advcredits" data-credits><h2>Story credits</h2>'
+    + '<p class="bigline"><b data-balance>' + esc(c.available) + '</b> available' + (c.held ? ' · ' + esc(c.held) + ' set aside for a story being made' : '') + '</p>'
+    + (c.expiring.length ? '<p class="small muted">' + c.expiring.map((e) => esc(e.amount) + ' from your plan until ' + esc(when(e.at))).join('; ') + '</p>' : '')
+    + '<p class="small muted">Each Story Adventure uses one credit when its first picture is drawn. Redraws are free, and a story whose pictures can\'t be drawn gives its credit back. Children never see these numbers.</p>'
+    + '<form class="stack redeemform" data-redeem><label for="redeem">Redeem a code</label><div class="btnrow"><input id="redeem" class="field" name="code" autocomplete="off" spellcheck="false" maxlength="20" placeholder="XXXX-XXXX-XXXX" data-code><button type="submit" class="btn btn--ghost">Redeem</button></div><p class="small" data-redeemnote role="status"></p></form>'
+    + (rows ? '<details class="ledger"><summary>History</summary><table class="ledgertable"><thead><tr><th>Date</th><th>What</th><th class="num">Credits</th></tr></thead><tbody>' + rows + '</tbody></table></details>' : '')
+    + (f.enabled ? '' : '<p class="small muted">Story Adventure isn\'t open yet: pictures can\'t be drawn until it is.</p>') + '</div>';
+}
+function wireCredits(main, onChange) {
+  const form = main.querySelector('[data-redeem]');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const note = main.querySelector('[data-redeemnote]');
+    const r = await storyApi().redeem(main.querySelector('[data-code]').value);
+    if (r.ok) { const msg = r.data.credits + ' credit' + (r.data.credits === 1 ? '' : 's') + ' added.'; note.textContent = msg; toast('Credits added'); onChange(msg); return; }
+    note.textContent = (r.data && r.data.message) || TEXT.network;
+  });
+}
 const wrap = (title, line, body) => '<section class="wrap page grownups"><div class="pagehead"><span class="eyebrow">Grown-ups</span><h1>' + esc(title) + '</h1>' + (line ? '<p class="muted">' + esc(line) + '</p>' : '') + '</div>' + body + '</section>';
 const redraw = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
 
@@ -64,9 +96,17 @@ export function grownups(main) {
   A.listChildren(childApi()).then(({ children: list, problem }) => {
     if (stopped) return;
     if (problem) { showProblem(main, problem); return; }
-    main.innerHTML = wrap('Grown-ups', 'See each child\'s writing, mark it and print it.', (list.length
+    main.innerHTML = wrap('Grown-ups', 'See each child\'s writing, mark it and print it.', '<div data-creditslot></div>' + (list.length
       ? '<div class="list">' + list.map((c) => '<a class="card listrow" href="' + childHref(c.id) + '" data-child="' + esc(c.id) + '"><span><strong>' + esc(c.nickname) + '</strong><br><span class="muted small">Year ' + esc(c.year) + '</span></span>' + ICON.arrow + '</a>').join('') + '</div>'
       : '<div class="card empty"><p class="muted">Add a child to your Waystead account, and they\'ll show here.</p></div>') + tasks);
+    const loadCredits = (note = '') => storyApi().family().then((r) => {
+      const slot = main.querySelector('[data-creditslot]');
+      if (stopped || !slot || !r.ok || !adventure()) return;
+      slot.innerHTML = creditsHtml(r.data);
+      if (note) slot.querySelector('[data-redeemnote]').textContent = note;
+      wireCredits(slot, loadCredits);
+    });
+    loadCredits();
   });
   return () => { stopped = true; };
 }
@@ -88,8 +128,22 @@ export function childPage(main, { cid }) {
     main.innerHTML = wrap(c.child.nickname + '\'s writing', PRIVACY,
       '<div class="card setting"><label class="switchrow"><input type="checkbox" data-ai' + (c.settings.aiFeedback ? ' checked' : '') + '> AI feedback for ' + esc(c.child.nickname) + '</label>'
       + '<p class="muted small">Off unless you turn it on. Only the story, its level and the task\'s title are sent to our AI provider: never a name, an account or an email.</p><p class="small" data-ainote role="status"></p></div>'
+      + (adventure() ? '<div class="card setting"><label class="switchrow"><input type="checkbox" data-story' + (c.settings.storyAdventure ? ' checked' : '') + '> Story Adventure for ' + esc(c.child.nickname) + '</label>'
+        + '<p class="muted small">Off unless you turn it on. ' + esc(c.child.nickname) + ' makes a story by choosing what happens, and a picture is drawn for each scene by our image provider, then checked automatically before ' + esc(c.child.nickname) + ' sees it. Only our own description of the scene is sent (the hero, place and action, chosen from our lists): never a name, an account, an email or anything typed. Each story uses one of your story credits.</p><p class="small" data-storynote role="status"></p></div>'
+        + '<div data-advslot></div>' : '')
       + (comics.length ? '<h2 class="sectionhead">Comics</h2><div class="list">' + comics.map(comicRow).join('') + '</div>' : '')
       + (pieces.length ? '<h2 class="sectionhead">Writing</h2><div class="list">' + pieces.map(row).join('') + '</div>' : comics.length ? '' : '<div class="card empty"><p class="muted">Nothing written yet.</p></div>'));
+    const story = main.querySelector('[data-story]');
+    if (story) story.addEventListener('change', async () => {
+      const want = story.checked;
+      story.disabled = true;
+      const r = await A.setStoryAdventure(childApi(), id, want, Date.now());
+      story.disabled = false;
+      if (r.ok) { main.querySelector('[data-storynote]').textContent = want ? 'Story Adventure is on.' : 'Story Adventure is off.'; return; }
+      story.checked = !want;
+      main.querySelector('[data-storynote]').textContent = (TEXT[r.problem] || TEXT.other) + ' Nothing has changed.';
+    });
+    if (main.querySelector('[data-advslot]')) storyApi().family().then((r) => { if (!stopped) drawAdventures(main.querySelector('[data-advslot]'), id, c.adventures, r.ok ? r.data : null); });
     const box = main.querySelector('[data-ai]');
     box.addEventListener('change', async () => {
       const want = box.checked;
@@ -243,4 +297,35 @@ export function taskReview(main) {
     markComics(box.checked ? [...new Set([...markedComics(), id])] : markedComics().filter((x) => x !== id));
     main.querySelector('[data-summary]').innerHTML = summary();
   }));
+}
+
+/** Every adventure this child has made: the words from their save, the pictures from the account; delete. */
+function drawAdventures(slot, cid, saved, family) {
+  if (!slot) return;
+  const D = adventure();
+  const server = family ? family.stories.filter((x) => x.childId === cid) : [];
+  const ids = new Set([...Object.keys(saved.stories), ...server.map((x) => x.storyId)]);
+  if (!ids.size) { slot.innerHTML = ''; return; }
+  const img = (id) => '<img src="' + esc(storyApi().imageUrl(id)) + '" alt="" loading="lazy" width="160" height="120">';
+  slot.innerHTML = '<h2 class="sectionhead">Story Adventures</h2><div class="list">' + [...ids].map((sid) => {
+    const s = saved.stories[sid];
+    const srv = server.find((x) => x.storyId === sid);
+    const words = s ? AD.mainPath.concat([7, 8]).filter((n) => s.scenes[n]).map((n) => '<li><b>' + (n === 7 ? 'Other path' : n === 8 ? 'Other ending' : 'Scene ' + n) + ':</b> ' + esc([AD.sceneCaption(s, n, D), AD.feelLine(s, n, R.FEELING_NAMES), AD.sayLine(s, n) ? '“' + AD.sayLine(s, n) + '”' : ''].filter(Boolean).join(' ')) + (s.scenes[n].typed ? ' <span class="pill">typed</span>' : '') + '</li>').join('') : '';
+    const pics = srv ? srv.images.map((i) => img(i.imageId)).join('') : '';
+    return '<div class="card advrow" data-advrow="' + esc(sid) + '"><p><strong>' + esc(s ? s.title || AD.heroLabel(s) + '\'s adventure' : 'An adventure') + '</strong><br><span class="muted small">' + esc(s ? (s.stage === 'done' ? 'Finished' : 'Being made') : 'Saved on another device') + (srv ? ' · ' + srv.images.length + ' picture' + (srv.images.length === 1 ? '' : 's') : '') + (srv && srv.state === 'failed' ? ' · pictures stopped, credit given back' : '') + '</span></p>'
+      + (pics ? '<div class="advthumbs">' + pics + '</div>' : '') + (words ? '<ol class="advwords">' + words + '</ol>' : '')
+      + '<div class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-advdelete>' + R.ICONS.bin + 'Delete this story</button><span data-advconfirm hidden><button type="button" class="btn btn--ghost btn--small" data-advyes>Yes, delete it and its pictures</button><button type="button" class="btn btn--quiet btn--small" data-advno>Keep it</button></span></div><p class="small" data-advnote role="status"></p></div>';
+  }).join('') + '</div>';
+  slot.querySelectorAll('[data-advrow]').forEach((row) => {
+    const sid = row.dataset.advrow;
+    const confirm = row.querySelector('[data-advconfirm]');
+    row.querySelector('[data-advdelete]').addEventListener('click', () => { confirm.hidden = false; row.querySelector('[data-advyes]').focus(); });
+    row.querySelector('[data-advno]').addEventListener('click', () => { confirm.hidden = true; });
+    row.querySelector('[data-advyes]').addEventListener('click', async () => {
+      const a = await storyApi().remove(sid);
+      const b = await A.forgetAdventure(childApi(), cid, sid, Date.now());
+      if ((a.ok || a.status === 404) && b.ok) { row.remove(); toast('Story deleted'); return; }
+      row.querySelector('[data-advnote]').textContent = TEXT[b.problem] || TEXT.other;
+    });
+  });
 }

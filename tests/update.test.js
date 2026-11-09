@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { watchForUpdate } from '../site/js/update.js';
+import { watchForUpdate } from '../site/js/update/update.js';
 import { isWordsPath, isPlayPath } from '../site/js/gate.js';
 
 const read = (f) => readFileSync(new URL('../site/' + f, import.meta.url), 'utf8');
@@ -19,9 +19,9 @@ function setup({ controller = {}, busy = false, reg = {}, wait = 1000 } = {}) {
   t.sw = {
     controller,
     addEventListener: (type, fn) => { assert.equal(type, 'controllerchange'); t.fns.push(fn); },
-    register: async (path) => { assert.equal(path, 'sw.js'); return t.reg; },
+    register: async (path, opts) => { assert.equal(path, 'sw.js'); assert.deepEqual(opts, { updateViaCache: 'none' }); return t.reg; },
   };
-  t.watch = watchForUpdate({ sw: t.sw, isBusy: () => t.busy, reload: () => { t.reloads += 1; }, onLeave: (fn) => t.leave.push(fn), wait, setTimer: (fn) => { t.timers.push(fn); } });
+  t.watch = watchForUpdate({ sw: t.sw, isBusy: () => t.busy, reload: () => { t.reloads += 1; }, onLeave: (fn) => t.leave.push(fn), onSafe: () => {}, onVisible: () => {}, every: () => {}, storage: null, wait, setTimer: (fn) => { t.timers.push(fn); } });
   t.takeOver = () => t.fns.forEach((f) => f());
   t.move = () => t.leave.forEach((f) => f());
   return t;
@@ -115,11 +115,11 @@ test('only My words paths wait; the play paths that hold back a reload are uncha
   assert.match(app, /updates\.settled\(\)\.then\(\(\) => \{ if \(currentPath\(\) === path\) V\.notFound\(main\); \}\)/);
 });
 
-test('the service worker takes over at once, and update.js and nav.js are in its shell', () => {
+test('the service worker takes over at once, and update/update.js and nav.js are in its shell', () => {
   const sw = read('sw.js');
   assert.match(sw, /self\.skipWaiting\(\)/);
   assert.match(sw, /self\.clients\.claim\(\)/);
-  assert.match(sw, /'js\/update\.js'/);
+  assert.match(sw, /'js\/update\/update\.js'/);
   assert.match(sw, /'js\/nav\/nav\.js'/);
   assert.doesNotMatch(sw, /spellbright-2026-11-03a/);
 });

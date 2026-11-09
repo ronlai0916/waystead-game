@@ -11,7 +11,7 @@
 // Without a font the game still works offline, in the device's own font.
 // Bump VERSION on every release so devices pick up the new files. Only caches
 // named "wordbright-…" are ever touched (Spellbright keeps "spellbright-…").
-const VERSION = 'wordbright-2026-11-05a';
+const VERSION = 'wordbright-2026-11-09a';
 
 const CHARACTERS = ['pip', 'ottie', 'bramble', 'fizz'].flatMap((name) =>
   ['portrait', 'thinking', 'happy', 'surprised'].flatMap((mood) =>
@@ -73,6 +73,7 @@ const SHELL = [
   'js/ui/results.js',
   'js/ui/speak.js',
   'js/ui/thememenu.js',
+  'js/update/update.js',
   'js/views/end.js',
   'js/views/home.js',
   'js/views/pages.js',
@@ -97,6 +98,12 @@ self.addEventListener('install', (event) => {
     await cache.addAll(SHELL);
     await self.skipWaiting();
   })());
+});
+
+// A page that finds this worker waiting asks it to take over (update/update.js):
+// WebKit has not always honoured skipWaiting() during install.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'skip-waiting') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {

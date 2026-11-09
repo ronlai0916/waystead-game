@@ -1,9 +1,10 @@
-// A player's writing on this device: "cp.writing:<player id>" and "cp.comics:<player id>", which account/sync.js
+// A player's writing on this device: "cp.writing:<player id>", "cp.comics:<player id>" and "cp.adventures:<player id>", which account/sync.js
 // also saves to the Waystead account. Marks and settings come from a parent and
 // are only ever read here. The look is shared with the other games (sb.theme,
 // sb.dayStyle, sb.voice).
 import * as W from './writing-doc.js';
 import * as K from './comic-doc.js';
+import * as AD from './adventure-doc.js';
 
 let player = null;
 let changed = null;
@@ -31,6 +32,14 @@ export function updateComics(fn) {
   writeComics(fn(readComics()));
   if (changed) changed(K.COMICS_KEY);
 }
+// Story Adventure (adventure-doc.js): "cp.adventures:<player id>", synced as the account key "adventures".
+export const readAdventures = (id = player) => AD.normaliseAdventures(read(keyOf('adventures', id), null));
+export const writeAdventures = (d, id = player) => write(keyOf('adventures', id), d);
+export function updateAdventures(fn) {
+  writeAdventures(fn(readAdventures()));
+  if (changed) changed(AD.ADVENTURES_KEY);
+}
+export const newStoryId = () => AD.newStoryId(crypto.getRandomValues(new Uint8Array(6)));
 export const readMarks = (id = player) => W.normaliseMarks(read(keyOf('marks', id), null));
 export const writeMarks = (d, id = player) => write(keyOf('marks', id), d);
 export const readSettings = (id = player) => W.normaliseSettings(read(keyOf('settings', id), null));

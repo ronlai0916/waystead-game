@@ -5,6 +5,7 @@
 //   shared/account/  the Waystead Account client  → all three sites
 //   shared/voice/    the device voice for "Hear"  → the two games (G8)
 //   shared/topbar/   the top bar's Menu button    → all three sites (G4b)
+//   shared/update/   one-load updates             → the three games (C2-3)
 //
 //   node tools/sync-shared.mjs
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
@@ -14,6 +15,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 export const SETS = [
   { source: 'shared/account/', targets: ['site/js/account/', 'wordbright/site/js/account/', 'hub/site/home-assets/js/account/', 'compose/site/js/account/'] },
   { source: 'shared/voice/', targets: ['site/js/voice/', 'wordbright/site/js/voice/', 'compose/site/js/voice/'] },
+  { source: 'shared/update/', targets: ['site/js/update/', 'wordbright/site/js/update/', 'compose/site/js/update/'] },
   { source: 'shared/topbar/', targets: ['site/js/nav/', 'wordbright/site/js/nav/', 'hub/site/home-assets/js/nav/', 'compose/site/js/nav/'] },
 ];
 

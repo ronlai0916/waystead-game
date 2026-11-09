@@ -42,8 +42,9 @@ test('G9: a ?fresh= request goes past the service worker; a new worker takes ove
   assert.match(sw, /self\.skipWaiting\(\)/);
   assert.match(sw, /self\.clients\.claim\(\)/);
   const app = readFileSync(ROOT + 'site/js/app.js', 'utf8');
-  assert.match(app, /addEventListener\('controllerchange'/);
-  assert.match(app, /if \(!hadWorker\) return;/);
+  // C2-3: the shared one-load update (update/update.js) listens for the takeover.
+  assert.match(app, /watchForUpdate\(\{\s*sw: workerContainer\(\),\s*isBusy: \(\) => currentPath\(\) === 'play'/);
+  assert.match(readFileSync(ROOT + 'site/js/update/update.js', 'utf8'), /addEventListener\('controllerchange'/);
 });
 
 test('cache names: a VERSION starting "wordbright-", and only "wordbright-" caches are deleted', () => {

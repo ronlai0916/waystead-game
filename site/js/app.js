@@ -19,7 +19,7 @@ import { wireVoiceMenu } from './voice/menu.js';
 import { startAccount } from './account/boot.js';
 import { gateHtml, gateCard } from './account/gate.js';
 import { isPlayPath, isLocked, isWordsPath } from './gate.js';
-import { watchForUpdate } from './update.js';
+import { watchForUpdate, workerContainer } from './update/update.js';
 import { wireTopNav } from './nav/nav.js';
 
 const main = document.getElementById('main');
@@ -28,7 +28,7 @@ let cleanup = null;
 let account = null;
 let voiceMenu = null; // the look menu's Voice part (G8c: redrawn when the player changes)
 let drawn = false; // the word list is in and the first view is drawn
-let updates = null; // one-load updates (update.js)
+let updates = null; // one-load updates (update/update.js)
 
 const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?')[0];
 
@@ -142,7 +142,7 @@ function render() {
 }
 
 // A My words page this app doesn't know may belong to a release still on its
-// way (update.js): wait for it, and the reload, before saying it isn't here.
+// way (update/update.js): wait for it, and the reload, before saying it isn't here.
 function unknownPage(path) {
   if (!isWordsPath(path)) { V.notFound(main); return; }
   main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>Just a moment</h1>'
@@ -220,7 +220,7 @@ function wireAccount() {
 
 async function start() {
   updates = watchForUpdate({
-    sw: 'serviceWorker' in navigator && location.protocol === 'https:' ? navigator.serviceWorker : null,
+    sw: workerContainer(),
     isBusy: () => isPlayPath(currentPath()),
     reload: () => location.reload(),
     onLeave: (fn) => window.addEventListener('hashchange', fn),

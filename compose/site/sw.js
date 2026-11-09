@@ -1,9 +1,9 @@
 // Offline support for Composition (scope /compose/). The app shell, the tasks and the
 // comic data are cached on install; pictures, stickers and fonts the first time they're used. A new version
-// takes over at once and the page reloads itself then (update.js). Bump VERSION on
+// takes over at once and the page reloads itself then (update/update.js). Bump VERSION on
 // every release. Only "compose-…" caches are ever deleted. Account calls are never
 // cached, apart from the Waystead voice's MP3s (the shared "voice" cache).
-const VERSION = 'compose-2026-11-08b';
+const VERSION = 'compose-2026-11-09a';
 
 const SHELL = [
   './',
@@ -16,6 +16,7 @@ const SHELL = [
   'data/tasks.json',
   'data/comic.json',
   'data/stickers.json',
+  'data/adventure.json',
   'assets/icons/favicon.svg',
   'assets/icons/apple-touch-icon.png',
   'js/account/api.js',
@@ -30,6 +31,9 @@ const SHELL = [
   'js/account/prefs.js',
   'js/account/session.js',
   'js/account/sync.js',
+  'js/adventure-api.js',
+  'js/adventure-doc.js',
+  'js/adventure-views.js',
   'js/app.js',
   'js/celebrate.js',
   'js/checks.js',
@@ -50,7 +54,7 @@ const SHELL = [
   'js/theme-boot.js',
   'js/thememenu.js',
   'js/ui.js',
-  'js/update.js',
+  'js/update/update.js',
   'js/views.js',
   'js/voice/menu.js',
   'js/voice/server.js',
@@ -68,6 +72,12 @@ self.addEventListener('install', (event) => {
     await cache.addAll(SHELL);
     await self.skipWaiting();
   })());
+});
+
+// A page that finds this worker waiting asks it to take over (update/update.js):
+// WebKit has not always honoured skipWaiting() during install.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'skip-waiting') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {

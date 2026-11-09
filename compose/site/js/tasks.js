@@ -22,6 +22,18 @@ export async function loadComicData() {
 export const comicShared = () => comicData;
 export const stickers = () => stickerData;
 export const useComicData = (c, s) => { comicData = c; stickerData = s; };
+// Story Adventure's lists and templates (data/adventure.json, C2-3).
+let adventureData = null;
+export async function loadAdventureData() {
+  const r = await fetch('data/adventure.json');
+  if (!r.ok) throw new Error('No data/adventure.json');
+  adventureData = await r.json();
+  return adventureData;
+}
+export const adventure = () => adventureData;
+export const useAdventureData = (d) => { adventureData = d; };
+/** Story Adventure has its own review (adventure.json reviewed, approve-tasks.mjs --adventure); grown-ups always see it. */
+export const adventureVisible = (kind) => kind === 'adult' || (!!adventureData && adventureData.reviewed === true);
 export const taskById = (id) => list.find((t) => t.id === id) || null;
 export const allTasks = () => list;
 /** The tasks this person may see. kind: 'adult', 'child', 'unknown'. */

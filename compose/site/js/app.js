@@ -1,11 +1,13 @@
 // Entry point: load the tasks, route by the URL hash, wire the top bar.
-import { loadTasks, loadComicData } from './tasks.js';
+import { loadTasks, loadComicData, loadAdventureData } from './tasks.js';
 import { wireThemeMenu } from './thememenu.js';
 import { stop, getSpeaker, hearSample, useVoiceAccount } from './speech.js';
 import * as V from './views.js';
 import * as G from './grownups-views.js';
 import * as CV from './comic-views.js';
 import * as OV from './own-views.js';
+import * as AV from './adventure-views.js';
+import * as AD from './adventure-doc.js';
 import * as K from './comic-doc.js';
 import * as S from './store.js';
 import * as W from './writing-doc.js';
@@ -13,7 +15,7 @@ import { wireVoiceMenu } from './voice/menu.js';
 import { startAccount } from './account/boot.js';
 import { gateHtml, gateCard } from './account/gate.js';
 import { isLocked, isPlayPath, isComposePath } from './gate.js';
-import { watchForUpdate } from './update.js';
+import { watchForUpdate, workerContainer } from './update/update.js';
 import { wireTopNav } from './nav/nav.js';
 import { useWho } from './who.js';
 
@@ -34,10 +36,14 @@ const ROUTES = [
   ['c/:id', CV.studio],
   ['c/:id/go', CV.go],
   ['c/:id/challenge', CV.challenge],
-  ['comics', CV.shelf],
+  ['comics', (main) => { const r = CV.shelf(main); const sec = main.querySelector('section'); if (sec) sec.insertAdjacentHTML('beforeend', AV.shelfHtml()); return r; }],
   ['comics/:cid', CV.view],
   ['own', OV.start],
   ['own/:cid', OV.step],
+  ['adv', AV.start],
+  ['adv/:sid', AV.make],
+  ['adv/:sid/read', AV.read],
+  ['adv/:sid/play', AV.play],
   ['t/:id/look', V.look],
   ['t/:id/plan', V.plan],
   ['t/:id/write', V.write],
@@ -65,6 +71,7 @@ function parentOf(path) {
   if (parts[0] === 't') return parts[2] === 'look' ? '#/' : '#/t/' + parts[1] + '/look';
   if (parts[0] === 'c') return parts.length > 2 ? '#/c/' + parts[1] : '#/';
   if (parts[0] === 'own') return parts.length > 1 ? '#/own' : '#/comics';
+  if (parts[0] === 'adv') return parts[2] === 'play' ? '#/adv/' + parts[1] + '/read' : parts.length > 1 ? (parts[2] === 'read' ? '#/comics' : '#/adv') : '#/comics';
   if (parts[0] === 'grownups') return parts.length > 3 ? '#/grownups/child/' + parts[2] : parts.length > 1 ? '#/grownups' : '#/';
   parts.pop();
   return '#/' + parts.join('/');
@@ -141,6 +148,13 @@ function wireAccount() {
         merge: K.mergeComics,
         prepare: (v) => K.trimComics(K.normaliseComics(v), Date.now()),
       },
+      // Story Adventure (C2-3): the child's stories; the pictures stay on the account's server, only their ids are here.
+      [AD.ADVENTURES_KEY]: {
+        read: () => (S.has('adventures', id) ? S.readAdventures(id) : undefined),
+        write: (v) => S.writeAdventures(AD.normaliseAdventures(v), id),
+        merge: AD.mergeAdventures,
+        prepare: (v) => AD.trimAdventures(v),
+      },
       // A parent's values: this device only ever reads them, and the account refuses a child's write.
       [W.MARKS_KEY]: { read: () => (S.has('marks', id) ? S.readMarks(id) : undefined), write: (v) => S.writeMarks(W.normaliseMarks(v), id), merge: (_, remote) => W.normaliseMarks(remote) },
       [W.SETTINGS_KEY]: { read: () => (S.has('settings', id) ? S.readSettings(id) : undefined), write: (v) => S.writeSettings(W.normaliseSettings(v), id), merge: (_, remote) => W.normaliseSettings(remote) },
@@ -163,7 +177,7 @@ function wireAccount() {
 }
 async function start() {
   updates = watchForUpdate({
-    sw: 'serviceWorker' in navigator && location.protocol === 'https:' ? navigator.serviceWorker : null,
+    sw: workerContainer(),
     isBusy: () => isPlayPath(currentPath()),
     reload: () => location.reload(),
     onLeave: (fn) => window.addEventListener('hashchange', fn),
@@ -172,7 +186,7 @@ async function start() {
   wireTheme();
   wireAccount();
   try {
-    await Promise.all([loadTasks(), loadComicData()]);
+    await Promise.all([loadTasks(), loadComicData(), loadAdventureData().catch(() => null)]);
   } catch (e) {
     main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>The stories didn\'t load</h1><p class="muted">Check your connection, then reload the page.</p></div></section>';
     console.error(e);
