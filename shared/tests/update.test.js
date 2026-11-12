@@ -156,7 +156,8 @@ test('every game\'s worker answers "skip-waiting", is bumped, and lists update/u
     const s = read(sw);
     assert.match(s, /addEventListener\('message'[\s\S]*?type === 'skip-waiting'\) self\.skipWaiting\(\)/, sw);
     assert.match(s, /'js\/update\/update\.js'/, sw);
-    assert.match(s, /-2026-11-09a'/, sw);
+    const version = /const VERSION = '[a-z]+-(\d{4}-\d{2}-\d{2}[a-z])'/.exec(s);
+    assert.ok(version && version[1] >= '2026-11-09a', sw + ': bumped at least to the shared update fix (2026-11-09a)');
     const a = read(app);
     assert.match(a, /watchForUpdate\(\{\s*sw: workerContainer\(\)/, app);
     assert.doesNotMatch(a, /hadWorker/, app);

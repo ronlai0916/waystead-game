@@ -2,24 +2,33 @@
 // the date comes in as `today`. What's done is read from the saved value
 // (words-doc.js): a job's mark, the grid's round, the test.
 //
-// The week is five jobs, then the test on its date, then Mend and keep. Each
-// job has a date: the days up to the test are shared out evenly, in order, so a
-// long gap spreads them and a short one (under 5 days) puts several on a day.
+// The week is seven jobs in a fixed order: hello, fix, games, story, practice,
+// then the test on its date, then Mend and keep. Each job has a date: the days
+// up to the test are shared out evenly, in order, so a long gap spreads them and
+// a short one (under 5 days) puts several on a day. No job is ever passed over.
 //
 //   · A job opens on its date, once every job before it is done. A missed job
-//     waits: nothing is skipped.
-//   · One job a day, unless there are now more jobs left than days before the
-//     test: then the day's share goes up so the week still fits.
-//   · From the test date the test comes first, because no word may be on show
-//     until it's done. Jobs not reached by then are passed over.
+//     waits, and is offered first.
+//   · Before the test date: one job a day, unless there are now more jobs left
+//     than days before the test: then the day's share goes up so the week fits.
+//   · From the test date, jobs still waiting catch up in order, at most CATCH_UP
+//     a day (a job finished today counts). The words stay on show meanwhile.
+//   · The test opens once all five jobs are done (the same day the last one is
+//     finished, if it is on or after the test date). Only then is it due and its
+//     words hidden: W.jobFor in words-doc.js decides that, for every page.
+//   · Mend and keep: the day after the test was done.
+//   · Weeks from before this rule: a test already finished while jobs were left
+//     undone. Those jobs are 'missed' ("Not done"): never a job, never waiting.
+//     A week that follows this rule never has one.
 import * as W from './words-doc.js';
 
 export const DAILY_TIME = 'about 15–20 minutes a day';
 export const DAILY_TIME_CAP = 'About 15–20 minutes a day';
 export const ROW_LINE = 'Each word is spelled 3 times in a row before it counts.';
 
-export const BEFORE_TEST = ['hello', 'fix', 'games', 'story', 'practice'];
+export const BEFORE_TEST = W.STUDY_JOBS;
 export const STEPS = [...BEFORE_TEST, 'test', 'mend'];
+export const CATCH_UP = 2; // jobs a day once the test date has come and some are still waiting
 export const MEND_WAIT = 7; // Mend and keep is on offer this many days after its date
 export const MIN_SENTENCE = 4;
 export const SENTENCES = 3;
@@ -46,8 +55,7 @@ export function stepDates(g, testDone = '') {
 
 /** The day a job was finished, or ''. */
 export function doneDay(d, g, step) {
-  if (step === 'practice') return W.roundDay(d, g, 'p');
-  if (step === 'fix') return W.stepDay(d, g, 'fix') || W.roundDay(d, g, 'x');
+  if (BEFORE_TEST.includes(step)) return W.studyJobDay(d, g, step);
   if (step === 'test') return W.testDone(d, g) ? W.testDayOf(W.testResults(d, g)) : '';
   return W.stepDay(d, g, step);
 }
@@ -61,6 +69,13 @@ function beforeTest(d, g, today, done) {
   const dates = stepDates(g);
   if (today < dates[first] || doneToday >= share) return { status: doneToday ? 'done' : 'rest', job: null };
   return { status: 'job', job: first };
+}
+
+// On or after the test date, with jobs still waiting: they come first, in order, CATCH_UP a day.
+function catchUp(done, today) {
+  const first = BEFORE_TEST.find((s) => !done[s]);
+  const doneToday = BEFORE_TEST.filter((s) => done[s] === today).length;
+  return doneToday >= CATCH_UP ? { status: 'done', job: null } : { status: 'job', job: first };
 }
 
 function afterTest(d, g, today, done, dates) {
@@ -79,23 +94,34 @@ function afterTest(d, g, today, done, dates) {
  *   status: 'job' (job is today's), 'done' (today's job is done), 'rest' (no job
  *   today), 'ready' (every job done, the test to come), 'finished'.
  *   steps: each job with state 'done' · 'today' · 'waiting' (its date has gone,
- *   still to do) · 'later' · 'passed' (the test came first).
+ *   still to do) · 'later' (the test and Mend and keep while jobs catch up, too) ·
+ *   'missed' (only a legacy week: the test was finished with this job undone).
+ *   catchUp: the test date has come and jobs are still waiting.
+ *   waiting: how many jobs before the test are still to do with their date gone.
  */
 export function studyState(d, g, today) {
   const done = Object.fromEntries(STEPS.map((s) => [s, doneDay(d, g, s)]));
   const dates = stepDates(g, done.test);
-  const { status, job } = today < g.test ? beforeTest(d, g, today, done) : afterTest(d, g, today, done, dates);
+  const catching = today >= g.test && W.jobFor(d, g, today) === 'practise';
+  const { status, job } = today < g.test ? beforeTest(d, g, today, done) : catching ? catchUp(done, today) : afterTest(d, g, today, done, dates);
   const steps = STEPS.map((id, i) => {
-    const state = done[id] ? 'done' : id === job ? 'today' : today >= g.test && BEFORE_TEST.includes(id) ? 'passed' : dates[id] < today ? 'waiting' : 'later';
+    const state = done[id] ? 'done' : id === job ? 'today' : done.test && BEFORE_TEST.includes(id) ? 'missed'
+      : catching && !BEFORE_TEST.includes(id) ? 'later' : dates[id] < today ? 'waiting' : 'later';
     return { id, n: i + 1, date: dates[id], state, ...STEP_TEXT[id] };
   });
-  return { status, job, steps, squeezed: W.daysBetween(g.start, g.test) < BEFORE_TEST.length };
+  const waiting = done.test ? 0 : BEFORE_TEST.filter((id) => !done[id] && dates[id] < today).length;
+  return { status, job, steps, catchUp: catching, waiting, squeezed: W.daysBetween(g.start, g.test) < BEFORE_TEST.length };
 }
 
-/** A job's page may open: today's job, or one already done, again, before the test. */
+/** The line for a child once the test date has come and jobs are still waiting. */
+export function catchUpLine(g, today) {
+  return (today === g.test ? 'Today is your test day.' : 'Your test day was ' + W.dayLabel(g.test) + '.') + ' Finish your jobs, then take the test here.';
+}
+
+/** A job's page may open: today's job, or one already done, again, while the words are on show before the test. */
 export function canOpen(d, g, step, today) {
   const s = studyState(d, g, today);
-  return s.job === step || (today < g.test && !!doneDay(d, g, step));
+  return s.job === step || (W.jobFor(d, g, today) === 'practise' && !!doneDay(d, g, step));
 }
 
 /** Mend and keep: 'fixups' first; then 'quick', all the words; 'done'. */
@@ -113,7 +139,7 @@ export function studyGroup(d, today) {
 }
 
 // ---- no word on show while its test is due ---------------------------------------
-/** The groups whose test is due: today is the date or later, and it isn't finished. */
+/** The groups whose test is due (W.jobFor): the date has come, every study job is done, and the test isn't finished. */
 export const dueGroups = (d, today) => W.liveGroups(d).filter((g) => W.jobFor(d, g, today) === 'test');
 /** Every word of those tests, lower case. */
 export const hiddenWords = (d, today) => new Set(dueGroups(d, today).flatMap((g) => g.words.map((w) => w.toLowerCase())));
@@ -165,7 +191,7 @@ export function roomState(d, today) {
   const s = studyState(d, g, today);
   const step = s.steps.find((x) => x.id === s.job) || null;
   return {
-    status: s.status, group: g, step, strip: s.steps, stars: weekStars(d, g), test: g.test,
+    status: s.status, group: g, step, strip: s.steps, stars: weekStars(d, g), test: g.test, catchUp: s.catchUp ? catchUpLine(g, today) : '',
     dots: W.allDots(d, g, today), ready: W.readyForTest(d, g), comeBack: W.comeBack(d, g, today), pip: pipFor(s.status, step, today), hideWords: showsHidden(g, hiddenWords(d, today)),
   };
 }

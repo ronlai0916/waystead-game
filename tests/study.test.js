@@ -35,6 +35,8 @@ function doJob(d, g, step, day) {
   if (step === 'test') return g.words.reduce((x, w) => pass(x, g, w, day, { kind: 't' }), d);
   return mark(d, g, step, day);
 }
+/** All five jobs before the test, done on `day`. */
+const studied = (d, g, day = MON) => St.BEFORE_TEST.reduce((x, s) => doJob(x, g, s, day), d);
 
 test('every file in the worker\'s shell is really there', () => {
   const sw = readFileSync(fileURLToPath(new URL('../site/sw.js', import.meta.url)), 'utf8');
@@ -83,12 +85,16 @@ test('a day with no job due is a rest day, not "done"', () => {
   assert.equal(status(d, g, plus(3)), 'rest'); // Story day is day 4 of 7
   assert.equal(job(d, g, plus(4)), 'story');
 });
-test('the job page: only today\'s job or one already done, and never once the test has come', () => {
+test('the job page: only today\'s job or one already done, and never once the test is due', () => {
   let { d, g } = made(undefined, { test: plus(5) });
   d = doJob(d, g, 'hello', MON);
   assert.equal(St.canOpen(d, g, 'hello', plus(1)), true, 'done again');
-  assert.equal(St.canOpen(d, g, 'hello', plus(5)), false, 'test day: no word on show');
   assert.equal(St.canOpen(d, g, 'games', plus(1)), false);
+  assert.equal(St.canOpen(d, g, 'hello', plus(5)), true, 'test day, jobs still waiting: the words are on show');
+  assert.equal(St.canOpen(d, g, 'fix', plus(5)), true, 'the next job waiting');
+  assert.equal(St.canOpen(d, g, 'games', plus(5)), false, 'still in order');
+  d = studied(d, g, plus(1));
+  assert.equal(St.canOpen(d, g, 'hello', plus(5)), false, 'test due: no word on show');
 });
 
 // ---- a missed day waits -----------------------------------------------------------------
@@ -117,12 +123,15 @@ test('with days to spare a late start still gets one job a day', () => {
   d = doJob(d, g, 'hello', plus(2));
   assert.equal(status(d, g, plus(2)), 'done');
 });
-test('the test comes first from its date, and jobs not reached are passed over', () => {
+test('from its date the jobs still waiting come first, then the test; nothing is passed over', () => {
   let { d, g } = made(undefined, { test: plus(5) });
   d = doJob(d, g, 'hello', MON);
-  assert.equal(job(d, g, plus(5)), 'test');
+  assert.equal(job(d, g, plus(5)), 'fix');
   const s = St.studyState(d, g, plus(5));
-  assert.equal(s.steps.find((x) => x.id === 'fix').state, 'passed');
+  assert.equal(s.catchUp, true);
+  assert.deepEqual(s.steps.map((x) => x.state), ['done', 'today', 'waiting', 'waiting', 'waiting', 'later', 'later']);
+  d = studied(d, g, plus(1));
+  assert.equal(job(d, g, plus(5)), 'test');
   assert.equal(job(d, g, plus(8)), 'test', 'a missed test waits too');
 });
 test('Mend and keep comes the day after the test, even a late one', () => {
@@ -267,6 +276,8 @@ test('a sentence: the word spelled right, and at least 4 words', () => {
 test('Game mode: open any time, except while the test is due', () => {
   let { d, g } = made(['fruit'], { test: plus(3) });
   assert.equal(St.gamesOpen(d, g, MON), true);
+  assert.equal(St.gamesOpen(d, g, plus(3)), true, 'test day with jobs waiting: they need the words');
+  d = studied(d, g, MON);
   assert.equal(St.gamesOpen(d, g, plus(3)), false, 'no word on show on test day');
   assert.equal(St.gamesOpen(d, g, plus(5)), false, 'a test not yet taken');
   d = pass(d, g, 'fruit', plus(3), { kind: 't' });
@@ -332,7 +343,8 @@ test('room: a rest day; every job done', () => {
   assert.equal(St.roomState(d, plus(6)).status, 'ready');
 });
 test('room: on test day the words stay hidden and Pip thinks', () => {
-  const { d } = made(undefined, { test: plus(5) });
+  const m = made(undefined, { test: plus(5) });
+  const d = studied(m.d, m.g, plus(1));
   const r = St.roomState(d, plus(5));
   assert.equal(r.step.id, 'test');
   assert.equal(r.hideWords, true);

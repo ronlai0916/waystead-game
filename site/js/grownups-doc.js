@@ -49,6 +49,8 @@ function groupReport(d, g, today) {
     id: g.id, name: g.name, start: g.start, testDate: g.test, canEdit: W.canEdit(g, today),
     status: s.status, job: s.job ? St.STEP_TEXT[s.job].title : '',
     steps: s.steps,
+    // Jobs whose date has gone, still to do (before the test is taken); testWaits: the test date has come, so the test waits for them.
+    waiting: today < g.test || s.catchUp ? s.waiting : 0, testWaits: s.catchUp,
     ready: W.readyForTest(d, g),
     words: p.words.map((x) => ({ word: x.word, back: x.back, status: x.status, tries: x.tries, peeks: x.peeks, dots: dots.get(x.word), today: inARow(x.word), comeBack: comeBack.includes(x.word) })),
     comeBack,

@@ -117,7 +117,13 @@ test('typed words: ours are taken; unknown and blocked ones are refused', () => 
 
 // ---- the daily plan --------------------------------------------------------------------
 test('days unlock by the date: practise, then the test, then fix-ups', () => {
-  const { d, g } = made(['fruit', 'earth']);
+  const m = made(['fruit', 'earth']);
+  const g = m.g;
+  // Study mode's five jobs, all done: the test is due on its date.
+  let d = ['hello', 'fix', 'games', 'story'].reduce((x, s) => W.markStep(x, g, s, MON, Date.parse(MON + 'T12:00:00Z')), m.d);
+  for (const w of W.rows(g)) for (const hour of [9, 10, 11]) d = attempt(d, g, w, MON, { hour });
+  assert.equal(W.studyDone(d, g), true);
+  assert.equal(W.jobFor(m.d, g, '2026-11-09'), 'practise', 'on the date, jobs still to do: they catch up first');
   assert.deepEqual(W.practiceDays(g), ['2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05', '2026-11-06', '2026-11-07', '2026-11-08']);
   assert.equal(W.jobFor(d, g, MON), 'practise');
   assert.equal(W.jobFor(d, g, '2026-11-08'), 'practise', 'the day before');

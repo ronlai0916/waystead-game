@@ -600,6 +600,9 @@ a.tab { color: var(--text); text-decoration: none; }
 .weekstrip__day.is-done .weekstrip__badge { background: var(--sb); color: var(--surface); }
 .weekstrip__day.is-today .weekstrip__badge { background: var(--surface); color: var(--sb); box-shadow: inset 0 0 0 2px var(--sb); }
 .weekstrip__day.is-waiting .weekstrip__badge { color: var(--text); box-shadow: inset 0 0 0 2px var(--muted); }
+/* A legacy week's job left undone when the test was taken (SB3-A): muted, "Not done". */
+.weekstrip__day.is-missed .weekstrip__badge { background: var(--surface); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); }
+.weekstrip__day.is-missed .weekstrip__name { color: var(--muted); font-weight: 600; }
 .weekstrip__badge svg { width: 18px; height: 18px; fill: currentColor; }
 .weekstrip__name { font-size: clamp(0.62rem, 2.7vw, 0.74rem); font-weight: 700; line-height: 1.15; white-space: nowrap; }
 .weekstrip__date { font-size: 0.66rem; color: var(--muted); line-height: 1.15; }

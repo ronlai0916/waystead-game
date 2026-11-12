@@ -92,6 +92,7 @@ function reportHtml(r, cid) {
   return '<div class="card setting report" data-report="' + esc(r.id) + '"><h2>' + esc(r.name) + '</h2>'
     + '<p class="muted small">Test on ' + esc(W.dayLabel(r.testDate)) + (r.job ? ' · Today: ' + esc(r.job) : '') + (r.ready ? ' · Ready for the test' : '') + '</p>'
     + stripHtml(r.steps, today())
+    + (r.waiting ? '<p class="small" data-waiting><b>' + plural(r.waiting, 'job') + ' waiting.</b>' + (r.testWaits ? ' The test date has come: the test opens once ' + (r.waiting === 1 ? 'this job is' : 'these jobs are') + ' done.' : ' Missed jobs are never skipped: they come first, in order.') + '</p>' : '')
     + '<div class="gridwrap" role="region" aria-label="Words in ' + esc(r.name) + '" tabindex="0"><table class="wordgrid reportgrid"><thead><tr><th scope="col">Word</th><th scope="col">3 in a row</th><th scope="col">Wrong letters</th><th scope="col">Peeks</th><th scope="col">Status</th></tr></thead><tbody>' + r.words.map(row).join('') + '</tbody></table></div>'
     + (r.comeBack.length ? '<p data-reportskips><b>Come back to this:</b> ' + esc(r.comeBack.join(', ')) + '</p>' : '')
     + (r.test.taken ? '<p><b>Test:</b> ' + r.test.right + ' of ' + r.test.of + ' right' + (r.test.rows.some((x) => !x.right) ? ' · Slipped: ' + esc(r.test.rows.filter((x) => !x.right).map((x) => x.word).join(', ')) : '') + '</p>' : '')

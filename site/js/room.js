@@ -35,6 +35,7 @@ export function room(main) {
     + '<div class="card room__top">' + pipHtml(r.pip) + '<div class="room__say"><span class="eyebrow">My room</span>'
     + '<h1>' + (r.status === 'done' ? 'Done for today!' : 'Hello' + (playerName() ? ', ' + esc(playerName()) : '')) + '</h1>'
     + '<p class="muted">' + esc(r.status === 'done' ? 'Well done. Your next job is ready tomorrow.' : SAY[r.status]) + '</p>'
+    + (r.catchUp ? '<p data-catchup>' + esc(r.catchUp) + '</p>' : '')
     + (r.ready && r.status !== 'ready' && day < g.test ? '<p><span class="pill pill--done">Ready for the test</span></p>' : '') + '</div></div>'
     + '<div class="room__job">' + button + '</div>'
     + (g && !r.hideWords ? comeBackHtml(g, r.comeBack) : '')

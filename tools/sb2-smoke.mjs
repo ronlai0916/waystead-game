@@ -4,6 +4,7 @@
 // No npm packages: Chrome's DevTools Protocol over Node's WebSocket.
 //
 //   node tools/sb2-smoke.mjs <folder for screenshots>
+//   CHROME_PATH=/path/to/chromium node tools/sb2-smoke.mjs <folder>   (default: macOS Chrome)
 //
 // The grown-ups' flag (CHILD_DATA_API) is served as it is in the repo (on), and
 // the fake account follows the real /api/children replies. One scene turns the
@@ -23,7 +24,7 @@ const ONLY = process.argv[3] || '';
 const PORT = 8123;
 const ACCOUNT = 'http://localhost:3000';
 const SITE = 'http://localhost:' + PORT;
-const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'; // CHROME_PATH: another Chrome or Chromium
 const CHILD = '11111111-1111-4111-8111-111111111111';
 const CHILD2 = '22222222-2222-4222-8222-222222222222';
 const ADULT = '33333333-3333-4333-8333-333333333333';
@@ -69,7 +70,9 @@ const account = createServer(async (req, res) => {
 
 // ---- Chrome ---------------------------------------------------------------------------
 const PROFILE = join(tmpdir(), 'sb2-smoke-' + process.pid);
-const chrome = spawn(CHROME, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--disable-gpu', '--mute-audio', '--autoplay-policy=no-user-gesture-required', '--remote-debugging-port=9333', '--user-data-dir=' + PROFILE, 'about:blank'], { stdio: 'ignore' });
+// Chrome won't start as root (a container) without --no-sandbox.
+const NO_SANDBOX = process.getuid && process.getuid() === 0 ? ['--no-sandbox'] : [];
+const chrome = spawn(CHROME, [...NO_SANDBOX, '--headless=new', '--no-first-run', '--no-default-browser-check', '--disable-gpu', '--mute-audio', '--autoplay-policy=no-user-gesture-required', '--remote-debugging-port=9333', '--user-data-dir=' + PROFILE, 'about:blank'], { stdio: 'ignore' });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function connect() {
   for (let i = 0; i < 80; i += 1) {
@@ -312,6 +315,13 @@ async function seedChild(doc, day = MON) {
 function weekDoc(words = WORDS, test = plus(5), from = MON) {
   return W.createGroup(W.emptyDoc(), { id: 'g1', name: 'Week one', test, words, today: from, now: Date.parse(from + 'T09:00:00') }).doc;
 }
+// The five Study mode jobs done on `day` (the test is due only once they are, SB3-A).
+function studied(doc, id = 'g1', day = plus(1)) {
+  const g = W.groupById(doc, id);
+  let d = ['hello', 'fix', 'games', 'story'].reduce((x, st) => W.markStep(x, g, st, day, Date.parse(day + 'T09:00:00')), doc);
+  W.rows(g).forEach((w, i) => { for (const h of [10, 11, 12]) d = W.addTry(d, { id: 'st' + id + i + h, word: w, day, group: id, kind: 'p', tries: 0, peeks: 0, clean: true, now: Date.parse(day + 'T' + h + ':00:00') + i }); });
+  return d;
+}
 const noWord = async (where) => {
   const t = (await text()).toLowerCase();
   for (const w of WORDS) ok(!t.includes(w), where + ' shows ' + w);
@@ -533,9 +543,59 @@ scene('each game once, in Game mode', async () => {
   ok(after.results.at(-1).c === 0 && after.results.at(-1).t === 1, 'the unfinished try is saved as not clean');
 });
 
+scene('a missed week: the jobs catch up from the test date, then the test', async () => {
+  await seedChild(weekDoc(), plus(6));
+  await open(plus(6), '#/');
+  await until('document.querySelector("[data-room=job]")', 'the room with a job');
+  ok(/Your test day was Sat 7 Nov\. Finish your jobs, then take the test here\./.test(await text('[data-catchup]')), 'the waiting line: ' + await text('[data-catchup]'));
+  ok(/Hello words/.test(await text('[data-job]')), 'Hello words first, not the test: ' + await text('[data-job]'));
+  ok(!/late|behind/i.test(await text()), 'kind words only');
+  ok(/fruit/.test((await text()).toLowerCase()), 'the words are on show');
+  await allViews('catchup-room');
+  await go('#/words/g/g1');
+  await until('document.querySelector("[data-catchup]")', 'the line on the group page');
+  ok(!await has('[data-testcard]'), 'no test card while jobs wait');
+  ok(await has('.weekstrip__day.is-waiting'), 'waiting jobs on the strip');
+  await allViews('catchup-group');
+  await go('#/words/g/g1/test');
+  await sleep(120);
+  ok(!/\/test$/.test(await ev('location.hash')), 'the test page sends you back while jobs wait');
+  await go('#/words/g/g1/games');
+  await until('document.querySelector(".gamecards")', 'Game mode open during catch-up');
+  step('two jobs, then done for today');
+  let d = await readLocal();
+  const g = W.groupById(d, 'g1');
+  for (const st of ['hello', 'fix']) d = W.markStep(d, g, st, plus(6), Date.parse(plus(6) + 'T10:00:00'));
+  await ev('localStorage.setItem("sb.words:' + CHILD + '",' + q(JSON.stringify(d)) + ')');
+  await open(plus(6), '#/');
+  await until('document.querySelector("[data-room=done]")', 'done for today after two');
+  step('the rest the next day, and the test opens the same day');
+  d = studied(d, 'g1', plus(7));
+  await ev('localStorage.setItem("sb.words:' + CHILD + '",' + q(JSON.stringify(d)) + ')');
+  await open(plus(7), '#/');
+  await until('document.querySelector("[data-room=job]")', 'the test');
+  ok(/Test day/.test(await text('[data-job]')), 'the test is the job now: ' + await text('[data-job]'));
+  await noWord('the room once the test is due');
+});
+
+scene('a legacy week: jobs left undone when the test was taken show "Not done"', async () => {
+  let d = weekDoc();
+  const g = W.groupById(d, 'g1');
+  for (const st of ['fix', 'games']) d = W.markStep(d, g, st, plus(1), Date.parse(plus(1) + 'T09:00:00'));
+  WORDS.forEach((w, i) => { d = W.addTry(d, { id: 'lt' + i, word: w, day: plus(5), group: 'g1', kind: 't', tries: 0, peeks: 0, clean: true, now: Date.parse(plus(5) + 'T11:00:00') + i }); });
+  await seedChild(d, plus(6));
+  await open(plus(6), '#/words/g/g1');
+  await until('document.querySelector(".weekstrip__day.is-missed")', 'missed jobs on the strip');
+  ok(await ev('document.querySelectorAll(".weekstrip__day.is-missed").length') === 3, 'hello, story and practice are not done');
+  ok(!await has('.weekstrip__day.is-waiting'), 'nothing waiting');
+  ok(/Not done/.test(await text('.weekstrip')), 'the strip says Not done');
+  ok(!await has('[data-catchup]'), 'no waiting line');
+  await allViews('legacy-group');
+});
+
 scene('test day: no page shows a test word', async () => {
   // A second group sharing a word, one with different words, and Tricky words holding a test word.
-  let doc = weekDoc();
+  let doc = studied(weekDoc());
   doc = W.createGroup(doc, { id: 'g2', name: 'Shares', test: plus(9), words: ['fruit', 'guard'], today: plus(1), now: Date.parse(plus(1) + 'T09:00:00') }).doc;
   doc = W.createGroup(doc, { id: 'g3', name: 'Other', test: plus(9), words: ['island'], today: plus(1), now: Date.parse(plus(1) + 'T09:00:00') }).doc;
   await seedChild(doc, plus(5));

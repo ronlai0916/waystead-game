@@ -89,12 +89,13 @@ function studyCard(d, g, day) {
   const s = St.studyState(d, g, day);
   const step = s.steps.find((x) => x.id === s.job);
   if (s.job === 'test') return testCard(g);
+  const late = s.catchUp ? '<p data-catchup>' + esc(St.catchUpLine(g, day)) + '</p>' : '';
   if (!step) {
     const [title, line] = STATUS_LINE[s.status];
-    return '<div class="card job"><span class="eyebrow">Today</span><h2>' + esc(title) + '</h2><p class="muted">' + esc(line) + '</p></div>';
+    return '<div class="card job"><span class="eyebrow">Today</span><h2>' + esc(title) + '</h2>' + late + '<p class="muted">' + esc(line) + '</p></div>';
   }
   const line = step.id === 'mend' && St.mendPart(d, g, day) === 'fixups' ? JOB.fixups.line : step.line;
-  return '<div class="card job job--' + step.id + '"><span class="eyebrow">Today</span><h2>' + esc(step.title) + '</h2><p class="muted">' + esc(line) + '</p><p class="muted small">' + esc(St.DAILY_TIME_CAP) + '</p>'
+  return '<div class="card job job--' + step.id + '"><span class="eyebrow">Today</span><h2>' + esc(step.title) + '</h2>' + late + '<p class="muted">' + esc(line) + '</p><p class="muted small">' + esc(St.DAILY_TIME_CAP) + '</p>'
     + (step.id === 'practice' ? starsLine(d, g, day) : '')
     + '<a class="btn btn--primary" href="' + stepHref(d, g, step.id, day) + '" data-job>Start' + ICON.arrow + '</a></div>';
 }
@@ -115,7 +116,9 @@ function modeSwitch(g, mode) {
 export { modeSwitch };
 
 function gridHtml(d, g, day, job) {
+  // While the jobs catch up after the test date, the grid runs on to today.
   const days = W.practiceDays(g);
+  if (job === 'practise') for (let x = g.test; x <= day; x = W.addDays(x, 1)) days.push(x);
   const open = job === 'practise';
   const L = W.allDots(d, g, day);
   const later = new Map(W.comeBack(d, g, day).map((x) => [x.word, x.flow]));
@@ -170,7 +173,7 @@ function drawGroup(main, g, others = []) {
     + (job === 'fixups' || job === 'fixed-today' ? fixupList(d, g, day) : '')
     + (testing ? '' : comeBackHtml(g, W.comeBack(d, g, day)))
     + (after ? resultsCard(d, g) : '')
-    + (day < g.test ? roundsLine(d, g, day) : '')
+    + (job === 'practise' ? roundsLine(d, g, day) : '')
     + (testing ? '' : gridHtml(d, g, day, job))
     + '<div class="btnrow"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
     + '<a class="btn btn--ghost" href="#/words/new">New group</a>'

@@ -329,8 +329,8 @@ export function studyStep(main, { gid, step, n }) {
 export function stripHtml(steps, day) {
   return '<ol class="weekstrip" aria-label="This week">' + steps.map((s) => '<li class="weekstrip__day is-' + s.state + '"' + (s.state === 'today' ? ' aria-current="step"' : '') + '>'
     + '<span class="weekstrip__badge">' + (s.state === 'done' ? ICON.star : s.n) + '</span><span class="weekstrip__name">' + esc(s.short) + '</span>'
-    + '<span class="sr">' + esc(s.title + ': ' + ({ done: 'done', today: 'today', waiting: 'waiting for you', later: 'on ' + W.dayLabel(s.date), passed: 'passed over' }[s.state])) + '</span>'
-    + '<span class="weekstrip__date" aria-hidden="true">' + (s.date === day ? 'Today' : esc(W.dayParts(s.date).join(' '))) + '</span></li>').join('') + '</ol>';
+    + '<span class="sr">' + esc(s.title + ': ' + ({ done: 'done', today: 'today', waiting: 'waiting for you', missed: 'not done', later: s.date < day ? 'once the jobs before it are done' : 'on ' + W.dayLabel(s.date) }[s.state])) + '</span>'
+    + '<span class="weekstrip__date" aria-hidden="true">' + (s.state === 'missed' ? 'Not done' : s.date === day ? 'Today' : esc(W.dayParts(s.date).join(' '))) + '</span></li>').join('') + '</ol>';
 }
 
 /** Today's skipped words, each a link back to it. */

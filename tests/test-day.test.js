@@ -18,8 +18,16 @@ const CH1 = ['build', 'earth', 'fruit', 'heart'];
 const chapterWords = (y, s) => (y === 'y34' && s === 'ch01' ? CH1 : ['island', 'recent']);
 const params = { gid: 'g1', yearId: 'y34', slug: 'ch01' };
 
-function due({ testDay = plus(5), words = ['fruit', 'earth'] } = {}) {
-  return W.createGroup(W.emptyDoc(), { id: 'g1', name: 'Week', test: testDay, words, today: MON, now: at(MON) }).doc;
+// All five Study mode jobs done (SB3-A): the test is due only once they are.
+function studied(d, id = 'g1', day = plus(1)) {
+  const g = W.groupById(d, id);
+  let x = ['hello', 'fix', 'games', 'story'].reduce((y, s) => W.markStep(y, g, s, day, at(day)), d);
+  for (const w of W.rows(g)) for (const h of [9, 10, 11]) x = W.addTry(x, { id: 'p' + w + day + h, word: w, day, group: id, kind: 'p', tries: 0, peeks: 0, clean: true, now: at(day) + h });
+  return x;
+}
+function due({ testDay = plus(5), words = ['fruit', 'earth'], study = true } = {}) {
+  const d = W.createGroup(W.emptyDoc(), { id: 'g1', name: 'Week', test: testDay, words, today: MON, now: at(MON) }).doc;
+  return study ? studied(d) : d;
 }
 const take = (d, word, day, right = true) => W.addTry(d, { id: word + day, word, day, group: 'g1', kind: 't', tries: right ? 0 : 1, peeks: 0, clean: right, now: at(day) });
 const guard = (pattern, d, day, p = params) => testGuard(pattern, p, d, day, chapterWords);
@@ -63,6 +71,12 @@ test('a missed test keeps its words hidden on every later day', () => {
 });
 test('a test left halfway keeps them hidden', () => {
   assert.equal(guard('words/progress', take(due(), 'fruit', plus(5)), plus(5)).id, 'g1');
+});
+test('test day with study jobs still waiting: nothing is hidden, so they can be done', () => {
+  for (const r of BLOCKED) assert.equal(guard(r, due({ study: false }), plus(5)), null, r);
+  assert.equal(guard('words/g/:gid/test', due({ study: false }), plus(5)), null);
+  assert.equal(St.hiddenWords(due({ study: false }), plus(9)).size, 0, 'nor on later days');
+  assert.equal(St.roomState(due({ study: false }), plus(5)).hideWords, false);
 });
 test('a deleted group hides nothing', () => {
   assert.equal(guard('words/progress', W.deleteGroup(due(), 'g1', at(plus(1))), plus(5)), null);

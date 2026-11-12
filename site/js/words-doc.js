@@ -286,8 +286,16 @@ export const sessionDone = (d, g, w, day, flow, L = ledger(d)) => sessionCount(d
 const reachedOn = (L, g, w, flow) => Object.entries(L.cells.get(cellKey(g.id, w)) || {}).filter(([, f]) => f & ROW[flow]).map(([day]) => day).sort();
 /** Has this word had a whole session in this flow, on any day? */
 const reached = (L, g, w, flow) => reachedOn(L, g, w, flow).length > 0;
+// The first day any of the group's words was answered in the test, or '' (not begun).
+function testBegan(L, g) {
+  const days = g.words.flatMap((w) => Object.entries(L.cells.get(cellKey(g.id, w)) || {}).filter(([, f]) => f & (TEST_RIGHT | TEST_WRONG)).map(([day]) => day));
+  return days.length ? days.sort()[0] : '';
+}
+// Practice counts for the test until the test begins. A test never begins before its date, so for a
+// group done on time this is "before the test date"; while the study jobs catch up, later days count too.
+const beforeTest = (L, g, day) => { const t = testBegan(L, g); return !t || day < t; };
 /** Before the test, in Fix it in or on the grid. */
-function practised(L, g, w) { return [...reachedOn(L, g, w, 'p'), ...reachedOn(L, g, w, 'x')].some((day) => day < g.test); }
+function practised(L, g, w) { return [...reachedOn(L, g, w, 'p'), ...reachedOn(L, g, w, 'x')].some((day) => beforeTest(L, g, day)); }
 
 /** The words a job still needs. Fix-ups go by the day; the others carry over, so a job left halfway keeps what's done. */
 export function jobLeft(d, g, day, flow, L = ledger(d)) {
@@ -302,7 +310,7 @@ export function roundDay(d, g, flow, L = ledger(d)) {
 /** The dots: 3 once a word has had a whole session before the test, else today's count. */
 export function dots(d, g, w, day, L = ledger(d)) {
   if (practised(L, g, w)) return ROW_NEEDED;
-  return day < g.test ? Math.max(sessionCount(d, g, w, day, 'p', L), sessionCount(d, g, w, day, 'x', L)) : 0;
+  return beforeTest(L, g, day) ? Math.max(sessionCount(d, g, w, day, 'p', L), sessionCount(d, g, w, day, 'x', L)) : 0;
 }
 export function allDots(d, g, day) { const L = ledger(d); return rows(g).map((w) => ({ word: w, dots: dots(d, g, w, day, L), back: g.back.includes(w) })); }
 /** Only the group's own words are in the test, so only they need their session. */
@@ -383,13 +391,31 @@ export function fixups(d, g) {
   return slipped(d, g).filter((w) => !Object.values(L.cells.get(cellKey(g.id, w)) || {}).some((f) => f & FIX_FIRST && f & ROW.f));
 }
 
+// ---- the study week's jobs before the test ------------------------------------------
+// Study mode (study-doc.js) has five jobs before the test. They are read here
+// because they decide when the test is due, and so when the words are hidden.
+export const STUDY_JOBS = ['hello', 'fix', 'games', 'story', 'practice'];
+/** The day a study job was finished, or ''. Practice day is a whole round of the grid; Fix it in a mark or a whole round of it. */
+export function studyJobDay(d, g, step) {
+  if (step === 'practice') return roundDay(d, g, 'p');
+  if (step === 'fix') return stepDay(d, g, 'fix') || roundDay(d, g, 'x');
+  return stepDay(d, g, step);
+}
+/** Every study job before the test is done. */
+export const studyDone = (d, g) => STUDY_JOBS.every((s) => studyJobDay(d, g, s));
+
 // ---- today's job ---------------------------------------------------------------
 // 'practise' · 'test' · 'wait' (tested today: fix-ups come tomorrow) ·
 // 'fixups' · 'fixed-today' (all done for today, some come back tomorrow) · 'finished'
+// The test is due (and its words hidden) from its date, once every study job is
+// done; until then it's still 'practise', so the jobs can catch up. A test
+// already begun (left halfway) stays due, so no word shows mid-test.
+// This is the one place that says the test is due: test-guard.js, the lists,
+// Game mode and Study mode all ask here.
 export function jobFor(d, g, today) {
   if (today < g.test) return 'practise';
   const results = testResults(d, g);
-  if (results.some((x) => !x.result)) return 'test';
+  if (results.some((x) => !x.result)) return results.some((x) => x.result) || studyDone(d, g) ? 'test' : 'practise';
   if (!results.some((x) => !x.result.right)) return 'finished';
   if (today <= testDayOf(results)) return 'wait';
   const left = fixups(d, g);
@@ -413,8 +439,8 @@ export function returningWords(d, today, exclude = [], limit = MAX_BACK) {
   const out = new Map();
   const skip = new Set(exclude);
   for (const g of liveGroups(d)) {
-    // Not before its test, and not while its test is due: those words stay out of sight.
-    if (today < g.test || jobFor(d, g, today) === 'test') { rows(g).forEach((w) => skip.add(w)); continue; }
+    // Not before its test (or while its jobs catch up), and not while its test is due: those words stay out of sight.
+    if (['practise', 'test'].includes(jobFor(d, g, today))) { rows(g).forEach((w) => skip.add(w)); continue; }
     const missed = new Set(slipped(d, g));
     rows(g).forEach((w, i) => { if (!out.has(w)) out.set(w, { w, missed: missed.has(w), order: out.size + i / 100 }); });
   }
