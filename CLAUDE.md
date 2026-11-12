@@ -95,3 +95,12 @@ A word-tile board game, to be served at /wordbright/. Design files and decisions
 - Looks: three styles in `wordbright/site/css/styles/` (garden, paint = Day; night = Night), chosen by `data-style` on `<html>` (set by `js/theme-boot.js` from `sb.theme` and `sb.dayStyle`, both shared with Spellbright). Colours are tokens in each style's first block; `wordbright/tests/contrast.test.js` reads them, so a new text/background pair goes in its list. Never preload a font, and keep fonts out of the service-worker shell: each style's fonts load only when used.
 - Meanings (`python3 tools/build-meanings.py`): WordNet 3.1, then OEWN, then base-word and phrase steps, then Wiktionary (G9c, CC BY-SA 4.0) from the extract `tools/wiktionary-extract.py` writes to `~/.cache/wordbright-meanings/` (the kaikki.org dump is never in git). Wiktionary meanings live apart in `data/meanings/wikt/`, `src: "wikt"`, with a credit link.
 - Tests: `node --test wordbright/tests/` (no npm packages).
+
+## Roles and models (Ron, 12 Nov 2026)
+- Architect, director, manager, planning: Fable 5.2, medium effort. The main session plans and delegates; it does not do the building itself on anything beyond a one-line change.
+- Writers and designers (code, tests, copy, screens): Sonnet 5.5, medium: the `writer` agent.
+- Debugging and checking (bug causes, diff review, re-running tests, human-factors checks): Opus 5.5, medium: the `checker` agent. Every build by the writer is checked before the report goes to Ron.
+- Deployment step preparation and junior work (formatting, spelling, conversions, screenshots): Haiku 5.5, medium: the `junior` agent. Ron runs every deploy command himself.
+- A hard task gets several agents in parallel; a simple task goes to `junior`.
+- The agent files are kept in `tools/claude-agents/` and copied to `~/.claude/agents/` (all projects) by Ron. The `planner` agent is for sessions not already running on Fable.
+- Unchanged: agents never commit or push; they stop before commit and report the exact `git add` list.
