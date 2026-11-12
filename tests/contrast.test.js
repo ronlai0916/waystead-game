@@ -68,6 +68,8 @@ const TEXT = [
   ['--sb', '--surface'], ['--sb', '--bg'], ['--text', '--sb-soft'], ['--muted', '--sb-soft'],
   // Spellbright 2: the week strip's badges, Meaning match, the story's words
   ['--surface', '--sb'], ['--text', '--good-soft'], ['--text', '--surface'], ['--muted', '--surface-2'],
+  // SB3-C1, the garden path: today's stone, the pale stones, the path panel, the quiet text on them
+  ['--stone-today-fg', '--stone-today'], ['--text', '--stone-wait-bg'], ['--muted', '--stone-wait-bg'], ['--muted', '--panel'], ['--text', '--panel'], ['--surface', '--sb'],
   // The Wordbright card
   ['--wb', '--surface'], ['--wb', '--bg'],
   // The Waystead Learning panel (its heading, text and Teal button)
@@ -75,7 +77,7 @@ const TEXT = [
 ];
 // Icons and outlines: 3:1 (WCAG 1.4.11). --sb is the spelling-part rail;
 // --petal-edge colours the lives dots.
-const UI = [['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface']];
+const UI = [['--stone-edge', '--stone-wait-bg'], ['--stone-edge', '--panel'], ['--stone-edge', '--surface'], ['--sb', '--panel'], ['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface']];
 // The "Best 7/11" pill: dark amber by day, Amber at night.
 const WARM = { garden: ['--amber-700', '--warm-soft'], paint: ['--amber-700', '--warm-soft'], night: ['--amber', '--warm-soft'] };
 

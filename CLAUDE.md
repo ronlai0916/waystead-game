@@ -19,7 +19,7 @@ Spellbright by Waystead: a static spelling game at game.waystead.co.uk/spellbrig
 - The "Waystead" wordmark is never recoloured. Logo = the waymark (two chevrons as a W, amber dot).
 
 ## Rules that bit before
-- The keyboard is three `.keyboard-row` containers (10/9/7 keys) with `flex-wrap: nowrap`. Check in a 390px viewport that P stays on row 1.
+- The keyboard is three `.keyboard-row` containers (10/9/7 letters; a child's third row also has the Delete key) with `flex-wrap: nowrap`. Check in a 390px viewport that P stays on row 1.
 - Every word's `chunks` must join to the word exactly (checked at load).
 - A word is always shown whole (G4b): no gap between its letters. `.chunked` marks the syllables only with the coloured segments under it. The practice grid's boxes may keep a small group spacing, because the word is hidden there.
 - Top bar (G4b): `shared/topbar/nav.js` (copied to each site's `js/nav/`) measures the room and folds the links into a Menu button rather than wrapping them. Always folded under 700 px (the same number is in each site's CSS); All games joins the Menu under 600 px. Never `display: none` the nav: folded, it still has to measure.
@@ -104,3 +104,11 @@ A word-tile board game, to be served at /wordbright/. Design files and decisions
 - A hard task gets several agents in parallel; a simple task goes to `junior`.
 - The agent files are kept in `tools/claude-agents/` and copied to `~/.claude/agents/` (all projects) by Ron. The `planner` agent is for sessions not already running on Fable.
 - Unchanged: agents never commit or push; they stop before commit and report the exact `git add` list.
+## Spellbright 3 child screens (SB3-C1)
+- The child's screens live in `site/js/child-doc.js` (pure helpers, tested in `tests/child.test.js`), `site/js/child-views.js` (home, path, Settings, Menu sheet, chrome) and `site/css/child.css`.
+- Child chrome applies only when `kind() === 'child'` (`isKnownChild()`); `body.is-child` gates it. 'unknown' keeps the full top bar. The keyboard sizes and pop-up letter are scoped to `body.is-child`, so an adult's keyboard is unchanged.
+- Menu and Settings are the child's way to the other pages (Settings: look, voice, switch player, grown-ups, My account, Sign out). The job bar (Back, job name, Stop for now) shows on job pages.
+- The rules files (words-doc, study-doc, spell-run, games-doc, test-guard behaviour, progress-doc, store) are not changed by this slice.
+- An adult playing their own My words gets the Delete key on the test, Fix it in and quick-fire (the key is not scoped to a child; accepted).
+- While `/api/me` has not answered (a cached player with no kind) the top bar is the mark alone (`body.is-pending`), then the child bar or the full bar; it is the full bar after 2.5 s or offline. A signed-out visitor with no cached player gets the full bar at once.
+- Menu has four rows: Games, My words, More practice (Chapters, with Pick words, Tricky words, Progress and My word numbers one tap on), Settings.

@@ -357,10 +357,11 @@ test('at the end of its tries a clash is a "try again", not a lost plan', async 
 // ---- the wording ------------------------------------------------------------------------------
 test('the new time is everywhere, and the old one nowhere', () => {
   const text = (f) => readFileSync(file(f), 'utf8');
-  for (const f of ['site/js/views.js', 'site/js/words-views.js', 'site/js/room.js', 'site/js/grownups-views.js', 'README.md', 'site/js/study-doc.js']) {
+  for (const f of ['site/js/views.js', 'site/js/words-views.js', 'site/js/room.js', 'site/js/child-doc.js', 'site/js/grownups-views.js', 'README.md', 'site/js/study-doc.js']) {
     assert.doesNotMatch(text(f), /10[–-]15|10 to 15|ten to fifteen/i, f);
   }
-  for (const f of ['site/js/views.js', 'site/js/words-views.js', 'site/js/room.js', 'site/js/grownups-views.js']) assert.match(text(f), /DAILY_TIME/, f);
+  // The child's home says "About 15 minutes" in its own words (SB3-C1: child-doc.js CHILD_TIME).
+  for (const f of ['site/js/views.js', 'site/js/words-views.js', 'site/js/grownups-views.js']) assert.match(text(f), /DAILY_TIME/, f);
   assert.match(text('site/js/study-doc.js'), /about 15–20 minutes a day/);
   assert.match(text('README.md'), /about 15–20 minutes a day/);
 });

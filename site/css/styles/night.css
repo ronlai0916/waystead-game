@@ -105,6 +105,11 @@
   --pass-fg: #1B1A20;
   --pass-shadow: 0 0 18px rgba(255, 212, 92, 0.6);
   --ring-still: var(--nebula);
+
+  --stone-today: var(--gold);
+  --stone-edge: #E0A93A;
+  --pip-ring: #262A66;
+  --pip-disc: #353A7A;
   color-scheme: dark;
 }
 

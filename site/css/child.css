@@ -1,0 +1,255 @@
+/* ==========================================================================
+   A child's screens (SB3-C1, "Direction A, the garden path").
+   Loaded after the three styles; uses only their tokens (the stone, panel and
+   Pip-ring tokens are in each style's first block, and their text pairs are in
+   tests/contrast.test.js). Nothing here changes an adult's page: the top bar
+   and footer rules need body.is-child, set by child-views.js for a signed-in
+   child. Everything on a child's screen is at least 48 px to tap.
+   ========================================================================== */
+
+/* ---- Top bar: the mark and one labelled Menu; inside a job, Stop for now ---- */
+body.is-child .topbar__nav { position: absolute; width: 0; height: 0; overflow: hidden; visibility: hidden; } /* still measured by nav.js, never display: none */
+body.is-child .allgames,
+body.is-child .topbar__inner > .thememenu,
+body.is-child #back,
+body.is-child .foot { display: none; }
+body.chrome-page .brand, body.chrome-job .brand { display: none; }
+
+.childbtn {
+  flex: none; display: inline-flex; align-items: center; gap: 8px; height: 48px; min-width: 48px; padding: 0 18px 0 14px;
+  border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text);
+  font-family: var(--f-display); font-weight: 600; font-size: 1.06rem; cursor: pointer; white-space: nowrap;
+}
+.childbtn:hover { border-color: var(--muted); }
+.childbtn svg { width: 22px; height: 22px; fill: none; stroke: var(--sb); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.childbtn--menu { margin-left: auto; }
+.childbtn--stop { padding-right: 20px; }
+.jobname { margin-left: auto; font-family: var(--f-display); font-weight: 600; font-size: 1.12rem; color: var(--text); text-align: right; }
+body.is-child .topbar__inner { padding: 8px 20px; }
+body.is-child .brand { min-height: 48px; }
+body.chrome-home .brand { pointer-events: none; }
+
+/* While the account has not said who is playing (a cached player with no kind yet): the mark alone, never the child's buttons.
+   html.wa-pre is set before the first paint (theme-boot.js); body.is-pending after that. The nav is never display: none (nav.js measures it).
+   Backstop: if no script ever takes html.wa-pre off, the animation puts everything back by itself after 3 s. */
+:is(body.is-pending, html.wa-pre body) .topbar__nav,
+:is(body.is-pending, html.wa-pre body) :is(.allgames, .topbar__inner > .thememenu, #player-slot, #theme, #back, .foot) { position: absolute; width: 0; height: 0; overflow: hidden; visibility: hidden; }
+html.wa-pre body .topbar__nav,
+html.wa-pre body :is(.allgames, .topbar__inner > .thememenu, #player-slot, #theme, #back, .foot) { animation: wa-release 3s steps(1, end) forwards; }
+@keyframes wa-release { to { position: static; width: auto; height: auto; overflow: visible; visibility: visible; } }
+
+/* ---- Shared child pieces --------------------------------------------------- */
+.btn--wide { width: 100%; min-height: 56px; }
+.btn--hero { width: 100%; max-width: none; min-height: 72px; font-size: 1.5rem; font-family: var(--f-display); }
+.btn--hero svg { width: 26px; height: 26px; }
+.linkbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 0 10px;
+  background: none; border: 0; color: var(--link); font-weight: 700; text-decoration: underline; cursor: pointer; text-align: center;
+}
+.linkbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.linkbtn--start { justify-self: start; padding-left: 0; }
+.hearit { min-height: 48px; font-size: 1.1rem; font-family: var(--f-display); font-weight: 600; }
+.hearit svg, .hearround svg { width: 22px; height: 22px; fill: none; stroke: var(--sb); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.hearround {
+  width: 48px; height: 48px; flex: none; display: inline-grid; place-items: center; border: 2px solid var(--line);
+  border-radius: 50%; background: var(--surface-2); cursor: pointer;
+}
+.hearround:hover { border-color: var(--muted); }
+.instruct { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.instruct h1 { font-size: clamp(1.45rem, 6vw, 1.9rem); }
+
+/* ---- Home --------------------------------------------------------------- */
+.childhome { display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 20px; min-height: calc(100vh - 80px); min-height: calc(100svh - 80px); }
+.savedline { align-self: center; margin: 0 0 12px; padding: 8px 18px; border-radius: 999px; background: var(--accent-soft); color: var(--text); font-weight: 700; }
+.homesay { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.pipring { width: 200px; height: 200px; border-radius: 50%; background: var(--pip-ring); display: grid; place-items: center; }
+.pipring__disc { width: 164px; height: 164px; border-radius: 50%; background: var(--pip-disc); display: grid; place-items: center; }
+.pipring .room__pip { width: 148px; height: 148px; border-radius: 50%; }
+.homesay__text { margin-top: 20px; display: grid; gap: 8px; justify-items: center; }
+.homesay__text h1 { font-size: 1.9rem; line-height: 1.2; max-width: 20ch; }
+.homesay__line { max-width: 32ch; color: var(--text); font-size: 1.05rem; }
+.homesay .hearit { margin-top: 14px; }
+.homego { margin: 28px 0 24px; text-align: center; }
+.homego__note { margin-top: 12px; color: var(--muted); font-size: 0.95rem; }
+.comeback { display: grid; justify-items: center; margin-top: 8px; }
+
+.pathcard {
+  margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; text-decoration: none; color: var(--text);
+  background: var(--surface); border: var(--card-border); border-radius: 24px; box-shadow: var(--shadow);
+}
+.pathcard__top, .pathcard__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pathcard__title { font-family: var(--f-display); font-weight: 600; font-size: 1.12rem; line-height: 32px; }
+.pathcard__go { width: 32px; height: 32px; border-radius: 50%; background: var(--sb); color: var(--surface); display: grid; place-items: center; }
+.pathcard__go svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.pathcard__tap { font-family: var(--f-display); font-weight: 600; color: var(--sb); }
+.pathcard__job { color: var(--muted); font-size: 0.9rem; }
+.minipath { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.minipath__one { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.minipath__n { font-size: 0.82rem; line-height: 1.2; color: var(--muted); }
+.minipath__n.is-now { color: var(--text); font-weight: 700; }
+
+/* ---- Stones: done = plum with a star; today = sun with a plum ring; waiting = pale, dashed, a clock; later = dashed with its number; test = a flag ---- */
+.stone {
+  width: 52px; height: 44px; flex: none; box-sizing: border-box; display: grid; place-items: center;
+  font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; color: var(--muted);
+  background: var(--stone-wait-bg); border: 2px dashed var(--stone-edge); border-radius: 52% 48% 55% 45% / 60% 55% 45% 40%;
+}
+.stone--1 { border-radius: 46% 54% 50% 50% / 55% 60% 40% 45%; }
+.stone--2 { border-radius: 55% 45% 48% 52% / 50% 58% 42% 50%; }
+.stone--3 { border-radius: 50% 50% 44% 56% / 58% 52% 48% 42%; }
+.stone svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.stone svg.fill { fill: currentColor; stroke-width: 2; }
+.stone--mini { width: 38px; height: 30px; }
+.stone--mini svg { width: 16px; height: 16px; }
+.stone--done { background: var(--sb); color: var(--surface); border: 0; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.28); }
+.stone--today, .stone--todaywait { background: var(--stone-today); color: var(--stone-today-fg); border: 3px solid var(--sb); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2); }
+.stone--waiting { color: var(--text); }
+.stone--missed { background: var(--surface); border: 2px solid var(--line); color: var(--muted); }
+
+/* ---- Path ------------------------------------------------------------------ */
+.pathpanel { list-style: none; margin: 0; padding: 18px 16px; display: grid; gap: 8px; background: var(--panel); border-radius: 28px; }
+.pathrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 56px; }
+.pathrow:nth-child(2) { padding-left: 18px; }
+.pathrow:nth-child(3) { padding-left: 30px; }
+.pathrow:nth-child(4) { padding-left: 18px; }
+.pathrow:nth-child(6) { padding-left: 18px; }
+.pathrow:nth-child(7) { padding-left: 36px; }
+.pathrow__main { display: flex; align-items: center; gap: 12px; min-width: 0; color: var(--text); text-decoration: none; }
+.pathrow__text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.pathrow__text b { font-family: var(--f-display); font-weight: 600; font-size: 1.05rem; }
+.pathrow__text span { font-size: 0.9rem; color: var(--muted); }
+.pathrow__text .pathrow__helper { color: var(--text); }
+.pathrow--today .pathrow__main, .pathrow--todaywait .pathrow__main {
+  flex: 1; padding: 6px 18px 6px 6px; min-height: 56px; background: var(--surface); border: 3px solid var(--sb); border-radius: 999px; box-shadow: var(--shadow);
+}
+.pathrow--today .pathrow__text span, .pathrow--todaywait .pathrow__text span { color: var(--text); font-weight: 700; }
+.pathrow__again { white-space: nowrap; flex: none; }
+.pathfoot { display: flex; justify-content: space-between; gap: 12px; margin: 20px 4px 0; color: var(--muted); font-weight: 700; }
+.pathfoot__one { display: inline-flex; align-items: center; gap: 8px; }
+.pathfoot svg { width: 20px; height: 20px; fill: none; stroke: var(--sb); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- Hello words ------------------------------------------------------------ */
+.hellopage .pagehead { gap: 8px; margin-bottom: 14px; }
+.segs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.segs i { height: 8px; border-radius: 999px; background: var(--line); }
+.segs i.is-done { background: var(--sb); }
+.segs i.is-now { background: var(--stone-today); box-shadow: inset 0 0 0 1px var(--stone-edge); }
+.wordcard--hello { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 16px; }
+.wordcard--hello .pic { max-width: 180px; margin: 0 auto; }
+.wordcard--hello .wordcard__word { font-size: 2.4rem; line-height: 1.1; }
+.stackbtns { display: grid; gap: 10px; }
+.means { display: grid; gap: 8px; }
+.means__head { font-family: var(--f-body); font-size: 0.8rem; letter-spacing: 0.04em; font-weight: 700; color: var(--eyebrow); }
+.means__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.nopic--wait { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--surface-2); border: 2px dashed var(--stone-edge); border-radius: var(--r); }
+.nopic__pip { width: 64px; height: 64px; border-radius: 50%; flex: none; }
+.btnrow--wide { margin-top: 16px; }
+.btnrow--wide .btn { width: 100%; max-width: none; }
+
+/* ---- Spelling steps --------------------------------------------------------- */
+.spellpage .pagehead { text-align: left; gap: 4px; margin-bottom: 4px; }
+.spellpage .pagehead h1 { font-size: clamp(1.45rem, 6vw, 1.9rem); }
+.spellpage .rowcount { justify-content: flex-start; margin-top: 6px; }
+.inarow { font-weight: 400; color: var(--muted); font-size: 0.92rem; }
+.peekrow { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; text-align: left; }
+.peekrow__hint { color: var(--muted); font-size: 0.92rem; line-height: 1.3; }
+.skiprow { display: flex; justify-content: center; margin: 4px 0 0; }
+.spellpage .btnrow--center .btn--wide { margin-top: 8px; }
+
+/* The keyboard on a child's screens: three rows (10 / 9 / 7 letters), never wrapped. Key width comes from the
+   board's own width, so at 390 px each key is about 35 x 56 with 3 px between keys and 8 px between rows.
+   Scoped to body.is-child: an adult's keyboard (and the chapter flower game) is exactly as it was. */
+.key--del { flex: none; width: 72px; min-width: 48px; } /* the plain width first, for a browser without container queries */
+.key--del svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.keyboard { position: relative; }
+body.is-child .keyboard { container-type: inline-size; gap: 8px; }
+body.is-child .keyboard-row { gap: 3px; }
+body.is-child .keyboard .key { width: 35px; height: 48px; flex: none; font-size: 1.2rem; }
+body.is-child .keyboard .key--del { width: 72px; }
+@supports (width: 1cqw) {
+  body.is-child .keyboard .key { width: min(46px, calc((100cqw - 27px) / 10)); }
+  body.is-child .keyboard .key--del { width: calc(2 * min(46px, calc((100cqw - 27px) / 10)) + 3px); }
+}
+body.is-child .spellpage .keyboard .key, body.is-child .game .keyboard .key { height: 56px; }
+body.is-child .keyboard .key.is-pressed { transform: translateY(3px); filter: brightness(0.9); box-shadow: none; }
+.keypop {
+  position: absolute; width: 50px; height: 72px; display: none; place-items: center; pointer-events: none; z-index: 5; line-height: 1;
+  background: var(--surface); color: var(--text); border: 2px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+  font-family: var(--f-display); font-weight: 600; font-size: 2rem;
+}
+.keypop.is-on { display: grid; }
+@media (max-width: 480px) { body.is-child .spellpage .keyboard, body.is-child .play .keyboard { width: calc(100% + 20px); margin-inline: -10px; } }
+/* The keyboard sits at the foot of the screen (a flexible space above it on a tall screen). The 80 px above its first row is where
+   the pop-up letter shows, so it never covers Hear, Peek or Skip. On a wide screen the board is capped and centred. */
+body.is-child main > section:has(.keyboard) { display: flex; flex-direction: column; box-sizing: border-box; min-height: calc(100vh - 72px); min-height: calc(100svh - 72px); }
+body.is-child main > section:has(.keyboard) > [data-slot]:has(.keyboard) { flex: 1; display: flex; flex-direction: column; }
+body.is-child .keyboard { margin-top: auto; max-width: 500px; margin-inline: auto; width: 100%; }
+body.is-child .keyboard::before { content: ''; display: block; height: 72px; flex: none; }
+body.is-child main > section:has(.keyboard) { padding-top: 8px; padding-bottom: 6px; }
+body.is-child main > section:has(.keyboard) .spellline { margin: 4px 0; }
+@media (max-width: 480px) { body.is-child .keyboard { max-width: none; } }
+
+/* ---- The flower game in Hello words, and the other games, for a child ---------- */
+body.is-child .play { gap: 12px; }
+body.is-child .play .pagehead { margin-bottom: 0; text-align: left; }
+body.is-child .play .btnrow--center .btn { width: 100%; min-height: 56px; }
+body.is-child .play .hint summary { min-height: 48px; }
+body.is-child .play .status { align-items: center; }
+
+/* ---- The pages Menu leads to: the minimum tidy-up (a grown-up plans the week) ---- */
+body.is-child .modeswitch, body.is-child .groupmanage { display: none; }
+body.is-child .btn--ghost { border-color: var(--muted); } /* a clear edge in every look, Night included */
+body.is-child .btn--small { min-height: 48px; }
+body.is-child .wordgrid a { display: inline-flex; align-items: center; min-height: 48px; }
+body.is-child .gamecards .shortcut { min-height: 64px; }
+body.is-child .listrow { min-height: 56px; }
+body.is-child .btnrow .btn { min-height: 48px; }
+body.is-child .shortcut, body.is-child .card.year { min-height: 56px; }
+body.is-child .wordgrid a { min-width: 48px; justify-content: center; }
+.groupedit { display: none; }
+body.is-child .groupedit { display: block; margin: 0; text-align: center; }
+[data-voicecard][hidden] { display: none; }
+body.is-child .play .keyboard .key { height: 56px; }
+
+/* ---- Menu sheet and Settings --------------------------------------------------- */
+.sheetlayer { position: fixed; inset: 0; z-index: 60; }
+.sheetback { position: absolute; inset: 0; background: rgba(27, 26, 32, 0.55); }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto; padding: 10px 16px calc(18px + env(safe-area-inset-bottom));
+  background: var(--bg); color: var(--text); border-radius: 28px 28px 0 0; box-shadow: 0 -12px 40px -16px rgba(0, 0, 0, 0.5);
+}
+.sheet__grip { display: block; width: 44px; height: 5px; margin: 0 auto 8px; border-radius: 999px; background: var(--line); }
+.sheet__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.sheet__head h2 { font-size: 1.5rem; }
+.sheet__close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.sheet__rows { display: grid; gap: 10px; }
+.sheetrow {
+  display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 14px; text-decoration: none; color: var(--text);
+  background: var(--surface); border: var(--card-border); border-radius: 20px; box-shadow: var(--shadow);
+}
+.sheetrow--quiet { background: transparent; border: 0; border-top: 1px solid var(--line); border-radius: 0; box-shadow: none; min-height: 64px; }
+.sheetrow__ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--surface-2); color: var(--sb); }
+.sheetrow__ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.sheetrow__text { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.25; }
+.sheetrow__text b { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.sheetrow__text span { font-size: 0.9rem; color: var(--muted); }
+.sheetrow__go { color: var(--sb); }
+.sheetrow__go svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.childsettings { display: grid; gap: 14px; align-content: start; }
+.childsettings .card { padding: 14px 16px; }
+.choices { display: grid; gap: 8px; margin-top: 10px; }
+.choice {
+  display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 16px; cursor: pointer; text-align: left;
+  border: 2px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); font-weight: 700;
+}
+.choice[aria-checked="true"] { border-color: var(--sb); box-shadow: inset 0 0 0 1px var(--sb); }
+.choice[aria-checked="true"]::after { content: "\2713"; color: var(--sb); }
+.setrow { display: flex; align-items: center; justify-content: space-between; min-height: 64px; text-decoration: none; color: var(--text); }
+.setrow svg { width: 22px; height: 22px; fill: none; stroke: var(--sb); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.about summary { display: flex; align-items: center; min-height: 48px; font-weight: 700; cursor: pointer; }
+.about__body { display: grid; gap: 4px; }
+.about__body a { display: inline-flex; align-items: center; min-height: 48px; }
+
+/* ---- On a wide screen the child's pages stay one calm column ----------------- */
+.childhome, .childpath, .childsettings, .hellopage, .spellpage { max-width: 560px; }

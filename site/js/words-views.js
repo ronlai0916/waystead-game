@@ -6,9 +6,10 @@ import * as S from './store.js';
 import * as W from './words-doc.js';
 import * as R from './spell-run.js';
 import { checkTyped } from './wordcheck.js';
-import { speak, stop } from './speech.js';
+import { speak, stop, sayLine } from './speech.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { esc, ICON, keyboard, shuffle, toast, dotsHtml, rowCountHtml, RETRY_LINE } from './ui.js';
+import { esc, ICON, keyboard, shuffle, toast, dotsHtml, rowCountHtml, inARowHtml, RETRY_LINE } from './ui.js';
+import * as C from './child-doc.js';
 import * as St from './study-doc.js';
 import { stepHref, stripHtml, comeBackHref, comeBackHtml } from './study-views.js';
 import { findEntry } from './word-info.js';
@@ -175,9 +176,11 @@ function drawGroup(main, g, others = []) {
     + (after ? resultsCard(d, g) : '')
     + (job === 'practise' ? roundsLine(d, g, day) : '')
     + (testing ? '' : gridHtml(d, g, day, job))
-    + '<div class="btnrow"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
+    + '<div class="btnrow groupmanage"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
     + '<a class="btn btn--ghost" href="#/words/new">New group</a>'
     + '<a class="btn btn--ghost" href="#/words/progress">My word numbers</a></div>'
+    // A child sees only this quiet link (a grown-up plans the week, but a group the child made is theirs to change).
+    + '<p class="groupedit"><a class="linkbtn" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a></p>'
     + (others.length ? '<h2 class="sectionhead">Other groups</h2><div class="list">' + others.map((o) => '<a class="card listrow" href="' + groupHref(o.id) + '"><span><strong>' + esc(o.name) + '</strong><br><span class="muted small">Test on ' + esc(W.dayLabel(o.test)) + '</span></span>'
       + '<span class="pill">' + esc(JOB[W.jobFor(d, o, day)].title) + '</span></a>').join('') + '</div>' : '')
     + '</section>';
@@ -340,18 +343,17 @@ export function spellWord(main, { gid, n }) {
   let timer = null;
   const count = () => W.sessionCount(S.readWords(), g, w, day, flow);
 
-  main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead"><span class="eyebrow">' + esc(fixing ? 'Fix-ups' : g.name) + '</span>'
-    + '<h1>Word ' + (list.indexOf(w) + 1) + ' of ' + list.length + '</h1>'
-    + (g.back.includes(w) ? '<span class="pill">Back again</span>' : '') + '<p class="rowcount" data-row></p></div>'
+  main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead"><span class="eyebrow">Word ' + (list.indexOf(w) + 1) + ' of ' + list.length + (g.back.includes(w) ? ' · back again' : '') + '</span>'
+    + '<h1>' + C.SPELL_INSTRUCTION + '</h1><button type="button" class="linkbtn linkbtn--start" data-instruct>Read it to me</button><p class="rowcount" data-row></p></div>'
     + '<p class="peek" data-peek aria-live="polite"></p>'
     + boxesHtml(w)
     + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
-    + '<div data-slot><div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear again</button>'
-    + '<button type="button" class="btn btn--ghost" data-peekbtn>Peek</button>'
-    + '<button type="button" class="btn btn--ghost" data-skip>Skip for now</button></div>' + keyboard() + '</div></section>';
+    + '<div data-slot><div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
+    + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+    + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>' + keyboard() + '</div></section>';
 
   const line = (s) => { main.querySelector('[data-line]').textContent = s; };
-  const showRow = (n2) => { main.querySelector('[data-row]').innerHTML = rowCountHtml(n2); };
+  const showRow = (n2) => { main.querySelector('[data-row]').innerHTML = inARowHtml(n2); };
   const clearBoxes = () => main.querySelectorAll('[data-box]').forEach((b) => { b.textContent = ''; b.classList.remove('is-filled', 'is-next'); });
   const markNext = () => {
     main.querySelectorAll('[data-box]').forEach((b) => b.classList.toggle('is-next', Number(b.dataset.box) === run.at));
@@ -384,6 +386,7 @@ export function spellWord(main, { gid, n }) {
       clearBoxes();
       markNext();
       line('');
+      main.querySelector('[data-hint]').textContent = C.PEEK_HINT;
       speak(w);
     }, AGAIN_MS);
   }
@@ -426,6 +429,7 @@ export function spellWord(main, { gid, n }) {
   window.addEventListener('pagehide', leave);
   main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => letter(k.dataset.letter)));
   main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
+  main.querySelector('[data-instruct]').addEventListener('click', () => sayLine(C.SPELL_INSTRUCTION));
   main.querySelector('[data-skip]').addEventListener('click', () => {
     if (done) return;
     leave();
@@ -438,6 +442,7 @@ export function spellWord(main, { gid, n }) {
     if (hold || done) return;
     run = R.peek(run);
     showRow(0);
+    main.querySelector('[data-hint]').textContent = C.PEEKED_LINE;
     hold = true;
     peekBtn.disabled = true;
     main.querySelector('[data-peek]').textContent = w;
@@ -474,17 +479,17 @@ export function testDay(main, { gid }) {
   function ask() {
     const w = t.current();
     typed = '';
-    main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead"><span class="eyebrow">' + esc(g.name) + ' · Test</span>'
-      + '<h1>Word ' + (total - t.remaining() + 1) + ' of ' + total + '</h1></div>'
-      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear again</button></div>'
+    main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead"><span class="eyebrow">Word ' + (total - t.remaining() + 1) + ' of ' + total + '</span>'
+      + '<h1>' + C.SPELL_INSTRUCTION + '</h1><button type="button" class="linkbtn linkbtn--start" data-instruct>Read it to me</button></div>'
+      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
       + '<p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
-      + keyboard()
-      + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--ghost" data-del>Delete</button>'
-      + '<button type="button" class="btn btn--primary" data-next>Next' + ICON.arrow + '</button></div></section>';
+      + keyboard({ del: true })
+      + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--primary btn--wide" data-next>Next' + ICON.arrow + '</button></div></section>';
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
+    main.querySelector('[data-instruct]').addEventListener('click', () => sayLine(C.SPELL_INSTRUCTION));
     main.querySelector('[data-del]').addEventListener('click', del);
     main.querySelector('[data-next]').addEventListener('click', next);
-    main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
+    main.querySelectorAll('.key[data-letter]').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
     speak(w);
   }
   const show = () => { main.querySelector('[data-answer]').textContent = typed; };

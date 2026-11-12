@@ -12,6 +12,7 @@ import { entryFor, hasMeaning, meaningsFor } from './word-info.js';
 import { speak, stop } from './speech.js';
 import { burstHtml, placeBursts } from './celebrate.js';
 import { esc, ICON, chunked, keyboard, toast, RETRY_LINE } from './ui.js';
+import * as C from './child-doc.js';
 import { dotsListHtml } from './study-views.js';
 import { modeSwitch } from './words-views.js';
 
@@ -24,7 +25,9 @@ function pageHtml(ctx, title, n, body) {
   return '<section class="wrap page spellpage game" data-game="' + title.id + '"><div class="pagehead"><span class="eyebrow">' + esc(ctx.eyebrow) + '</span><h1>' + esc(title.text) + '</h1>'
     + (n ? '<p class="muted">' + esc(n) + '</p>' : '') + '</div>' + body + '</section>';
 }
-const heard = () => '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear again</button><button type="button" class="btn btn--ghost" data-skip>Skip for now</button></div>';
+// The same Hear and Skip rows as practice: one big "Hear the word", Skip as a link.
+const heard = () => '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
+  + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>';
 
 function wordDone(ctx, slot, w, clean, next, last) {
   slot.innerHTML = '<div class="card result ' + (clean ? 'result--good' : 'result--bad') + '"><div class="result__head">'
@@ -237,13 +240,13 @@ function quick(main, ctx, done) {
       '<div class="gentlebar" aria-hidden="true"><span data-bar></span></div>'
       + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
       + '<p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
-      + '<div data-slot>' + heard() + keyboard()
-      + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--ghost" data-del>Delete</button><button type="button" class="btn btn--primary" data-go>Next' + ICON.arrow + '</button></div></div>');
+      + '<div data-slot>' + heard() + keyboard({ del: true })
+      + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--primary btn--wide" data-go>Next' + ICON.arrow + '</button></div></div>');
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
     main.querySelector('[data-del]').addEventListener('click', del);
     main.querySelector('[data-go]').addEventListener('click', submit);
     main.querySelector('[data-skip]').addEventListener('click', skip);
-    main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
+    main.querySelectorAll('.key[data-letter]').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
     const secs = G.quickSeconds(w);
     main.querySelector('[data-bar]').style.setProperty('--secs', secs + 's');
     clearTimeout(timer);

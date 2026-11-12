@@ -83,11 +83,51 @@ export const rowCountHtml = (n, of = 3) => dotsHtml(n, of) + ' <span class="smal
 export const RETRY_LINE = 'Let\'s try that one again.';
 
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
-export function keyboard() {
-  return '<div class="keyboard" role="group" aria-label="Letters">' + ROWS.map((row) =>
+const DEL_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z"/><path d="M13 9.5l4 4M17 9.5l-4 4"/></svg>';
+// { del: true } puts a Delete key at the end of the third row (typed answers only).
+export function keyboard({ del = false } = {}) {
+  return '<div class="keyboard" role="group" aria-label="Letters">' + ROWS.map((row, r) =>
     '<div class="keyboard-row">' + [...row].map((L) =>
-      '<button type="button" class="key" data-letter="' + L + '" aria-label="Guess ' + L + '">' + L + '</button>').join('') + '</div>').join('') + '</div>';
+      '<button type="button" class="key" data-letter="' + L + '" aria-label="Guess ' + L + '">' + L + '</button>').join('')
+      + (del && r === 2 ? '<button type="button" class="key key--del" data-del aria-label="Delete">' + DEL_ICON + '</button>' : '') + '</div>').join('')
+    + '<span class="keypop" aria-hidden="true"></span></div>';
 }
+
+// A letter pops up above the key being pressed. One listener for every keyboard; the
+// pop-up is absolute, so nothing moves. The key's own letter is aria-hidden here.
+let popTimer = null;
+function initKeyPop() {
+  if (typeof document === 'undefined') return;
+  const hide = () => {
+    clearTimeout(popTimer);
+    popTimer = setTimeout(() => {
+      document.querySelectorAll('.keypop.is-on').forEach((p) => p.classList.remove('is-on'));
+      document.querySelectorAll('.key.is-pressed').forEach((k) => k.classList.remove('is-pressed'));
+    }, 120);
+  };
+  document.addEventListener('pointerdown', (e) => {
+    const key = e.target.closest && e.target.closest('.key[data-letter]');
+    const board = key && key.closest('.keyboard');
+    const pop = board && board.querySelector('.keypop');
+    if (!pop || key.disabled || !document.body.classList.contains('is-child')) return; // a child's screens only
+    clearTimeout(popTimer);
+    pop.textContent = key.dataset.letter.toLowerCase();
+    const w = 50;
+    const left = Math.max(0, Math.min(board.clientWidth - w, key.offsetLeft + key.offsetWidth / 2 - w / 2));
+    pop.style.left = left + 'px';
+    pop.style.top = (key.offsetTop - 76) + 'px';
+    pop.classList.add('is-on');
+    key.classList.add('is-pressed');
+  });
+  ['pointerup', 'pointercancel'].forEach((t) => document.addEventListener(t, hide));
+}
+initKeyPop();
+
+/** Where a word's picture stands: 'ready', or 'none' (the on-demand picture service is a later slice). 'pending' is drawn as "Picture on its way". */
+export const pictureState = (w) => (hasImage(w) ? 'ready' : 'none');
+
+/** "1 of 3 in a row", with its dots. */
+export const inARowHtml = (n, of = 3) => dotsHtml(n, of) + ' <span class="inarow">' + n + ' of ' + of + ' in a row</span>';
 
 export function shuffle(list) {
   const a = [...list];

@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/styles/garden.css">
   <link rel="stylesheet" href="css/styles/paint.css">
   <link rel="stylesheet" href="css/styles/night.css">
+  <link rel="stylesheet" href="css/child.css">
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
@@ -29,6 +30,7 @@
       <button type="button" class="iconbtn topbar__back" id="back" aria-label="Go back" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
+      <button type="button" class="childbtn childbtn--back" id="child-back" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
       <a class="brand" href="#/" aria-label="Spellbright home">
         <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true">
           <path d="M16 34 L34 70 L50 26 L66 70 L84 34" class="brand__stroke"/>
@@ -39,6 +41,9 @@
           <span class="brand__product">Spellbright</span>
         </span>
       </a>
+      <button type="button" class="childbtn childbtn--stop" id="child-stop" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>Stop for now</button>
+      <span class="jobname" id="job-name" hidden></span>
+      <button type="button" class="childbtn childbtn--menu" id="child-menu" aria-haspopup="dialog" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
       <nav class="topbar__nav" aria-label="Main">
         <a href="#/words">My words</a>
         <a href="#/custom">Pick words</a>

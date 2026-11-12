@@ -21,7 +21,7 @@ export const RULES = {
   ':yearId/:slug': 'chapter', ':yearId/:slug/study': 'chapter', ':yearId/:slug/study/:word': 'chapter',
   ':yearId/:slug/quick': 'chapter', ':yearId/:slug/quick/:word': 'chapter', ':yearId/:slug/practice': 'chapter', ':yearId/:slug/test': 'chapter',
   'words/new': 'any', 'words/progress': 'any', 'words/g/:gid/edit': 'any',
-  'words/g/:gid': 'first', 'words/g/:gid/test': 'safe',
+  'words/g/:gid': 'first', 'words/g/:gid/test': 'safe', 'words/g/:gid/path': 'safe', settings: 'safe',
   'words/g/:gid/spell/:n': 'group', 'words/g/:gid/study/:step': 'group', 'words/g/:gid/study/:step/:n': 'group', 'words/g/:gid/games': 'group', 'words/g/:gid/game/:game': 'group',
   grownups: 'adult', 'grownups/stories': 'adult', 'grownups/child/:cid': 'adult', 'grownups/child/:cid/plan': 'adult', 'grownups/child/:cid/plan/:gid': 'adult',
 };

@@ -8,12 +8,13 @@ import * as St from './study-doc.js';
 import * as R from './spell-run.js';
 import { entryFor, meaningsFor } from './word-info.js';
 import { speak, spellOut, sayLine, stop } from './speech.js';
-import { runSession } from './play.js';
 import { loadStories, storyFor } from './stories.js';
 import { storyPage } from './story-views.js';
 import { playGames } from './games-views.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { esc, ICON, picture, chunked, boldWord, keyboard, toast, dotsHtml, rowCountHtml } from './ui.js';
+import { runSession } from './play.js';
+import { esc, ICON, chunked, boldWord, keyboard, toast, dotsHtml, rowCountHtml, inARowHtml, pictureState, picture } from './ui.js';
+import * as C from './child-doc.js';
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -52,20 +53,28 @@ const firstLeft = (d, g, step, n) => { for (let i = 0; i < n; i += 1) if (!W.ste
 const markPart = (g, step, i) => { const day = today(); S.updateWords((d) => W.markStep(d, g, step + ':' + i, day, Date.now())); };
 
 /* ------------------------------------------------------------ Hello words --- */
+const HEAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const roundHear = (attr, label) => '<button type="button" class="hearround" ' + attr + ' aria-label="' + label + '">' + HEAR + '</button>';
+
+// The picture, by state (ui.js pictureState): a picture; "Picture on its way" (a later
+// slice: nothing returns 'pending' yet); or none at all, a calm layout with no empty box.
+function helloPicture(w) {
+  const st = pictureState(w);
+  if (st === 'ready') return picture(w);
+  if (st === 'pending') return '<div class="nopic nopic--wait"><img class="nopic__pip" src="assets/characters/pip-thinking-256.webp" width="64" height="64" alt=""><p><b>Picture on its way</b><br><span class="muted">Pip is drawing it.</span></p></div>';
+  return '';
+}
+
 function wordCard(w, clue) {
   const m = w.meaning;
-  return '<div class="card wordcard">' + picture(w) + '<div class="wordcard__body">'
+  return '<div class="card wordcard wordcard--hello' + (pictureState(w) === 'none' ? ' wordcard--nopic' : '') + '">' + helloPicture(w)
     + '<div class="wordcard__word">' + chunked(w, '', { tricky: true }) + '</div>'
-    + (w.ipa ? '<div class="wordcard__line"><span class="ipa">' + esc(w.ipa) + '</span><span class="pill">' + esc(m.partOfSpeech) + '</span></div>' : '')
-    + (m.definition ? '<p>' + esc(m.definition) + '</p>' : '')
-    + (m.example ? '<p class="example">' + boldWord(m.example, w.word) + '</p>' : '')
-    + (w.chunks.length > 1 ? '<p class="chunktext">Syllables: ' + esc(w.chunks.join(' · ')) + '</p>' : '')
-    + (w.tricky ? '<p class="chunktext">Tricky letters: ' + esc(w.tricky) + '</p>' : '')
     + (clue ? '<p class="small"><b>Your clue:</b> ' + esc(clue) + '</p>' : '')
-    + '<div class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-hear>' + ICON.play + 'Hear it</button>'
-    + '<button type="button" class="btn btn--quiet btn--small" data-spell>' + ICON.spell + 'Spell it out</button>'
-    + (m.example ? '<button type="button" class="btn btn--quiet btn--small" data-example>Hear the example</button>' : '') + '</div>'
-    + '</div></div>';
+    + '<div class="stackbtns"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear it</button>'
+    + '<button type="button" class="btn btn--ghost btn--wide" data-spell>' + ICON.spell + 'Say the letters</button></div>'
+    + (m.definition ? '<div class="means"><h2 class="means__head">What it means</h2><div class="means__row"><p>' + esc(m.definition) + '</p>' + roundHear('data-mean', 'Hear the meaning') + '</div>'
+      + (m.example ? '<div class="means__row"><p class="example">' + boldWord(m.example, w.word) + '</p>' + roundHear('data-example', 'Hear the example') + '</div>' : '') + '</div>' : '')
+    + '</div>';
 }
 function wireWordCard(main, w) {
   main.querySelector('[data-hear]').addEventListener('click', () => speak(w.word));
@@ -74,26 +83,33 @@ function wireWordCard(main, w) {
   }));
   const ex = main.querySelector('[data-example]');
   if (ex) ex.addEventListener('click', () => sayLine(w.meaning.example));
+  const mean = main.querySelector('[data-mean]');
+  if (mean) mean.addEventListener('click', () => sayLine(w.meaning.definition));
 }
+
+const segsHtml = (i, n) => '<div class="segs" role="img" aria-label="Word ' + (i + 1) + ' of ' + n + '">' + Array.from({ length: n }, (_, k) => '<i class="' + (k < i ? 'is-done' : k === i ? 'is-now' : '') + '"></i>').join('') + '</div>';
 
 function hello(main, g) {
   const list = W.rows(g);
   let i = firstLeft(S.readWords(), g, 'hello', list.length);
-  let endGame = null;
   let stopped = false;
+  let endGame = null;
   function card() {
     const w = entryFor(list[i]);
-    main.innerHTML = '<section class="wrap page">' + head('hello', '<h1>Word ' + (i + 1) + ' of ' + list.length + '</h1>')
+    main.innerHTML = '<section class="wrap page hellopage"><div class="pagehead"><span class="eyebrow">Word ' + (i + 1) + ' of ' + list.length + '</span>' + segsHtml(i, list.length)
+      + '<div class="instruct"><h1>' + C.HELLO_INSTRUCTION + '</h1>' + roundHear('data-instruct', 'Read it to me') + '</div></div>'
       + wordCard(w, W.clueFor(S.readWords(), w.word))
-      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-play>Play the flower game' + ICON.arrow + '</button></div></section>';
+      + '<div class="btnrow btnrow--wide"><button type="button" class="btn btn--primary btn--big" data-play>' + C.FLOWER_GAME + ICON.arrow + '</button></div></section>';
     wireWordCard(main, w);
+    main.querySelector('[data-instruct]').addEventListener('click', () => sayLine(C.HELLO_INSTRUCTION));
     main.querySelector('[data-play]').addEventListener('click', () => {
       stop();
-      endGame = runSession(main, { eyebrow: 'Hello words', title: 'Word ' + (i + 1) + ' of ' + list.length, words: [w], mode: 'mini', lastLabel: i + 1 < list.length ? 'Next word' : 'Finish', onFinish: next });
+      endGame = runSession(main, { eyebrow: 'Hello words', title: 'Word ' + (i + 1) + ' of ' + list.length, words: [w], mode: 'mini', progress: false, lastLabel: i + 1 < list.length ? 'Next word' : 'Finish', onFinish: next });
     });
     speak(w.word);
     window.scrollTo(0, 0);
   }
+  // The game ends with its word: only then is the word marked (leaving before leaves it undone).
   function next() {
     endGame = null;
     markPart(g, 'hello', i);
@@ -122,9 +138,9 @@ function fix(main, g, start) {
   let timer = null;
   const w = () => entryFor(word);
   const count = () => W.sessionCount(S.readWords(), g, word, today(), 'x');
-  const skipBtn = '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-skip>Skip for now</button></div>';
+  const skipBtn = '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>';
   const page = (title, body, n = count()) => {
-    main.innerHTML = '<section class="wrap page spellpage">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (rows.indexOf(word) + 1) + ' of ' + rows.length + '</p><p class="rowcount" data-row>' + rowCountHtml(n) + '</p>') + body + '</section>';
+    main.innerHTML = '<section class="wrap page spellpage">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (rows.indexOf(word) + 1) + ' of ' + rows.length + '</p><p class="rowcount" data-row>' + inARowHtml(n) + '</p>') + body + '</section>';
     const b = main.querySelector('[data-skip]');
     if (b) b.addEventListener('click', skip);
     window.scrollTo(0, 0);
@@ -156,10 +172,11 @@ function fix(main, g, start) {
     typed = '';
     peeks = 0;
     page('Now type it', '<p class="peek" data-peek aria-live="polite"></p><p class="spellline" role="status">' + esc(typeof line === 'string' ? line : '') + '</p><p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
-      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button></div>' + keyboard()
-      + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--ghost" data-del>Delete</button>'
-      + '<button type="button" class="btn btn--primary" data-check>Check' + ICON.arrow + '</button></div>' + skipBtn);
-    main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
+      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
+      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+      + skipBtn + keyboard({ del: true })
+      + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--primary btn--wide" data-check>Check' + ICON.arrow + '</button></div>');
+    main.querySelectorAll('.key[data-letter]').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
     button('[data-hear]', () => speak(w().word));
     button('[data-peekbtn]', peek);
     button('[data-del]', del);
@@ -168,7 +185,8 @@ function fix(main, g, start) {
   }
   function peek() {
     peeks += 1;
-    main.querySelector('[data-row]').innerHTML = rowCountHtml(0);
+    main.querySelector('[data-row]').innerHTML = inARowHtml(0);
+    main.querySelector('[data-hint]').textContent = C.PEEKED_LINE;
     main.querySelector('[data-peek]').textContent = w().word;
     main.querySelector('[data-peekbtn]').disabled = true;
     clearTimeout(timer);

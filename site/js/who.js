@@ -18,3 +18,7 @@ export function kind() {
 export const isAdult = () => kind() === 'adult';
 /** An adult playing as one of their children (a child's own session can't switch). */
 export const playingAsChild = () => { const p = player(); return !!p && p.kind === 'child' && p.canSwitch === true; };
+/** The child's top bar and pages (SB3-C1) need the kind to be known: only 'child'. 'unknown' keeps today's full top bar. */
+export const isKnownChild = () => kind() === 'child';
+/** A child's screens (SB3-C1): a signed-in child, or a device still waiting for /api/me. */
+export const isChild = () => kind() === 'child' || kind() === 'unknown';

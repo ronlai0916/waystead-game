@@ -47,3 +47,9 @@
   }
   window.sbTheme = { apply: apply, resolve: resolve, DAY_STYLES: DAY_STYLES };
 })();
+
+// A cached player has no kind until /api/me answers: the top bar shows the mark alone until the app says who it is
+// (child-views.js applyChrome takes this class off at once; css/child.css "html.wa-pre").
+(function () {
+  try { if (localStorage.getItem('wa.player')) document.documentElement.classList.add('wa-pre'); } catch (e) {}
+})();

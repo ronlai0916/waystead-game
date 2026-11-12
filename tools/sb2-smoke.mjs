@@ -38,6 +38,7 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
 
 let flagOn = true;
 let netDown = false;
+let blocked = ''; // a file name the site answers 404 to, for a scene about a failed load
 let storiesHidden = false; // the stories are approved in the repo: some scenes need them waiting
 const site = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, SITE).pathname);
@@ -45,6 +46,7 @@ const site = createServer((req, res) => {
   const base = m ? (m[1] === 'spellbright' ? 'site/' : 'wordbright/site/') : null;
   let file = base ? ROOT + base + (m[2] || 'index.html') : null;
   if (file && existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
+  if (blocked && path.endsWith(blocked)) file = null;
   if (!file || !existsSync(file)) { res.writeHead(404, { 'Content-Security-Policy': csp }); res.end('not here'); return; }
   let body = readFileSync(file);
   if (file.endsWith('grownups-data.js') && !flagOn) body = String(body).replace('CHILD_DATA_API = true', 'CHILD_DATA_API = false');
@@ -58,6 +60,7 @@ acct.children = (id) => (id === ADULT ? [{ id: CHILD, nickname: 'Robin', year: 4
 const account = createServer(async (req, res) => {
   const cors = { 'Access-Control-Allow-Origin': SITE, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS', Vary: 'Origin' };
   if (req.method === 'OPTIONS') { res.writeHead(204, cors); res.end(); return; }
+  if (acct.slowMe && req.url.startsWith('/api/me')) await new Promise((r) => setTimeout(r, acct.slowMe));
   if (acct.offline) { req.socket.destroy(); return; } // the network gone, as the browser sees it
   if (req.url.startsWith('/api/voice/')) { res.writeHead(404, cors); res.end(); return; }
   const chunks = [];
@@ -107,7 +110,7 @@ function listen() {
       return;
     }
     if (m.method === 'Runtime.exceptionThrown') problems.push('exception: ' + (m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text));
-    if (m.method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(m.params.type)) problems.push('console.' + m.params.type + ': ' + m.params.args.map((a) => a.value ?? a.description).join(' '));
+    if (m.method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(m.params.type) && !blocked) problems.push('console.' + m.params.type + ': ' + m.params.args.map((a) => a.value ?? a.description).join(' '));
     if (m.method === 'Log.entryAdded' && ['error', 'warning'].includes(m.params.entry.level)) {
       const t = m.params.entry.text + ' ' + (m.params.entry.url || '');
       // Expected: a 404 from the voice (the device speaks instead), a 409 from a save (merged and sent again),
@@ -162,6 +165,10 @@ async function setClock(day, hour = 10) {
       const real = speechSynthesis.speak.bind(speechSynthesis);
       speechSynthesis.speak = (u) => { globalThis.__lines.push(u.text); setTimeout(() => { if (u.onend) u.onend(new Event('end')); u.dispatchEvent && u.dispatchEvent(new Event('end')); }, 5); };
       void real;
+      // A fake Utterance and voice list (empty until a scene fills __voices), so a scene can make voices arrive late.
+      globalThis.SpeechSynthesisUtterance = class { constructor(t) { this.text = t; } addEventListener() {} dispatchEvent() {} };
+      globalThis.__voices = [];
+      speechSynthesis.getVoices = () => globalThis.__voices;
     } catch (e) { /* no speech here */ }
   })();`;
   boot = (await send('Page.addScriptToEvaluateOnNewDocument', { source: src })).identifier;
@@ -286,6 +293,14 @@ async function gridRound() {
     if (/Back/.test(label)) return;
   }
 }
+async function hearTheFlower(w, view = '') {
+  await click('[data-play]');
+  await until('document.querySelector(".blanks")', 'the flower game');
+  if (view) await allViews(view);
+  await keys([...new Set(w)].join(''));
+  await click('[data-next]');
+  await sleep(40);
+}
 const rowNow = () => text('[data-row]');
 async function typeFix(w) { await keys(w); await key('Enter'); await sleep(40); }
 
@@ -326,14 +341,6 @@ const noWord = async (where) => {
   const t = (await text()).toLowerCase();
   for (const w of WORDS) ok(!t.includes(w), where + ' shows ' + w);
 };
-async function hearTheFlower(w) {
-  await click('[data-play]');
-  await until('document.querySelector(".blanks")', 'the flower game');
-  await keys([...new Set(w)].join(''));
-  await click('[data-next]');
-  await sleep(40);
-}
-
 scene('week', async () => {
   storiesHidden = true; // the examples path; the story itself has its own scene
   try { await week(); } finally { storiesHidden = false; }
@@ -352,8 +359,14 @@ async function week() {
   for (let i = 0; i < WORDS.length; i += 1) {
     await until('document.querySelector("[data-play]")', 'word ' + i);
     const w = await lastWord();
-    if (i === 0) { await click('[data-example]'); ok(await ev('globalThis.__lines.length > 0'), 'the example is read aloud'); }
-    await hearTheFlower(w);
+    if (i === 0) {
+      await click('[data-example]'); ok(await ev('globalThis.__lines.length > 0'), 'the example is read aloud');
+      ok(/Meet this word\. Hear it\./.test(await text('h1')), 'the instruction');
+      ok(/Word 1 of 4/i.test(await text()) && await has('.segs'), 'the progress');
+      ok(/What it means/.test(await text()) && /Say the letters/.test(await text()) && /Hear it/.test(await text('[data-hear]')), 'the card');
+      ok(/Play the flower game/.test(await text('[data-play]')), 'the main button is the flower game');
+    }
+    await hearTheFlower(w, i === 0 ? 'day1-hello-game' : '');
   }
   await until('/Done for today/.test(document.querySelector("main").innerText)', 'Done for today');
   await click('a[href="#/"]');
@@ -455,7 +468,7 @@ async function week() {
   await allViews('group-ready');
 
   step('Game mode from the group page');
-  await click('[data-mode=game]');
+  await go('#/words/g/g1/games');
   await until('document.querySelector(".gamecards")', 'Game mode');
   await allViews('game-mode');
 
@@ -547,13 +560,16 @@ scene('a missed week: the jobs catch up from the test date, then the test', asyn
   await seedChild(weekDoc(), plus(6));
   await open(plus(6), '#/');
   await until('document.querySelector("[data-room=job]")', 'the room with a job');
-  ok(/Your test day was Sat 7 Nov\. Finish your jobs, then take the test here\./.test(await text('[data-catchup]')), 'the waiting line: ' + await text('[data-catchup]'));
+  const waitText = (await text('[data-catchup]')).replace(/\s+/g, ' ');
+  ok(/5 jobs waiting for you/i.test(waitText) && /Your test day was Sat 7 Nov\. Finish your jobs, then take the test here\./.test(waitText), 'the waiting line: ' + waitText);
   ok(/Hello words/.test(await text('[data-job]')), 'Hello words first, not the test: ' + await text('[data-job]'));
+  ok(/Then Fix it in\. The test opens when your jobs are done\./.test(await text()), 'the then line');
   ok(!/late|behind/i.test(await text()), 'kind words only');
-  ok(/fruit/.test((await text()).toLowerCase()), 'the words are on show');
+  ok(await ev('document.querySelectorAll("main button, main a").length') === 3, 'Hear it, the one button and the path card: ' + await ev('document.querySelectorAll("main button, main a").length'));
   await allViews('catchup-room');
   await go('#/words/g/g1');
   await until('document.querySelector("[data-catchup]")', 'the line on the group page');
+  ok(/fruit/.test((await text()).toLowerCase()), 'the words are on show');
   ok(!await has('[data-testcard]'), 'no test card while jobs wait');
   ok(await has('.weekstrip__day.is-waiting'), 'waiting jobs on the strip');
   await allViews('catchup-group');
@@ -574,7 +590,7 @@ scene('a missed week: the jobs catch up from the test date, then the test', asyn
   await ev('localStorage.setItem("sb.words:' + CHILD + '",' + q(JSON.stringify(d)) + ')');
   await open(plus(7), '#/');
   await until('document.querySelector("[data-room=job]")', 'the test');
-  ok(/Test day/.test(await text('[data-job]')), 'the test is the job now: ' + await text('[data-job]'));
+  ok(/Start the test/.test(await text('[data-job]')), 'the test is the job now: ' + await text('[data-job]'));
   await noWord('the room once the test is due');
 });
 
@@ -656,7 +672,7 @@ scene('a wrong word, a peek, a skip and coming back', async () => {
   const turn = () => until('document.querySelector(".spellbox.is-next")', 'the word again', 8000);
   step('a mistake: the same word again, at 0/3');
   await keys('z');
-  ok(/0\/3/.test(await rowNow()), 'a mistake shows 0/3');
+  ok(/0 of 3 in a row/.test(await rowNow()), 'a mistake shows 0/3');
   await allViews('spell-mistake');
   await keys(first);
   await until('/try that one again/.test(document.querySelector("[data-line]").innerText)', 'the retry line');
@@ -666,31 +682,31 @@ scene('a wrong word, a peek, a skip and coming back', async () => {
   step('two clean, then a mistake at 2/3 resets');
   await keys(first);
   await sleep(60);
-  ok(/1\/3/.test(await rowNow()), '1/3: ' + await rowNow());
+  ok(/1 of 3 in a row/.test(await rowNow()), '1/3: ' + await rowNow());
   await turn();
   await keys(first);
   await sleep(60);
-  ok(/2\/3/.test(await rowNow()), '2/3');
+  ok(/2 of 3 in a row/.test(await rowNow()), '2/3');
   await allViews('spell-two-of-three');
   await turn();
   await keys('z');
   await keys(first);
   await sleep(60);
-  ok(/0\/3/.test(await rowNow()), 'a mistake at 2/3 resets');
+  ok(/0 of 3 in a row/.test(await rowNow()), 'a mistake at 2/3 resets');
   step('a peek resets too');
   await turn();
   await keys(first);
   await sleep(60);
-  ok(/1\/3/.test(await rowNow()), '1/3 again');
+  ok(/1 of 3 in a row/.test(await rowNow()), '1/3 again');
   await turn();
   await click('[data-peekbtn]');
-  ok(/0\/3/.test(await rowNow()), 'a peek shows 0/3');
+  ok(/0 of 3 in a row/.test(await rowNow()), 'a peek shows 0/3');
   await sleep(2200);
   await keys(first);
   await sleep(60);
-  ok(/0\/3/.test(await rowNow()), 'a peek counts as no clean spelling');
+  ok(/0 of 3 in a row/.test(await rowNow()), 'a peek counts as no clean spelling');
   await spellToDone();
-  ok(/3\/3/.test(await rowNow()), '3/3');
+  ok(/3 of 3 in a row/.test(await rowNow()), '3/3');
   await click('[data-next]');
   await until('document.querySelector(".spellbox.is-next") && location.hash !== ' + q(here), 'the next word');
 
@@ -704,7 +720,7 @@ scene('a wrong word, a peek, a skip and coming back', async () => {
   step('leaving halfway keeps the count');
   await keys(third);
   await sleep(60);
-  ok(/1\/3/.test(await rowNow()), '1/3');
+  ok(/1 of 3 in a row/.test(await rowNow()), '1/3');
   await sleep(1800); // the debounced save
   await go('#/words/g/g1');
   await until('document.querySelector("[data-comeback]")', 'the marker on the group page');
@@ -717,7 +733,7 @@ scene('a wrong word, a peek, a skip and coming back', async () => {
   await allViews('room-comeback');
   await go('#/words/g/g1/spell/' + WORDS.indexOf(third));
   await until('document.querySelector(".spellbox.is-next")', 'the word again');
-  ok(/1\/3/.test(await rowNow()), 'it carries on at 1/3');
+  ok(/1 of 3 in a row/.test(await rowNow()), 'it carries on at 1/3');
   await sleep(1800);
 
   step('another device carries on');
@@ -727,7 +743,7 @@ scene('a wrong word, a peek, a skip and coming back', async () => {
   await open(plus(4), '#/');
   await until('document.querySelector("[data-comeback]")', 'the marker on the other device', 8000);
   await go('#/words/g/g1/spell/' + WORDS.indexOf(third));
-  await until('document.querySelector("[data-row]").innerText.includes("1/3")', 'the count on the other device');
+  await until('document.querySelector("[data-row]").innerText.includes("1 of 3 in a row")', 'the count on the other device');
 
   step('tapping the marker opens the word; the job ends only then');
   await spellToDone();
@@ -764,7 +780,7 @@ scene('Fix it in: a peek, a skip, coming back', async () => {
   await click('[data-written]');
   await until('document.querySelector("[data-peekbtn]")', 'Type');
   await click('[data-peekbtn]');
-  ok(/0\/3/.test(await rowNow()), 'a peek shows 0/3');
+  ok(/0 of 3 in a row/.test(await rowNow()), 'a peek shows 0/3');
   await typeFix(w);
   await until('document.querySelector("[data-go]")', 'Check');
   ok(/try that one again/i.test(await text('h1')), 'right with a peek still comes back');
@@ -857,8 +873,482 @@ scene('a typed word gets Wordbright\'s meaning', async () => {
   await click('[data-job]');
   await until('document.querySelector(".wordcard")', 'Hello words');
   ok(/vehicle|farm|pull/i.test(await text('.wordcard')), 'a meaning: ' + await text('.wordcard'));
+  await until('document.querySelector("[data-play]")', 'the flower game button');
+});
+
+// ---- SB3-C1: the child's screens ("the garden path") ----------------------------------------
+const visible = (sel) => ev('(() => { const e = document.querySelector(' + q(sel) + '); if (!e) return false; const r = e.getBoundingClientRect(); return !!(r.width && r.height && getComputedStyle(e).visibility !== "hidden"); })()');
+const rect = (sel) => ev('(() => { const r = document.querySelector(' + q(sel) + ').getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; })()');
+const gameDayDoc = () => { let d = weekDoc(WORDS, plus(7)); const g = W.groupById(d, 'g1'); d = W.markStep(d, g, 'hello', MON, Date.parse(MON + 'T09:00:00')); return W.markStep(d, g, 'fix', plus(1), Date.parse(plus(1) + 'T09:00:00')); };
+
+scene('child home, path, Menu and Settings', async () => {
+  await seedChild(gameDayDoc(), plus(2));
+  await open(plus(2), '#/');
+  await until('document.querySelector("[data-room=job]")', 'the home');
+  step('the top bar: the mark and one labelled Menu');
+  ok(/^Menu$/.test((await text('#child-menu')).trim()), 'a labelled Menu');
+  ok(await visible('.brand') && await visible('#child-menu'), 'the mark and Menu show');
+  for (const sel of ['.topbar__nav', '.allgames', '#player-slot', '#theme', '.foot']) ok(!await visible(sel), sel + ' is not shown to a child');
+  ok((await rect('#child-menu')).h >= 48, 'Menu is at least 48 px high');
+  step('home: Pip, the day and job, one sentence, Hear it, one button, the time, the path card');
+  ok(/Wednesday · Game day/i.test(await text('.eyebrow')), 'the eyebrow: ' + await text('.eyebrow'));
+  ok(/Play four quick games with your words\./.test(await text('h1')), 'the sentence');
+  ok(await has('[data-pip=happy]'), 'Pip');
+  ok(/Start Game day/.test(await text('[data-job]')), 'the button');
+  ok(/About 15 minutes/.test(await text()), 'the time');
+  ok(/My path this week/.test(await text('.pathcard')) && /Tap to see your week/.test(await text('.pathcard')) && /Job 3 of 7/.test(await text('.pathcard')), 'the path card: ' + await text('.pathcard'));
+  ok(await ev('document.querySelectorAll(".pathcard .stone").length') === 7, 'seven mini stones');
+  ok(!/stars|Test day|Fri/.test(await text()), 'no stars or test date on the home');
+  ok(await ev('[...document.querySelectorAll("main a, main button")].every((e) => e.getBoundingClientRect().height >= 47)'), 'every tap target is 48 px high');
+  await click('[data-hear]');
+  ok(await ev('globalThis.__lines.at(-1)') === 'Play four quick games with your words.', 'Hear it reads the sentence');
+  await allViews('child-home');
+
+  step('the path');
+  await click('[data-pathcard]');
+  await until('document.querySelector("[data-path]")', 'the path');
+  ok(/Your path this week/.test(await text('h1')), 'the heading');
+  ok(await ev('document.querySelectorAll(".pathrow").length') === 7, 'seven stones');
+  ok(await has('.pathrow--done') && await has('.pathrow--today') && await has('.pathrow--later'), 'done, today and later');
+  ok(/Today · tap to start/.test(await text('.pathrow--today')), 'today: tap to start');
+  ok(await ev('document.querySelectorAll("[data-again]").length') === 2 && /Do it again/.test(await text('[data-again]')), 'Do it again on the two done jobs');
+  ok(/Test Fri 6 Nov|Test .* Nov/.test(await text('.pathfoot')) && /stars?/.test(await text('.pathfoot')), 'flat stars and test date: ' + await text('.pathfoot'));
+  ok(await ev('document.querySelectorAll(".pathfoot a, .pathfoot button").length') === 0, 'they are not buttons');
+  ok(/Fix any slips/.test(await text('.pathpanel')), 'the Mend helper');
+  ok(!/late/i.test(await text('.pathpanel')), 'no "late"');
+  ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
+  ok(/^Back$/.test((await text('#child-back')).trim()), 'Back is labelled');
+  await allViews('child-path');
+  await click('#child-back');
+  await until('document.querySelector("[data-room=job]")', 'home again');
+
+  step('the Menu sheet: a real dialog');
+  await click('#child-menu');
+  await until('document.querySelector("[role=dialog]")', 'the sheet');
+  ok(await ev('document.querySelector("[role=dialog]").getAttribute("aria-modal") === "true"'), 'aria-modal');
+  ok(await ev('document.activeElement && document.activeElement.hasAttribute("data-close")'), 'focus moves in, to Close');
+  ok(await ev('document.querySelector("main").hasAttribute("inert") && document.querySelector("header").hasAttribute("inert")'), 'the page behind is inert');
+  const rows = await ev('[...document.querySelectorAll(".sheetrow")].map((e) => e.querySelector("b").textContent)');
+  ok(rows.join() === 'Games,My words,More practice,Settings', 'the rows: ' + rows);
+  ok(/Chapters, tricky words, your progress/.test(await text('.sheetrow[data-row=practice]')) && await has('.sheetrow[data-row=practice][href="#/chapters"]'), 'More practice goes to the chapters');
+  ok(await has('.sheetrow[data-row=games][href$="/games"]'), 'Games is open');
+  await allViews('child-menu');
+  await key('Escape');
+  await until('!document.querySelector("[role=dialog]")', 'Escape closes it');
+  ok(await ev('document.activeElement.id === "child-menu"'), 'focus returns to Menu');
+  ok(await ev('!document.querySelector("main").hasAttribute("inert")'), 'the page is live again');
+  await click('#child-menu');
+  await until('document.querySelector("[role=dialog]")', 'the sheet again');
+  await click('[data-close]');
+  await until('!document.querySelector("[role=dialog]")', 'Close closes it');
+
+  step('Settings');
+  await click('#child-menu');
+  await until('document.querySelector("[role=dialog]")', 'the sheet');
+  await click('.sheetrow[data-row=settings]');
+  await until('document.querySelector("[data-settings]")', 'Settings');
+  ok(!await has('[role=dialog]'), 'the sheet closed on the way');
+  ok(/Day or night/.test(await text()) && /Grown-ups/.test(await text()) && /About and licence/.test(await text()), 'the rows: ' + await text());
+  ok(!await has('[data-switch]'), 'a child\'s own session cannot switch (the account\'s chip has no Switch player either)');
+  ok(await ev('document.querySelectorAll("[data-looks] [data-choice]").length') === 4, 'the four looks');
+  await click("[data-looks] [data-choice=night]");
+  ok(await ev('document.documentElement.dataset.style') === 'night', 'Night is chosen');
+  await click("[data-looks] [data-choice=garden]");
+  ok(await ev('document.documentElement.dataset.style') === 'garden', 'and the garden again');
+  await ev('document.querySelector("[data-about]").open = true');
+  ok(/Open Government Licence/.test(await text()), 'the licence line moved here');
+  await allViews('child-settings');
+  ok(!await visible('.foot'), 'no footer');
+});
+
+scene('child menu while the test is due, and the test keyboard', async () => {
+  await seedChild(studied(weekDoc()), plus(5));
+  await open(plus(5), '#/');
+  await until('document.querySelector("[data-room=job]")', 'the home on test day');
+  ok(/Start the test/.test(await text('[data-job]')), 'Start the test');
+  await noWord('the home on test day');
+  await click('#child-menu');
+  await until('document.querySelector("[role=dialog]")', 'the sheet');
+  ok(/Test first, then games\./.test(await text('[data-row=games]')), 'the closed line');
+  ok(!await has('a[data-row=games]'), 'Games is not a link');
+  ok(/Hear it/.test(await text('[data-hear-line]')), 'Hear it');
+  await click('[data-hear-line]');
+  ok(await ev('globalThis.__lines.at(-1)') === 'Test first, then games.', 'the line is read');
+  await allViews('child-menu-test');
+  await click('[data-close]');
+  step('the test: one Hear the word, a keyboard with Delete');
+  await click('[data-job]');
+  await until('document.querySelector("[data-next]")', 'the test');
+  ok(await visible('#child-stop') && !await visible('#child-menu'), 'Stop for now, no Menu');
+  ok(/Hear the word/.test(await text('[data-hear]')) && /Listen, then type the word\./.test(await text('h1')), 'the words');
+  ok((await rect('.key--del')).w >= 48, 'Delete is at least 48 px wide');
+  await noWord('the test');
+  await keys('ab');
+  await click('[data-del]');
+  ok(await text('[data-answer]') === 'a', 'Delete takes a letter off');
+});
+
+scene('hello with no picture', async () => {
+  await seedChild(weekDoc(['tractor', 'earth']), MON);
+  await open(MON, '#/');
+  await click('[data-job]');
+  await until('document.querySelector(".wordcard")', 'Hello words');
+  ok(!await has('.wordcard img') && !await has('.pic'), 'no broken or empty picture');
+  ok(await has('.wordcard--nopic'), 'the calm no-picture layout');
+  ok(!/Picture on its way/.test(await text()), 'the placeholder stays behind its state');
+  ok(await visible('#child-stop') && /Hello words/.test(await text('#job-name')), 'the job name and Stop for now');
+  ok((await rect('#child-stop')).h >= 48, 'Stop for now is at least 48 px');
+  await allViews('child-hello-nopic');
+});
+
+scene('practice: the keyboard, a pressed key, a peek, Stop for now', async () => {
+  await seedChild(practiceDayDoc(), plus(4));
+  await open(plus(4), '#/');
+  await click('[data-job]');
+  await until('document.querySelector(".spellbox.is-next")', 'the practice word');
+  ok(/Listen, then type the word\./.test(await text('h1')) && /Word 1 of 4/i.test(await text('.eyebrow')), 'the heading');
+  ok(/Read it to me/.test(await text()) && /Hear the word/.test(await text('[data-hear]')), 'Read it to me and Hear the word');
+  ok(await ev('document.querySelectorAll("main svg:not([aria-hidden])").length') === 0, 'the only speaker icon is Hear the word');
+  ok(/1\/3|0 of 3 in a row/.test(await rowNow()), 'the dots caption: ' + await rowNow());
+  ok(/Peeking starts your count again\./.test(await text('[data-hint]')), 'the peek hint');
+  ok(/Skip for now\. It comes back later\./.test(await text('[data-skip]')) && await ev('document.querySelector("[data-skip]").tagName') === 'BUTTON', 'Skip is a button');
+  const skip = await rect('[data-skip]');
+  const peek = await rect('[data-peekbtn]');
+  ok(skip.h >= 48 && skip.y - (peek.y + peek.h) >= 3, 'Skip is 48 px high and clear of Peek: ' + JSON.stringify([skip, peek]));
+  ok(await ev('document.querySelectorAll(".keyboard-row").length') === 3, 'three rows');
+  ok(await ev('[...document.querySelectorAll(".keyboard-row")].map((r) => r.querySelectorAll(".key").length).join()') === '10,9,7', '10, 9 and 7 keys');
+  ok(await ev('getComputedStyle(document.querySelector(".keyboard-row")).flexWrap') === 'nowrap', 'nowrap');
+  const q1 = await rect('.key[data-letter=Q]');
+  const p1 = await rect('.key[data-letter=P]');
+  const a1 = await rect('.key[data-letter=A]');
+  ok(Math.abs(q1.y - p1.y) < 1 && p1.x + p1.w <= 390, 'P stays on row 1 at 390: ' + JSON.stringify(p1));
+  ok(q1.w >= 34 && q1.w <= 36 && q1.h === 56, 'keys are about 35 x 56: ' + JSON.stringify(q1));
+  ok(Math.abs((a1.y - q1.y - q1.h) - 8) < 1, 'rows are 8 px apart');
+  ok(Math.abs((await rect('.key[data-letter=W]')).x - q1.x - q1.w - 3) < 1, 'keys are 3 px apart');
+  step('a pressed key shows its letter above, and nothing moves');
+  const before = await ev('document.documentElement.scrollHeight');
+  const kb = await rect('.keyboard');
+  await ev('document.querySelector(".key[data-letter=I]").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }))');
+  ok(await ev('document.querySelector(".keypop").classList.contains("is-on") && document.querySelector(".keypop").textContent === "i" && document.querySelector(".keypop").getAttribute("aria-hidden") === "true"'), 'the pop-up letter, aria-hidden');
+  ok(await ev('document.documentElement.scrollHeight') === before && (await rect('.keyboard')).y === kb.y, 'no layout shift');
+  await allViews('child-practice-pressed');
+  await ev('document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))');
+  await until('!document.querySelector(".keypop.is-on")', 'the pop-up goes away');
+  step('a peek');
+  await click('[data-peekbtn]');
+  ok(/Peeked\. Start your count again\./.test(await text('[data-hint]')), 'after the peek: ' + await text('[data-hint]'));
+  await allViews('child-practice-peeked');
+  await sleep(2200);
+  step('Stop for now');
+  ok(/Practice day/.test(await text('#job-name')) && await visible('#child-stop') && !await visible('#child-menu') && !await visible('.brand') && !await visible('.foot'), 'the job bar');
+  await click('#child-stop');
+  await until('document.querySelector("[data-room]")', 'home');
+  ok(/Your place is saved\./.test(await text('[data-saved]')), 'Your place is saved.');
+  await allViews('child-stopped');
+  await go('#/words');
+  await go('#/');
+  await until('document.querySelector("[data-room]")', 'home again');
+  ok(!await has('[data-saved]'), 'shown once');
+});
+
+scene('an adult playing as a child can switch player from Settings', async () => {
+  await seedChild(gameDayDoc(), plus(2));
+  acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
+  await open(plus(2), '#/settings');
+  await until('document.querySelector("[data-settings]")', 'Settings');
+  await until('document.querySelector("[data-switch]")', 'Switch player', 8000);
+  ok(/\/play\?return=/.test(await ev('document.querySelector("[data-switch]").href')), 'the existing /play flow');
+  acct.who = childMe;
+});
+
+scene('an adult keeps today\'s top bar and pages', async () => {
+  await seedAdult();
+  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'the adult\'s home');
+  ok(!await ev('document.body.classList.contains("is-child")'), 'not a child\'s chrome');
+  ok(await visible('#theme') && await visible('.foot') && !await visible('#child-menu'), 'the look menu and footer show, no child Menu');
+  ok(await ev('document.querySelectorAll(".topbar__nav a").length') === 4, 'the four links');
+});
+
+scene('an adult with a cached player keeps the full top bar: slow account, then no account', async () => {
+  await signedOutBlank(plus(2));
+  acct.who = adultMe;
+  await ev('localStorage.setItem("wa.player",' + q(JSON.stringify({ id: ADULT, name: 'Sam', avatar: null })) + ')');
+  acct.slowMe = 2500;
+  await setClock(plus(2));
+  await send('Page.navigate', { url: 'about:blank' });
+  await send('Page.navigate', { url: SITE + '/spellbright/#/' });
+  await until('document.readyState === "complete"', 'the page');
+  for (let i = 0; i < 5; i += 1) {
+    await sleep(300);
+    ok(!await ev('document.body.classList.contains("is-child")'), 'no child bar while the account is slow (' + i + ')');
+    ok(!await visible('#child-menu'), 'no child Menu while the account is slow');
+  }
+  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'the adult\'s home after /api/me', 9000);
+  ok(!await ev('document.body.classList.contains("is-child")') && await visible('#theme') && !await visible('#child-menu'), 'the adult bar after the answer');
+  acct.slowMe = 0;
+  step('account offline, a cached player that has no kind');
+  acct.offline = true;
+  netDown = true; // the failed /api/me is the point of this scene
+  await open(plus(2), '#/');
+  await sleep(1500);
+  ok(!await ev('document.body.classList.contains("is-child")') && !await visible('#child-menu'), 'never a stuck child bar');
+  ok(await visible('#theme') && await ev('document.querySelectorAll(".topbar__nav a").length') === 4, 'the full top bar stays');
+  await allViews('adult-bar-offline');
+  acct.offline = false;
+  netDown = false;
+});
+
+scene('Settings: look, Voice, My account and Sign out; arrow keys change the look', async () => {
+  await seedChild(gameDayDoc(), plus(2));
+  await open(plus(2), '#/settings');
+  await until('document.querySelector("[data-settings]")', 'Settings');
+  await until('document.querySelector("[data-account]")', 'My account', 8000);
+  // Headless Chrome has no voices, so the shared menu hides its Voice part: the page shows Voice exactly when the menu does.
+  ok(await has('[data-voices]') === await ev('(() => { const p = document.querySelector("#theme-menu [data-voice-part]"); return !!p && !p.hidden; })()'), 'Voice is shown when the look menu offers it');
+  ok(await has('[data-signout]') && await has('[data-grownups]'), 'Sign out and Grown-ups');
+  const radios = await ev('[...document.querySelectorAll("[data-looks] [data-choice]")].map((e) => e.getAttribute("role"))');
+  ok(radios.length >= 3 && radios.every((r) => r === 'radio'), 'three look radios: ' + JSON.stringify(radios));
+  await ev('document.querySelector("[data-looks] [data-choice][aria-checked=true]").focus()');
+  const was = await ev('document.querySelector("[data-looks] [data-choice][aria-checked=true]").dataset.choice');
+  await key('ArrowRight');
+  await sleep(100);
+  ok(await ev('document.querySelector("[data-looks] [data-choice][aria-checked=true]").dataset.choice') !== was, 'ArrowRight picks the next look');
+  await allViews('child-settings-rows');
+});
+
+scene('quick-fire has Delete and the same Hear/Skip rows as practice; the group page is tidy for a child', async () => {
+  await seedChild(gameDayDoc(), plus(2));
+  await open(plus(2), '#/words/g/g1/game/quick');
+  await until('document.querySelector("[data-game=quick]")', 'Quick-fire');
+  ok(await has('.key--del') && await has('.skiprow') && /Hear the word/.test(await text('[data-hear]')), 'Delete, Hear and Skip');
+  await keys('ab');
+  await click('[data-del]');
+  ok(await ev('document.querySelectorAll(".spellbox .ch, [data-answer]").length >= 0'), 'Delete pressed');
+  ok((await rect('.key--del')).w >= 48, 'Delete is at least 48 px');
+  await allViews('child-quickfire');
+  await go('#/words/g/g1');
+  await until('document.querySelector(".wordgrid, .wordlist, main h1")', 'the group page');
+  ok(!await visible('.modeswitch') && !await visible('.groupmanage'), 'no Study/Game tabs or management buttons for a child');
+  await allViews('child-group');
+});
+
+scene('a stopped test says Carry on with the test', async () => {
+  await seedChild(studied(weekDoc()), plus(5));
+  await open(plus(5), '#/');
+  await until('document.querySelector("[data-job]")', 'home');
+  await click('[data-job]');
+  await until('document.querySelector("[data-next]")', 'the test');
+  await keys(await lastWord());
+  await key('Enter');
+  await sleep(150);
+  await click('#child-stop');
+  await until('document.querySelector("[data-room]")', 'home');
+  await go('#/');
+  await sleep(200);
+  ok(/Carry on with the test/.test(await text('[data-job]')) , 'the test button: ' + await text('[data-job]'));
+});
+
+scene('an adult\'s keyboard is exactly as before: 46 x 54 keys, 5 px gap at 1280', async () => {
+  await seedAdult();
+  await width(1280, 900);
+  await go('#/y34/ch01/quick/fruit');
+  await until('document.querySelector(".keyboard .key[data-letter]")', 'a chapter keyboard');
+  const k = await ev('(() => { const a = document.querySelectorAll(".keyboard-row")[0].querySelectorAll(".key"); const r = a[0].getBoundingClientRect(), r2 = a[1].getBoundingClientRect(); return { w: r.width, h: r.height, gap: r2.x - r.right }; })()');
+  ok(Math.round(k.w) === 46 && Math.round(k.h) === 54 && Math.round(k.gap) === 5, 'adult keys: ' + JSON.stringify(k));
+  ok(!await has('.key--del'), 'no Delete key for an adult');
+  await width(1280, 900);
+});
+
+const bar = () => ev('({ child: document.body.classList.contains("is-child"), pending: document.body.classList.contains("is-pending") || document.documentElement.classList.contains("wa-pre"), nav: !!document.querySelector(".topbar__nav") && document.querySelector(".topbar__nav").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector(".topbar__nav")).visibility !== "hidden", chip: document.querySelector("#player-slot") && document.querySelector("#player-slot").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector("#player-slot")).visibility !== "hidden", look: !!document.querySelector("#theme") && document.querySelector("#theme").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector("#theme")).visibility !== "hidden", foot: !!document.querySelector(".foot") && document.querySelector(".foot").getBoundingClientRect().height > 0 && getComputedStyle(document.querySelector(".foot")).visibility !== "hidden", menu: !document.querySelector("#child-menu").hidden && document.querySelector("#child-menu").getBoundingClientRect().width > 0, brand: document.querySelector(".brand").getBoundingClientRect().width > 0 })');
+/** Sample the top bar every 60 ms for `ms`. */
+async function sampleBar(ms) { const out = []; const t0 = Date.now(); while (Date.now() - t0 < ms) { out.push({ at: Date.now() - t0, ...await bar() }); await sleep(60); } return out; }
+async function openCached(day, hash = '#/') {
+  await setClock(day);
+  await send('Page.navigate', { url: 'about:blank' });
+  await send('Page.navigate', { url: SITE + '/spellbright/' + hash });
+  await until('document.readyState !== "loading"', 'the page');
+}
+
+scene('a real child while /api/me is slow: the mark alone, never the full bar, then the child bar', async () => {
+  for (const delay of [300, 1500]) {
+    step('/api/me takes ' + delay + ' ms');
+    await seedChild(gameDayDoc(), plus(2));
+    acct.slowMe = delay;
+    await openCached(plus(2));
+    const seen = await sampleBar(delay + 1200);
+    acct.slowMe = 0;
+    const early = seen.filter((x) => !x.child);
+    ok(early.every((x) => !x.nav && !x.chip && !x.look && !x.foot && !x.menu), 'while waiting: never the nav, chip, look menu, footer or child buttons: ' + JSON.stringify(early.find((x) => x.nav || x.chip || x.look || x.foot || x.menu)));
+    ok(early.some((x) => x.pending && x.brand), 'the mark alone while waiting');
+    ok(seen.at(-1).child && seen.at(-1).menu && !seen.at(-1).nav && !seen.at(-1).pending, 'then the child bar');
+    const swaps = seen.filter((x, i) => i && x.child !== seen[i - 1].child).length;
+    ok(swaps === 1, 'one switch only');
+    if (delay === 1500) await allViews('child-pending-done');
+  }
+});
+
+scene('an adult with a cached player and a slow account: never the child bar, the mark alone, then the full bar; offline: the full bar by 2.5 s', async () => {
+  await signedOutBlank(plus(2));
+  acct.who = adultMe;
+  await ev('localStorage.setItem("wa.player",' + q(JSON.stringify({ id: ADULT, name: 'Sam', avatar: null })) + ')');
+  acct.slowMe = 1500;
+  await openCached(plus(2));
+  const seen = await sampleBar(2800);
+  acct.slowMe = 0;
+  ok(seen.every((x) => !x.child && !x.menu), 'never the child bar');
+  ok(seen.slice(0, 5).every((x) => !x.nav && !x.look && !x.chip), 'the mark alone while waiting');
+  ok(seen.at(-1).look && seen.at(-1).foot && !seen.at(-1).pending, 'then the full bar: ' + JSON.stringify(seen.at(-1)));
+  step('offline');
+  acct.offline = true;
+  netDown = true;
+  await openCached(plus(2));
+  const off = await sampleBar(3200);
+  ok(off.every((x) => !x.child && !x.menu), 'never the child bar offline');
+  const late = off.filter((x) => x.at > 2700);
+  ok(late.length && late.every((x) => x.look && x.foot && !x.pending), 'the full bar by 2.5 s: ' + JSON.stringify(late[0]));
+  acct.offline = false;
+  netDown = false;
+});
+
+scene('signed out with no cached player: the full bar at once', async () => {
+  await signedOutBlank(plus(2));
+  acct.who = null;
+  await openCached(plus(2), '#/about');
+  const seen = await sampleBar(600);
+  ok(seen.every((x) => !x.pending && !x.child), 'no pending state');
+});
+
+scene('More practice: Chapters, Pick words, Tricky words, Progress, My word numbers, back; no word on test day', async () => {
+  await seedChild(gameDayDoc(), plus(2));
+  await open(plus(2), '#/');
+  await click('#child-menu');
+  await until('document.querySelector("[role=dialog]")', 'the sheet');
+  const rows = await ev('[...document.querySelectorAll(".sheetrow")].map((e) => e.querySelector("b").textContent)');
+  ok(rows.join() === 'Games,My words,More practice,Settings', 'four rows: ' + rows);
+  ok((await rect('.sheetrow[data-row=practice]')).h >= 48, 'the row is 48 px high');
+  await allViews('child-menu-4');
+  await click('.sheetrow[data-row=practice]');
+  await until('document.querySelector(".shortcuts")', 'the chapters page');
+  ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
+  ok(await ev('[...document.querySelectorAll(".shortcuts a")].every((a) => a.getBoundingClientRect().height >= 48 && a.getBoundingClientRect().width >= 48)'), 'the links are at least 48 px');
+  await allViews('child-chapters');
+  for (const [href, ready] of [['#/custom', 'main h1'], ['#/tricky', 'main h1'], ['#/progress', 'main h1']]) {
+    await go('#/chapters');
+    await click('.shortcuts a[href="' + href + '"]');
+    await until('location.hash === ' + q(href) + ' && document.querySelector(' + q(ready) + ')', href);
+    await click('#child-back');
+    await until('location.hash === "#/" || location.hash === ""', 'back home from ' + href);
+  }
+  await go('#/progress');
+  await until('document.querySelector("a[href=\'#/words/progress\']")', 'My word numbers link');
+  ok((await rect('a[href="#/words/progress"]')).h >= 48, 'My word numbers is at least 48 px high');
+  await click('a[href="#/words/progress"]');
+  await until('location.hash === "#/words/progress"', 'My word numbers');
+  step('the group page: only the quiet Change link');
+  await go('#/words/g/g1');
+  await until('document.querySelector(".groupedit")', 'the group page');
+  ok(!await visible('.groupmanage') && await visible('.groupedit a') && (await rect('.groupedit a')).h >= 48, 'a quiet Change this group, 48 px');
+  ok(/Change this group|Rename or delete/.test(await text('.groupedit')), 'its words');
+  await click('.groupedit a');
+  await until('location.hash.endsWith("/edit")', 'the edit page');
+  step('test day: these pages show no word');
+  await seedChild(studied(weekDoc()), plus(5));
+  await open(plus(5), '#/chapters');
+  for (const h of ['#/chapters', '#/custom', '#/tricky', '#/progress', '#/words/progress', '#/words', '#/settings']) {
+    await go(h);
+    await sleep(250);
+    const t = (await text()).toLowerCase();
+    for (const w of WORDS) ok(!new RegExp('\\b' + w + '\\b').test(t), h + ' on test day shows ' + w); // whole words: "Building up" is a chapter title
+  }
+});
+
+scene('Settings: voices that arrive late fill the Voice card; the tip stays', async () => {
+  await seedChild(gameDayDoc(), plus(2));
+  await open(plus(2), '#/settings');
+  await until('document.querySelector("[data-settings]")', 'Settings');
+  ok(!await visible('[data-voicecard]'), 'no voices yet: no Voice card');
+  await ev('globalThis.__voices = [{ name: "Test Daniel", lang: "en-GB", localService: true, default: true, voiceURI: "test-daniel" }]; speechSynthesis.dispatchEvent(new Event("voiceschanged"));');
+  await until('document.querySelector("[data-voices] [data-voice]")', 'the Voice card after voiceschanged');
+  ok(await ev('document.querySelectorAll("[data-voices] [data-voice]").length') >= 1, 'the voices are listed');
+  ok(await visible('[data-voicecard]'), 'the card shows');
+  ok(await ev('!![...document.querySelectorAll("[data-voices] [data-voice]")].find((e) => e.getAttribute("aria-checked") === "true")'), 'one is ticked');
+  ok(await has('[data-more]') || await has('[data-voicetip]'), 'Add more voices or the tip line is kept');
+  await click('[data-voices] [data-voice]:last-child');
+  await allViews('child-settings-voices');
+  await go('#/');
+  await ev('globalThis.__voices = []; speechSynthesis.dispatchEvent(new Event("voiceschanged"));');
+  await sleep(100);
+});
+
+scene('Hello flower game: no one-word progress line, lives kept, child-sized keys; grid links 48 px wide', async () => {
+  await seedChild(weekDoc(), MON);
+  await open(MON, '#/');
+  await click('[data-job]');
+  await until('document.querySelector("[data-play]")', 'Hello');
   await click('[data-play]');
   await until('document.querySelector(".blanks")', 'the flower game');
+  ok(!await has('.progressline') && !/Word 1 of 1/.test(await text()), 'no "Word 1 of 1"');
+  ok(await ev('document.querySelectorAll(".lives i").length') === 6, 'the lives stay');
+  const k = await rect('.key[data-letter=A]');
+  ok(Math.round(k.h) === 56 && k.w >= 34 && k.w <= 37, 'keys are 35 x 56: ' + JSON.stringify(k));
+  const k2 = await rect('.keyboard-row .key');
+  ok(Math.abs(k2.w - 35) < 2.5, 'the same width as the other child keyboards');
+  await allViews('child-hello-game');
+  await open(plus(4), '#/words/g/g1');
+  await until('document.querySelector(".wordgrid a, .gridwrap a")', 'the grid links');
+  ok(await ev('[...document.querySelectorAll(".wordgrid a")].every((a) => a.getBoundingClientRect().width >= 47.5 && a.getBoundingClientRect().height >= 47.5)'), 'grid links are 48 x 48');
+});
+
+scene('a failed load never leaves the mark-alone bar: word list 404, and app.js 404', async () => {
+  await seedChild(gameDayDoc(), plus(2));
+  step('the word list does not load');
+  blocked = 'curriculum.json';
+  await openCached(plus(2));
+  await until('/word list didn.t load/.test(document.body.innerText)', 'the message');
+  let b = await bar();
+  ok(!b.pending && b.look && b.foot && !b.child, 'the full bar beside the message: ' + JSON.stringify(b));
+  step('app.js does not load at all');
+  blocked = 'js/app.js';
+  await openCached(plus(2));
+  await sleep(300);
+  b = await bar();
+  ok(b.pending && !b.look, 'the mark alone at first: ' + JSON.stringify(b));
+  await sleep(3200);
+  b = await bar();
+  ok(b.look && b.foot && !b.menu, 'the bar is back on its own by 3.5 s: ' + JSON.stringify(b));
+  ok(await ev('getComputedStyle(document.querySelector(".topbar__nav")).display') !== 'none', 'the nav is never display: none');
+  blocked = '';
+});
+
+scene('the keyboard sits at the foot; the pop-up letter never covers a control (390x844, 390x667, 768x1024, 1024x768)', async () => {
+  await seedChild(practiceDayDoc(), plus(4));
+  for (const [w, h] of [[390, 844], [390, 667], [768, 1024], [1024, 768]]) {
+    step(w + 'x' + h);
+    await open(plus(4), '#/');
+    await width(w, h);
+    await click('[data-job]');
+    await until('document.querySelector(".spellbox.is-next")', 'the practice word');
+    await width(w, h);
+    await sleep(150);
+    const kb = await rect('.keyboard');
+    const skip = await rect('[data-skip]');
+    const peek = await rect('[data-peekbtn]');
+    ok(kb.w <= 560 && (w > 480 ? Math.abs(kb.x + kb.w / 2 - w / 2) < 16 : true), 'the keyboard is capped and centred: ' + JSON.stringify(kb));
+    if (h === 844 && w === 390) console.log(await ev('JSON.stringify([...document.querySelectorAll("main section > *, main section [data-slot] > *")].map((e) => [e.className || e.tagName, Math.round(e.getBoundingClientRect().top), Math.round(e.getBoundingClientRect().height)]))'));
+    if (h >= 844) ok(await ev('document.documentElement.scrollHeight <= innerHeight + 1'), 'no scrolling needed to reach the keyboard at ' + w + 'x' + h + ': ' + await ev('document.documentElement.scrollHeight + " vs " + innerHeight + " kb " + JSON.stringify(document.querySelector(".keyboard").getBoundingClientRect())'));
+    ok(kb.y >= skip.y + skip.h - 0.5, 'the keyboard is below Skip at ' + w + 'x' + h + ': ' + JSON.stringify({ kb, skip }));
+    for (const L of ['Q', 'P', 'I']) {
+      await ev('document.querySelector(".key[data-letter=' + L + ']").scrollIntoView({ block: "end" })');
+      await ev('document.querySelector(".key[data-letter=' + L + ']").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }))');
+      const pop = await rect('.keypop');
+      const hit = async (sel) => ev('(() => { const a = document.querySelector(".keypop").getBoundingClientRect(), b = document.querySelector(' + q(sel) + ').getBoundingClientRect(); return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom); })()');
+      for (const sel of ['[data-skip]', '[data-peekbtn]', '[data-hear]']) ok(!await hit(sel), 'the pop-up for ' + L + ' covers ' + sel + ' at ' + w + 'x' + h + ' (pop ' + JSON.stringify(pop) + ')');
+      if (L === 'P' && (h === 844 || w === 768)) { await ev('window.scrollTo(0, 0)'); await shot('child-practice-topkey-' + w + 'x' + h); }
+      await ev('document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))');
+      await sleep(160);
+    }
+  }
+  await width(390, 900);
 });
 
 function childWeek() {

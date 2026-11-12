@@ -80,6 +80,15 @@
   --pass-bg: var(--sun);
   --pass-fg: #1B1A20;
   --ring-still: var(--rose);
+
+  /* SB3-C1, the garden path: stones, the path panel, Pip's sun ring. */
+  --stone-today: var(--sun);
+  --stone-today-fg: #1B1A20;
+  --stone-edge: #B7791F;
+  --stone-wait-bg: var(--surface-2);
+  --panel: var(--accent-soft);
+  --pip-ring: #FFF0C9;
+  --pip-disc: #FFD95E;
   color-scheme: light;
 }
 

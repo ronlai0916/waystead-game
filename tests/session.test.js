@@ -186,7 +186,7 @@ test('skip: the marker is on the list, the grid and in My room, and opens the wo
   const v = readFileSync(file('site/js/words-views.js'), 'utf8');
   assert.match(v, /comeBackHref\(g, w, later\.get\(w\)\)/, 'the grid');
   assert.match(v, /comeBackHtml\(g, W\.comeBack\(d, g, day\)\)/, 'the group page');
-  assert.match(readFileSync(file('site/js/room.js'), 'utf8'), /comeBackHtml\(g, r\.comeBack\)/, 'the room');
+  assert.match(readFileSync(file('site/js/child-views.js'), 'utf8'), /comeBackHref\(g, x\.word, x\.flow\)/, 'the room');
   const s = readFileSync(file('site/js/study-views.js'), 'utf8');
   assert.match(s, /flow === 'x' \? '\/study\/fix\/' \+ n : '\/spell\/' \+ n/);
 });
@@ -230,8 +230,8 @@ test('skip: it\'s for today only', () => {
   assert.deepEqual(W.comeBack(d, g, DAY), []);
 });
 test('a skipped word shows no marker on a day its words are hidden', () => {
-  const src = readFileSync(file('site/js/room.js'), 'utf8');
-  assert.match(src, /g && !r\.hideWords \? comeBackHtml/);
+  const src = readFileSync(file('site/js/child-doc.js'), 'utf8');
+  assert.match(src, /g && !r\.hideWords \? r\.comeBack/);
   assert.match(readFileSync(file('site/js/words-views.js'), 'utf8'), /\(testing \? '' : comeBackHtml/);
 });
 

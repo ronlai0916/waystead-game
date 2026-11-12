@@ -9,7 +9,8 @@ import * as MW from './words-views.js';
 import * as SV from './study-views.js';
 import * as GV from './games-views.js';
 import { home } from './room.js';
-import { useWho } from './who.js';
+import { useWho, kind, isChild, isKnownChild } from './who.js';
+import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools } from './child-views.js';
 import * as GU from './grownups-views.js';
 import { storyReview } from './story-views.js';
 import * as W from './words-doc.js';
@@ -52,6 +53,8 @@ const ROUTES = [
   ['words/g/:gid/study/:step/:n', SV.studyStep],
   ['words/g/:gid/games', GV.gameMode],
   ['words/g/:gid/game/:game', GV.oneGame],
+  ['words/g/:gid/path', pathPage],
+  ['settings', settingsPage],
   ['grownups', GU.grownups],
   ['grownups/stories', storyReview],
   ['grownups/child/:cid', GU.childDashboard],
@@ -120,13 +123,27 @@ function gated(path) {
   return true;
 }
 
+// The top bar while /api/me has not answered (a cached player with no kind): the mark alone, then once the
+// child bar or the full bar. After 2.5 s with no answer (or offline) it is the full bar.
+let answered = false;
+let waitedOut = false;
+const pending = () => kind() === 'unknown' && !answered && !waitedOut;
+/** The mark-alone bar must never stick: put the full bar back (before the first draw, or when the word list fails). */
+function releaseBar() {
+  document.documentElement.classList.remove('wa-pre');
+  document.body.classList.remove('is-pending');
+}
+const chrome = () => applyChrome(isKnownChild(), currentPath(), pending());
+
 function render() {
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
   stop();
   const path = currentPath();
+  applyChrome(isKnownChild(), path, pending());
   if (gated(path)) return;
   const found = match(path);
+  if (found && found.pattern === 'settings' && !isChild()) { location.replace('#/'); return; }
   backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = parentOf(path); };
   document.querySelectorAll('.topbar__nav a, .navmenu a').forEach((a) => {
@@ -206,15 +223,18 @@ function wireAccount() {
     },
   });
   // G8c: Hear asks the account's voice server for a signed-in player.
+  useChildTools({ voice: () => voiceMenu, speaker: () => getSpeaker() });
   useVoiceAccount(() => (account ? { origin: account.origin, signedIn: !!account.session.player } : null));
   account.session.on(() => { if (voiceMenu) voiceMenu.redraw(); });
   // /api/me says what kind of player this is; the cached player can't. It decides
   // the home page, so draw it again once that's known.
   useWho(() => account.session.player, () => account.session.refresh());
+  account.ready.then(() => { answered = true; if (drawn) chrome(); });
+  setTimeout(() => { waitedOut = true; releaseBar(); if (drawn) chrome(); }, 2500);
   let knownKind = '';
   account.session.on(({ player }) => {
     const k = (player && player.kind) || '';
-    if (k !== knownKind) { knownKind = k; if (drawn && /^(grownups|$)/.test(currentPath())) render(); } // no other page depends on it: never wipe a half-filled form
+    if (k !== knownKind) { knownKind = k; if (drawn) chrome(); if (drawn && /^(grownups|$)/.test(currentPath())) render(); } // no other page depends on it: never wipe a half-filled form
   });
 }
 
@@ -226,11 +246,14 @@ async function start() {
     onLeave: (fn) => window.addEventListener('hashchange', fn),
   });
   wireTopNav();
+  wireChrome({ currentPath, parentOf });
   wireTheme();
   wireAccount();
   try {
     await loadData();
   } catch (e) {
+    waitedOut = true;
+    releaseBar(); // the full bar, whatever happened to the account
     main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>The word list didn\'t load</h1>'
       + '<p class="muted">Check your connection, then reload the page.</p></div></section>';
     console.error(e);

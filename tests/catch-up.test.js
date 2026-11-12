@@ -172,8 +172,8 @@ test('the waiting line: kind words, the test day by name', () => {
   assert.equal(St.roomState(d, plus(5)).catchUp, 'Today is your test day. Finish your jobs, then take the test here.');
   assert.equal(St.roomState(d, plus(4)).catchUp, '', 'not before the date');
   for (const line of [St.catchUpLine(g, plus(6)), St.catchUpLine(g, plus(5))]) assert.doesNotMatch(line, /late|behind|missed/i);
-  const v = readFileSync(file('site/js/words-views.js'), 'utf8') + readFileSync(file('site/js/room.js'), 'utf8');
-  assert.equal(v.match(/data-catchup/g).length, 2, 'on the study page and in My room');
+  const v = readFileSync(file('site/js/words-views.js'), 'utf8') + readFileSync(file('site/js/child-views.js'), 'utf8');
+  assert.equal(v.match(/data-catchup/g).length, 2, 'on the study page and on the child\'s home');
 });
 
 test('Grown-ups: how many jobs wait, and that the test opens once they\'re done', () => {
