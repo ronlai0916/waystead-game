@@ -70,6 +70,8 @@ const TEXT = [
   ['--surface', '--sb'], ['--text', '--good-soft'], ['--text', '--surface'], ['--muted', '--surface-2'],
   // SB3-C1, the garden path: today's stone, the pale stones, the path panel, the quiet text on them
   ['--stone-today-fg', '--stone-today'], ['--text', '--stone-wait-bg'], ['--muted', '--stone-wait-bg'], ['--muted', '--panel'], ['--text', '--panel'], ['--surface', '--sb'],
+  // SB3-C2, Grown-ups: the Needs help chip (soft plum), the Got it chip, the waiting chip (honey)
+  ['--help-fg', '--help-bg'], ['--good', '--good-soft'], ['--stone-today-fg', '--stone-today'], ['--text', '--help-bg'],
   // The Wordbright card
   ['--wb', '--surface'], ['--wb', '--bg'],
   // The Waystead Learning panel (its heading, text and Teal button)

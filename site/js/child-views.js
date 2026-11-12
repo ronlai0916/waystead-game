@@ -12,6 +12,7 @@ import { sayLine, stop } from './speech.js';
 import { MORE } from './voice/menu.js';
 import { CHOICES, currentChoice, choose } from './thememenu.js';
 import { announce } from './daystyle.js';
+import { getWeek, setWeek } from './week-choice.js';
 import { esc, ICON } from './ui.js';
 
 const today = () => W.localDay(Date.now());
@@ -58,7 +59,9 @@ const takeSaved = () => { const s = savedPending; savedPending = false; return s
 export function childHome(main) {
   const d = S.readWords();
   const day = today();
-  const r = St.roomState(d, day);
+  const pick = C.weekChoice(d, day, getWeek());
+  if (pick.stale) setWeek(''); // the saved week is finished, gone or reset: the home shows its own pick
+  const r = St.roomState(d, day, pick.group);
   const g = r.group;
   const st = g ? St.studyState(d, g, day) : null;
   const testStarted = !!(g && r.step && r.step.id === 'test' && W.testLeft(d, g).length < g.words.length); // stopped part-way: no word is named
@@ -75,16 +78,27 @@ export function childHome(main) {
       + '<span class="minipath" aria-hidden="true">' + steps.map((s) => '<span class="minipath__one">' + stoneHtml(s, true) + '<span class="minipath__n' + (s.kind.startsWith('today') ? ' is-now' : '') + '">' + s.n + '</span></span>').join('') + '</span>'
       + '<span class="pathcard__foot"><span class="pathcard__tap">Tap to see your week</span><span class="pathcard__job">Job ' + n + ' of 7</span></span></a>';
   }
+  const weekLine = pick.canSwitch
+    ? '<div class="weekline"><p class="weekline__name">Week: <b>' + esc(g.name) + '</b></p><button type="button" class="btn btn--quiet weekline__change" data-week-change aria-haspopup="dialog">Change</button></div>' : '';
+  const due = pick.due[0];
+  const dueLine = due
+    ? '<p class="homego__due" data-duetest>Your test for ' + esc(due.name) + ' is ready.</p><a class="btn btn--ghost" href="' + groupHref(due.id) + '/test" data-taketest>Take the test</a>' : '';
+  const nextLine = !due && pick.next
+    ? '<p class="homego__due" data-nextweek>' + esc(pick.next.name) + ' has a job waiting.</p><button type="button" class="btn btn--ghost" data-go-week="' + esc(pick.next.id) + '">Go to that week</button>' : '';
   const back = v.comeBack.map((x) => '<a class="linkbtn" href="' + comeBackHref(g, x.word, x.flow) + '" data-comeback>Come back to this: ' + esc(x.word) + '</a>').join('');
   main.innerHTML = '<section class="wrap page room childhome" data-room="' + r.status + '">'
     + (takeSaved() ? '<p class="savedline" role="status" data-saved>' + C.SAVED_LINE + '</p>' : '')
     + '<div class="homesay">' + pipHtml(v.pip)
     + (v.catchUp ? '<div class="homesay__text" data-catchup>' + say + '</div>' : '<div class="homesay__text">' + say + '</div>')
     + '<button type="button" class="btn btn--quiet hearit" data-hear>' + SVG.hear + 'Hear it</button></div>'
-    + '<div class="homego"><a class="btn btn--primary btn--hero" href="' + href + '"' + attr + '>' + esc(v.button.label) + ICON.arrow + '</a>'
-    + (v.note ? '<p class="homego__note">' + esc(v.note) + '</p>' : '') + (back ? '<div class="comeback">' + back + '</div>' : '') + '</div>'
+    + weekLine + '<div class="homego"><a class="btn btn--primary btn--hero" href="' + href + '"' + attr + '>' + esc(v.button.label) + ICON.arrow + '</a>'
+    + (v.note ? '<p class="homego__note">' + esc(v.note) + '</p>' : '') + dueLine + nextLine + (back ? '<div class="comeback">' + back + '</div>' : '') + '</div>'
     + card + '</section>';
   main.querySelector('[data-hear]').addEventListener('click', () => sayLine(v.say));
+  const change = main.querySelector('[data-week-change]');
+  if (change) change.addEventListener('click', () => openWeeks(change, pick.weeks, (id) => { setWeek(id); if (!change.isConnected) return; childHome(main); const b = main.querySelector('[data-week-change]'); if (b) b.focus(); }));
+  const goWeek = main.querySelector('[data-go-week]');
+  if (goWeek) goWeek.addEventListener('click', () => { setWeek(goWeek.dataset.goWeek); childHome(main); const b = main.querySelector('[data-week-change]'); if (b) b.focus(); });
   const saved = main.querySelector('[data-saved]');
   if (saved) setTimeout(() => saved.remove(), 6000);
   return () => stop();
@@ -201,21 +215,23 @@ export function settingsPage(main) {
 /* ------------------------------------------------------------- Menu sheet --- */
 let sheet = null;
 export function closeMenu(returnFocus = true) {
-  if (!sheet) return;
+  if (!sheet) return false;
   const { root, opener, undo } = sheet;
   sheet = null;
   undo();
   root.remove();
   stop();
   if (returnFocus && opener && opener.isConnected) opener.focus();
+  return true;
 }
 
 export function openMenu(opener) {
   if (sheet) return;
   const d = S.readWords();
   const day = today();
-  const g = St.studyGroup(d, day);
-  const rows = C.menuRows({ gid: g ? g.id : '', hasGroup: !!g, gamesOpen: g ? St.gamesOpen(d, g, day) : false, canSwitch: !!chipLink('switch') });
+  const pick = C.weekChoice(d, day, getWeek());
+  const g = pick.group;
+  const rows = C.menuRows({ gid: g ? g.id : '', wordsGid: pick.chosen && g ? g.id : '', hasGroup: !!g, gamesOpen: g ? St.gamesOpen(d, g, day) : false, canSwitch: !!chipLink('switch') });
   const ICONS = { games: SVG.games, words: SVG.words, practice: SVG.practice, settings: SVG.settings };
   const row = (x) => x.closed
     ? '<div class="sheetrow sheetrow--closed" data-row="' + x.id + '"><span class="sheetrow__ico">' + ICONS[x.id] + '</span><span class="sheetrow__text"><b>' + x.title + '</b><span>' + esc(x.sub) + '</span></span>'
@@ -240,6 +256,46 @@ export function openMenu(opener) {
   root.addEventListener('click', (e) => { if (e.target.closest('a[href]')) closeMenu(false); });
   const hearLine = root.querySelector('[data-hear-line]');
   if (hearLine) hearLine.addEventListener('click', () => sayLine(C.GAMES_CLOSED));
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const items = [...dlg.querySelectorAll('a[href], button:not([disabled])')];
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  root.querySelector('[data-close]').focus();
+}
+
+/* ------------------------------------------------------- Which week? sheet --- */
+/** The bottom sheet "Which week?": one big row per switchable week; one tap calls pick(id) and closes. Same pattern as the Menu sheet. */
+function openWeeks(opener, weeks, pick) {
+  if (sheet) return;
+  const row = (w) => '<button type="button" class="sheetrow weekrow' + (w.current ? ' is-current' : '') + '" data-week="' + esc(w.id) + '"' + (w.current ? ' aria-current="true"' : '') + '>'
+    + '<span class="sheetrow__text"><b>' + esc(w.name) + '</b><span>' + esc(w.testLabel) + '</span><span>' + esc(w.job) + '</span></span>'
+    + (w.current ? '<span class="pill pill--done">Showing now</span>' : w.waiting ? '<span class="pill pill--warm">Jobs waiting</span>' : '') + '</button>';
+  const root = document.createElement('div');
+  root.className = 'sheetlayer';
+  root.innerHTML = '<div class="sheetback" data-sheet-back></div>'
+    + '<div class="sheet weeksheet" id="child-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><span class="sheet__grip" aria-hidden="true"></span>'
+    + '<div class="sheet__head"><h2 id="sheet-title">Which week?</h2><button type="button" class="btn btn--ghost sheet__close" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Close</button></div>'
+    + '<div class="sheet__rows">' + weeks.map(row).join('') + '</div></div>';
+  document.body.append(root);
+  const behind = [...document.body.children].filter((el) => el !== root && !el.matches('script, #toast'));
+  behind.forEach((el) => el.setAttribute('inert', ''));
+  const undo = () => behind.forEach((el) => el.removeAttribute('inert'));
+  sheet = { root, opener, undo };
+  const dlg = root.querySelector('.sheet');
+  const close = () => closeMenu();
+  root.querySelector('[data-close]').addEventListener('click', close);
+  root.querySelector('[data-sheet-back]').addEventListener('click', close);
+  root.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-week]');
+    if (!b) return;
+    const same = b.hasAttribute('aria-current');
+    closeMenu(false);
+    if (same) { if (opener.isConnected) opener.focus(); } else pick(b.dataset.week);
+  });
   root.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); return; }
     if (e.key !== 'Tab') return;

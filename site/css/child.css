@@ -72,6 +72,11 @@ html.wa-pre body :is(.allgames, .topbar__inner > .thememenu, #player-slot, #them
 .homego { margin: 28px 0 24px; text-align: center; }
 .homego__note { margin-top: 12px; color: var(--muted); font-size: 0.95rem; }
 .comeback { display: grid; justify-items: center; margin-top: 8px; }
+.weekline { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 12px; margin: 20px 0 0; color: var(--text); }
+.weekline__name { margin: 0; font-size: 1rem; }
+.weekline__change { min-height: 48px; }
+.weekline + .homego { margin-top: 12px; }
+.homego__due { margin: 16px 0 8px; color: var(--text); font-weight: 700; }
 
 .pathcard {
   margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; text-decoration: none; color: var(--text);
@@ -227,6 +232,12 @@ body.is-child .play .keyboard .key { height: 56px; }
   display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 14px; text-decoration: none; color: var(--text);
   background: var(--surface); border: var(--card-border); border-radius: 20px; box-shadow: var(--shadow);
 }
+button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer; }
+.weeksheet .sheet__rows { max-height: 60vh; overflow-y: auto; }
+.weekrow { min-height: 64px; justify-content: space-between; }
+.weekrow.is-current { border: 2px solid var(--accent); }
+.weekrow .pill { flex: none; }
+.studyweek { margin-top: 8px; width: 100%; min-height: 48px; }
 .sheetrow--quiet { background: transparent; border: 0; border-top: 1px solid var(--line); border-radius: 0; box-shadow: none; min-height: 64px; }
 .sheetrow__ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--surface-2); color: var(--sb); }
 .sheetrow__ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -253,3 +264,13 @@ body.is-child .play .keyboard .key { height: 56px; }
 
 /* ---- On a wide screen the child's pages stay one calm column ----------------- */
 .childhome, .childpath, .childsettings, .hellopage, .spellpage { max-width: 560px; }
+
+/* ---- A wide but short screen (SB3-C1c): the child's screens with the keyboard beside them ----------------------------
+   The same two columns as app.css. This undoes what the "keyboard at the foot" rules above do for a tall screen (a full-height
+   flex column, a flexible space above the keyboard) and keeps the 72 px above its first row for the pop-up letter. */
+@media (min-width: 820px) and (max-height: 1000px) {
+  body.is-child main > section.wrap.page:is(.play, .spellpage) { display: grid; min-height: 0; padding-top: 8px; padding-bottom: 8px; gap: 0; }
+  body.is-child main > section.wrap.page:is(.play, .spellpage) > [data-slot] { display: contents; }
+  body.is-child main > section.wrap.page:is(.play, .spellpage) .keyboard { margin: 0 0 0 24px; max-width: none; width: min(520px, 58vw); }
+  body.is-child .spellpage .spellline { margin: 4px 0; }
+}

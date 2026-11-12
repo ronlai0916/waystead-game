@@ -145,15 +145,43 @@ export function backTarget(path) {
 }
 
 /** The rows of the Menu sheet. Games closes while the test is due. */
-export function menuRows({ gid, gamesOpen, hasGroup, canSwitch = false }) {
+export function menuRows({ gid, gamesOpen, hasGroup, canSwitch = false, wordsGid = '' }) {
   const rows = [];
   if (hasGroup) {
     rows.push(gamesOpen
       ? { id: 'games', title: 'Games', sub: 'Quick games with your words', href: '#/words/g/' + encodeURIComponent(gid) + '/games' }
       : { id: 'games', title: 'Games', sub: GAMES_CLOSED, closed: true });
   }
-  rows.push({ id: 'words', title: 'My words', sub: 'See your words', href: '#/words' });
+  rows.push({ id: 'words', title: 'My words', sub: 'See your words', href: wordsGid ? '#/words/g/' + encodeURIComponent(wordsGid) : '#/words' });
   rows.push({ id: 'practice', title: 'More practice', sub: 'Chapters, tricky words, your progress', href: '#/chapters' });
   rows.push({ id: 'settings', title: 'Settings', sub: canSwitch ? 'Day or night, switch player' : 'Day or night', href: '#/settings', quiet: true });
   return rows;
+}
+
+// ---- which week the home shows (SB3-C1b) --------------------------------------------
+/**
+ * The child may have several live weeks. `chosen` is this device's saved choice (a group id or '').
+ *   group: the week to show: the chosen one if it is live and not finished, else St.studyGroup's pick.
+ *   chosen: true when `group` is the saved choice.   stale: a choice was saved but no longer applies (clear it).
+ *   weeks: the switchable weeks (live, not finished), each { id, name, test (day), testLabel, job, waiting, due, current }.
+ *     job is "Job 3 of 7", "Every job done" or "Test ready" (a name only: no word is ever printed here).
+ *   next: another week with a job when the shown week has none today, or null.   canSwitch: two or more weeks.   due: the weeks whose test is due, other than `group`.
+ */
+export function weekChoice(d, today, chosen = '') {
+  const pick = St.studyGroup(d, today);
+  const info = W.liveGroups(d).map((g) => ({ g, s: St.studyState(d, g, today), due: W.jobFor(d, g, today) === 'test' })).filter((x) => x.s.status !== 'finished');
+  const mine = chosen ? info.find((x) => x.g.id === chosen) : null;
+  const group = mine ? mine.g : pick;
+  const weeks = info.map(({ g, s, due }) => ({
+    id: g.id, name: g.name, test: g.test, testLabel: 'Test ' + W.dayLabel(g.test), due, current: !!group && g.id === group.id,
+    waiting: s.waiting > 0 && !due, // jobs whose day has gone
+    job: due ? 'Test ready' : s.status === 'ready' ? 'Every job done' : 'Job ' + jobNumber(s.steps, s.job || '') + ' of 7',
+  }));
+  const shown = info.find((x) => group && x.g.id === group.id);
+  // Nothing to do today in the shown week, but another has a job: a quiet pointer to it (names only).
+  const next = shown && shown.s.status !== 'job' ? info.find((x) => x.g.id !== group.id && !x.due && x.s.status === 'job') : null;
+  return {
+    group, chosen: !!mine, next: next ? { id: next.g.id, name: next.g.name } : null, stale: !!chosen && !mine, weeks, canSwitch: weeks.length >= 2,
+    due: info.filter((x) => x.due && (!group || x.g.id !== group.id)).map((x) => ({ id: x.g.id, name: x.g.name })),
+  };
 }

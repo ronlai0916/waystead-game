@@ -337,7 +337,7 @@ export function studyStep(main, { gid, step, n }) {
   const id = decodeURIComponent(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
-  if (!g) { location.replace('#/words'); return undefined; }
+  if (!g) { location.replace('#/'); return undefined; }
   if (!PAGES[step] || !St.canOpen(d, g, step, today())) { location.replace(groupHref(id)); return undefined; }
   if (step === 'mend' && St.mendPart(d, g, today()) === 'fixups') { location.replace(groupHref(id)); return undefined; }
   return PAGES[step](main, g, n);

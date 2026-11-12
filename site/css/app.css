@@ -673,3 +673,44 @@ ul.report__list.card { padding-left: 34px; }
 .approve { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; }
 .approve input { width: 20px; height: 20px; accent-color: var(--sb); }
 .command { display: block; padding: 8px 10px; border-radius: var(--r-sm); background: var(--surface-2); font-family: var(--f-mono); font-size: 0.85rem; overflow-wrap: anywhere; }
+
+/* ---- A wide but short screen (SB3-C1c): a landscape tablet or laptop with the browser's bars showing -------------------
+   Up to 1000 px tall (an iPad Pro 13" on its side with Safari's bars is about 1366 x 915 to 990) and at least 820 px wide, a page with the on-screen keyboard puts the things to see and hear on the left
+   (picture, flower, Hear the word, the letter boxes, Peek, Skip) and the keyboard on the right, so both are in view at once.
+   Portrait (a phone, an iPad upright) and a tall window stay one column. A page with no keyboard has an empty second column of
+   width 0: its content keeps its x and width but moves a few px (less top padding, grid margins do not collapse). [data-slot] is display: contents so its children join the grid. No :has(), no script. */
+@media (min-width: 820px) and (max-height: 1000px) {
+  main > .page.play, main > .page.spellpage {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: repeat(10, auto) 1fr auto; gap: 0; align-content: start;
+    max-width: var(--wrap); padding-top: 12px; padding-bottom: 12px; /* child.css keeps a practice page 560 px wide: not here */
+  }
+  main > .page.spellpage > *:not(.keyboard):not([data-slot]), main > .page.spellpage > [data-slot] > *:not(.keyboard) { justify-self: center; width: 100%; max-width: 528px; } /* a page with no keyboard keeps its one column */
+  main > .page.play > [data-slot], main > .page.spellpage > [data-slot] { display: contents; }
+  main > .page.play > *, main > .page.spellpage > *, main > .page.play > [data-slot] > *, main > .page.spellpage > [data-slot] > * { grid-column: 1; }
+  main > .page.play > *:not([data-slot]), main > .page.play > [data-slot] > * { margin-top: 0; margin-bottom: 10px; }
+  main > .page.play .keyboard, main > .page.spellpage .keyboard {
+    grid-column: 2; grid-row: 1 / 12; align-self: end; width: min(520px, 58vw); max-width: none; margin: 0 0 0 24px;
+    position: sticky; bottom: 8px; /* if the left column is taller than the screen, the keyboard stays in view */
+  }
+  /* Check, Next and Go sit under the keyboard (row 12), so they are in view with it and the tab order follows the screen. */
+  main > .page.spellpage > .btnrow.testbtns, main > .page.spellpage > [data-slot] > .btnrow.testbtns {
+    grid-column: 2; grid-row: 12; justify-self: start; width: min(520px, 58vw); max-width: none; margin: 8px 0 0 24px;
+  }
+  /* The flower game's end-of-word card takes the keyboard's place, so the left column stays still and Next word is in view. */
+  main > .page.play > [data-slot] > .result { grid-column: 2; grid-row: 1 / -1; align-self: end; width: min(520px, 58vw); margin: 0 0 0 24px; }
+  main > .page.play .keyboard-row, main > .page.spellpage .keyboard-row { width: 100%; }
+  main > .page.play .play__top { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 16px; }
+  main > .page.play .play__top .pic { width: auto; max-width: none; height: clamp(104px, 27vh, 200px); height: clamp(104px, 27svh, 200px); }
+  main > .page.play .flower { max-height: clamp(104px, 27vh, 200px); max-height: clamp(104px, 27svh, 200px); }
+  main > .page.play .btnrow--center { margin-top: 0; }
+  main > .page.play .pagehead, main > .page.spellpage .pagehead { margin-bottom: 8px; }
+  /* The heading takes less height, so the typing step's Check is in view with the keyboard: the small lines side by side, a smaller reserved peek line. */
+  main > .page.spellpage .pagehead { grid-template-columns: auto auto; justify-content: start; align-items: center; column-gap: 16px; }
+  main > .page.spellpage .pagehead > .eyebrow, main > .page.spellpage .pagehead > h1 { grid-column: 1 / -1; }
+  main > .page.spellpage .peek { min-height: 1em; line-height: 1; }
+  main > .page.spellpage .answerline { margin: 4px auto 8px; }
+}
+/* A phone on its side (under 520 px tall): the page may scroll, and the keyboard stays in view beside it. */
+@media (min-width: 820px) and (max-height: 520px) {
+  main > .page.play .keyboard, main > .page.spellpage .keyboard { position: sticky; top: 76px; align-self: start; }
+}

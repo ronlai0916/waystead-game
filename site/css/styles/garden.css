@@ -89,6 +89,10 @@
   --panel: var(--accent-soft);
   --pip-ring: #FFF0C9;
   --pip-disc: #FFD95E;
+
+  /* SB3-C2, Grown-ups: "Needs help" is soft plum, so honey only ever means "waiting". */
+  --help-bg: #EFE6F7;
+  --help-fg: #5B3390;
   color-scheme: light;
 }
 

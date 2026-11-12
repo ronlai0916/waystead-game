@@ -53,18 +53,72 @@ test('a group: a name, a test date 7 days on by default, up to 10 words', () => 
   assert.equal(W.createGroup(W.emptyDoc(), { id: 'x', words: ['fruit', 'fruit'], today: MON, now: 1 }).doc.groups.x.words.length, 1);
 });
 
-test('editing: words and date until the test day; renaming and deleting any day', () => {
+test('editing: words and date until the test has begun; the name any time; a new date must be after today', () => {
   const { d, g } = made();
   const edited = W.editGroup(d, g.id, { name: 'New name', words: ['fruit'], test: '2026-11-12' }, '2026-11-08', at('2026-11-08')).doc;
   assert.deepEqual(W.groupById(edited, g.id).words, ['fruit']);
   assert.equal(W.groupById(edited, g.id).test, '2026-11-12');
-  assert.match(W.editGroup(d, g.id, { words: ['fruit'] }, '2026-11-09', 2).error, /test day/);
-  assert.match(W.editGroup(d, g.id, { test: '2026-11-20' }, '2026-11-10', 2).error, /test day/);
+  // On and after the test date, with no test result recorded, it can still change (SB3-C2).
+  assert.equal(W.editGroup(d, g.id, { words: ['fruit'] }, '2026-11-09', 2).doc.groups[g.id].words.join(), 'fruit');
+  assert.equal(W.editGroup(d, g.id, { test: '2026-11-20' }, '2026-11-10', 2).doc.groups[g.id].test, '2026-11-20');
+  assert.match(W.editGroup(d, g.id, { test: '2026-11-10' }, '2026-11-10', 2).error, /after today/, 'a new date must be after today');
   const renamed = W.editGroup(d, g.id, { name: 'Later', words: g.words, test: g.test }, '2026-11-10', 2).doc;
   assert.equal(W.groupById(renamed, g.id).name, 'Later', 'the same words and date are no change');
   assert.match(W.editGroup(d, g.id, { name: ' ' }, MON, 2).error, /name/);
-  assert.equal(W.canEdit(g, '2026-11-08'), true);
-  assert.equal(W.canEdit(g, '2026-11-09'), false);
+});
+
+test('S6: a child keeps the old rule (before the test date and before the test began); a grown-up uses canEdit', () => {
+  const { d, g } = made();
+  const before = W.addDays(g.test, -1);
+  assert.equal(W.canEditAsChild(d, g, before), true, 'before the test date');
+  assert.equal(W.canEditAsChild(d, g, g.test), false, 'on the test date: rename only');
+  assert.equal(W.canEditAsChild(d, g, W.addDays(g.test, 2)), false, 'after it too');
+  assert.equal(W.canEdit(d, g), true, 'the grown-up still can');
+  const begun = attempt(d, g, 'fruit', before, { kind: 't' });
+  assert.equal(W.canEditAsChild(begun, g, before), false, 'test begun');
+  const src = readFileSync(new URL('../site/js/words-views.js', import.meta.url), 'utf8');
+  assert.match(src, /W\.canEditAsChild\(d, g, day\)/);
+  assert.doesNotMatch(src, /W\.canEdit\(/, 'the child side never uses the grown-up rule');
+});
+
+test('canEdit: before the date, on or after it with no test result, and after a result', () => {
+  const { d, g } = made();
+  assert.equal(W.canEdit(d, g), true, 'before the date');
+  assert.equal(W.canEdit(d, g), true, 'the date has no say: the same on the test day, and the day after');
+  const begun = attempt(d, g, 'fruit', '2026-11-09', { kind: 't' });
+  assert.equal(W.testBegun(begun, g), true);
+  assert.equal(W.canEdit(begun, g), false, 'any test result');
+  assert.match(W.editGroup(begun, g.id, { words: ['fruit'] }, '2026-11-09', 2).error, /test has begun/);
+  assert.match(W.editGroup(begun, g.id, { test: '2026-11-20' }, '2026-11-10', 2).error, /test has begun/);
+  assert.equal(W.editGroup(begun, g.id, { name: 'Still renamed' }, '2026-11-10', 2).doc.groups[g.id].name, 'Still renamed');
+  // A practice try is not a test result.
+  assert.equal(W.canEdit(attempt(d, g, 'fruit', '2026-11-09'), g), true);
+  // A result for a word taken out of the group is not this group's test.
+  const other = attempt(d, g, 'zebra', '2026-11-09', { kind: 't' });
+  assert.equal(W.canEdit(other, g), true);
+});
+
+test('editing keeps the practice on words that stay; a word taken out stops counting but its tries stay; a new word starts fresh', () => {
+  let { d, g } = made(['fruit', 'earth', 'heart']);
+  for (const h of [10, 11, 12]) d = attempt(d, g, 'fruit', '2026-11-03', { hour: h });
+  d = attempt(d, g, 'earth', '2026-11-03', { hour: 10 });
+  const before = new Map(W.allDots(d, g, '2026-11-03').map((x) => [x.word, x.dots]));
+  assert.equal(before.get('fruit'), 3);
+  assert.equal(before.get('earth'), 1);
+  const edited = W.editGroup(d, g.id, { words: ['fruit', 'earth', 'build'] }, '2026-11-03', at('2026-11-03', 13)).doc; // heart out, build in
+  const g2 = W.groupById(edited, g.id);
+  const after = new Map(W.allDots(edited, g2, '2026-11-03').map((x) => [x.word, x.dots]));
+  assert.equal(after.get('fruit'), 3, 'a kept word keeps its 3 in a row');
+  assert.equal(after.get('earth'), 1, 'and its count');
+  assert.equal(after.get('build'), 0, 'a new word starts fresh');
+  assert.equal(after.has('heart'), false, 'a word taken out no longer counts for this group');
+  assert.equal(W.readyForTest(edited, g2), false);
+  assert.equal(edited.results.length, d.results.length, 'no try is destroyed');
+  attempt(edited, g2, 'heart', '2026-11-03'); // still writable
+  const prog = W.groupProgress(edited, g2);
+  assert.equal(prog.words.some((x) => x.word === 'heart'), false);
+  // The word's own days still count towards remembered words (the ledger is per word as well as per group).
+  assert.equal(W.overall(edited).practised, W.overall(d).practised);
 });
 
 test('deleting a group keeps its tries: they still count', () => {

@@ -162,7 +162,12 @@ export function starterGroup(d, { name, words, today }) {
 /** Never made a group, on any device: time for the starter. */
 export const needsStarter = (d) => !Object.values(d.groups).some((g) => g.at > d.resetAt);
 
-/** Renaming works any day. The words and the date can change until the test day. */
+/**
+ * Renaming works any day. The words and the date can change until the app's test has begun for the group
+ * (canEdit: any test result recorded), not only until the test date (SB3-C2). A new date must be after today.
+ * Practice is kept: tries are counted per group and word, so a word that stays keeps its dots; a word taken out
+ * stops counting for this group (its tries are never deleted); a word added starts fresh.
+ */
 export function editGroup(d, id, changes, today, now) {
   const g = d.groups[id];
   if (!g || g.gone) return { error: 'That group has gone.' };
@@ -175,7 +180,7 @@ export function editGroup(d, id, changes, today, now) {
   if ('words' in changes || 'test' in changes) {
     const wordsChange = 'words' in changes && JSON.stringify(uniqueWords(changes.words)) !== JSON.stringify(g.words);
     const dateChange = 'test' in changes && changes.test !== g.test;
-    if ((wordsChange || dateChange) && !canEdit(g, today)) return { error: 'This group can\'t change now the test day has come.' };
+    if ((wordsChange || dateChange) && !canEdit(d, { ...g, id })) return { error: 'This week can\'t change now the test has begun.' };
     if ('words' in changes) {
       next.words = uniqueWords(changes.words);
       const error = checkWords(next.words);
@@ -190,11 +195,35 @@ export function editGroup(d, id, changes, today, now) {
   }
   return { doc: { ...d, groups: { ...d.groups, [id]: next } } };
 }
-export const canEdit = (g, today) => today < g.test;
+/** The app's test has begun for this group: any of its words has a test result. */
+export const testBegun = (d, g) => testResults(d, g).some((x) => x.result);
+/** The words and the test date may change until the test has begun. The name any time. */
+export const canEdit = (d, g) => !testBegun(d, g);
+/**
+ * The child's own form keeps the older, stricter rule: words and date only before the test date, and while the test
+ * has not begun. From the test date a child may rename or delete only. (A grown-up uses canEdit.)
+ */
+export const canEditAsChild = (d, g, today) => today < g.test && canEdit(d, g);
 /** Its tries stay: they still count towards remembered words. */
 export function deleteGroup(d, id, now) {
   const g = d.groups[id];
-  return g ? { ...d, groups: { ...d.groups, [id]: { ...g, at: now, gone: now } } } : d;
+  return g ? { ...d, groups: { ...d.groups, [id]: { ...g, at: Math.max(now, g.at + 1), gone: now } } } : d;
+}
+export const UNDELETE_DAYS = 30;
+/** Weeks deleted in the last 30 days, newest first (a grown-up can bring one back). */
+export const deletedGroups = (d, now) => Object.entries(d.groups).filter(([, g]) => g.gone && g.at > d.resetAt && now - g.gone < UNDELETE_DAYS * DAY_MS)
+  .map(([id, g]) => ({ id, ...g })).sort((a, b) => b.gone - a.gone || a.id.localeCompare(b.id));
+const sameWords = (a, b) => JSON.stringify(a.map((w) => w.toLowerCase()).sort()) === JSON.stringify(b.map((w) => w.toLowerCase()).sort());
+/**
+ * Bring a deleted group back: only `gone` is cleared, and `at` goes up so it wins the merge. Refused kindly when a
+ * live group already has the same test date and words. Answers { doc } or { error }.
+ */
+export function restoreGroup(d, id, now) {
+  const g = d.groups[id];
+  if (!g || !g.gone) return { error: 'That week isn\'t in the deleted list.' };
+  if (liveGroups(d).some((x) => x.test === g.test && sameWords(x.words, g.words))) return { error: 'There is already a week with these words and this test date.' };
+  const { gone, ...kept } = g;
+  return { doc: { ...d, groups: { ...d.groups, [id]: { ...kept, at: Math.max(now, g.at + 1, gone + 1) } } } };
 }
 
 // ---- tries ---------------------------------------------------------------------

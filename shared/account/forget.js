@@ -4,7 +4,7 @@
 // session) keeps everything, so a player who signs in again carries on.
 // THIS FILE IS A COPY: edit shared/account/ and run `node tools/sync-shared.mjs`.
 //
-// Removed: sb.progress:<id>, sb.words:<id>, wb.game:<id>, wb.setup:<id>, wb.stats:<id>,
+// Removed: sb.progress:<id>, sb.words:<id>, sb.week:<id>, wb.game:<id>, wb.setup:<id>, wb.stats:<id>,
 // wa.prefs:<id>, wa.import:<id>:*, wa.sync:<id>:*, wa.player.
 // Kept: a game whose queue still has changes not yet sent keeps its
 // wa.sync:<id>:<game> AND the values it names (e.g. wb.stats:<id>): the queue
@@ -14,7 +14,7 @@ import { PLAYER_KEY } from './player.js';
 
 export const SIGNED_OUT_PARAM = 'signedout';
 const PREFIX = { spellbright: 'sb', wordbright: 'wb' };
-const DATA = ['sb.progress', 'sb.words', 'wb.game', 'wb.setup', 'wb.stats'];
+const DATA = ['sb.progress', 'sb.words', 'sb.week', 'wb.game', 'wb.setup', 'wb.stats'];
 
 function keysOf(storage) {
   if (typeof storage.keys === 'function') return storage.keys();

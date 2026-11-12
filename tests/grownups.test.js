@@ -66,11 +66,15 @@ test('a plan is an ordinary group in the child\'s value, with their returning wo
   assert.deepEqual(r.doc.groups.p1.back, ['heart']);
   assert.equal(r.doc.groups.p1.name, 'Spellings');
 });
-test('a plan can change until the test day, then only its name', () => {
+test('a plan can change until the test has begun, then only its name', () => {
   const d = P.createPlan(W.emptyDoc(), plan(), { id: 'p1', today: MON, now: at(MON) }).doc;
   const e = P.editPlan(d, 'p1', { name: 'New', words: ['fruit'], test: plus(6) }, { today: plus(1), now: at(plus(1)) });
   assert.deepEqual([e.doc.groups.p1.name, e.doc.groups.p1.words, e.doc.groups.p1.test], ['New', ['fruit'], plus(6)]);
-  assert.match(P.editPlan(d, 'p1', { words: ['fruit'] }, { today: plus(5), now: at(plus(5)) }).error, /test day/);
+  const after = P.editPlan(d, 'p1', { words: ['fruit'] }, { today: plus(5), now: at(plus(5)) });
+  assert.deepEqual(after.doc.groups.p1.words, ['fruit'], 'on the test date, before any test result');
+  const g = W.groupById(d, 'p1');
+  const begun = tryOf(d, g, 'fruit', plus(5), { kind: 't' });
+  assert.match(P.editPlan(begun, 'p1', { words: ['earth'] }, { today: plus(5), now: at(plus(5)) }).error, /test has begun/);
 });
 
 // ---- typed words ---------------------------------------------------------------------
@@ -172,8 +176,8 @@ test('dashboard: skipped words, until they\'re done', () => {
 });
 test('the dashboard shows them', () => {
   const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  assert.match(src, /<th scope="col">3 in a row<\/th>/);
-  assert.match(src, /rowCountHtml\(w\.dots, W\.ROW_NEEDED\)/);
+  assert.match(src, /dotsHtml\(w\.dots, W\.ROW_NEEDED\)/, 'the dots');
+  assert.match(src, /What we noticed/);
   assert.match(src, /<b>Come back to this:<\/b>/);
 });
 test('dashboard: remembered, practised and independent first goes', () => {
@@ -207,7 +211,7 @@ test('dashboard: a child with nothing yet', () => {
 test('the dashboard says who can see it, and has a report to print', () => {
   const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
   assert.ok(src.includes('Only you and your child can see this.'));
-  assert.ok(src.includes('Print weekly report'));
+  assert.ok(src.includes('Print this week'));
   assert.match(readFileSync(file('site/css/app.css'), 'utf8'), /@media print/);
 });
 
@@ -222,7 +226,7 @@ test('only an adult playing as themselves sees Grown-ups', () => {
 });
 test('the pages check before they draw or fetch anything', () => {
   const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  for (const fn of ['grownups', 'childDashboard', 'planWeek', 'editWeek']) {
+  for (const fn of ['grownups', 'childDashboard', 'planWeek', 'planAny', 'editWeek']) {
     const body = src.slice(src.indexOf('export function ' + fn + '('), src.indexOf('export function ' + fn + '(') + 120);
     assert.match(body, /adultOnly\(main\)/, fn);
   }
@@ -408,7 +412,7 @@ test('a plan with no clash isn\'t reported as updated', async () => {
   assert.equal(r.updated, false);
 });
 test('the page says it', () => {
-  assert.match(readFileSync(file('site/js/grownups-views.js'), 'utf8'), /r\.updated \? 'Updated with the latest' : 'Saved'/);
+  assert.match(readFileSync(file('site/js/grownups-views.js'), 'utf8'), /if \(r\.updated\) toast\('Updated with the latest'\)/);
 });
 test('a bad plan saves nothing', async () => {
   const { acct, api } = family();

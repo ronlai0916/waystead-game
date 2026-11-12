@@ -333,7 +333,7 @@ export function gameMode(main, { gid }) {
   const id = decodeURIComponent(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
-  if (!g) { location.replace('#/words'); return; }
+  if (!g) { location.replace('#/'); return; }
   main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>' + esc(g.name) + '</h1>'
     + '<p class="muted">The same words, any time.</p></div>' + modeSwitch(g, 'game')
     + '<div class="shortcuts gamecards">' + G.GAME_IDS.map((k) => '<a class="card shortcut" href="' + groupHref(id) + '/game/' + k + '"><span><strong>' + esc(G.GAMES[k].title) + '</strong><br><span class="muted small">' + esc(G.GAMES[k].line) + '</span></span>' + ICON.arrow + '</a>').join('') + '</div>'
@@ -345,7 +345,7 @@ export function oneGame(main, { gid, game }) {
   const id = decodeURIComponent(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
-  if (!g) { location.replace('#/words'); return undefined; }
+  if (!g) { location.replace('#/'); return undefined; }
   if (!PLAY[game]) { location.replace(groupHref(id) + '/games'); return undefined; }
   return playGames(main, g, {
     eyebrow: g.name,

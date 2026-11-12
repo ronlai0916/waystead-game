@@ -13,6 +13,7 @@ import * as C from './child-doc.js';
 import * as St from './study-doc.js';
 import { stepHref, stripHtml, comeBackHref, comeBackHtml } from './study-views.js';
 import { findEntry } from './word-info.js';
+import { getWeek, setWeek } from './week-choice.js';
 
 const PEEK_MS = 2000;
 const AGAIN_MS = 1600; // how long a finished word stays before it comes back
@@ -165,6 +166,8 @@ function drawGroup(main, g, others = []) {
   const job = W.jobFor(d, g, day);
   const testing = job === 'test'; // no word on show on test day
   const after = ['wait', 'fixups', 'fixed-today', 'finished'].includes(job);
+  const child = document.body.classList.contains('is-child');
+  const switchable = child ? new Set(C.weekChoice(d, day, '').weeks.map((w) => w.id)) : new Set(); // a child can make another week the one the home shows
   main.innerHTML = '<section class="wrap page">'
     + '<div class="pagehead"><span class="eyebrow">My words</span><h1>' + esc(g.name) + '</h1>'
     + '<p class="muted">' + plural(g.words.length, 'word') + (g.back.length ? ', and ' + g.back.length + ' back again' : '') + ' · Test on ' + esc(W.dayLabel(g.test)) + '</p></div>'
@@ -176,14 +179,16 @@ function drawGroup(main, g, others = []) {
     + (after ? resultsCard(d, g) : '')
     + (job === 'practise' ? roundsLine(d, g, day) : '')
     + (testing ? '' : gridHtml(d, g, day, job))
-    + '<div class="btnrow groupmanage"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
+    + '<div class="btnrow groupmanage"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEditAsChild(d, g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
     + '<a class="btn btn--ghost" href="#/words/new">New group</a>'
     + '<a class="btn btn--ghost" href="#/words/progress">My word numbers</a></div>'
     // A child sees only this quiet link (a grown-up plans the week, but a group the child made is theirs to change).
-    + '<p class="groupedit"><a class="linkbtn" href="' + groupHref(g.id) + '/edit">' + (W.canEdit(g, day) ? 'Change this group' : 'Rename or delete') + '</a></p>'
+    + '<p class="groupedit"><a class="linkbtn" href="' + groupHref(g.id) + '/edit">' + (W.canEditAsChild(d, g, day) ? 'Change this group' : 'Rename or delete') + '</a></p>'
     + (others.length ? '<h2 class="sectionhead">Other groups</h2><div class="list">' + others.map((o) => '<a class="card listrow" href="' + groupHref(o.id) + '"><span><strong>' + esc(o.name) + '</strong><br><span class="muted small">Test on ' + esc(W.dayLabel(o.test)) + '</span></span>'
-      + '<span class="pill">' + esc(JOB[W.jobFor(d, o, day)].title) + '</span></a>').join('') + '</div>' : '')
+      + '<span class="pill">' + esc(JOB[W.jobFor(d, o, day)].title) + '</span></a>'
+      + (switchable.has(o.id) && getWeek() !== o.id ? '<button type="button" class="btn btn--quiet studyweek" data-study-week="' + esc(o.id) + '">Study this week<span class="sr">: ' + esc(o.name) + '</span></button>' : '')).join('') + '</div>' : '')
     + '</section>';
+  main.querySelectorAll('[data-study-week]').forEach((b) => b.addEventListener('click', () => { setWeek(b.dataset.studyWeek); location.hash = groupHref(b.dataset.studyWeek); }));
   placeBursts(main);
 }
 
@@ -202,15 +207,16 @@ export function myWords(main) {
 }
 
 export function group(main, { gid }) {
-  const g = W.groupById(S.readWords(), decodeURIComponent(gid));
-  if (!g) { location.replace('#/words'); return; }
-  drawGroup(main, g);
+  const d0 = S.readWords();
+  const g = W.groupById(d0, decodeURIComponent(gid));
+  if (!g) { location.replace('#/'); return; }
+  drawGroup(main, g, document.body.classList.contains('is-child') ? W.liveGroups(d0).filter((o) => o.id !== g.id) : []);
 }
 
 // ---- making and changing a group -----------------------------------------------------
 function groupForm(main, existing) {
   const day = today();
-  const locked = existing && !W.canEdit(existing, day);
+  const locked = existing && !W.canEditAsChild(S.readWords(), existing, day);
   const tricky = S.trickyWords().map((t) => t.word).filter((w) => D.entry(w));
   let name = existing ? existing.name : '';
   let test = existing ? existing.test : W.defaultTest(day);
@@ -243,7 +249,7 @@ function groupForm(main, existing) {
   function draw() {
     const back = existing ? existing.back : W.returningWords(S.readWords(), day, chosen);
     main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>' + (existing ? 'Change this group' : 'New group') + '</h1>'
-      + (locked ? '<p class="muted">The test day has come, so the words and date stay as they are. You can still rename or delete it.</p>' : '<p class="muted">Up to ' + W.MAX_WORDS + ' words. Practise each day until the test.</p>') + '</div>'
+      + (locked ? '<p class="muted">The test ' + (W.testBegun(S.readWords(), existing) ? 'has begun' : 'day has come') + ', so the words and date stay as they are. You can still rename or delete it.</p>' : '<p class="muted">Up to ' + W.MAX_WORDS + ' words. Practise each day until the test.</p>') + '</div>'
       + '<div class="card groupform">'
       + '<label class="small muted" for="g-name">Name</label><input id="g-name" class="field" maxlength="' + W.MAX_NAME + '" value="' + esc(name) + '" placeholder="' + esc(W.defaultName(test)) + '" data-name>'
       + (locked ? '' : '<label class="small muted" for="g-test">Test date</label><input id="g-test" class="field" type="date" value="' + esc(test) + '" min="' + W.addDays(day, 1) + '" max="' + W.addDays(existing ? existing.start : day, W.MAX_DAYS) + '" data-test>')
@@ -312,7 +318,7 @@ function groupForm(main, existing) {
 export function newGroup(main) { groupForm(main, null); }
 export function editGroupPage(main, { gid }) {
   const g = W.groupById(S.readWords(), decodeURIComponent(gid));
-  if (!g) { location.replace('#/words'); return; }
+  if (!g) { location.replace('#/'); return; }
   groupForm(main, g);
 }
 
@@ -332,7 +338,7 @@ export function spellWord(main, { gid, n }) {
   const w = g ? W.rows(g)[Number(n)] : null;
   const job = g ? W.jobFor(d0, g, day) : '';
   const fixing = (job === 'fixups' || job === 'fixed-today') && !!w && W.fixups(d0, g).includes(w);
-  if (!w || !(job === 'practise' || fixing)) { if (g) toGroup(id); else location.replace('#/words'); return; }
+  if (!w || !(job === 'practise' || fixing)) { if (g) toGroup(id); else location.replace('#/'); return; }
   const kind = fixing ? 'f' : 'p';
   const flow = kind;
   const list = fixing ? W.fixups(d0, g) : W.rows(g);
@@ -469,7 +475,7 @@ export function testDay(main, { gid }) {
   const id = decodeURIComponent(gid);
   const d0 = S.readWords();
   const g = W.groupById(d0, id);
-  if (!g) { location.replace('#/words'); return; }
+  if (!g) { location.replace('#/'); return; }
   const day = today();
   if (W.jobFor(d0, g, day) !== 'test') { toGroup(id); return; }
   const total = g.words.length;

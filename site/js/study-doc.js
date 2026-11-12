@@ -184,9 +184,10 @@ function pipFor(status, step, today) {
   return step && (step.id === 'test' || step.date < today) ? 'thinking' : 'happy'; // a test, or a job that waited
 }
 
-/** All My room needs. `group` is null before the first group. On test day it must not show the words. */
-export function roomState(d, today) {
-  const g = studyGroup(d, today);
+/** All My room needs. `group` is null before the first group. On test day it must not show the words.
+ *  `chosen` (optional): a live group to show instead of studyGroup's pick (the child's chosen week). */
+export function roomState(d, today, chosen = null) {
+  const g = chosen || studyGroup(d, today);
   if (!g) return { status: 'none', group: null, pip: 'happy', hideWords: false };
   const s = studyState(d, g, today);
   const step = s.steps.find((x) => x.id === s.job) || null;

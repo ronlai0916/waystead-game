@@ -10,7 +10,7 @@ import * as SV from './study-views.js';
 import * as GV from './games-views.js';
 import { home } from './room.js';
 import { useWho, kind, isChild, isKnownChild } from './who.js';
-import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools } from './child-views.js';
+import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools, closeMenu } from './child-views.js';
 import * as GU from './grownups-views.js';
 import { storyReview } from './story-views.js';
 import * as W from './words-doc.js';
@@ -57,7 +57,9 @@ const ROUTES = [
   ['settings', settingsPage],
   ['grownups', GU.grownups],
   ['grownups/stories', storyReview],
+  ['grownups/plan', GU.planAny],
   ['grownups/child/:cid', GU.childDashboard],
+  ['grownups/child/:cid/week/:gid', GU.childDashboard],
   ['grownups/child/:cid/plan', GU.planWeek],
   ['grownups/child/:cid/plan/:gid', GU.editWeek],
   [':yearId', V.year],
@@ -139,8 +141,10 @@ function render() {
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
   stop();
+  const hadSheet = closeMenu(false); // a sheet never stays open over a redraw (a sync, a route change)
   const path = currentPath();
   applyChrome(isKnownChild(), path, pending());
+  if (hadSheet) setTimeout(settleFocus, 0);
   if (gated(path)) return;
   const found = match(path);
   if (found && found.pattern === 'settings' && !isChild()) { location.replace('#/'); return; }
@@ -156,6 +160,17 @@ function render() {
   if (due) MW.testTodayPage(main, due); else cleanup = found.view(main, found.params) || null;
   const h1 = main.querySelector('h1');
   document.title = (path && h1 ? h1.textContent + ' · ' : '') + 'Spellbright by Waystead';
+}
+
+// A sheet was closed by a redraw: focus goes to the Change or Menu button if there is one, else the page heading.
+function settleFocus() {
+  const a = document.activeElement;
+  if (a && a !== document.body && a !== main && a.isConnected && !a.closest('.sheetlayer') && !a.closest('[inert]')) return;
+  const menu = document.getElementById('child-menu');
+  const target = main.querySelector('[data-week-change]') || (menu && !menu.hidden ? menu : null) || main.querySelector('h1');
+  if (!target) return;
+  if (!/^(A|BUTTON)$/.test(target.tagName)) target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
 }
 
 // A My words page this app doesn't know may belong to a release still on its
