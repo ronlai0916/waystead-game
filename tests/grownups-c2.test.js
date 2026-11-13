@@ -245,7 +245,7 @@ test('grown-ups pages: no inline style or script, own stylesheet in the shell, a
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   assert.ok(sw.includes("'css/grownups.css'"));
   assert.match(readFileSync(file('site/index.html'), 'utf8'), /css\/grownups\.css/);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-13d'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-13e'/);
   const css = readFileSync(file('site/css/grownups.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   for (const rule of css.split('}').map((r) => r.split('{')[0].trim()).filter((s) => s && !s.startsWith('@') && !/^\d|^(from|to)/.test(s))) {
     for (const sel of rule.split(',').map((x) => x.trim())) assert.match(sel, /^\.gu|^@/, 'scoped to .gu: ' + sel);

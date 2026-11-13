@@ -160,6 +160,8 @@ function fixupList(d, g, day) {
     + (W.sessionDone(d, g, w, day, 'f') ? '<span class="pill pill--done">Done today</span>' : W.comeBack(d, g, day).some((x) => x.word === w && x.flow === 'f') ? '<span class="pill pill--warm">Come back to this</span>' : '<span class="pill">Not yet</span>') + '</a>').join('') + '</div>';
 }
 
+/** The signed-in player's role as the page chrome knows it: only a grown-up may delete a week (SB3-G). */
+const roleNow = () => (document.body.classList.contains('is-adult') ? 'adult' : document.body.classList.contains('is-child') ? 'child' : 'unknown');
 function drawGroup(main, g, others = []) {
   const d = S.readWords();
   const day = today();
@@ -167,7 +169,9 @@ function drawGroup(main, g, others = []) {
   const testing = job === 'test'; // no word on show on test day
   const after = ['wait', 'fixups', 'fixed-today', 'finished'].includes(job);
   const child = document.body.classList.contains('is-child');
-  const switchable = child ? new Set(C.weekChoice(d, day, '').weeks.map((w) => w.id)) : new Set(); // a child can make another week the one the home shows
+  const editLabel = W.editLinkLabel(d, g, day, roleNow());
+  if (child && !W.weekPickOn(d)) others = []; // switch off: a child's My words shows only the app's pick
+  const switchable = child && W.weekPickOn(d) ? new Set(C.weekChoice(d, day, '').weeks.map((w) => w.id)) : new Set(); // a child can make another week the one the home shows
   main.innerHTML = '<section class="wrap page">'
     + '<div class="pagehead"><span class="eyebrow">My words</span><h1>' + esc(g.name) + '</h1>'
     + '<p class="muted">' + plural(g.words.length, 'word') + (g.back.length ? ', and ' + g.back.length + ' back again' : '') + ' · Test on ' + esc(W.dayLabel(g.test)) + '</p></div>'
@@ -179,11 +183,11 @@ function drawGroup(main, g, others = []) {
     + (after ? resultsCard(d, g) : '')
     + (job === 'practise' ? roundsLine(d, g, day) : '')
     + (testing ? '' : gridHtml(d, g, day, job))
-    + '<div class="btnrow groupmanage"><a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + (W.canEditAsChild(d, g, day) ? 'Change this group' : 'Rename or delete') + '</a>'
+    + '<div class="btnrow groupmanage">' + (editLabel ? '<a class="btn btn--ghost" href="' + groupHref(g.id) + '/edit">' + editLabel + '</a>' : '')
     + '<a class="btn btn--ghost" href="#/words/new">New group</a>'
     + '<a class="btn btn--ghost" href="#/words/progress">My word numbers</a></div>'
     // A child sees only this quiet link (a grown-up plans the week, but a group the child made is theirs to change).
-    + '<p class="groupedit"><a class="linkbtn" href="' + groupHref(g.id) + '/edit">' + (W.canEditAsChild(d, g, day) ? 'Change this group' : 'Rename or delete') + '</a></p>'
+    + (editLabel ? '<p class="groupedit"><a class="linkbtn" href="' + groupHref(g.id) + '/edit">' + editLabel + '</a></p>' : '')
     + (others.length ? '<h2 class="sectionhead">Other groups</h2><div class="list">' + others.map((o) => '<a class="card listrow" href="' + groupHref(o.id) + '"><span><strong>' + esc(o.name) + '</strong><br><span class="muted small">Test on ' + esc(W.dayLabel(o.test)) + '</span></span>'
       + '<span class="pill">' + esc(JOB[W.jobFor(d, o, day)].title) + '</span></a>'
       + (switchable.has(o.id) && getWeek() !== o.id ? '<button type="button" class="btn btn--quiet studyweek" data-study-week="' + esc(o.id) + '">Study this week<span class="sr">: ' + esc(o.name) + '</span></button>' : '')).join('') + '</div>' : '')
@@ -197,7 +201,9 @@ export function myWords(main) {
   const d = S.readWords();
   const current = W.currentGroup(d, today());
   // Another group sharing a word with a test that's due: the test's own page instead.
-  const g = current && St.showsHidden(current, St.hiddenWords(d, today())) ? St.dueGroups(d, today())[0] : current;
+  let g = current && St.showsHidden(current, St.hiddenWords(d, today())) ? St.dueGroups(d, today())[0] : current;
+  // Switch off: a child or unknown player's My words is the app's pick (the due-test branch above stays first).
+  if (roleNow() !== 'adult' && !W.weekPickOn(d) && !(g && St.dueGroups(d, today()).some((x) => x.id === g.id))) { const pick = C.weekChoice(d, today(), '').group; if (pick) g = pick; }
   if (!g) {
     main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>Your words for the week</h1></div>'
       + '<div class="card empty"><p class="muted">Make a group of up to ' + W.MAX_WORDS + ' words and pick a test date.</p><a class="btn btn--primary" href="#/words/new">New group</a></div></section>';
@@ -210,6 +216,7 @@ export function group(main, { gid }) {
   const d0 = S.readWords();
   const g = W.groupById(d0, decodeURIComponent(gid));
   if (!g) { location.replace('#/'); return; }
+  // (app.js's router has already sent a child to the pick when the week switch is off: C.weekGuard.)
   drawGroup(main, g, document.body.classList.contains('is-child') ? W.liveGroups(d0).filter((o) => o.id !== g.id) : []);
 }
 
@@ -227,6 +234,7 @@ function groupForm(main, existing) {
   let typed = '';
   let note = '';
   let armed = false;
+  const mayDelete = !!existing && W.mayDeleteWeek(roleNow()); // a child never gets a delete (SB3-G)
 
   const tabBtn = (id, label) => '<button type="button" class="tab" role="tab" aria-selected="' + (tab === id) + '" data-tab="' + id + '">' + esc(label) + '</button>';
   const source = () => (tab === 'chapter' ? D.chapterById(chapterId).words.map((w) => w.word)
@@ -249,7 +257,7 @@ function groupForm(main, existing) {
   function draw() {
     const back = existing ? existing.back : W.returningWords(S.readWords(), day, chosen);
     main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>' + (existing ? 'Change this group' : 'New group') + '</h1>'
-      + (locked ? '<p class="muted">The test ' + (W.testBegun(S.readWords(), existing) ? 'has begun' : 'day has come') + ', so the words and date stay as they are. You can still rename or delete it.</p>' : '<p class="muted">Up to ' + W.MAX_WORDS + ' words. Practise each day until the test.</p>') + '</div>'
+      + (locked ? '<p class="muted">The test ' + (W.testBegun(S.readWords(), existing) ? 'has begun' : 'day has come') + ', so the words and date stay as they are. You can still rename it' + (mayDelete ? ' or delete it' : '') + '.</p>' : '<p class="muted">Up to ' + W.MAX_WORDS + ' words. Practise each day until the test.</p>') + '</div>'
       + '<div class="card groupform">'
       + '<label class="small muted" for="g-name">Name</label><input id="g-name" class="field" maxlength="' + W.MAX_NAME + '" value="' + esc(name) + '" placeholder="' + esc(W.defaultName(test)) + '" data-name>'
       + (locked ? '' : '<label class="small muted" for="g-test">Test date</label><input id="g-test" class="field" type="date" value="' + esc(test) + '" min="' + W.addDays(day, 1) + '" max="' + W.addDays(existing ? existing.start : day, W.MAX_DAYS) + '" data-test>')
@@ -259,7 +267,7 @@ function groupForm(main, existing) {
       + (back.length ? '<p class="muted small">Back again with this group: ' + esc(back.join(', ')) + '</p>' : '')
       + (locked ? '' : '<div class="stack addwords">' + picker() + '</div>')
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-save>Save</button>'
-      + (existing ? '<button type="button" class="btn btn--ghost" data-delete>' + (armed ? 'Tap again to delete' : 'Delete this group') + '</button>' : '') + '</div>'
+      + (mayDelete ? '<button type="button" class="btn btn--ghost" data-delete>' + (armed ? 'Tap again to delete' : 'Delete this group') + '</button>' : '') + '</div>'
       + '</section>';
     wire();
   }
@@ -295,7 +303,8 @@ function groupForm(main, existing) {
     }
     q('[data-save]').addEventListener('click', save);
     const del = q('[data-delete]');
-    if (del) del.addEventListener('click', () => {
+    if (del && mayDelete) del.addEventListener('click', () => {
+      if (!W.mayDeleteWeek(roleNow())) return;
       if (!armed) { armed = true; draw(); return; }
       S.updateWords((d) => W.deleteGroup(d, existing.id, Date.now()));
       toast('Group deleted');
@@ -319,6 +328,8 @@ export function newGroup(main) { groupForm(main, null); }
 export function editGroupPage(main, { gid }) {
   const g = W.groupById(S.readWords(), decodeURIComponent(gid));
   if (!g) { location.replace('#/'); return; }
+  // A child may open the form only where their own rules let them change something; never to delete (SB3-G).
+  if (roleNow() !== 'adult' && !W.canEditAsChild(S.readWords(), g, today())) { location.replace(groupHref(g.id)); return; }
   groupForm(main, g);
 }
 

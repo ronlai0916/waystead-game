@@ -167,7 +167,21 @@ export function menuRows({ gid, gamesOpen, hasGroup, canSwitch = false, wordsGid
  *     job is "Job 3 of 7", "Every job done" or "Test ready" (a name only: no word is ever printed here).
  *   next: another week with a job when the shown week has none today, or null.   canSwitch: two or more weeks.   due: the weeks whose test is due, other than `group`.
  */
-export function weekChoice(d, today, chosen = '') {
+/**
+ * The one guard for every words/g/:gid page (SB3-G): a grown-up's switch is off and the player is not an adult
+ * (a child, or unknown: the same rule as editLinkLabel), and the page is another week's. Answers the id of the app's pick
+ * to go to, or null (switch on, an adult, the pick's own page, a week whose test is due, an unknown week).
+ */
+export function weekGuard(d, today, gid, kind) {
+  if (kind === 'adult' || W.weekPickOn(d) || !W.groupById(d, gid)) return null;
+  const pick = weekChoice(d, today, '');
+  if (!pick.group || pick.group.id === gid || pick.due.some((x) => x.id === gid)) return null;
+  return pick.group.id;
+}
+export function weekChoice(d, today, chosenSaved = '') {
+  // SB3-G: a grown-up can switch the choice off; the device's saved week is then ignored (and kept, for when it is on again).
+  const allowed = W.weekPickOn(d);
+  const chosen = allowed ? chosenSaved : '';
   const pick = St.studyGroup(d, today);
   const info = W.liveGroups(d).map((g) => ({ g, s: St.studyState(d, g, today), due: W.jobFor(d, g, today) === 'test' })).filter((x) => x.s.status !== 'finished');
   const mine = chosen ? info.find((x) => x.g.id === chosen) : null;
@@ -181,7 +195,7 @@ export function weekChoice(d, today, chosen = '') {
   // Nothing to do today in the shown week, but another has a job: a quiet pointer to it (names only).
   const next = shown && shown.s.status !== 'job' ? info.find((x) => x.g.id !== group.id && !x.due && x.s.status === 'job') : null;
   return {
-    group, chosen: !!mine, next: next ? { id: next.g.id, name: next.g.name } : null, stale: !!chosen && !mine, weeks, canSwitch: weeks.length >= 2,
+    group, chosen: !!mine, next: next && allowed ? { id: next.g.id, name: next.g.name } : null, stale: !!chosen && !mine, weeks, canSwitch: allowed && weeks.length >= 2, allowed,
     due: info.filter((x) => x.due && (!group || x.g.id !== group.id)).map((x) => ({ id: x.g.id, name: x.g.name })),
   };
 }

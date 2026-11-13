@@ -11,7 +11,9 @@
 //     steps:   { ['<group>|<step>']: { d: day, at } },  Study mode: jobs done
 //     clues:   { [word]: { t: text, at } },             memory clues
 //     notes:   [{ id, g: group, w: word, x: sentence, d: day, at }],
-//     skips:   [{ id, g: group, w: word, d: day, f: flow, at }] }   "Skip for now"
+//     skips:   [{ id, g: group, w: word, d: day, f: flow, at }],   "Skip for now"
+//     weekPick?: { on: boolean, at: ms } }   OPTIONAL (SB3-G): a grown-up's switch, "Your child can choose which
+//                                            week to study". Absent = on (today's behaviour); old docs unchanged.
 //
 //   k: 'p' practice, 't' the test, 'f' a fix-up. A practice or fix-up try may
 //   also have s: 'x' (Fix it in), 'g' (a spelling game) or 'm' (Meaning match);
@@ -32,6 +34,8 @@
 //   · a group: the copy changed last wins, whole; a deleted group stays
 //     deleted until someone changes it later; deleting never loses its tries;
 //   · resetAt: the later one; anything before it goes;
+//   · weekPick: the copy with the later `at` wins (a tie: the larger JSON); absent loses to present. It is not
+//     cleared by resetAt: "Clear my progress" keeps it (reset(now, d)), so it can't be used to get round the switch;
 //   · steps: the first time a job was done; clues: the newest; notes, skips: by id.
 // SIZE: a value may be at most 64 KB. Past 48 KB the oldest tries are folded
 // (per group and word) until it is under 40 KB, and deleted groups older than
@@ -103,6 +107,7 @@ export function normalise(d) {
     && typeof x.w === 'string' && typeof x.x === 'string' && isDay(x.d) && num(x.at));
   out.skips = (Array.isArray(d.skips) ? d.skips : []).filter((x) => isObj(x) && typeof x.id === 'string' && typeof x.g === 'string'
     && typeof x.w === 'string' && typeof x.f === 'string' && isDay(x.d) && num(x.at));
+  if (isObj(d.weekPick) && typeof d.weekPick.on === 'boolean' && num(d.weekPick.at)) out.weekPick = { on: d.weekPick.on, at: d.weekPick.at };
   return out;
 }
 
@@ -551,6 +556,8 @@ export function merge(a, b) {
   const byId = (list) => [...new Map(list.filter(later).map((n) => [n.id, n])).values()].sort(byTime);
   out.notes = byId([...x.notes, ...y.notes]);
   out.skips = byId([...x.skips, ...y.skips]);
+  const wp = [x.weekPick, y.weekPick].filter(Boolean).sort((p, q) => q.at - p.at || (JSON.stringify(q) > JSON.stringify(p) ? 1 : -1))[0];
+  if (wp) out.weekPick = wp;
   return out;
 }
 
@@ -570,4 +577,20 @@ export function trim(d, now) {
   return { ...out, folded };
 }
 
-export const reset = (now) => ({ ...emptyDoc(), resetAt: now });
+/** Clear my progress. A grown-up's week-choice switch is not progress: it is kept (SB3-G), so a reset never gives a child the choice back. */
+export const reset = (now, prev) => ({ ...emptyDoc(), resetAt: now, ...(prev && prev.weekPick ? { weekPick: prev.weekPick } : {}) });
+
+// ---- the grown-up's week-choice switch (SB3-G) ----------------------------------------
+/** True unless a grown-up switched it off. Absent field = on. */
+export const weekPickOn = (d) => !(d && d.weekPick && d.weekPick.on === false);
+/** Set the switch; `at` always goes up, so this change wins the merge. */
+export const setWeekPick = (d, on, now) => ({ ...d, weekPick: { on: !!on, at: Math.max(now, (d.weekPick ? d.weekPick.at : 0) + 1) } });
+/** Only a grown-up (who.js kind 'adult') may delete a week; a child never, and an unknown player never. */
+/** The words page's link to the edit form: a child only where their own rules allow a change, and never a word "delete"; '' = no link. */
+export function editLinkLabel(d, g, today, kind) {
+  if (canEditAsChild(d, g, today)) return 'Change this group';
+  return kind === 'adult' ? 'Rename or delete' : ''; // a child and an unknown player are treated alike: never the word "delete"
+}
+/** Only a grown-up may clear a player's progress (it wipes every week): never a child, never an unknown player. */
+export const mayClearProgress = (kind) => kind === 'adult';
+export const mayDeleteWeek = (kind) => kind === 'adult';

@@ -16,6 +16,7 @@ import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools, closeMe
 import * as GU from './grownups-views.js';
 import { storyReview } from './story-views.js';
 import * as W from './words-doc.js';
+import { weekGuard } from './child-doc.js';
 import * as S from './store.js';
 import * as P from './progress-doc.js';
 import { wireVoiceMenu } from './voice/menu.js';
@@ -163,6 +164,11 @@ function render() {
     if (a.hasAttribute('aria-current')) a.setAttribute('aria-current', 'page');
   });
   if (!found) { unknownPage(path); return; }
+  // SB3-G: a grown-up's week switch is off: a child's (or unknown player's) pages for another week go to the app's pick.
+  if (found.pattern.startsWith('words/g/:gid')) {
+    const to = weekGuard(S.readWords(), W.localDay(Date.now()), decodeURIComponent(found.params.gid), isAdult() ? 'adult' : 'child');
+    if (to) { location.replace('#/words/g/' + encodeURIComponent(to)); return; }
+  }
   // A test is due: no page shows its words, so the page goes to the test instead.
   const due = testGuard(found.pattern, found.params, S.readWords(), W.localDay(Date.now()), chapterWords);
   if (due) MW.testTodayPage(main, due); else cleanup = found.view(main, found.params) || null;

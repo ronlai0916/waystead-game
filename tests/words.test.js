@@ -77,7 +77,8 @@ test('S6: a child keeps the old rule (before the test date and before the test b
   const begun = attempt(d, g, 'fruit', before, { kind: 't' });
   assert.equal(W.canEditAsChild(begun, g, before), false, 'test begun');
   const src = readFileSync(new URL('../site/js/words-views.js', import.meta.url), 'utf8');
-  assert.match(src, /W\.canEditAsChild\(d, g, day\)/);
+  assert.match(src, /W\.editLinkLabel\(d, g, day, roleNow\(\)\)/); // the link follows canEditAsChild (words-doc)
+  assert.match(src, /W\.canEditAsChild\(S\.readWords\(\), g, today\(\)\)/);
   assert.doesNotMatch(src, /W\.canEdit\(/, 'the child side never uses the grown-up rule');
 });
 

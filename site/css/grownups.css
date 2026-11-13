@@ -122,6 +122,11 @@
 .gu-word__notes b { font-size: 0.8rem; font-weight: 400; color: var(--muted); }
 .gu-word__notes span { display: block; }
 .gu-word__prep { display: flex; flex-wrap: wrap; gap: 6px; }
+.gu-weekpick { padding: 18px 22px; margin-bottom: 20px; display: grid; gap: 10px; }
+.gu-weekpick p { margin: 0; }
+.gu-weekpick__btn { justify-self: start; min-height: 48px; text-align: left; display: inline-flex; align-items: center; gap: 12px; }
+.gu-weekpick__state { display: inline-block; min-width: 3.2em; padding: 2px 12px; border-radius: 999px; border: 2px solid currentColor; text-align: center; font-weight: 800; }
+.gu-weekpick__btn[aria-pressed="true"] { border-color: var(--link); }
 .gu-deleted { padding: 18px 22px; margin-bottom: 20px; }
 .gu-deleted ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
 .gu-deleted li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 8px 0; border-top: 1px solid var(--line); }

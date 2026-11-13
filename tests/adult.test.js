@@ -86,5 +86,5 @@ test('the files: no inline style, the bar is a Spellbright-only mode, the shared
   assert.equal(read('shared/topbar/nav.js'), read('site/js/nav/nav.js'));
   const sw = read('site/sw.js');
   for (const f of ['css/adult.css', 'js/adult-doc.js', 'js/adult-chrome.js']) assert.ok(sw.includes("'" + f + "'"), f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-13d'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-13e'/);
 });

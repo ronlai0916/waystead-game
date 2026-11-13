@@ -2,6 +2,7 @@
 // and may return a cleanup function.
 import * as D from './data.js';
 import * as S from './store.js';
+import * as W from './words-doc.js';
 import { speak, spellOut, stop } from './speech.js';
 import { runSession, summaryHtml } from './play.js';
 import { esc, ICON, picture, chunked, chunkText, boldWord, redact, shuffle, toast, meter, applyMeters } from './ui.js';
@@ -386,14 +387,16 @@ export function progress(main) {
     + '<div class="settings">' + yearBlockHtml('y34') + yearBlockHtml('y56')
     + '<div class="card setting"><h2>Open every chapter</h2><p class="muted small">Normally a chapter opens when the one before it is passed. Turn this on to jump ahead.</p>'
     + '<label class="radios"><input type="checkbox" data-unlock' + (S.unlockAll() ? ' checked' : '') + '> Open all chapters</label></div>'
-    + '<div class="card setting"><h2>Start again</h2><p class="muted small">' + (S.currentPlayer() ? 'Clears chapter progress and tricky words for the player signed in, on every device.' : 'Clears chapter progress and tricky words in this browser.') + '</p>'
-    + '<div class="btnrow"><button type="button" class="btn btn--ghost" data-reset>Clear my progress</button></div></div>'
+    + (document.body.classList.contains('is-adult') ? '<div class="card setting" data-startagain><h2>Start again</h2><p class="muted small">' + (S.currentPlayer() ? 'Clears chapter progress and tricky words for the player signed in, on every device.' : 'Clears chapter progress and tricky words in this browser.') + '</p>'
+    + '<div class="btnrow"><button type="button" class="btn btn--ghost" data-reset>Clear my progress</button></div></div>' : '')
     + '</div></section>';
   applyMeters(main);
   main.querySelector('[data-unlock]').addEventListener('change', (e) => { S.setUnlockAll(e.target.checked); toast(e.target.checked ? 'All chapters open' : 'Chapters open one by one'); });
   const reset = main.querySelector('[data-reset]');
   let armed = false;
-  reset.addEventListener('click', () => {
+  if (reset) reset.addEventListener('click', () => {
+    // Only a grown-up clears progress (it wipes every week): the role is checked again here.
+    if (!W.mayClearProgress(document.body.classList.contains('is-adult') ? 'adult' : 'child')) return;
     if (!armed) { armed = true; reset.textContent = 'Tap again to clear everything'; reset.classList.add('btn--primary'); return; }
     S.resetAll(); toast('Progress cleared'); progress(main);
   });

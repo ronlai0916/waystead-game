@@ -117,7 +117,7 @@ export const setUnlockAll = (on) => write(KEYS.unlockAll, !!on);
 export function resetAll() {
   if (player) {
     update(() => P.reset(Date.now()));
-    updateWords(() => W.reset(Date.now()));
+    updateWords((d) => W.reset(Date.now(), d));
     try { localStorage.removeItem(KEYS.unlockAll); } catch (e) { /* ignore */ }
     return;
   }

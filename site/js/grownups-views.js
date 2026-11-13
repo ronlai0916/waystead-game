@@ -287,8 +287,11 @@ export function childDashboard(main, { cid, gid }) {
       ? '<section class="card gu-deleted" data-deletedlist><h2>Deleted weeks</h2><p class="small muted">Removed in the last 30 days. ' + esc(nick) + '\'s practice on these words was kept.</p><ul>'
         + o.deleted.map((x) => '<li data-gone="' + esc(x.id) + '"><span><b>' + esc(x.name) + '</b> <span class="muted small">' + plural(x.words, 'word') + ' · test ' + esc(nb(W.dayLabel(x.test))) + '</span></span>'
           + '<button type="button" class="btn btn--ghost btn--small" data-restore="' + esc(x.id) + '">Bring back<span class="sr">: ' + esc(x.name) + '</span></button></li>').join('') + '</ul></section>' : '';
+    const pickOn = W.weekPickOn(d);
+    const pickCard = '<section class="card gu-weekpick" data-weekpick><p class="small muted" id="gu-weekpick-help">' + esc(P.weekPickHelp(nick, pickOn)) + '</p>'
+      + '<button type="button" class="btn btn--ghost gu-weekpick__btn" data-weekpick-toggle aria-pressed="' + pickOn + '" aria-describedby="gu-weekpick-help"><span>' + esc(P.WEEKPICK_NAME) + '</span><span class="gu-weekpick__state" aria-hidden="true" data-weekpick-state>' + P.weekPickState(pickOn) + '</span></button></section>';
     if (!g) {
-      main.innerHTML = '<section class="wrap page grownups gu" data-noweek>' + head(nick + '\'s week', PRIVACY) + notes
+      main.innerHTML = '<section class="wrap page grownups gu" data-noweek>' + head(nick + '\'s week', PRIVACY) + notes + pickCard
         + '<div class="card gu-empty"><h2>No week yet</h2><p class="muted">Plan a week of words and a test date for ' + esc(nick) + '.</p><a class="btn btn--primary" href="' + planHref(id) + '" data-plan>' + I.plus + 'Plan a week</a></div>' + deleted + '</section>';
       wire(null);
       return;
@@ -321,7 +324,7 @@ export function childDashboard(main, { cid, gid }) {
       + '<div class="card stat"><b>' + over.independent + '%</b><span>Independent first goes</span><span class="muted small">' + over.clean + ' of ' + plural(over.firstGoes, 'first go', 'first goes') + '</span></div></div>'
       + (rep.sentences.length ? '<h3>Sentences</h3><ul class="report__list">' + rep.sentences.map((s) => '<li><b>' + esc(s.word) + ':</b> ' + esc(s.text) + '</li>').join('') + '</ul>' : '')
       + '<p class="small muted">' + esc(PRIVACY) + '</p></section>';
-    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + P.weekLine(k)) + notes + switcher + glance + path + wordsCard + more + deleted + '</section>';
+    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + P.weekLine(k)) + notes + switcher + glance + path + wordsCard + more + pickCard + deleted + '</section>';
     wire(g);
   }
   function pathSub(v, k) {
@@ -330,6 +333,19 @@ export function childDashboard(main, { cid, gid }) {
   }
   function wire(g) {
     const q = (s) => main.querySelector(s);
+    const pick = q('[data-weekpick-toggle]');
+    if (pick) {
+      pick.addEventListener('click', async () => {
+        const on = !W.weekPickOn(c.words);
+        line = ''; problemLine = '';
+        const r = await change((doc) => ({ doc: W.setWeekPick(doc, on, Date.now()) }));
+        if (!r) return;
+        line = P.weekPickFlash(on);
+        draw();
+        const b = main.querySelector('[data-weekpick-toggle]');
+        if (b) b.focus();
+      });
+    }
     const printBtn = q('[data-print]');
     if (printBtn) printBtn.addEventListener('click', () => window.print());
     const del = q('[data-delete]');

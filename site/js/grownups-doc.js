@@ -370,3 +370,12 @@ export function primaryAction(items) {
 export const isCompact = (n) => n >= 3;
 /** The Waystead account's home (its children page is not a known address): "Add a child" and "Manage children". */
 export const accountHomeHref = (origin) => accountUrl(origin, 'adult');
+
+// ---- the week-choice switch (SB3-G) ----------------------------------------------------
+export const WEEKPICK_NAME = 'Your child can choose which week to study';
+export const weekPickState = (on) => (on ? 'On' : 'Off');
+export const weekPickLabel = (on) => 'Your child can choose which week to study: ' + (on ? 'On' : 'Off');
+export const weekPickHelp = (nick, on) => on
+  ? nick + ' can pick which week to study when there is more than one. Switch it off and ' + nick + ' sees the week the app picks.'
+  : nick + ' sees the week the app picks. A week ' + nick + ' chose on the device is ignored until you switch this back on.';
+export const weekPickFlash = (on) => (on ? 'Your child can choose which week to study again.' : 'Your child now sees the week the app picks.');

@@ -2962,6 +2962,78 @@ scene('SB3-F adult Menu: My words is the second row and opens My words; the Lear
   ok(!await visible('.foot__papers'), 'never for a visitor');
 });
 
+// ---- SB3-G: only a grown-up deletes a week; a grown-up's switch for the week choice --------------------
+scene('SB3-G: a child never gets a delete, on the group page or the edit form', async () => {
+  await seedChild(twoWeeksDoc(), plus(3));
+  await open(plus(3), '#/words/g/g1');
+  await until('document.querySelector("main h1")', 'the group page');
+  ok(!/delete/i.test(await text()), 'no word "delete" on a child\'s group page: ' + (await text()).slice(0, 80));
+  ok(await ev('[...document.querySelectorAll("main a[href$=\\"/edit\\"]")].every((a) => !/delete/i.test(a.textContent))'), 'no edit link says delete');
+  await go('#/words/g/g1/edit');
+  await until('document.querySelector("[data-save]")', 'the edit form');
+  ok(!await has('[data-delete]') && !/delete/i.test(await text()), 'the child\'s form has no Delete button or wording');
+  step('from the test day the child has no edit link and the edit route goes back to the group');
+  await open(plus(5), '#/words/g/g1');
+  await until('document.querySelector("main h1")', 'the group page on test day');
+  ok(!await has('main a[href$="/edit"]') && !/delete/i.test(await text()), 'no edit link at all');
+  await go('#/words/g/g1/edit');
+  await until('location.hash === "#/words/g/g1"', 'sent back to the group');
+  ok(!await has('[data-delete]'), 'no delete path');
+});
+
+scene('SB3-G: the parent switches the week choice off, the child has no switcher; on again restores it', async () => {
+  await signedOutBlank(plus(3));
+  acct.who = adultMe;
+  acct.put(CHILD, 'spellbright', 'words', twoWeeksDoc());
+  acct.put(CHILD2, 'spellbright', 'words', wrenWeek());
+  await open(plus(3), '#/grownups/child/' + CHILD);
+  await until('document.querySelector("[data-weekpick-toggle]")', 'the switch');
+  const tog = '[data-weekpick-toggle]';
+  ok(await ev('document.querySelector("' + tog + '").getAttribute("aria-pressed")') === 'true' && /Your child can choose which week to study/.test(await text(tog)) && /On/.test(await text(tog + ' [data-weekpick-state]')) && await ev('document.querySelector("' + tog + ' [data-weekpick-state]").getAttribute("aria-hidden")') === 'true', 'on by default: ' + await text(tog));
+  ok((await rect(tog)).h >= 48, 'at least 48 px high');
+  await click(tog);
+  await until('/Off/.test(document.querySelector("' + tog + ' [data-weekpick-state]").textContent)', 'Off');
+  ok(await ev('document.querySelector("' + tog + '").getAttribute("aria-pressed")') === 'false', 'aria-pressed false');
+  ok(saved().weekPick && saved().weekPick.on === false, 'saved to the child\'s words in the account');
+  async function asChild(label) {
+    const doc = saved();
+    acct.who = childMe;
+    await ev('localStorage.setItem("wa.player",' + q(JSON.stringify({ id: CHILD, name: 'Robin', avatar: null })) + ')');
+    await ev('localStorage.setItem("sb.words:' + CHILD + '",' + q(JSON.stringify(doc)) + ')');
+    await ev('localStorage.setItem("sb.week:' + CHILD + '","g2")');
+    await open(plus(3), '#/');
+    await until('document.querySelector("[data-room]")', label + ': the home');
+  }
+  await asChild('off');
+  ok(!await has('.weekline') && !await has('[data-week-change]') && !/Week:/.test(await text()), 'off: no Week line or Change');
+  ok(!/Week two/.test(await text('h1, .homesay')) , 'off: the saved week is ignored');
+  await go('#/words/g/g1');
+  await until('document.querySelector("main h1")', 'the group page');
+  ok(!await has('[data-study-week]'), 'off: no Study this week buttons');
+  step('off: another week\'s group page goes to the pick; a child has no Clear my progress');
+  await go('#/words/g/g2');
+  await until('location.hash === "#/words/g/g1"', 'sent to the pick');
+  ok(!await has('main .list a[href*="/g/"]'), 'no Other groups list');
+  await go('#/words/g/g2/path');
+  await until('location.hash === "#/words/g/g1"', 'another week\'s path goes to the pick');
+  await go('#/words/g/g2/games');
+  await until('location.hash === "#/words/g/g1"', 'another week\'s games go to the pick');
+  await go('#/words');
+  await until('document.querySelector("main h1")', 'My words');
+  ok(!await has('main .list a[href*="/g/"]') && /Week one/.test(await text('main h1')), 'My words shows the pick only: ' + await text('main h1'));
+  await go('#/progress');
+  await until('document.querySelector("main h1")', 'Progress');
+  ok(!await has('[data-reset]') && !/Clear my progress/.test(await text()), 'no Clear my progress for a child');
+  step('on again');
+  acct.who = adultMe;
+  await open(plus(3), '#/grownups/child/' + CHILD);
+  await until('document.querySelector("[data-weekpick-toggle]")', 'the switch again');
+  await click(tog);
+  await until('/On/.test(document.querySelector("' + tog + ' [data-weekpick-state]").textContent)', 'On');
+  await asChild('on');
+  ok(await has('[data-week-change]'), 'on: the Change button is back');
+});
+
 // ---- run ------------------------------------------------------------------------------------
 let failed = 0;
 async function main() {
