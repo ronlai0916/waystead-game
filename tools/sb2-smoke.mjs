@@ -115,7 +115,7 @@ function listen() {
       const t = m.params.entry.text + ' ' + (m.params.entry.url || '');
       // Expected: a 404 from the voice (the device speaks instead), a 409 from a save (merged and sent again),
       // the 403 and 404 the Grown-ups scenes ask for, and failed calls while the network is meant to be down.
-      if (!/\/api\/voice\//.test(t) && !/status of 40[349]/.test(t) && !(/net::ERR/.test(t) && netDown)) problems.push('log: ' + t);
+      if (!/\/api\/voice\//.test(t) && !/wordbright\/js\/account\/api\.js/.test(t) /* Wordbright's own CSP does not list the test account on :3000 */ && !/status of 40[349]/.test(t) && !(/net::ERR/.test(t) && netDown)) problems.push('log: ' + t);
     }
   });
 }
@@ -1063,10 +1063,9 @@ scene('an adult playing as a child can switch player from Settings', async () =>
 
 scene('an adult keeps today\'s top bar and pages', async () => {
   await seedAdult();
-  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'the adult\'s home');
-  ok(!await ev('document.body.classList.contains("is-child")'), 'not a child\'s chrome');
-  ok(await visible('#theme') && await visible('.foot') && !await visible('#child-menu'), 'the look menu and footer show, no child Menu');
-  ok(await ev('document.querySelectorAll(".topbar__nav a").length') === 4, 'the four links');
+  await until('document.querySelector("[data-child],[data-first],[data-noapi]")', 'the adult\'s home');
+  ok(!await ev('document.body.classList.contains("is-child")') && await ev('document.body.classList.contains("is-adult")'), 'the adult\'s chrome, not a child\'s');
+  ok(await visible('#adult-menu-btn') && await visible('#adult-chip') && !await visible('#theme') && await visible('.foot') && !await visible('#child-menu'), 'Menu and the account chip show, the old look menu and the child Menu do not');
 });
 
 scene('an adult with a cached player keeps the full top bar: slow account, then no account', async () => {
@@ -1083,8 +1082,8 @@ scene('an adult with a cached player keeps the full top bar: slow account, then 
     ok(!await ev('document.body.classList.contains("is-child")'), 'no child bar while the account is slow (' + i + ')');
     ok(!await visible('#child-menu'), 'no child Menu while the account is slow');
   }
-  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'the adult\'s home after /api/me', 9000);
-  ok(!await ev('document.body.classList.contains("is-child")') && await visible('#theme') && !await visible('#child-menu'), 'the adult bar after the answer');
+  await until('document.querySelector("[data-child],[data-first],[data-noapi]")', 'the adult\'s home after /api/me', 9000);
+  ok(!await ev('document.body.classList.contains("is-child")') && await visible('#adult-menu-btn') && !await visible('#child-menu'), 'the adult bar after the answer');
   acct.slowMe = 0;
   step('account offline, a cached player that has no kind');
   acct.offline = true;
@@ -1159,7 +1158,7 @@ scene('an adult\'s keyboard is exactly as before: 46 x 54 keys, 5 px gap at 1280
   await width(1280, 900);
 });
 
-const bar = () => ev('({ child: document.body.classList.contains("is-child"), pending: document.body.classList.contains("is-pending") || document.documentElement.classList.contains("wa-pre"), nav: !!document.querySelector(".topbar__nav") && document.querySelector(".topbar__nav").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector(".topbar__nav")).visibility !== "hidden", chip: document.querySelector("#player-slot") && document.querySelector("#player-slot").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector("#player-slot")).visibility !== "hidden", look: !!document.querySelector("#theme") && document.querySelector("#theme").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector("#theme")).visibility !== "hidden", foot: !!document.querySelector(".foot") && document.querySelector(".foot").getBoundingClientRect().height > 0 && getComputedStyle(document.querySelector(".foot")).visibility !== "hidden", menu: !document.querySelector("#child-menu").hidden && document.querySelector("#child-menu").getBoundingClientRect().width > 0, brand: document.querySelector(".brand").getBoundingClientRect().width > 0 })');
+const bar = () => ev('({ adult: !!document.querySelector("#adult-menu-btn") && document.querySelector("#adult-menu-btn").getBoundingClientRect().width > 0, child: document.body.classList.contains("is-child"), pending: document.body.classList.contains("is-pending") || document.documentElement.classList.contains("wa-pre"), nav: !!document.querySelector(".topbar__nav") && document.querySelector(".topbar__nav").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector(".topbar__nav")).visibility !== "hidden", chip: document.querySelector("#player-slot") && document.querySelector("#player-slot").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector("#player-slot")).visibility !== "hidden", look: !!document.querySelector("#theme") && document.querySelector("#theme").getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector("#theme")).visibility !== "hidden", foot: !!document.querySelector(".foot") && document.querySelector(".foot").getBoundingClientRect().height > 0 && getComputedStyle(document.querySelector(".foot")).visibility !== "hidden", menu: !document.querySelector("#child-menu").hidden && document.querySelector("#child-menu").getBoundingClientRect().width > 0, brand: document.querySelector(".brand").getBoundingClientRect().width > 0 })');
 /** Sample the top bar every 60 ms for `ms`. */
 async function sampleBar(ms) { const out = []; const t0 = Date.now(); while (Date.now() - t0 < ms) { out.push({ at: Date.now() - t0, ...await bar() }); await sleep(60); } return out; }
 async function openCached(day, hash = '#/') {
@@ -1197,7 +1196,7 @@ scene('an adult with a cached player and a slow account: never the child bar, th
   acct.slowMe = 0;
   ok(seen.every((x) => !x.child && !x.menu), 'never the child bar');
   ok(seen.slice(0, 5).every((x) => !x.nav && !x.look && !x.chip), 'the mark alone while waiting');
-  ok(seen.at(-1).look && seen.at(-1).foot && !seen.at(-1).pending, 'then the full bar: ' + JSON.stringify(seen.at(-1)));
+  ok((seen.at(-1).look || seen.at(-1).adult) && seen.at(-1).foot && !seen.at(-1).pending, 'then the full bar: ' + JSON.stringify(seen.at(-1)));
   step('offline');
   acct.offline = true;
   netDown = true;
@@ -1228,13 +1227,13 @@ scene('More practice: Chapters, Pick words, Tricky words, Progress, My word numb
   ok((await rect('.sheetrow[data-row=practice]')).h >= 48, 'the row is 48 px high');
   await allViews('child-menu-4');
   await click('.sheetrow[data-row=practice]');
-  await until('document.querySelector(".shortcuts")', 'the chapters page');
+  await until('document.querySelector(".morerows")', 'the chapters page');
   ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
-  ok(await ev('[...document.querySelectorAll(".shortcuts a")].every((a) => a.getBoundingClientRect().height >= 48 && a.getBoundingClientRect().width >= 48)'), 'the links are at least 48 px');
+  ok(await ev('[...document.querySelectorAll(".morerows a")].every((a) => a.getBoundingClientRect().height >= 48 && a.getBoundingClientRect().width >= 48)'), 'the links are at least 48 px');
   await allViews('child-chapters');
   for (const [href, ready] of [['#/custom', 'main h1'], ['#/tricky', 'main h1'], ['#/progress', 'main h1']]) {
     await go('#/chapters');
-    await click('.shortcuts a[href="' + href + '"]');
+    await click('.morerows a[href="' + href + '"]');
     await until('location.hash === ' + q(href) + ' && document.querySelector(' + q(ready) + ')', href);
     await click('#child-back');
     await until('location.hash === "#/" || location.hash === ""', 'back home from ' + href);
@@ -1406,18 +1405,17 @@ scene('grown-ups: home with two children, and one child\'s week', async () => {
   storiesHidden = true; // the stories wait to be read: the notice comes first
   try {
     await seedTwo();
-    await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'the Grown-ups card on the adult\'s home');
+    await until('document.querySelector("[data-child],[data-first],[data-noapi]")', 'the adult\'s home is the week at a glance');
     ok(!await has('[data-room]'), 'an adult doesn\'t get a child\'s room');
-    await allViews('gu-home-card');
-    await click('a[href="#/grownups"]');
+    await go('#/grownups');
     await until('document.querySelectorAll("[data-child]").length === 2', 'a card for each child');
     ok(!await has('table'), 'no table on the home');
     ok(await ev('(() => { const n = document.querySelector("[data-stories]"), c = document.querySelector("[data-child]"); return !!n && !!(n.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); })()'), 'the stories notice is before the children');
     ok(/20 stories to read first/.test(await textOf('[data-stories]')), 'the notice counts the stories');
     const robin = await textOf('[data-child="' + CHILD + '"]');
-    ok(/Robin Year 4/.test(robin) && /Week one/.test(robin) && /4 words/.test(robin), 'name, year, group and word count: ' + robin);
+    ok(/Robin Year 4/.test(robin) && /Week one/.test(robin) && /test /.test(robin), 'name, year, group and word count: ' + robin);
     ok(/Needs help/.test(robin) && /build/.test(robin), 'a Needs help word on the card');
-    ok(/Today Game day/.test(robin) && /Jobs waiting None/.test(robin), 'today and waiting: ' + robin);
+    ok(/Next: Game day\. Then Story day\./.test(robin), 'the next job: ' + robin);
     ok(await ev('document.querySelectorAll("[data-child=\\"' + CHILD + '\\"] .gu-stones li").length') === 7, 'seven stones');
     ok(/On track/.test(await textOf('[data-child="' + CHILD + '"] [data-chip]')), 'On track');
     ok(/Wren Year 6/.test(await textOf('[data-child="' + CHILD2 + '"]')), 'the second child');
@@ -1777,7 +1775,7 @@ async function toStart(word) {
 
 scene('grown-ups: when things go wrong', async () => {
   await seedAdult();
-  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'home');
+  await until('document.querySelector("[data-child],[data-first],[data-noapi]")', 'home');
   step('409: the child saved first');
   await toStart('guard');
   const newer = W.addTry(saved(), { id: 'late', word: 'earth', day: plus(2), group: 'g1', kind: 'p', tries: 0, peeks: 0, clean: true, now: Date.parse(plus(2) + 'T09:30:00') });
@@ -1835,7 +1833,7 @@ scene('story review', async () => {
 });
 async function storyReview() {
   await seedAdult();
-  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'home');
+  await until('document.querySelector("[data-child],[data-first],[data-noapi]")', 'home');
   await go('#/grownups/stories');
   await until('document.querySelectorAll("[data-story]").length === 20', 'all 20 stories');
   ok(/0 of 20 stories are live/.test(await text('[data-summary]')), 'none live');
@@ -1876,7 +1874,7 @@ scene('permissions', async () => {
   step('with the flag off');
   flagOn = false;
   await seedAdult();
-  await until('document.querySelector("a[href=\\"#/grownups\\"]")', 'home');
+  await until('document.querySelector("[data-child],[data-first],[data-noapi]")', 'home');
   await go('#/grownups');
   await until('document.querySelector("[data-noapi]")', 'the note');
   ok(await has('a[href="#/grownups/stories"]'), 'the story review still opens');
@@ -2339,7 +2337,9 @@ scene('keyboard fits in landscape', async () => {
             const b = KB_BASE[role + ' ' + page + ' ' + s + ' ' + w + 'x' + h];
             ok(b, id + ': no base values recorded');
             const now = [m.kb.x, m.kb.y, m.kb.w, m.kb.h, m.q.w, m.q.h].map((n) => Math.round(n * 10) / 10);
-            ok(JSON.stringify(now) === JSON.stringify(b), id + ': keyboard moved: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now));
+            // An adult's page now has the Waystead Learning line in its foot (SB3-F): a tall page may gain a scroll bar, which makes the keyboard up to 17 px narrower. Where it sits is unchanged.
+            const same = role === 'adult' ? now.every((n, i) => (i === 2 || i === 4 ? n <= b[i] + 0.5 && n >= b[i] - 17 : i === 0 ? Math.abs(n - b[i]) <= 9 : n === b[i])) : JSON.stringify(now) === JSON.stringify(b);
+            ok(same, id + ': keyboard moved: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now));
           }
           if (role === 'child' && w >= 820 && h <= 1000 && (s === 'garden' || page === 'flower')) {
             await ev('window.scrollTo(0, 0)');
@@ -2390,6 +2390,576 @@ scene('keyboard fits in landscape', async () => {
   }
   step(cases + ' cases');
   await width(390, 900);
+});
+
+// ---- SB3-F: the adult's front page, top bar, Menu and account panel ---------------------------
+const KIDS2 = [{ id: CHILD, nickname: 'Robin', year: 4, avatar: null }, { id: CHILD2, nickname: 'Wren', year: 6, avatar: null }];
+const setKids = (list) => { acct.children = (id) => (id === ADULT ? list : []); };
+function wrenOnTrack() { let d = wrenWeek(); d = W.markStep(d, W.groupById(d, 'w1'), 'fix', plus(1), Date.parse(plus(1) + 'T10:00:00')); return d; }
+function endedWeek() {
+  let d = studied(weekDoc(WORDS, plus(3)), 'g1', plus(1));
+  WORDS.forEach((w, i) => { d = W.addTry(d, { id: 'et' + i, word: w, day: plus(3), group: 'g1', kind: 't', tries: 0, peeks: 0, clean: true, now: Date.parse(plus(3) + 'T10:00:00') + i }); });
+  return W.markStep(d, W.groupById(d, 'g1'), 'mend', plus(4), Date.parse(plus(4) + 'T10:00:00'));
+}
+async function seedFront(docs, kids, day = plus(2), who = adultMe) {
+  await signedOutBlank(day);
+  acct.who = who;
+  setKids(kids);
+  for (const [id, d] of docs) acct.put(id, 'spellbright', 'words', d);
+  await open(day, '#/');
+  await until('document.querySelector("[data-child],[data-first]")', 'the front page');
+}
+const primaries = () => ev('[...document.querySelectorAll("main .btn--primary")].map((e) => e.textContent.replace(/\\s+/g, " ").trim())');
+const inFirstScreen = async (sel, w, h) => { await width(w, h); const r = await rect(sel); return r.y >= 0 && r.y + r.h <= h; };
+
+scene('front page (adult): two children, one green button in the header row, stable order', async () => {
+  storiesHidden = true;
+  try {
+    await seedFront([[CHILD, childWeek()], [CHILD2, wrenWeek()]], KIDS2);
+    ok(!await has('[data-room]') && /^#\/?$/.test(await ev('location.hash')), 'the adult\'s #/ is the week at a glance, not the chapters or a room');
+    ok(/Wednesday 4 November/i.test(await text('[data-date]')), 'a date eyebrow: ' + await text('[data-date]'));
+    ok(/Wren has a job waiting\. Robin is on track\./.test(await text('[data-summary]')), 'one summary sentence: ' + await text('[data-summary]'));
+    ok((await primaries()).join('|') === 'See Wren’s week', 'one green button, the first child who needs attention: ' + await primaries());
+    ok(await ev('!!document.querySelector(".gu-top [data-primary]") && !!document.querySelector(".gu-top .btn--ghost[data-planweek]")'), 'the green button is in the header row, with a quiet Plan a week');
+    ok(await ev('[...document.querySelectorAll("[data-child] [data-see]")].every((e) => e.classList.contains("btn--ghost"))'), 'every card button is quiet');
+    ok((await ev('[...document.querySelectorAll("[data-child]")].map((e) => e.dataset.child)')).join() === CHILD + ',' + CHILD2, 'the account\'s order');
+    ok(!await has('.gu-facts') && await ev('document.querySelectorAll(".gu-stones--one").length') === 2, 'no facts tiles; the stone strip on each card');
+    ok(/Next: Game day\. Then Story day\./.test(await textOf('[data-child="' + CHILD + '"] [data-next]')), 'Robin: ' + await textOf('[data-child="' + CHILD + '"]'));
+    ok(/Next: Fix it in \(waiting\)\. Then Game day\./.test(await textOf('[data-child="' + CHILD2 + '"] [data-next]')), 'Wren: ' + await textOf('[data-child="' + CHILD2 + '"] [data-next]'));
+    ok(/Needs help/.test(await textOf('[data-child="' + CHILD + '"] [data-help]')) && /build/.test(await textOf('[data-child="' + CHILD + '"] [data-help]')), 'Needs help: build');
+    ok(await ev('[...document.querySelectorAll(".gu-stones--one")].every((o) => o.querySelectorAll("li.is-today").length === 1)'), 'the sun is on one stone in each strip');
+    ok(/20 stories to read first/.test(await textOf('[data-stories]')), 'the stories notice is kept');
+    ok(/Sun: next job/.test(await textOf('[data-stonekey]')), 'the key');
+    for (const [w, h] of [[1180, 640], [390, 844]]) ok(await inFirstScreen('[data-primary]', w, h), 'the green button is in the first screen at ' + w + 'x' + h);
+    await width(390, 844);
+    ok(await ev('[...document.querySelectorAll(".gu-stones--one")].every((o) => new Set([...o.children].map((li) => Math.round(li.getBoundingClientRect().top))).size === 1)'), 'the seven stones stay on one line at 390');
+    step('the foot: one quiet line from Waystead Learning, and the part-of-Waystead line, not For parents or More games');
+    ok(await visible('.foot__papers') && /11\+ English practice papers/.test(await text('.foot__papers')) && /learning\.waystead\.co\.uk\/packs/.test(await ev('document.querySelector(".foot__papers a").href')), 'the papers line');
+    ok(await visible('.foot') && !await visible('.foot__more') && /part of Waystead/.test(await text('.foot')), 'the footer has the Waystead line only');
+    await allViews('front-two');
+    await click('[data-primary]');
+    await until('location.hash === "#/grownups/child/' + CHILD2 + '"', 'Wren\'s week');
+    ok(await visible('.foot__papers'), 'the papers line is on the other adult pages too');
+  } finally { storiesHidden = false; setKids(KIDS2); }
+});
+
+scene('front page (adult): one child; everyone on track; a week that has ended; a child with no week', async () => {
+  try {
+    step('one child');
+    await seedFront([[CHILD, childWeek()]], [KIDS2[0]]);
+    ok(await ev('document.querySelectorAll("[data-child]").length') === 1 && /Robin is on track\./.test(await text('[data-summary]')), 'one card: ' + await text('[data-summary]'));
+    ok((await primaries()).join('|') === 'Plan a week', 'Plan a week is the green button when no one needs you: ' + await primaries());
+    ok(await has('.gu-top [data-planweek].btn--primary'), 'it is in the header row');
+    await allViews('front-one');
+    step('everyone on track');
+    await seedFront([[CHILD, childWeek()], [CHILD2, wrenOnTrack()]], KIDS2);
+    ok(/Robin and Wren are on track\./.test(await text('[data-summary]')), await text('[data-summary]'));
+    ok((await primaries()).join('|') === 'Plan a week' && await ev('[...document.querySelectorAll("[data-see]")].every((e) => e.classList.contains("btn--ghost"))'), 'Plan a week leads; the cards are quiet');
+    await allViews('front-ontrack');
+    step('a week that has ended');
+    await seedFront([[CHILD, endedWeek()], [CHILD2, wrenOnTrack()]], KIDS2, plus(5));
+    ok(/Robin’s week has ended\. Wren has 2 jobs waiting\./.test(await text('[data-summary]')), await text('[data-summary]'));
+    ok((await primaries()).join('|') === 'Plan Robin’s next week', 'the green button plans the next week: ' + await primaries());
+    ok(/week ended on/.test(await textOf('[data-child="' + CHILD + '"] [data-next]')) && await has('[data-child="' + CHILD + '"] [data-plan]') && /Week finished/.test(await textOf('[data-child="' + CHILD + '"] [data-chip]')), 'the ended card: ' + await textOf('[data-child="' + CHILD + '"]'));
+    await allViews('front-ended');
+    step('a child with no week');
+    await seedFront([[CHILD, childWeek()]], KIDS2);
+    ok((await primaries()).join('|') === 'Plan a week for Wren', 'Plan a week for Wren is the green button: ' + await primaries());
+    ok(/No week yet/.test(await textOf('[data-child="' + CHILD2 + '"] [data-chip]')) && await ev('document.querySelector("[data-child=\\"' + CHILD2 + '\\"] [data-plan]").classList.contains("btn--ghost")'), 'the card button is quiet');
+    await allViews('front-noweek');
+  } finally { setKids(KIDS2); }
+});
+
+scene('front page (adult): five children get one compact row each; no children says what to do first', async () => {
+  const ids = [1, 2, 3, 4, 5].map((n) => 'b' + n + '111111-1111-4111-8111-111111111111');
+  const names = ['Amara', 'Ben', 'Chloe', 'Dev', 'Ellie'];
+  const kids = ids.map((id, i) => ({ id, nickname: names[i], year: 4, avatar: null }));
+  try {
+    await seedFront(ids.map((id, i) => [id, i === 1 || i === 4 ? wrenWeek() : childWeek()]), kids);
+    ok(await ev('document.querySelectorAll(".gu-card--row").length') === 5 && await ev('document.querySelectorAll(".gu-stones").length') === 0, 'five rows, no stone strips');
+    ok(/Ben and Ellie need you\. Three children are on track\./.test(await text('[data-summary]')), await text('[data-summary]'));
+    ok((await ev('[...document.querySelectorAll("[data-child]")].map((e) => e.dataset.child)')).join() === ids.join(), 'stable order');
+    ok((await primaries()).join('|') === 'See Ben’s week' && await ev('[...document.querySelectorAll("[data-see]")].every((e) => e.classList.contains("btn--ghost"))'), 'Ben gets the one green button, in the header: ' + await primaries());
+    for (const [w, h] of [[1180, 640], [390, 844]]) ok(await inFirstScreen('[data-primary]', w, h), 'the green button is in the first screen at ' + w + 'x' + h);
+    await width(390, 844);
+    const tall = await ev('document.documentElement.scrollHeight');
+    ok(tall < 2300, 'five rows are not three screens at 390: ' + tall);
+    await allViews('front-five');
+    step('no children');
+    await seedFront([], []);
+    ok(await has('[data-first]') && /Add your first child/.test(await text('[data-first] h1')) && !await has('[data-planweek]'), 'what to do first: ' + await text('main'));
+    ok(/\/account$/.test(await ev('document.querySelector("[data-addchild]").href')) && /Add a child/.test(await text('[data-addchild]')), 'Add a child, on the Waystead account');
+    ok(await visible('.foot__papers'), 'the papers line');
+    await allViews('front-none');
+  } finally { setKids(KIDS2); }
+});
+
+scene('adult bar: the mark with Grown-ups, Menu, the account chip; one row at 390; the old bar is gone', async () => {
+  await seedFront([[CHILD, childWeek()], [CHILD2, wrenWeek()]], KIDS2);
+  await width(1280, 800);
+  ok(await ev('document.body.classList.contains("is-adult") && !document.body.classList.contains("is-child")'), 'the adult chrome');
+  ok(/Grown-ups/i.test(await text('.brand')) && await visible('.brand__tag'), 'the mark with a Grown-ups tag');
+  ok(await ev('document.querySelector(".brand").getAttribute("href")') === '#/', 'one link to the front page');
+  ok(await visible('#adult-menu-btn') && await visible('#adult-chip'), 'Menu and the chip');
+  ok(await ev('[...document.querySelectorAll(".topbar a, .topbar button")].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== "hidden"; }).length') === 3, 'three controls in the bar');
+  for (const sel of ['#theme', '.allgames', '#player-slot', '.navmenu']) ok(!await visible(sel), sel + ' has left the adult bar');
+  ok(await ev('getComputedStyle(document.querySelector(".topbar__nav")).display') !== 'none', 'the nav is never display: none');
+  ok(await ev('document.querySelector("#adult-menu-btn").getAttribute("aria-controls")') === 'adult-menu-panel' && await ev('document.querySelector("#adult-chip").getAttribute("aria-controls")') === 'adult-account-panel', 'aria-controls');
+  ok(/Sam/.test(await text('#adult-chip')) && await ev('document.querySelector("#adult-chip").getAttribute("aria-label")') === 'Sam. Account menu', 'the chip shows the name, labelled');
+  for (const w of [390, 360]) {
+    await width(w, 844);
+    const m = await ev('(() => { const i = document.querySelector(".topbar__inner"), ks = [...i.querySelectorAll(".brand, #adult-menu-btn, #adult-chip")].map((e) => e.getBoundingClientRect()); return { h: i.getBoundingClientRect().height, tops: ks.map((r) => Math.round(r.top)), right: Math.max(...ks.map((r) => r.right)), over: document.documentElement.scrollWidth - innerWidth, name: getComputedStyle(document.querySelector(".adultchip__name")).display, tag: getComputedStyle(document.querySelector(".brand__tag")).display, chipW: ks[2].width }; })()');
+    ok(m.h < 70 && new Set(m.tops).size <= 2 && m.right <= w && m.over <= 0, 'one row at ' + w + ': ' + JSON.stringify(m));
+    ok(m.name === 'none' && m.chipW >= 44, 'the chip is the avatar only on a phone: ' + JSON.stringify(m));
+  }
+  step('an account with no name');
+  await seedFront([], [], plus(2), { ...adultMe, displayName: '' });
+  await width(1280, 800);
+  ok(/Your account/.test(await text('#adult-chip')) && await has('#adult-chip .adultface--plain'), 'Your account with a person glyph: ' + await text('#adult-chip'));
+  await click('#adult-chip');
+  await until('!document.querySelector("#adult-account-panel").hidden', 'the panel');
+  ok(!/Grown-up(?!s)/.test(await ev('document.querySelector(".topbar").innerText + " " + document.querySelector("#adult-account-panel").innerText')), 'the word Grown-up is never shown as a name');
+  ok(/Your account/.test(await text('#adult-account-panel .adultwho')), 'the panel says Your account');
+  await shot('adult-chip-noname');
+  await key('Escape');
+});
+
+scene('adult Menu: below the bar on a wide screen, a bottom sheet on a phone; focus, Escape, Close, inert, route change', async () => {
+  await seedFront([[CHILD, childWeek()], [CHILD2, wrenWeek()]], KIDS2);
+  await width(1280, 800);
+  await click('#adult-menu-btn');
+  await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
+  ok(await ev('document.querySelector("#adult-menu-btn").getAttribute("aria-expanded")') === 'true', 'aria-expanded');
+  const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => ({ t: a.querySelector("b").textContent, h: a.getAttribute("href"), tall: a.getBoundingClientRect().height, sub: a.querySelector("span.adultrow__text > span").textContent }))');
+  ok(rows.map((r) => r.t).join() === 'More practice,My words,Pick words,Tricky words,Progress,All games' && rows.map((r) => r.h).join() === '#/chapters,#/words,#/custom,#/tricky,#/progress,../', 'the six rows: ' + JSON.stringify(rows));
+  ok(rows.every((r) => r.tall >= 48 && r.sub.length > 0), 'each row 48 px or more with a helper');
+  ok(await ev('document.querySelector("#adult-menu-panel nav") !== null && !document.querySelector("#adult-menu-panel [role=menu]")'), 'a nav with a list, no role=menu');
+  const bar = await rect('.topbar');
+  const panel = await rect('#adult-menu-panel');
+  ok(panel.y >= bar.y + bar.h - 1, 'the panel is below the bar: ' + JSON.stringify({ bar, panel }));
+  ok(await ev('document.activeElement.hasAttribute("data-adult-close") && !!document.activeElement.closest("#adult-menu-panel")'), 'focus is in the Menu, on Close');
+  ok(await ev('document.querySelector("main").hasAttribute("inert") && document.querySelector(".foot").hasAttribute("inert")'), 'the page behind is inert');
+  for (let i = 0; i < 9; i += 1) { await key('Tab'); ok(await ev('!!document.activeElement.closest("#adult-menu-panel")'), 'Tab stays in the Menu (' + i + ')'); }
+  await shot('adult-menu-1280');
+  await key('Escape');
+  await sleep(60);
+  ok(await ev('document.querySelector("#adult-menu-panel").hidden && document.activeElement.id === "adult-menu-btn" && !document.querySelector("main").hasAttribute("inert")'), 'Escape closes, focus goes back to Menu, nothing inert');
+  await click('#adult-menu-btn');
+  await click('#adult-menu-panel [data-adult-close]');
+  ok(await ev('document.querySelector("#adult-menu-panel").hidden && document.activeElement.id === "adult-menu-btn"'), 'Close closes');
+  await click('#adult-menu-btn');
+  await click('#adult-chip');
+  ok(await ev('document.querySelector("#adult-menu-panel").hidden && !document.querySelector("#adult-account-panel").hidden'), 'the chip swaps the Menu for the account panel');
+  await key('Escape');
+  step('a route change closes it; every row opens its page');
+  for (const [href, ready] of [['#/chapters', '[data-chapters]'], ['#/words', 'main h1'], ['#/custom', 'main h1'], ['#/tricky', 'main h1'], ['#/progress', 'main h1']]) {
+    await go('#/');
+    await until('document.querySelector("[data-child]")', 'the front page');
+    await click('#adult-menu-btn');
+    await click('#adult-menu-panel a[href="' + href + '"]');
+    await until('location.hash === ' + q(href) + ' && document.querySelector(' + q(ready) + ')', href);
+    await sleep(80);
+    ok(await ev('document.activeElement === document.querySelector("main h1")'), 'after choosing ' + href + ' focus is on the new page\'s heading');
+    ok(await ev('document.querySelector("#adult-menu-panel").hidden && !document.querySelector("main").hasAttribute("inert")'), 'a row closes the Menu: ' + href);
+  }
+  ok(await ev('document.querySelector("#adult-menu-panel a[href=\\"../\\"]").getAttribute("href")') === '../', 'All games goes to the games home');
+  await click('#adult-menu-btn');
+  await go('#/tricky');
+  await sleep(80);
+  ok(await ev('document.querySelector("#adult-menu-panel").hidden'), 'a route change closes the Menu');
+  step('a phone: the bottom sheet');
+  await width(390, 844);
+  await go('#/');
+  await until('document.querySelector("[data-child]")', 'the front page');
+  await click('#adult-menu-btn');
+  const sheet = await rect('#adult-menu-panel');
+  ok(Math.abs(sheet.y + sheet.h - 844) <= 1 && sheet.w >= 389 && sheet.x <= 1, 'a bottom sheet: ' + JSON.stringify(sheet));
+  ok(await visible('#adult-menu-btn') && (await rect('#adult-menu-btn')).y + (await rect('#adult-menu-btn')).h <= sheet.y, 'the Menu button stays visible above the sheet');
+  await shot('adult-menu-390');
+  await style('night');
+  await shot('adult-menu-night-390');
+  await width(1280, 800);
+  await shot('adult-menu-night-1280');
+  await style('garden');
+  await key('Escape');
+});
+
+scene('adult account panel: name, ONE Play as a child row, Your account, the look, For parents, Sign out', async () => {
+  await seedFront([[CHILD, childWeek()], [CHILD2, wrenWeek()]], KIDS2);
+  await width(1280, 800);
+  await click('#adult-chip');
+  await until('document.querySelector("#adult-account-panel [data-switch]")', 'the switch rows');
+  ok(await ev('document.querySelector("#adult-chip").getAttribute("aria-expanded")') === 'true', 'aria-expanded');
+  const t = await textOf('#adult-account-panel');
+  ok(/Sam/.test(await textOf('#adult-account-panel .adultwho')) && /Play as a child/.test(t) && /Robin or Wren/.test(t) && !/Switch to /.test(t) && !/Manage children|My account/.test(t) && /Your account/.test(t) && /Children, password and sign-in/.test(t) && !/on this device/i.test(t) && /For parents/.test(t) && /Sign out/.test(t), 'the panel: ' + t);
+  ok(await ev('document.querySelectorAll("#adult-account-panel [data-switch]").length') === 1 && await ev('document.querySelectorAll("#adult-account-panel a[href$=\\"/account\\"]").length') === 1, 'ONE play-as row and ONE account row (no two rows to the same place)');
+  const hrefs = await ev('Object.fromEntries([...document.querySelectorAll("#adult-account-panel a")].map((a) => [a.textContent.replace(/\\s+/g, " ").trim().split(" ")[0] + (a.dataset.switch ? ":" + a.dataset.switch : ""), a.href]))');
+  ok(/\/play\?return=/.test(await ev('document.querySelector("[data-switch]").href')), 'Play as a child uses the existing play-as-a-child flow');
+  ok(/\/signout\?return=/.test(await ev('document.querySelector("[data-signout]").href')) && /\/account$/.test(await ev('document.querySelector("[data-account]").href')) && /#\/about$/.test(await ev('document.querySelector("[data-parents]").href')), 'Sign out, Your account and For parents: ' + JSON.stringify(hrefs));
+  ok(await ev('document.querySelectorAll("#adult-account-panel [role=radio][data-choice]").length') === 4 && await ev('document.querySelectorAll("#adult-account-panel [data-choice][aria-checked=true]").length') === 1, 'four looks, one ticked');
+  ok(await ev('[...document.querySelectorAll("#adult-account-panel a, #adult-account-panel button")].every((e) => e.getBoundingClientRect().height >= 44)'), 'every control is 44 px or more');
+  ok(await ev('(() => { const o = document.querySelector("[data-signout] svg path").getAttribute("d"); return !/M9 6l6 6/.test(o); })()'), 'Sign out has an exit icon');
+  await shot('adult-account-garden-1280');
+  step('the look changes to Night and back, and the old look menu stays in step');
+  await click('#adult-account-panel [data-choice=night]');
+  await until('document.documentElement.dataset.style === "night"', 'Night');
+  ok(await ev('document.querySelector("#adult-account-panel [data-choice=night]").getAttribute("aria-checked")') === 'true' && await ev('document.querySelector("#theme").dataset.choice') === 'night' && await ev('localStorage.getItem("sb.theme")') === 'dark', 'Night is on and saved, the old menu follows');
+  await shot('adult-account-night-1280');
+  await width(390, 844);
+  await shot('adult-account-night-390');
+  await width(1280, 800);
+  await click('#adult-account-panel [data-choice=garden]');
+  await until('document.documentElement.dataset.style === "garden"', 'Sunny garden');
+  ok(await ev('document.querySelector("#adult-account-panel [data-choice=garden]").getAttribute("aria-checked")') === 'true' && await ev('localStorage.getItem("sb.theme")') === 'light', 'back to the Sunny garden');
+  step('arrow keys move through the looks');
+  await ev('document.querySelector("#adult-account-panel [data-choice=garden]").focus()');
+  await key('ArrowDown');
+  await until('document.documentElement.dataset.style === "paint"', 'Paint box by the arrow key');
+  await click('#adult-account-panel [data-choice=garden]');
+  step('a short screen: the panel scrolls inside itself');
+  await width(1180, 640);
+  const p640 = await rect('#adult-account-panel');
+  ok(p640.y + p640.h <= 640, 'the panel fits 1180x640: ' + JSON.stringify(p640));
+  ok(await ev('(() => { const p = document.querySelector("#adult-account-panel"); return p.scrollHeight >= p.clientHeight; })()'), 'it scrolls inside');
+  await shot('adult-account-1180x640');
+  await width(390, 844);
+  const p390 = await rect('#adult-account-panel');
+  ok(p390.y + p390.h <= 844 && p390.w >= 389, 'the sheet fits 390x844: ' + JSON.stringify(p390));
+  ok(await ev('document.documentElement.scrollWidth <= innerWidth'), 'no sideways scroll');
+  await shot('adult-account-390');
+  await key('Escape');
+  ok(await ev('document.querySelector("#adult-account-panel").hidden && document.activeElement.id === "adult-chip"'), 'Escape closes, focus back on the chip');
+  await width(1280, 800);
+  step('switching to a child: the child\'s own bar');
+  acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
+  await seedChild(gameDayDoc(), plus(2));
+  acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
+  await open(plus(2), '#/');
+  await until('document.querySelector("[data-room], .childhome, main h1")', 'the child home');
+  ok(!await ev('document.body.classList.contains("is-adult")') && await ev('document.body.classList.contains("is-child")') && !await visible('#adult-menu-btn'), 'playing as Robin: the child bar, not the adult bar');
+  acct.who = childMe;
+});
+
+scene('adult: every old control is still reachable; the child, signed-out and Wordbright bars are unchanged', async () => {
+  await seedFront([[CHILD, childWeek()], [CHILD2, wrenWeek()]], KIDS2);
+  await width(1280, 800);
+  const old = { 'Pick words': '#/custom', 'Tricky words': '#/tricky', 'Progress': '#/progress', 'More practice': '#/chapters', 'All games': '../' };
+  await click('#adult-menu-btn');
+  for (const [title, href] of Object.entries(old)) ok(await has('#adult-menu-panel a[href="' + href + '"]') && new RegExp(title).test(await text('#adult-menu-panel a[href="' + href + '"]')), title + ' is in the Menu');
+  await key('Escape');
+  await click('#adult-chip');
+  await until('document.querySelector("#adult-account-panel [data-signout]")', 'the account panel');
+  for (const s of ['[data-choice=garden]', '[data-choice=paint]', '[data-choice=night]', '[data-choice=system]', '[data-signout]', '[data-account]', '[data-parents]']) ok(await has('#adult-account-panel ' + s), 'the account panel has ' + s);
+  await key('Escape');
+  await go('#/words');
+  await until('document.querySelector("main h1")', 'My words by its address');
+  ok(await ev('document.body.classList.contains("is-adult")') && !/Not found|isn.t here/i.test(await text('main h1')), 'My words still opens by its address (its link now lives inside each child\'s week)');
+  step('a child: the child bar, no adult bar, no papers line');
+  await seedChild(gameDayDoc(), plus(2));
+  await open(plus(2), '#/');
+  await until('document.querySelector("[data-room]")', 'the room');
+  ok(await ev('document.body.classList.contains("is-child") && !document.body.classList.contains("is-adult")') && await visible('#child-menu') && !await visible('#adult-menu-btn') && !await visible('.foot') && !await visible('.foot__papers') && !await visible('.brand__tag'), 'the child bar is as before');
+  step('signed out: the full bar as before, no adult bar, no papers line');
+  await signedOutBlank(plus(2));
+  acct.who = null;
+  await open(plus(2), '#/about');
+  ok(await visible('.foot__more') && !await visible('#adult-menu-btn') && !await visible('.foot__papers') && !await ev('document.body.classList.contains("is-adult")'), 'signed out: no adult bar, no papers line; For parents and More games stay in the footer');
+  ok(await ev('document.querySelectorAll(".topbar__nav a").length') === 4 && !await visible('.topbar__nav') && !await visible('#theme') && !await visible('.allgames') && await ev('document.body.classList.contains("is-visitor")'), 'signed out: the four links are still in the page, out of sight (the visitor bar)');
+  step('Wordbright\'s bar is not touched');
+  acct.who = adultMe;
+  await send('Page.navigate', { url: SITE + '/wordbright/' });
+  await until('document.readyState === "complete" && document.querySelector(".topbar__nav, .topbar")', 'Wordbright');
+  await sleep(300);
+  ok(!await has('#adult-chip') && !await has('.adultbar') && !await ev('document.body.classList.contains("is-adult")') && (await has('.topbar')), 'Wordbright has no adult bar');
+  acct.who = null;
+});
+
+// ---- SB3-F: the front pages (signed out, More practice, one chapter) --------------------------------
+import * as FD from '../site/js/front-doc.js';
+const progDoc = (chapters = {}, results = []) => ({ v: 1, resetAt: 0, chapters, results, folded: {}, tricky: {} });
+const T0 = Date.parse(MON + 'T09:00:00');
+const passedCh = (n) => ({ id: 'r' + n, c: 'y34-ch' + String(n).padStart(2, '0'), s: 5, t: 5, at: T0 + n });
+const PROG_3 = progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 }, 'y34-ch02': { studiedAt: T0, practisedAt: T0 }, 'y34-ch03': { studiedAt: T0 } }, [passedCh(1), passedCh(2)]);
+async function putProgress(id, doc) { await ev('localStorage.setItem("sb.progress:' + id + '",' + q(JSON.stringify(doc)) + ')'); }
+async function childWith(doc, hash, day = plus(2)) {
+  await seedChild(gameDayDoc(), day);
+  await putProgress(CHILD, doc);
+  await open(day, hash);
+}
+async function adultWith(doc, hash, day = plus(2)) {
+  await signedOutBlank(day);
+  acct.who = adultMe;
+  await putProgress(ADULT, doc);
+  await open(day, hash);
+  await until('document.querySelector("[data-for=adult]") || document.querySelector("[data-chapterpage][data-for=adult]")', 'the adult\'s page', 9000);
+}
+const mainButtons = () => ev('[...document.querySelectorAll("main a[href], main button")].filter((e) => { const r = e.getBoundingClientRect(); return r.width && r.height; }).length');
+const frontPrimaries = () => ev('document.querySelectorAll("main .btn--primary").length');
+/** Press Tab until the element is focused, then say how thick its outline is. */
+async function tabTo(sel) {
+  for (let i = 0; i < 40; i += 1) {
+    await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    if (await ev('document.activeElement && document.activeElement.matches(' + q(sel) + ')')) return ev('parseFloat(getComputedStyle(document.activeElement).outlineWidth)');
+  }
+  throw new Error('Tab never reached ' + sel);
+}
+
+scene('SB3-F signed out: one button, the seven jobs, no word, no game', async () => {
+  await signedOutBlank(plus(2));
+  acct.who = null;
+  await open(plus(2), '#/');
+  await until('document.querySelector("[data-front=signed-out]")', 'the signed-out page');
+  const t = await text();
+  ok(/A spelling week\.\s*One short job a day\./.test(t), 'the headline');
+  ok(/Children: ask a grown-up to sign in\./.test(t) && /New here\? Create a free account/.test(t), 'the sign-up and child lines');
+  ok(await frontPrimaries() === 1 && /Sign in to start/.test(await text('main .btn--primary')), 'ONE primary: Sign in to start');
+  ok(/\/signin\?return=/.test(await ev('document.querySelector("[data-signin]").href')) && /\/signin\?return=/.test(await ev('document.querySelector("[data-create]").href')), 'the sign-in link carries the return URL (no separate sign-up route: both go to the sign-in page)');
+  ok(await mainButtons() <= 5, 'at most 5 tappable things in the page, found ' + await mainButtons());
+  ok(await ev('document.querySelector("[data-about]").getAttribute("href")') === '#/about', 'For parents and teachers goes to #/about');
+  ok(!/Start game|Today's word|Waystead Learning|Learning/.test(t), 'no game, Today\'s word or Learning advert');
+  ok(!await has('main .chunked, main .keyboard, main [data-hear]'), 'no word, keyboard or Hear it');
+  const copy = new Set((JSON.stringify(FD.SIGNED_OUT) + ' ' + JSON.stringify(FD.JOBS)).toLowerCase().match(/[a-z]+/g));
+  const words = await ev(`(async () => { const c = await (await fetch('data/curriculum.json')).json(); const all = new Set(); for (const y of ['year_3_4','year_5_6']) for (const ch of c[y].chapters) for (const w of ch.words) all.add(w.word.toLowerCase()); return [...all]; })()`);
+  const seen = new Set(document_text(t).filter((w) => !copy.has(w)));
+  ok(!words.some((w) => seen.has(w)), 'no spelling word on the page: ' + words.filter((w) => seen.has(w)));
+  ok(!/^\s*$/.test(await ev('document.querySelector(".front__pip img").getAttribute("src")')), 'Pip');
+  step('the seven jobs: one row at 1280 and 1180, a list at 390 and 820');
+  for (const w of [1280, 1180]) {
+    await width(w, 800);
+    const tops = await ev('[...document.querySelectorAll(".jobs__one")].map((e) => Math.round(e.getBoundingClientRect().top))');
+    ok(tops.length === 7 && new Set(tops).size === 1, 'seven in ONE row at ' + w + ': ' + tops);
+    const lines = await ev(`[...document.querySelectorAll(".jobs__text span")].map((e) => { const r = document.createRange(); r.selectNodeContents(e); const ls = {}; for (const c of r.getClientRects()) { const k = Math.round(c.top); ls[k] = (ls[k] || 0) + c.width; } return Object.values(ls); })`);
+    ok(lines.every((l) => l.length <= 2 && l.every((x) => x > 40)), 'no orphan word in a helper at ' + w + ': ' + JSON.stringify(lines));
+  }
+  for (const w of [820, 390]) {
+    await width(w, 900);
+    const xs = await ev('[...document.querySelectorAll(".jobs__one")].map((e) => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top)]; })');
+    ok(new Set(xs.map((x) => x[0])).size === 1 && xs.every((x, i) => i === 0 || x[1] > xs[i - 1][1]), 'a numbered list at ' + w);
+  }
+  step('focus ring: 3 px on the button and the links');
+  await width(1280, 800);
+  ok(await tabTo('[data-signin]') >= 3, 'a 3 px ring on Sign in to start');
+  ok(await tabTo('[data-create]') >= 3 && await tabTo('[data-about]') >= 3, 'rings on the links');
+  await allViews('front-signedout');
+  await width(1180, 640);
+  ok(await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'no sideways scroll at 1180x640');
+  await width(820, 1180);
+  ok(await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'no sideways scroll at 820x1180');
+  await width(390);
+});
+function document_text(t) { return (t.toLowerCase().match(/[a-z]+/g) || []); }
+
+scene('SB3-F More practice as a child: chrome, one button, year switch, stones', async () => {
+  await childWith(PROG_3, '#/chapters');
+  await until('document.querySelector("[data-chapters]")', 'More practice');
+  ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
+  const t = await text();
+  ok(!/Learning|Start game|Today's word|Waystead/.test(t) , 'no advert, no Start game, no Today\'s word');
+  ok(/^More practice/.test(t) && /Learn a chapter, then test it\./.test(t), 'the child\'s title and sentence');
+  ok(await frontPrimaries() === 1 && /Carry on: Chapter 3/.test(await text('[data-carry]')) && /Practise/.test(await text('[data-carry] small')), 'ONE primary: Carry on: Chapter 3 (next step Practise)');
+  ok(await ev('document.querySelector("[data-carry]").getAttribute("href")') === '#/y34/ch03/practice', 'the button goes to the next step');
+  const states = await ev('[...document.querySelectorAll(".stonelink")].map((a) => a.dataset.state)');
+  ok(states.join() === 'passed,passed,studying,todo,todo,todo,todo,todo,todo,todo', 'stone states: ' + states);
+  ok(/109 words in 10 chapters · 2 tests passed/.test(await text('.yearcard__sum')), 'the year line');
+  ok(await ev('[...document.querySelectorAll(".stonelink")].every((a) => { const r = a.getBoundingClientRect(); return r.height >= 48 && r.width >= 48; })'), 'stones are at least 48 px');
+  ok(await ev('[...document.querySelectorAll(".stonelink")].every((a) => { const r = a.getBoundingClientRect(); return r.height >= 72 && r.width >= 60; })'), 'stones are about 64 x 72 at 390');
+  ok(await ev('[...document.querySelectorAll(".stonelink__label")].every((e) => parseFloat(getComputedStyle(e).fontSize) >= 14)'), 'labels are at least 14 px');
+  ok(await ev('document.querySelectorAll(".stonelink[data-state=passed] svg").length') === 2, 'a passed stone has a star');
+  ok(await ev('[...document.querySelectorAll(".yearswitch__b, .morerow, [data-carry], .hearit")].every((e) => e.getBoundingClientRect().height >= 48)'), 'switch, rows, button and Hear it are at least 48 px');
+  ok(await ev('document.querySelectorAll(".morerows a").length') === 3, 'three quiet rows');
+  ok(await tabTo('.stonelink') >= 3, 'a 3 px focus ring on a stone');
+  await click('[data-hear]');
+  await until('globalThis.__lines.some((l) => /Learn a chapter/.test(l))', 'the sentence spoken');
+  step('the year switch, remembered');
+  await click('.yearswitch__b[data-year=y56]');
+  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y56' && /Start: Chapter 1/.test(await text('[data-carry]')) && await frontPrimaries() === 1, 'Year 5 and 6: Start: Chapter 1, still one primary');
+  ok(await ev('document.querySelector(".yearswitch__b[data-year=y56]").getAttribute("aria-pressed")') === 'true', 'pressed state');
+  await open(plus(2), '#/chapters');
+  await until('document.querySelector("[data-yearpanel=y56]")', 'the remembered year');
+  await click('.yearswitch__b[data-year=y34]');
+  await allViews('front-chapters-child');
+  await width(1180, 640);
+  ok(await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'no sideways scroll at 1180x640');
+  await width(820, 1180);
+  ok(await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'no sideways scroll at 820x1180');
+  await width(390);
+  step('every chapter is reachable, a closed one says what to pass first');
+  await click('.stonelink[data-chapter=ch04]');
+  await until('document.querySelector("[data-chapter-locked]")', 'the closed chapter');
+  ok(/Pass Chapter 3 first\./.test(await text()) && await ev('document.querySelector("[data-chapter-locked] a.btn").getAttribute("href")') === '#/y34/ch03', 'Pass Chapter 3 first, with a way there');
+  step('all ten passed');
+  await childWith(progDoc({}, Array.from({ length: 10 }, (_, i) => passedCh(i + 1))), '#/chapters');
+  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y56', 'with Year 3 and 4 all passed the page opens on Year 5 and 6');
+  await click('.yearswitch__b[data-year=y34]');
+  await until('document.querySelector("[data-allpassed]")', 'the all-passed state');
+  ok(await frontPrimaries() === 0 && /All 10 passed/.test(await text('[data-allpassed]')), 'All ten passed, no button');
+});
+
+scene('SB3-F More practice as an adult: the adult header, no advert here, a place for the foot line', async () => {
+  await adultWith(progDoc(), '#/chapters');
+  ok(/MORE PRACTICE/i.test(await text('.pagehead .eyebrow')) && /Practise chapter by chapter/.test(await text('h1')), 'eyebrow and title');
+  ok(/Each chapter: learn the words, practise them, then take the chapter test\./.test(await text()), 'the sentence');
+  ok(!await has('[data-hear]') && await visible('#adult-menu-btn') && !await visible('#child-menu'), 'no Hear it, the adult bar');
+  ok(!/Start game|Today's word/.test(await text('main')) && /From Waystead Learning/i.test(await text('.foot__papers')) && await visible('.foot__papers'), 'one Learning papers line, in the footer; no Start game');
+  ok(await frontPrimaries() === 1 && /Start: Chapter 1/.test(await text('[data-carry]')), 'ONE primary: Start: Chapter 1');
+  await allViews('front-chapters-adult');
+  await width(1180, 640);
+  ok(await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'no sideways scroll at 1180x640');
+  await width(390);
+});
+
+scene('SB3-F one chapter: three steps, the test gated until practised, a test already allowed stays open', async () => {
+  await childWith(PROG_3, '#/y34/ch03');
+  await until('document.querySelector("[data-chapterpage]")', 'the chapter');
+  const st = await ev('[...document.querySelectorAll("[data-step]")].map((e) => e.dataset.step + ":" + e.dataset.state)');
+  ok(st.join() === 'learn:done,practise:next,test:later', 'steps: ' + st);
+  ok(await frontPrimaries() === 1 && await has('[data-primary=practise]'), 'ONE primary: the next step');
+  ok(await has('[data-test-gated]') && !await has('a[href$="/ch03/test"]') && !await has('[data-test-anyway]'), 'the test is a quiet row for a child: Opens when you\'ve practised.');
+  ok(/Opens when you’ve practised\./.test(await text('[data-test-gated]')), 'its words');
+  ok(await has('[data-hear]') && await has('[data-quick]'), 'Hear it, and the quick game stays');
+  ok(await ev('[...document.querySelectorAll("main a, main summary, main button")].every((e) => e.getBoundingClientRect().height >= 48)'), 'every control is at least 48 px');
+  await click('.chapterwords summary');
+  ok(await visible('.chapterwords .wordchips span'), 'the word list opens from step 1');
+  await allViews('front-chapter');
+  step('practised: the test becomes the primary');
+  await childWith(progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 }, 'y34-ch02': { studiedAt: T0, practisedAt: T0 }, 'y34-ch03': { studiedAt: T0, practisedAt: T0 } }, [passedCh(1), passedCh(2)]), '#/y34/ch03');
+  await until('document.querySelector("[data-chapterpage]")', 'the chapter');
+  ok(await has('[data-primary=test]') && await frontPrimaries() === 1 && !await has('[data-test-gated]'), 'Take the test is the one primary');
+  step('tried before, never practised on this record: still openable');
+  await childWith(progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 }, 'y34-ch02': { studiedAt: T0, practisedAt: T0 } }, [passedCh(1), passedCh(2), { id: 'x3', c: 'y34-ch03', s: 3, t: 5, at: T0 + 9 }]), '#/y34/ch03');
+  await until('document.querySelector("[data-chapterpage]")', 'the chapter');
+  ok(await ev('document.querySelector("[data-step-link=test]").getAttribute("href")') === '#/y34/ch03/test' && !await has('[data-test-gated]'), 'an attempted test stays openable');
+  step('a passed chapter: its test opens again, Next chapter leads on');
+  await go('#/y34/ch01');
+  await until('document.querySelector("[data-chapterpage]")', 'chapter 1');
+  ok(/Take the test again/.test(await text('[data-step-link=test]')) && await has('[data-next-chapter]'), 'Take the test again, and Next chapter');
+  await click('[data-step-link=test]');
+  await until('location.hash === "#/y34/ch01/test"', 'the test opens');
+  step('learning marks the step done');
+  await childWith(PROG_3, '#/y34/ch03/study');
+  await click('[data-done]');
+  await go('#/y34/ch03');
+  await until('document.querySelector("[data-chapterpage]")', 'the chapter');
+  ok((await ev('document.querySelector("[data-step=practise]").dataset.state')) === 'next', 'practise is next');
+  step('an adult may always open the test');
+  await adultWith(PROG_3, '#/y34/ch03');
+  await until('document.querySelector("[data-chapterpage]")', 'the chapter');
+  ok(await has('[data-test-gated]') && await ev('document.querySelector("[data-test-anyway]").getAttribute("href")') === '#/y34/ch03/test', 'Take the test anyway, for an adult');
+  ok(!await has('[data-hear]'), 'no Hear it for an adult');
+});
+
+scene('SB3-F no "Start game" in the site, every old link still resolves, no test word on test day', async () => {
+  const { readdirSync } = await import('node:fs');
+  for (const dir of ['site/js', 'site/css']) for (const f of readdirSync(ROOT + dir)) {
+    if (!/\.(js|css)$/.test(f)) continue;
+    ok(!/Start game/.test(readFileSync(ROOT + dir + '/' + f, 'utf8')), 'Start game in ' + dir + '/' + f);
+  }
+  ok(!/Start game/.test(readFileSync(ROOT + 'site/index.html', 'utf8')), 'Start game in index.html');
+  await childWith(PROG_3, '#/chapters');
+  const seen = new Set();
+  for (const h of ['#/chapters', '#/y34', '#/y56', '#/y34/ch03', '#/y34/ch05', '#/custom', '#/tricky', '#/progress', '#/about', '#/words']) {
+    await go(h);
+    await sleep(200);
+    const t = await text();
+    ok(!/Start game|Today's word/.test(t), h + ' says Start game or Today\'s word');
+    ok(!/That page isn.t here/.test(t) && (await ev('!!document.querySelector("main h1")')), h + ' is a dead link');
+    for (const a of await ev('[...document.querySelectorAll("main a[href^=\\"#/\\"]")].map((a) => a.getAttribute("href"))')) seen.add(a);
+  }
+  const fine = [...seen].filter((a) => !/\/(quick|practice|test)(\/|$)|^#\/custom\/play/.test(a));
+  for (const h of fine) {
+    await go(h);
+    await sleep(120);
+    ok(!/That page isn.t here/.test(await text()), 'a link on the front pages is dead: ' + h);
+  }
+  await go('#/y34');
+  await until('location.hash === "#/chapters"', 'the old year page goes to More practice');
+  ok(await ev('document.querySelector(".yearswitch__b[data-year=y34]").getAttribute("aria-pressed")') === 'true', 'with the year chosen');
+  await go('#/y56');
+  await until('document.querySelector("[data-yearpanel=y56]")', 'Year 5 and 6 chosen by its old link');
+  step('test day: More practice and a chapter show no test word');
+  await seedChild(studied(weekDoc()), plus(5));
+  await putProgress(CHILD, PROG_3);
+  await open(plus(5), '#/chapters');
+  for (const h of ['#/chapters', '#/y34/ch03', '#/y56']) {
+    await go(h);
+    await sleep(250);
+    const t = (await text()).toLowerCase();
+    for (const w of WORDS) ok(!new RegExp('\\b' + w + '\\b').test(t), h + ' on test day shows ' + w);
+  }
+});
+
+scene('SB3-F signed-out top bar: the mark and Sign in only; open pages keep a way back; offline says so by the button', async () => {
+  await signedOutBlank(plus(2));
+  acct.who = null;
+  await open(plus(2), '#/');
+  await width(1280, 800);
+  await until('document.querySelector("[data-front=signed-out]")', 'the signed-out page');
+  ok(await ev('document.body.classList.contains("is-visitor")'), 'body.is-visitor');
+  ok(await visible('.brand') && await visible('.playerchip--out') && /Sign in/.test(await text('.playerchip--out')), 'the mark and a small Sign in');
+  ok(!await visible('.topbar__nav') && !await visible('.allgames') && !await visible('#theme') && !await visible('#adult-menu-btn') && !await visible('#child-menu'), 'no My words, Pick words, Tricky words, Progress, All games or look menu');
+  ok(await ev('getComputedStyle(document.querySelector(".topbar__nav")).display') !== 'none', 'the nav is never display: none');
+  ok(!await visible('#back'), 'no Back on the front page');
+  await ev('Object.defineProperty(navigator, "onLine", { get: () => true, configurable: true }); window.dispatchEvent(new Event("online"))'); // the namespace may report no network
+  ok(await ev('!!document.querySelector("[data-offline]") && document.querySelector("[data-offline]").hidden'), 'online: no offline line');
+  step('offline: the line by the button');
+  await ev('Object.defineProperty(navigator, "onLine", { get: () => false, configurable: true }); window.dispatchEvent(new Event("offline"))');
+  await until('!document.querySelector("[data-offline]").hidden', 'the offline line');
+  ok(await text('[data-offline]') === 'You need to be online to sign in.' && await visible('[data-offline]') && await visible('[data-signin]'), 'You need to be online to sign in.');
+  const near = await ev('(() => { const a = document.querySelector("[data-offline]").getBoundingClientRect(), b = document.querySelector("[data-signin]").getBoundingClientRect(); return Math.abs(a.top - b.bottom); })()');
+  ok(near < 60, 'the line sits close to the button: ' + near);
+  await width(390, 800);
+  ok(await visible('[data-offline]') && await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'at 390: visible, no sideways scroll');
+  await allViews('front-signedout-offline');
+  await width(1280, 800);
+  await ev('Object.defineProperty(navigator, "onLine", { get: () => true, configurable: true }); window.dispatchEvent(new Event("online"))');
+  await until('document.querySelector("[data-offline]").hidden', 'the line goes when online');
+  step('an open page: the same bar, a way back to the front page');
+  await go('#/about');
+  await until('document.querySelector("main h1")', 'How to play');
+  ok(await ev('document.body.classList.contains("is-visitor")') && !await visible('.topbar__nav') && !await visible('.allgames') && !await visible('#theme') && await visible('.playerchip--out'), 'the same mark-and-Sign-in bar');
+  ok(await visible('#back') && await visible('.brand'), 'Back and the mark are there');
+  await click('#back');
+  await until('location.hash === "#/" || location.hash === ""', 'back to the front page');
+  await until('document.querySelector("[data-front=signed-out]")', 'the signed-out page again');
+  await go('#/about');
+  await until('document.querySelector("main h1")', 'About again');
+  await click('.brand');
+  await until('document.querySelector("[data-front=signed-out]")', 'the mark goes to the front page');
+});
+
+scene('SB3-F Back from a chapter page, and the year address, go to More practice, for an adult and a child', async () => {
+  for (const who of ['adult', 'child']) {
+    if (who === 'adult') await adultWith(PROG_3, '#/y34/ch03'); else await childWith(PROG_3, '#/y34/ch03');
+    await until('document.querySelector("[data-chapterpage]")', who + ': the chapter page');
+    const back = who === 'adult' ? '#back' : '#child-back';
+    ok(await visible(back), who + ': Back is there on a chapter page');
+    if (who === 'adult') { const r = await rect('#back'); ok(Math.round(r.w) === 44 && Math.round(r.h) === 44, 'the adult Back is 44 x 44: ' + JSON.stringify(r)); }
+    await click(back);
+    await until('location.hash === "#/chapters" && document.querySelector("[data-chapters]")', who + ': chapter page Back is More practice, not the front page');
+    await go('#/y34');
+    await until('location.hash === "#/chapters" && document.querySelector("[data-chapters]")', who + ': the old year address opens More practice');
+  }
+});
+
+scene('SB3-F adult Menu: My words is the second row and opens My words; the Learning line shows on More practice for an adult only', async () => {
+  await adultWith(progDoc(), '#/chapters');
+  await width(1280, 800);
+  ok(await visible('.foot__papers') && /From Waystead Learning/i.test(await text('.foot__papers')) && await ev('document.querySelectorAll(".foot__papers").length') === 1, 'ONE Learning papers line, at the foot of More practice');
+  await click('#adult-menu-btn');
+  await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
+  const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => [a.querySelector("b").textContent, a.querySelector("span.adultrow__text > span").textContent])');
+  ok(rows.length === 6 && rows[1][0] === 'My words' && rows[1][1] === 'Practise words yourself', 'My words, Practise words yourself, after More practice: ' + JSON.stringify(rows));
+  await click('#adult-menu-panel a[href="#/words"]');
+  await until('location.hash === "#/words" && document.querySelector("main h1")', 'My words');
+  await childWith(PROG_3, '#/chapters');
+  await until('document.querySelector("[data-chapters]")', 'More practice as a child');
+  ok(!await visible('.foot__papers'), 'never for a child');
+  await signedOutBlank(plus(2));
+  acct.who = null;
+  await open(plus(2), '#/');
+  await until('document.querySelector("[data-front=signed-out]")', 'signed out');
+  ok(!await visible('.foot__papers'), 'never for a visitor');
 });
 
 // ---- run ------------------------------------------------------------------------------------

@@ -1,0 +1,120 @@
+/* ==========================================================================
+   The front pages (SB3-F): the signed-out page, More practice (the chapters page) and one chapter.
+   Loaded after the three styles and child.css; tokens only, so garden, paint and Night all work. The stone shapes
+   (.stone, --done, --today, --later) are child.css's. Focus is the site's 3 px ring (app.css :focus-visible).
+   ========================================================================== */
+.front { padding-top: 28px; padding-bottom: 56px; }
+.front h1 { font-size: clamp(1.9rem, 6.4vw, 3.3rem); line-height: 1.1; }
+.front__lede { margin: 0; font-size: 1.15rem; color: var(--muted); max-width: 52ch; }
+.front__sentence { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 6px; }
+.btn--lead { min-height: 60px; padding: 12px 28px; font-size: 1.2rem; font-family: var(--f-display); }
+.btn--lead svg { width: 24px; height: 24px; }
+.front .linkbtn { min-height: 48px; }
+
+/* ---- Signed out ---------------------------------------------------------- */
+.front__hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: center; }
+.front__say { display: grid; gap: 14px; justify-items: start; }
+.front__go { display: grid; gap: 4px; justify-items: start; margin-top: 6px; }
+.front__go .btn { margin-bottom: 8px; }
+.front__create { display: inline-flex; align-items: center; min-height: 48px; color: var(--link); font-weight: 700; text-decoration: underline; }
+.front__offline { margin: 0 0 8px; color: var(--text); font-weight: 700; font-size: 1rem; }
+.front__offline[hidden] { display: none; }
+.front__kids { margin: 0; color: var(--muted); font-size: 1rem; }
+.front__pip { justify-self: start; }
+.front__week { margin-top: 28px; padding: 22px 20px 24px; }
+.front__week h2 { font-size: 1.5rem; }
+.front__week > p { margin: 6px 0 0; }
+.jobs { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 14px; }
+.jobs__one { display: flex; align-items: center; gap: 14px; min-height: 52px; }
+.jobs__text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.jobs__text b { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.jobs__text span { color: var(--muted); font-size: 0.95rem; text-wrap: balance; }
+.front__parents { margin-top: 28px; display: grid; gap: 4px; }
+.front__parents h2 { font-size: 1.25rem; }
+.front__parents p { margin: 0; color: var(--muted); }
+.front__more { color: var(--link); font-weight: 700; display: inline-block; padding: 12px 0; }
+@media (min-width: 720px) {
+  .front__hero { grid-template-columns: minmax(0, 1fr) auto; gap: 40px; }
+  .front__pip { justify-self: end; }
+}
+@media (min-width: 960px) {
+  .jobs { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
+  .jobs__one { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .jobs__text span { font-size: 0.9rem; }
+}
+
+/* ---- More practice -------------------------------------------------------- */
+.chapterspage > .pagehead, .chapterspage > .yearswitch, .chapterspage > [data-yearslot] { max-width: 760px; }
+.chapterspage .pagehead { margin-bottom: 14px; }
+.yearswitch { display: flex; gap: 4px; padding: 4px; background: var(--surface-2); border-radius: 999px; margin-bottom: 14px; }
+.yearswitch__b {
+  flex: 1; min-height: 48px; padding: 0 12px; border: 2px solid transparent; border-radius: 999px; background: transparent; color: var(--text);
+  font-family: var(--f-display); font-weight: 600; font-size: 1.05rem; cursor: pointer;
+}
+.yearswitch__b[aria-pressed="true"] { background: var(--surface); border-color: var(--sb); }
+.yearcard { padding: 14px 12px 16px; display: grid; gap: 12px; }
+.yearcard__sum { margin: 0 0 0 6px; color: var(--muted); font-size: 1rem; }
+.stones { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.stonelink {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 64px; min-height: 72px; padding: 6px 2px;
+  border-radius: 16px; text-decoration: none; color: var(--text);
+}
+.stonelink.is-next { background: var(--surface-2); }
+.stonelink .stone { width: 60px; height: 46px; }
+.stonelink .stone svg { width: 18px; height: 18px; margin-right: 3px; }
+.stone--done, .stone--today { display: inline-flex; align-items: center; justify-content: center; }
+.stonelink__label { font-size: 0.92rem; line-height: 1.1; color: var(--text); }
+.stonelink[data-state="studying"] .stonelink__label { font-weight: 700; }
+.btn--carry { width: 100%; justify-content: space-between; min-height: 64px; padding: 10px 22px; text-align: left; }
+.btn__two { display: flex; flex-direction: column; line-height: 1.2; }
+.btn__two b { font-family: var(--f-display); font-weight: 600; font-size: 1.2rem; }
+.btn__two small { font-size: 0.95rem; font-weight: 400; }
+.allpassed { display: flex; align-items: center; gap: 10px; margin: 0; min-height: 56px; padding: 0 18px; border-radius: 999px; background: var(--accent-soft); color: var(--text); font-family: var(--f-display); font-weight: 600; font-size: 1.2rem; }
+.allpassed svg { width: 24px; height: 24px; fill: var(--sb); stroke: none; }
+.yearcard .small { margin: 0 0 0 6px; }
+.morehead { margin: 26px 0 10px; font-size: 1.15rem; }
+.morerows { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.morerow {
+  display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 14px; text-decoration: none; color: var(--text);
+  background: var(--surface); border: var(--card-border); border-radius: 20px;
+}
+.morerow__ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--surface-2); color: var(--sb); }
+.morerow__ico svg, .morerow__go svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.morerow__text { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.25; }
+.morerow__text b { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.morerow__text span { font-size: 0.95rem; color: var(--muted); }
+.morerow__go { color: var(--sb); }
+@media (min-width: 820px) { .morerows { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ---- One chapter ----------------------------------------------------------- */
+.chapterpage { max-width: 760px; }
+.chapterpage > .btn--lead { margin-top: 18px; width: 100%; }
+.stepcards { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.stepcard { background: var(--surface); border: var(--card-border); border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 16px; display: grid; gap: 12px; }
+.stepcard--next { border: 2px solid var(--sb); }
+.stepcard--later { border: 2px dashed var(--stone-edge); box-shadow: none; }
+.stepcard__row { display: flex; align-items: flex-start; gap: 14px; }
+.stepcard__row .stone { width: 60px; height: 46px; margin-top: 2px; }
+.stepcard__row .stone svg { width: 18px; height: 18px; margin-right: 3px; }
+.stepcard__text h2 { font-size: 1.25rem; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.stepcard__text p { margin: 4px 0 0; color: var(--muted); font-size: 1rem; }
+.stepcard__pill { font-family: var(--f-body); font-size: 0.85rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.stepcard--done .stepcard__pill { background: var(--good-soft); color: var(--good); }
+.stepcard--next .stepcard__pill { background: var(--stone-today); color: var(--stone-today-fg); }
+.stepcard__act { display: grid; gap: 4px; justify-items: start; }
+.stepcard__act .btn--lead { width: 100%; }
+.stepcard__wait { margin: 0; min-height: 48px; display: flex; align-items: center; color: var(--muted); font-size: 1rem; }
+.chapterwords summary { display: flex; align-items: center; min-height: 48px; font-weight: 700; color: var(--link); cursor: pointer; }
+.chapterwords .wordchips { margin: 4px 0 8px; }
+.chapterfoot { margin: 14px 0 0; }
+@media (min-width: 720px) {
+  .stepcard__act { justify-items: end; }
+  .stepcard__act .btn--lead { width: auto; }
+}
+
+/* ---- The signed-out top bar: the mark and a small Sign in. Open pages (#/about) keep Back. ----
+   Same technique as the child bar: the nav is taken out of sight and out of the layout, never display: none (nav.js measures it). */
+body.is-visitor .topbar__nav,
+body.is-visitor :is(.allgames, .topbar__inner > .thememenu:not(.playermenu)) { position: absolute; width: 0; height: 0; overflow: hidden; visibility: hidden; }
+body.is-visitor .topbar__inner { gap: 12px; }
+body.is-visitor .brand__tag { display: none; }

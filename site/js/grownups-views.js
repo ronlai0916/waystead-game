@@ -7,6 +7,7 @@ import * as D from './data.js';
 import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import * as P from './grownups-doc.js';
+const { possessive } = P;
 import * as A from './grownups-data.js';
 import { checkTyped } from './wordcheck.js';
 import { findEntry, hasMeaning, meaningsFor } from './word-info.js';
@@ -100,21 +101,42 @@ const waitingText = (card) => (card.waiting ? card.waitingTitles.concat(card.wai
 const helpRow = (card) => '<div class="gu-help" data-help><span>Needs help' + (card.help.length ? '' : ': none') + '</span>' + card.help.map((w) => '<span class="gu-hw">' + esc(w) + '</span>').join('') + '</div>';
 
 /* ---------------------------------------------------------------- the home --- */
-function homeCard(c, d, day) {
+// The adult's front page (SB3-F): a date, one sentence, one green button in the header row, a card for each child
+// (one or two children), or one compact row each (three or more). Order is the account's, never reshuffled.
+const hrefFor = (c, key) => (key === 'noweek' || key === 'ended' ? planHref(c.id) : childHref(c.id));
+const labelFor = (c, key) => (key === 'noweek' ? 'Plan a week for ' + c.nickname : key === 'ended' ? 'Plan ' + possessive(c.nickname) + ' next week' : 'See ' + possessive(c.nickname) + ' week');
+const cardButton = (c, key, extra = '') => '<a class="btn btn--ghost" href="' + hrefFor(c, key) + '"' + (key === 'noweek' || key === 'ended' ? ' data-plan' : ' data-see') + extra + '>'
+  + (key === 'noweek' || key === 'ended' ? I.plus : '') + esc(labelFor(c, key)) + (key === 'noweek' || key === 'ended' ? '' : I.next) + '</a>';
+/** The stones of a front-page card: the sun is on the next job whether or not today has one. */
+function glanceStrip(card, who) {
+  const sun = P.sunStep(card);
+  const hasToday = card.steps.some((v) => v.kind.startsWith('today'));
+  return '<ol class="gu-stones gu-stones--one" aria-label="' + esc(who + '\'s seven jobs') + '">' + card.steps.map((v) => {
+    const w = v.kind === 'waiting' || v.kind === 'todaywait';
+    const view = !hasToday && v.id === sun ? { ...v, kind: w ? 'todaywait' : 'today', icon: w ? 'clock' : v.icon } : v;
+    return '<li class="' + (view.kind.startsWith('today') ? 'is-today' : '') + '">' + stone(view)
+      + '<span class="gu-stones__name" aria-hidden="true">' + esc(St.STEP_TEXT[v.id].short) + '</span><span class="sr">' + esc(stoneSay(v)) + '</span></li>';
+  }).join('') + '</ol>';
+}
+function homeCard(c, d, day, key, compact) {
   const name = esc(c.nickname);
-  const head = (sub, chipHtml) => '<div class="gu-card__top"><span class="gu-avatar" aria-hidden="true">' + esc(c.nickname.slice(0, 1).toUpperCase()) + '</span><div class="gu-card__who"><h2>' + name + ' <small>Year ' + esc(c.year) + '</small></h2><p>' + sub + '</p></div>' + chipHtml + '</div>';
   const o = P.childOverview(d, day, Date.now());
+  const avatar = '<span class="gu-avatar" aria-hidden="true">' + esc(c.nickname.slice(0, 1).toUpperCase()) + '</span>';
+  const who = (sub) => '<div class="gu-card__who"><h2>' + name + ' <small>Year ' + esc(c.year) + '</small></h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>';
   if (!o.current) {
-    return '<article class="card gu-card" data-child="' + esc(c.id) + '" data-state="none">' + head('No week planned yet.', chip('none', P.CHIP_LABEL.none, ' data-chip="none"'))
-      + '<a class="btn btn--primary" href="' + planHref(c.id) + '" data-plan>' + I.plus + 'Plan a week for ' + name + '</a></article>';
+    return '<article class="card gu-card' + (compact ? ' gu-card--row' : '') + '" data-child="' + esc(c.id) + '" data-state="none"><div class="gu-card__top">' + avatar + who('No week planned yet.') + chip('none', P.CHIP_LABEL.none, ' data-chip="none"') + '</div>'
+      + '<div class="gu-card__act">' + cardButton(c, 'noweek') + '</div></article>';
   }
   const k = o.current;
-  return '<article class="card gu-card" data-child="' + esc(c.id) + '" data-state="' + k.chip.key + '">'
-    + head(esc(k.name) + ' · ' + plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)), chip(k.chip.key, k.chip.label, ' data-chip="' + k.chip.key + '"'))
-    + strip(k, c.nickname)
-    + '<dl class="gu-facts">' + fact('Today', k.today) + fact('Jobs waiting', waitingText(k)) + fact('Test', nb(W.dayLabel(k.test)), 'gu-fact--wide') + '</dl>'
+  const ended = key === 'ended';
+  const raw = P.nextLine(k);
+  const sub = esc(k.name) + ' · ' + (ended ? 'test was ' : 'test ') + nb(W.dayLabel(k.test));
+  return '<article class="card gu-card' + (compact ? ' gu-card--row' : '') + '" data-child="' + esc(c.id) + '" data-state="' + k.chip.key + '">'
+    + '<div class="gu-card__top">' + avatar + who(sub) + chip(k.chip.key, k.chip.label, ' data-chip="' + k.chip.key + '"') + '</div>'
+    + '<p class="gu-next" data-next>' + (ended ? esc(c.nickname + '\u2019s week ended on ' + W.dayLabel(k.test) + '. Plan the next one.') : raw ? '<b>Next:</b>' + esc(raw.slice(5)) : '') + '</p>'
     + helpRow(k)
-    + '<div><a class="btn btn--ghost" href="' + childHref(c.id) + '" data-see>See ' + name + '\'s week' + I.next + '</a></div></article>';
+    + (compact ? '' : glanceStrip(k, c.nickname))
+    + '<div class="gu-card__act">' + cardButton(c, key) + '</div></article>';
 }
 
 export function grownups(main) {
@@ -136,14 +158,27 @@ export function grownups(main) {
     const unread = stories.filter((s) => !s.reviewed).length;
     const notice = unread
       ? '<a class="card gu-notice" href="#/grownups/stories" data-stories><span class="gu-notice__icon">' + I.chat + '</span><span class="gu-notice__text"><b>' + plural(unread, 'story', 'stories') + ' to read first</b><span>Children see their Story day story after you have read it.</span></span><span class="gu-notice__go">' + I.chevron + '</span></a>' : '';
+    if (!list.length) {
+      const href = P.accountHomeHref(accountOrigin(location));
+      main.innerHTML = '<section class="wrap page grownups gu"><div class="card gu-first" data-first><span class="pipring"><span class="pipring__disc"><img class="room__pip" src="assets/characters/pip-portrait-256.webp" width="148" height="148" alt=""></span></span>'
+        + '<div class="gu-first__text"><span class="eyebrow">Welcome</span><h1>Add your first child</h1><p class="muted">Spellbright plans a spelling week for each child. Start by adding a child to your Waystead account.</p>'
+        + '<div><a class="btn btn--primary" href="' + esc(href) + '" data-addchild>Add a child' + I.plus + '</a></div></div></div>' + notice + '<div class="gu-stories">' + storiesLink + '</div></section>';
+      return;
+    }
+    const items = list.map((c, i) => ({ name: c.nickname, ...P.glanceKey(data[i].problem ? null : P.childOverview(data[i].words, day, Date.now()), data[i].problem || '') }));
+    const compact = P.isCompact(list.length);
     const cards = list.map((c, i) => (data[i].problem
-      ? '<article class="card gu-card" data-child="' + esc(c.id) + '"><div class="gu-card__who"><h2>' + esc(c.nickname) + '</h2><p>' + esc(P.PROBLEM_TEXT[data[i].problem]) + '</p></div><div><button type="button" class="btn btn--ghost" data-retry>Try again</button></div></article>'
-      : homeCard(c, data[i].words, day)));
-    main.innerHTML = '<section class="wrap page grownups gu"><div class="gu-top"><div class="pagehead"><span class="eyebrow">Grown-ups</span><h1>This week at a glance</h1>'
-      + '<p class="lede">Each child does one short job a day. Nothing is ever skipped: a missed job waits and comes first.</p></div>'
-      + (list.length ? '<a class="btn btn--primary" href="#/grownups/plan" data-planweek>' + I.plus + 'Plan a week</a>' : '') + '</div>'
+      ? '<article class="card gu-card' + (compact ? ' gu-card--row' : '') + '" data-child="' + esc(c.id) + '"><div class="gu-card__who"><h2>' + esc(c.nickname) + '</h2><p>' + esc(P.PROBLEM_TEXT[data[i].problem]) + '</p></div><div><button type="button" class="btn btn--ghost" data-retry>Try again</button></div></article>'
+      : homeCard(c, data[i].words, day, items[i].key, compact)));
+    const act = P.primaryAction(items);
+    const plan = '<a class="btn ' + (act.kind === 'plan' ? 'btn--primary' : 'btn--ghost') + '" href="#/grownups/plan" data-planweek>' + I.plus + 'Plan a week</a>';
+    const lead = act.kind === 'plan' ? '' : '<a class="btn btn--primary" href="' + hrefFor(list[act.index], items[act.index].key) + '" data-primary' + (act.kind === 'see' ? ' data-see-lead' : ' data-plan-lead') + '>' + esc(act.label) + (act.kind === 'see' ? I.next : '') + '</a>';
+    main.innerHTML = '<section class="wrap page grownups gu"><div class="gu-top"><div class="pagehead"><span class="eyebrow" data-date>' + esc(P.longDate(day)) + '</span><h1>This week at a glance</h1>'
+      + '<p class="lede" data-summary>' + esc(P.glanceSummary(items)) + '</p></div>'
+      + '<div class="gu-top__acts">' + lead + plan + '</div></div>'
       + notice
-      + (list.length ? '<div class="gu-cards">' + cards.join('') + '</div>' + (data.some((x) => !x.problem && P.childOverview(x.words, day, Date.now()).current) ? '<p class="gu-key" data-stonekey>' + esc(P.STONE_KEY) + '</p>' : '') : '<div class="card gu-empty"><p class="muted">Add a child to your Waystead account, and they\'ll show here.</p></div>')
+      + '<div class="gu-cards' + (compact ? ' gu-cards--rows' : list.length === 1 ? ' gu-cards--one' : '') + '">' + cards.join('') + '</div>'
+      + (!compact && data.some((x) => !x.problem && P.childOverview(x.words, day, Date.now()).current) ? '<p class="gu-key" data-stonekey>' + esc(P.STONE_KEY_NEXT) + '</p>' : '')
       + (unread ? '' : '<div class="gu-stories">' + storiesLink + '</div>') + '</section>';
     main.querySelectorAll('[data-retry]').forEach((b) => b.addEventListener('click', redraw));
   });

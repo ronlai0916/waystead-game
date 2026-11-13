@@ -7,35 +7,19 @@ import { runSession, summaryHtml } from './play.js';
 import { esc, ICON, picture, chunked, chunkText, boldWord, redact, shuffle, toast, meter, applyMeters } from './ui.js';
 import { dayStyleHtml, wireDayStyle } from './daystyle.js';
 import { burstHtml, placeBursts } from './celebrate.js';
-import { todayLine, backAgainFor, hiddenToday } from './words-views.js';
+import { backAgainFor, hiddenToday } from './words-views.js';
+import { isUnlocked, notFound, chapters } from './front-views.js';
 import { withoutHidden, DAILY_TIME, DAILY_TIME_CAP, ROW_LINE } from './study-doc.js';
 
 const MAX_PICK = 30;
 
-// Wordbright's sign for the card that links to it: three letter tiles.
-const TILES = '<svg viewBox="0 0 100 100" class="tiles" aria-hidden="true">'
-  + [['W', 8, 30, -6], ['O', 37, 22, 3], ['R', 66, 32, 8]].map(([l, x, y, r]) => '<g transform="rotate(' + r + ' ' + (x + 13) + ' ' + (y + 13) + ')">'
-    + '<rect x="' + x + '" y="' + y + '" width="26" height="26" rx="6" class="tiles__tile"/>'
-    + '<text x="' + (x + 13) + '" y="' + (y + 19) + '" class="tiles__letter">' + l + '</text></g>').join('')
-  + '<rect x="14" y="66" width="72" height="8" rx="4" class="tiles__rack"/></svg>';
 const href = (...parts) => '#/' + parts.join('/');
 
-function isUnlocked(ch) {
-  if (S.unlockAll() || ch.index === 0) return true;
-  const prev = D.chapters(ch.yearId)[ch.index - 1];
-  return S.chapterProgress(prev.id).passed;
-}
 function yearStats(yearId) {
   const chs = D.chapters(yearId);
   const passed = chs.filter((c) => S.chapterProgress(c.id).passed).length;
   const words = chs.reduce((n, c) => n + c.words.length, 0);
   return { passed, total: chs.length, words };
-}
-// "Start game" goes straight to the chapter to work on: the first one whose
-// test isn't passed yet (or the year's list once every chapter is passed).
-function startHref(yearId) {
-  const ch = D.chapters(yearId).find((c) => !S.chapterProgress(c.id).passed && isUnlocked(c));
-  return ch ? href(yearId, ch.slug) : href(yearId);
 }
 // Cambridge Dictionary's page for a word: its UK audio, recorded by people.
 // Opens in a new tab so the game keeps its place.
@@ -44,132 +28,6 @@ function cambridgeLink(w, cls) {
     + '" target="_blank" rel="noopener noreferrer">' + ICON.external + 'Cambridge Dictionary<span class="sr"> (opens in a new tab)</span></a>';
 }
 function wordEntries(ch) { return ch.words.map((w) => D.entry(w.word)); }
-
-function notFound(main) {
-  main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>That page isn\'t here</h1>'
-    + '<p class="muted">The link may be from an older version.</p><a class="btn btn--primary" href="#/">Go to the start</a></div></section>';
-}
-
-/* ---------------------------------------------------------------- Home --- */
-export function home(main) {
-  const w = D.wordOfTheDay(hiddenToday());
-  const tricky = S.trickyWords().length;
-  const yearCard = (id) => {
-    const y = D.years()[id];
-    const s = yearStats(id);
-    const block = D.yearBlock(id);
-    return '<a class="card year" href="' + href(id) + '">'
-      + '<span class="eyebrow">' + esc(block.subtitle) + '</span>'
-      + '<h2>' + esc(y.label) + '</h2>'
-      + '<p class="muted">' + s.words + ' words in ' + s.total + ' chapters</p>'
-      + meter(s.passed, s.total)
-      + '<p class="small"><b>' + s.passed + ' of ' + s.total + '</b> chapter tests passed</p></a>';
-  };
-  main.innerHTML = '<section class="wrap page">'
-    + '<div class="hero">'
-    + '<div class="stack"><span class="eyebrow">Spellbright</span>'
-    + '<h1>Every word on the Year 3–6 list, one chapter at a time.</h1>'
-    + '<p class="hero__lede">213 words from the national curriculum spelling list. Study each one, hear it in a British voice, save the flower with it, then prove it in a chapter test.</p>'
-    + '<div class="btnrow"><a class="btn btn--primary" href="' + startHref('y34') + '">Start game with Year 3 &amp; 4' + ICON.arrow + '</a>'
-    + '<a class="btn btn--primary" href="' + startHref('y56') + '">Start game with Year 5 &amp; 6' + ICON.arrow + '</a></div>'
-    + '<p class="muted small">Each button opens the next chapter to work on.</p></div>'
-    + '<div class="card today" aria-label="Word of the day">'
-    + '<span class="eyebrow">Today\'s word</span>'
-    + '<div class="today__word">' + chunked(w) + '</div>'
-    + '<div class="today__meta"><span class="ipa">' + esc(w.ipa) + '</span><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span></div>'
-    + '<p>' + esc(w.meaning.definition) + '</p>'
-    + '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>'
-    + '<div class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-hear>' + ICON.play + 'Hear it</button>'
-    + '<button type="button" class="btn btn--quiet btn--small" data-spell>' + ICON.spell + 'Spell it out</button></div>'
-    + '</div></div>'
-    + '<div class="years">' + yearCard('y34') + yearCard('y56') + '</div>'
-    + '<div class="shortcuts">'
-    + '<a class="card shortcut" href="#/words"><span><strong>My words</strong><br><span class="muted small">' + esc(todayLine()) + '</span></span>' + ICON.arrow + '</a>'
-    + '<a class="card shortcut" href="#/custom"><span><strong>Pick your own words</strong><br><span class="muted small">Any words, any chapter</span></span>' + ICON.arrow + '</a>'
-    + '<a class="card shortcut" href="#/tricky"><span><strong>Tricky words</strong><br><span class="muted small">' + (tricky ? tricky + ' to go back to' : 'None yet') + '</span></span>' + ICON.arrow + '</a>'
-    + '<a class="card shortcut" href="#/progress"><span><strong>Progress</strong><br><span class="muted small">Chapters and settings</span></span>' + ICON.arrow + '</a>'
-    + '</div>'
-    + '<aside class="card promo" aria-label="Waystead Learning">'
-    + '<div class="promo__papers" aria-hidden="true"><i></i><i></i><i></i></div>'
-    + '<div class="stack"><span class="eyebrow">From Waystead Learning</span>'
-    + '<h2>11+ English practice papers</h2>'
-    + '<p>Original, printable papers for Years 3–6: two reading passages, plus spelling, punctuation and grammar, with an answer key. Try a free 15-minute sample first.</p>'
-    + '<div class="btnrow"><a class="btn btn--primary" href="https://learning.waystead.co.uk/packs">See the papers' + ICON.arrow + '</a>'
-    + '<a class="btn btn--ghost" href="https://learning.waystead.co.uk/">Visit Waystead Learning</a></div></div>'
-    + '</aside>'
-    + '<a class="card sister" href="../wordbright/">' + TILES
-    + '<span class="sister__text"><span class="eyebrow">Also from Waystead</span>'
-    + '<b class="sister__name">Play Wordbright, the word-tile game</b>'
-    + '<span class="muted small">Make words on a board, find the bonus squares and play against friendly computer players. Great practice for 11+ vocabulary.</span></span>'
-    + ICON.arrow + '</a>'
-    + '<div class="steps"><span class="eyebrow">How a chapter works</span><ol>'
-    + '<li><strong>Study</strong>Read the meaning, hear the word and see its spelling parts.</li>'
-    + '<li><strong>Quick game</strong>Guess the letters before the flower loses its 6 petals. The picture gets clearer as you miss.</li>'
-    + '<li><strong>Practice</strong>The full game, with 10 petals. The picture stays hidden until the end.</li>'
-    + '<li><strong>Test</strong>Hear each word and type it. Get every word right to open the next chapter.</li>'
-    + '</ol></div></section>';
-  applyMeters(main);
-  const lettersEl = () => main.querySelectorAll('.today__word .chunked__letter');
-  main.querySelector('[data-hear]').addEventListener('click', () => speak(w.word));
-  main.querySelector('[data-spell]').addEventListener('click', () => spellOut(w.word, (i) => {
-    lettersEl().forEach((el) => el.classList.toggle('is-on', Number(el.dataset.i) === i));
-  }));
-  return stop;
-}
-
-/* ---------------------------------------------------------------- Year --- */
-export function year(main, { yearId }) {
-  const y = D.years()[yearId];
-  const block = D.yearBlock(yearId);
-  const s = yearStats(yearId);
-  main.innerHTML = '<section class="wrap page">'
-    + '<div class="pagehead"><span class="eyebrow">' + esc(block.subtitle) + '</span><h1>' + esc(y.label) + '</h1>'
-    + '<p class="muted">' + s.passed + ' of ' + s.total + ' chapter tests passed</p>' + meter(s.passed, s.total) + '</div>'
-    + '<div class="chapters">' + D.chapters(yearId).map((ch) => {
-      const t = D.chapterTitle(ch);
-      const p = S.chapterProgress(ch.id);
-      const open = isUnlocked(ch);
-      const blurb = D.chapterBlurb(ch);
-      const pills = open
-        ? (p.studied ? '<span class="pill pill--done">Studied</span>' : '')
-          + (p.practised ? '<span class="pill pill--done">Practised</span>' : '')
-          + (p.passed ? '<span class="pill pill--done">Test passed</span>' : (p.attempts ? '<span class="pill pill--warm">Best ' + p.best + ' of ' + ch.words.length + '</span>' : ''))
-          + '<span class="pill">' + ch.words.length + ' words</span>'
-        : '<span class="pill">Pass the chapter ' + (t.n - 1) + ' test to open</span>';
-      const inner = '<span class="chapter__num">' + t.n + '</span><div><h2>' + esc(t.name) + '</h2>'
-        + (blurb ? '<p class="muted small">' + esc(blurb) + '</p>' : '') + '<div class="pills">' + pills + '</div></div>';
-      return open
-        ? '<a class="card chapter" href="' + href(yearId, ch.slug) + '">' + inner + '</a>'
-        : '<div class="card chapter chapter--locked" aria-disabled="true">' + inner + '</div>';
-    }).join('') + '</div></section>';
-  applyMeters(main);
-}
-
-/* ------------------------------------------------------------- Chapter --- */
-export function chapter(main, { yearId, slug }) {
-  const ch = D.chapterBySlug(yearId, slug);
-  if (!ch) return notFound(main);
-  if (!isUnlocked(ch)) { location.replace(href(yearId)); return; }
-  const t = D.chapterTitle(ch);
-  const p = S.chapterProgress(ch.id);
-  const base = href(yearId, slug);
-  const done = (b) => (b ? '<span class="pill pill--done">Done</span>' : '<span class="pill">Not yet</span>');
-  main.innerHTML = '<section class="wrap page">'
-    + '<div class="pagehead"><span class="eyebrow">' + esc(D.years()[yearId].label) + ' · Chapter ' + t.n + '</span><h1>' + esc(t.name) + '</h1>'
-    + (D.chapterBlurb(ch) ? '<p class="muted">' + esc(D.chapterBlurb(ch)) + '</p>' : '') + '</div>'
-    + '<div class="wordchips">' + ch.words.map((w) => '<span>' + esc(w.word) + '</span>').join('') + '</div>'
-    + '<div class="phases">'
-    + '<div class="card phase"><span class="eyebrow">Step 1</span><h2>Study the words</h2><p class="muted small">Meaning, sound and spelling parts for all ' + ch.words.length + ' words, then a quick game.</p>' + done(p.studied)
-    + '<a class="btn btn--primary" href="' + base + '/study">Study</a></div>'
-    + '<div class="card phase"><span class="eyebrow">Step 2</span><h2>Practice</h2><p class="muted small">The flower game with 10 petals, for every word in the chapter.</p>' + done(p.practised)
-    + '<a class="btn ' + (p.studied ? 'btn--primary' : 'btn--ghost') + '" href="' + base + '/practice">Practise</a></div>'
-    + '<div class="card phase"><span class="eyebrow">Step 3</span><h2>Chapter test</h2><p class="muted small">Hear each word and type it. All ' + ch.words.length + ' right opens the next chapter.</p>'
-    + (p.passed ? '<span class="pill pill--done">Passed</span>' : (p.attempts ? '<span class="pill pill--warm">Best ' + p.best + ' of ' + ch.words.length + '</span>' : '<span class="pill">Not yet</span>'))
-    + '<a class="btn ' + (p.practised ? 'btn--primary' : 'btn--ghost') + '" href="' + base + '/test">Take the test</a></div>'
-    + '</div>'
-    + '<div class="btnrow"><a class="btn btn--quiet" href="' + base + '/quick">' + ICON.game + 'Quick game with all ' + ch.words.length + ' words</a></div>'
-    + '</section>';
-}
 
 /* --------------------------------------------------------------- Study --- */
 export function study(main, { yearId, slug }) {
@@ -359,8 +217,8 @@ export function test(main, { yearId, slug }) {
         + (a.right ? '<span class="pill pill--done">Right</span>' : '<span class="pill pill--warm">Missed</span>') + '</div>').join('') + '</div>'
       + '<div class="btnrow">'
       + (passed && nextCh ? '<a class="btn btn--primary" href="' + href(yearId, nextCh.slug) + '">Next chapter' + ICON.arrow + '</a>' : '')
-      + (!passed ? '<a class="btn btn--primary" href="' + base + '/practice">Practise again</a><a class="btn btn--ghost" href="' + base + '/test" data-retry>Try the test again</a>' : '')
-      + '<a class="btn btn--ghost" href="' + href(yearId) + '">All chapters</a></div></section>';
+      + (!passed ? '<a class="btn btn--primary" href="' + base + '/practice">Practise again</a><a class="btn btn--ghost" href="' + base + '/test" data-retry>Take the test again</a>' : '')
+      + '<a class="btn btn--ghost" href="#/chapters">All chapters</a></div></section>';
     placeBursts(main);
     const retry = main.querySelector('[data-retry]');
     if (retry) retry.addEventListener('click', (e) => { e.preventDefault(); window.dispatchEvent(new HashChangeEvent('hashchange')); });
@@ -499,7 +357,7 @@ export function tricky(main) {
             + '<span class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-hear="' + esc(w.word) + '">' + ICON.play + '<span class="sr">Hear</span></button>'
             + '<button type="button" class="btn btn--ghost btn--small" data-remove="' + esc(w.word) + '">Remove</button></span></div>';
         }).join('') + '</div>'
-      : '<div class="card empty"><h2>Nothing here yet</h2><p class="muted">Words you miss in a test or in “Pick words” land here, so you can practise them again.</p><a class="btn btn--primary" href="#/">Start learning</a></div>')
+      : '<div class="card empty"><h2>Nothing here yet</h2><p class="muted">Words you miss in a test or in “Pick words” land here, so you can practise them again.</p><a class="btn btn--primary" href="#/chapters">Choose a chapter</a></div>')
     + '</section>';
   main.querySelectorAll('[data-hear]').forEach((b) => b.addEventListener('click', () => speak(b.dataset.hear)));
   main.querySelectorAll('[data-remove]').forEach((b) => b.addEventListener('click', () => { S.removeTricky(b.dataset.remove); tricky(main); toast('Removed ' + b.dataset.remove); }));

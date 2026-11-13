@@ -71,6 +71,30 @@
 .gu-hw { display: inline-flex; align-items: center; min-height: 32px; padding: 2px 14px; border-radius: 999px; background: var(--help-bg); color: var(--help-fg); font-weight: 700; }
 .gu-empty { padding: 28px; display: grid; gap: 12px; justify-items: start; }
 
+/* ---- SB3-F: the adult's front page ------------------------------------------------ */
+.gu-top__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+.gu .eyebrow[data-date] { margin-bottom: 2px; }
+.gu-next { font-size: 1.05rem; color: var(--text); }
+.gu-next b { font-weight: 700; margin-right: 4px; }
+.gu-card__act { display: flex; flex-wrap: wrap; gap: 8px; }
+.gu-stones--one { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px 2px; }
+.gu-stones--one .stone { width: 100%; max-width: 44px; }
+.gu-stones--one .gu-stones__name { font-size: clamp(0.62rem, 2.7vw, 0.78rem); overflow-wrap: anywhere; }
+.gu-cards--one { grid-template-columns: minmax(0, 640px); }
+.gu-cards--rows { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.gu-card--row { padding: 16px 20px; gap: 10px 20px; }
+@media (min-width: 760px) {
+  .gu-card--row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top act" "next act" "help act"; align-items: center; }
+  .gu-card--row .gu-card__top { grid-area: top; }
+  .gu-card--row .gu-next { grid-area: next; }
+  .gu-card--row .gu-help { grid-area: help; }
+  .gu-card--row .gu-card__act { grid-area: act; align-self: center; }
+  .gu-card--row .gu-card__who h2 { font-size: 1.3rem; }
+}
+.gu-first { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px 40px; padding: 32px 24px; margin-bottom: 20px; }
+.gu-first__text { display: grid; gap: 12px; justify-items: start; max-width: 46ch; }
+.gu-first__text h1 { font-size: clamp(1.7rem, 6vw, 2.3rem); }
+
 /* ---- One child's week ---------------------------------------------------- */
 .gu-switchline { margin: 0 0 8px; }
 .gu-switch { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 0; list-style: none; }

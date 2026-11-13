@@ -5,11 +5,13 @@ import { testGuard } from './test-guard.js';
 import { wireThemeMenu } from './thememenu.js';
 import { stop, getSpeaker, hearSample, useVoiceAccount } from './speech.js';
 import * as V from './views.js';
+import * as FV from './front-views.js';
 import * as MW from './words-views.js';
 import * as SV from './study-views.js';
 import * as GV from './games-views.js';
 import { home } from './room.js';
-import { useWho, kind, isChild, isKnownChild } from './who.js';
+import { useWho, kind, isChild, isKnownChild, isAdult } from './who.js';
+import { applyAdult, useAdultTools } from './adult-chrome.js';
 import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools, closeMenu } from './child-views.js';
 import * as GU from './grownups-views.js';
 import { storyReview } from './story-views.js';
@@ -35,8 +37,8 @@ const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?
 
 // Hash routes. :params are captured by name.
 const ROUTES = [
-  ['', home],
-  ['chapters', V.home],
+  ['', front],
+  ['chapters', FV.chapters],
   ['about', V.about],
   ['custom', V.custom],
   ['custom/play', V.customPlay],
@@ -62,8 +64,8 @@ const ROUTES = [
   ['grownups/child/:cid/week/:gid', GU.childDashboard],
   ['grownups/child/:cid/plan', GU.planWeek],
   ['grownups/child/:cid/plan/:gid', GU.editWeek],
-  [':yearId', V.year],
-  [':yearId/:slug', V.chapter],
+  [':yearId', FV.year],
+  [':yearId/:slug', FV.chapter],
   [':yearId/:slug/study', V.study],
   [':yearId/:slug/study/:word', V.spell],
   [':yearId/:slug/quick', V.quick],
@@ -71,6 +73,9 @@ const ROUTES = [
   [':yearId/:slug/practice', V.practice],
   [':yearId/:slug/test', V.test],
 ];
+
+// A visitor with no session sees the signed-out front page (SB3-F); everyone else gets room.js's home.
+function front(m, p) { return kind() === 'none' ? FV.signedOut(m, { signInHref: account ? account.signInHref() : '' }) : home(m, p); }
 
 const chapterWords = (yearId, slug) => (D.chapterBySlug(yearId, slug) || { words: [] }).words.map((w) => w.word);
 
@@ -99,6 +104,7 @@ function parentOf(path) {
   if (parts[0] === 'grownups') return parts.length > 3 ? '#/grownups/child/' + parts[2] : parts.length > 1 ? '#/grownups' : '#/';
   if (parts[0] === 'words' && parts.length > 3) return '#/words/g/' + parts[2];
   if (parts[0] === 'words' && parts.length > 1) return '#/words';
+  if (/^y(34|56)$/.test(parts[0]) && parts.length <= 2) return '#/chapters'; // a year or a chapter page: back to More practice
   parts.pop();
   return '#/' + parts.join('/');
 }
@@ -111,7 +117,7 @@ function gated(path) {
   waiting = null;
   if (!account) return false;
   const answer = account.gate(path, isLocked(path));
-  if (answer === 'play') return false;
+  if (answer === 'play' || (path === '' && (answer === 'signin' || answer === 'offline'))) return false; // the front page is open to a visitor; only a wait shows the card
   main.innerHTML = gateHtml(gateCard(answer, navigator.onLine), account.signInHref(), { href: '#/about', label: 'About Spellbright' });
   backBtn.hidden = path === '';
   backBtn.onclick = () => { location.hash = parentOf(path); };
@@ -135,7 +141,9 @@ function releaseBar() {
   document.documentElement.classList.remove('wa-pre');
   document.body.classList.remove('is-pending');
 }
-const chrome = () => applyChrome(isKnownChild(), currentPath(), pending());
+// A visitor with no session sees the mark and a small Sign in only (css/front.css; the nav is hidden, never display: none).
+const applyVisitor = () => document.body.classList.toggle('is-visitor', kind() === 'none');
+const chrome = () => { applyChrome(isKnownChild(), currentPath(), pending()); applyAdult(isAdult()); applyVisitor(); };
 
 function render() {
   if (typeof cleanup === 'function') cleanup();
@@ -143,7 +151,7 @@ function render() {
   stop();
   const hadSheet = closeMenu(false); // a sheet never stays open over a redraw (a sync, a route change)
   const path = currentPath();
-  applyChrome(isKnownChild(), path, pending());
+  chrome();
   if (hadSheet) setTimeout(settleFocus, 0);
   if (gated(path)) return;
   const found = match(path);
@@ -239,6 +247,7 @@ function wireAccount() {
   });
   // G8c: Hear asks the account's voice server for a signed-in player.
   useChildTools({ voice: () => voiceMenu, speaker: () => getSpeaker() });
+  useAdultTools({ origin: () => account.origin, player: () => account.session.player });
   useVoiceAccount(() => (account ? { origin: account.origin, signedIn: !!account.session.player } : null));
   account.session.on(() => { if (voiceMenu) voiceMenu.redraw(); });
   // /api/me says what kind of player this is; the cached player can't. It decides
@@ -249,7 +258,7 @@ function wireAccount() {
   let knownKind = '';
   account.session.on(({ player }) => {
     const k = (player && player.kind) || '';
-    if (k !== knownKind) { knownKind = k; if (drawn) chrome(); if (drawn && /^(grownups|$)/.test(currentPath())) render(); } // no other page depends on it: never wipe a half-filled form
+    if (k !== knownKind) { knownKind = k; if (drawn) chrome(); if (drawn && /^(grownups|chapters$|y(34|56)(\/ch\d\d)?$|$)/.test(currentPath())) render(); } // no other page depends on it: never wipe a half-filled form
   });
 }
 

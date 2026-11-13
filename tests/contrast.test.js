@@ -72,6 +72,10 @@ const TEXT = [
   ['--stone-today-fg', '--stone-today'], ['--text', '--stone-wait-bg'], ['--muted', '--stone-wait-bg'], ['--muted', '--panel'], ['--text', '--panel'], ['--surface', '--sb'],
   // SB3-C2, Grown-ups: the Needs help chip (soft plum), the Got it chip, the waiting chip (honey)
   ['--help-fg', '--help-bg'], ['--good', '--good-soft'], ['--stone-today-fg', '--stone-today'], ['--text', '--help-bg'],
+  // SB3-F, the adult's bar, Menu and account panel: the Grown-ups tag, the panel's icon discs and quiet text, the face, the papers line
+  ['--eyebrow', '--surface'], ['--sb', '--sb-soft'], ['--sb', '--surface-2'], ['--link', '--surface-2'], ['--muted', '--bg'], ['--text', '--bg'], ['--stone-today-fg', '--stone-today'], ['--muted', '--surface'], ['--link', '--bg'],
+  // SB3-F, the front pages: the year switch and the next stone on the pale surface, the quiet link on it, the chapter step pills
+  ['--link', '--surface-2'], ['--text', '--surface-2'], ['--muted', '--surface-2'], ['--link', '--surface'], ['--stone-today-fg', '--stone-today'], ['--good', '--good-soft'], ['--surface', '--sb'], ['--text', '--accent-soft'],
   // The Wordbright card
   ['--wb', '--surface'], ['--wb', '--bg'],
   // The Waystead Learning panel (its heading, text and Teal button)
@@ -79,7 +83,7 @@ const TEXT = [
 ];
 // Icons and outlines: 3:1 (WCAG 1.4.11). --sb is the spelling-part rail;
 // --petal-edge colours the lives dots.
-const UI = [['--stone-edge', '--stone-wait-bg'], ['--stone-edge', '--panel'], ['--stone-edge', '--surface'], ['--sb', '--panel'], ['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface']];
+const UI = [['--sb', '--surface-2'], ['--stone-edge', '--surface'], ['--sb', '--accent-soft'], ['--stone-edge', '--stone-wait-bg'], ['--stone-edge', '--panel'], ['--stone-edge', '--surface'], ['--sb', '--panel'], ['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface']];
 // The "Best 7/11" pill: dark amber by day, Amber at night.
 const WARM = { garden: ['--amber-700', '--warm-soft'], paint: ['--amber-700', '--warm-soft'], night: ['--amber', '--warm-soft'] };
 

@@ -142,7 +142,7 @@ function voiceChoices() {
 }
 const radios = (list, attr) => list.map((c) => '<button type="button" class="choice" role="radio" aria-checked="' + c.on + '" tabindex="' + (c.on ? 0 : -1) + '" ' + attr + '="' + esc(c.id) + '"' + (c.off ? ' aria-disabled="true"' : '') + '>' + esc(c.label) + '</button>').join('');
 /** The Voice card: the shared list as radios, "Add more voices" when the menu offers it, and the menu's own tip line. */
-function voiceCardHtml() {
+export function voiceCardHtml() {
   const vs = voiceChoices();
   if (!vs.length) return '';
   const vm = tools.voice();
@@ -154,7 +154,7 @@ function voiceCardHtml() {
     + (line ? '<p class="small muted" data-voicetip>' + esc(line) + '</p>' : '');
 }
 // Arrow keys move through a group of radios and choose as they go.
-function roving(box, attr, pick) {
+export function roving(box, attr, pick) {
   box.addEventListener('keydown', (e) => {
     const keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
     if (!keys[e.key]) return;
@@ -165,6 +165,9 @@ function roving(box, attr, pick) {
     pick(all[(i + keys[e.key] + all.length) % all.length]);
   });
 }
+
+/** The voice menu and speaker app.js gave us (the grown-up's account panel shares the Voice card). */
+export const childTools = () => tools;
 
 export function settingsPage(main) {
   const swi = chipLink('switch');

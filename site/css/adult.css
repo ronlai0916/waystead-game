@@ -1,0 +1,106 @@
+/* ==========================================================================
+   The adult's top bar, Menu and account panel (SB3-F). Everything here needs
+   body.is-adult (set by adult-chrome.js for a signed-in adult who is not
+   playing as a child), so a signed-out visitor, a child and the other
+   products' shared top bar are as they were. Only existing tokens; the text
+   pairs are in tests/contrast.test.js. Every control is at least 44 px and
+   takes the site's 3 px focus ring.
+   ========================================================================== */
+
+/* ---- The bar: mark + Grown-ups tag, Menu, account chip ---- */
+.adultbar { display: none; }
+.brand__tag { display: none; }
+body.is-adult .adultbar { display: flex; align-items: center; gap: 10px; flex: none; }
+/* The old links, All games and the look menu stay in the page for nav.js to measure, never display: none on the nav. */
+body.is-adult .topbar__nav { position: absolute; width: 0; height: 0; overflow: hidden; visibility: hidden; }
+body.is-adult .allgames,
+body.is-adult .topbar__inner > .thememenu { display: none; }
+body.is-adult .brand__tag {
+  display: inline-block; margin-left: 4px; padding: 3px 10px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface);
+  color: var(--eyebrow); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
+}
+.adultbtn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 2px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--text); font: inherit; font-weight: 700; font-size: 0.98rem; white-space: nowrap; cursor: pointer;
+}
+.adultbtn:hover { border-color: var(--muted); }
+.adultbtn[aria-expanded="true"] { border-color: var(--sb); box-shadow: 0 0 0 2px var(--sb); }
+.adultbtn svg { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--sb); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.adultbtn--chip { padding: 0 12px 0 6px; max-width: 16rem; }
+.adultchip__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adultchip__chev svg { width: 18px; height: 18px; }
+.adultface {
+  width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--stone-today); color: var(--stone-today-fg);
+  font-family: var(--f-display); font-weight: 700; font-size: 1rem;
+}
+.adultface--plain { background: var(--sb-soft); color: var(--sb); }
+.adultface--plain svg { width: 18px; height: 18px; stroke: currentColor; }
+.adultface--sm { width: 36px; height: 36px; }
+@media (max-width: 599.98px) {
+  .adultbtn--chip { padding: 0; width: 44px; justify-content: center; }
+  .adultchip__name, .adultchip__chev { display: none; }
+}
+@media (max-width: 479.98px) {
+  body.is-adult .brand__tag { display: none; }
+  body.is-adult .topbar__inner { gap: 8px; }
+}
+
+/* ---- The panels: below the bar on a wide screen, a bottom sheet under 600 px ---- */
+.adultlayer { position: fixed; inset: 0; z-index: 19; }
+.adultlayer[hidden], .adultpanel[hidden] { display: none; }
+.adultlayer__back { position: absolute; inset: 0; background: rgba(27, 26, 32, 0.5); }
+.adultpanel {
+  position: absolute; top: var(--adult-top, 76px); right: max(16px, calc((100vw - var(--wrap)) / 2 + 16px)); width: min(420px, calc(100vw - 32px));
+  max-height: calc(100vh - var(--adult-top, 76px) - 12px); max-height: calc(100dvh - 80px); overflow-y: auto; overscroll-behavior: contain;
+  padding: 16px 18px 18px; background: var(--surface); color: var(--text); border: 3px solid var(--sb); border-radius: 22px; box-shadow: var(--shadow), 0 16px 40px -16px rgba(0, 0, 0, 0.45);
+}
+.adultpanel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.adultpanel__head h2 { font-size: 1.4rem; }
+.adultclose { min-height: 44px; padding: 6px 16px; }
+.adultclose svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.adultpanel__h { margin: 14px 0 6px; font-family: var(--f-body); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.adultwho { display: flex; align-items: center; gap: 12px; padding: 4px 0 6px; }
+.adultwho .adultface { width: 48px; height: 48px; font-size: 1.3rem; }
+.adultwho > span:last-child { display: grid; min-width: 0; }
+.adultwho b { font-family: var(--f-display); font-size: 1.15rem; overflow-wrap: anywhere; }
+.adultwho span span { color: var(--muted); font-size: 0.92rem; }
+.adultlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.adultlist--tight { margin-top: 6px; }
+.adultlist--rule { margin-top: 10px; padding-top: 6px; border-top: 1px solid var(--line); }
+.adultrow { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 8px; border-radius: 14px; color: var(--text); text-decoration: none; }
+.adultrow:hover { background: var(--surface-2); }
+.adultrow:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+.adultrow__ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--sb-soft); color: var(--sb); }
+.adultrow__ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.adultrow__text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.adultrow__text b { font-family: var(--f-display); font-weight: 600; font-size: 1.08rem; }
+.adultrow__text span { color: var(--muted); font-size: 0.9rem; }
+.adultrow__go { color: var(--sb); flex: none; }
+.adultrow__go svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.adultlooks { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 6px; }
+.adultlooks .choice { justify-content: center; min-height: 48px; padding: 6px 10px; text-align: center; gap: 6px; }
+.adultvoice { margin-top: 10px; }
+.adultvoice h2 { font-family: var(--f-body); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 10px 0 6px; }
+.adultvoice .choices { margin-top: 4px; }
+.adultpanel .choice:focus-visible, .adultpanel .linkbtn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (max-width: 599.98px) {
+  .adultpanel {
+    top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 86vh; max-height: calc(100dvh - 80px);
+    border: 0; border-radius: 28px 28px 0 0; background: var(--bg); padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
+    box-shadow: 0 -12px 40px -16px rgba(0, 0, 0, 0.5);
+  }
+  .adultlooks { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- The foot of an adult's pages: one quiet line from Waystead Learning ---- */
+.foot__papers { display: none; }
+body.is-adult .foot__papers { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 4px 0 14px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+.foot__papers .eyebrow { color: var(--muted); }
+.foot__papers p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; max-width: 60ch; }
+.foot__papers a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--link); font-weight: 700; }
+.foot__papers a svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+body.is-adult .foot__more { display: none; }
+
+/* 44 px buttons in the same 60 px bar as before, so a page under it does not move. */
+body.is-adult .topbar__inner { padding-top: 8px; padding-bottom: 8px; }
+body.is-adult #back { width: 44px; height: 44px; }

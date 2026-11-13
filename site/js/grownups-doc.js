@@ -5,7 +5,7 @@
 import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import { trickyWords } from './progress-doc.js';
-import { switchUrl } from './account/config.js';
+import { switchUrl, accountUrl } from './account/config.js';
 import { stoneView } from './child-doc.js';
 
 /** Only an adult playing as themselves. A child, or an adult playing as one, never. */
@@ -258,3 +258,115 @@ export const deletedLine = 'Deleted.';
 export const deleteQuestion = (name, child) => 'Delete ' + name + ' for ' + child + '?';
 export const deleteBody = (child) => child + '\'s practice on these words is kept and still counts towards remembered words.';
 export const LOCKED_LINE = 'The test has begun, so the words and date can\'t change now. You can still rename the week, or plan next week.';
+
+/* ===================================================================================
+   SB3-F: the adult's front page ("This week at a glance"). Pure, like the rest.
+   =================================================================================== */
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+/** "Tuesday 17 November" for a day string; '' for anything else. */
+export function longDate(day) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day || '');
+  if (!m) return '';
+  const t = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  return WEEKDAYS[t.getUTCDay()] + ' ' + t.getUTCDate() + ' ' + MONTHS[t.getUTCMonth()];
+}
+
+export const STONE_KEY_NEXT = 'Star: done. Sun: next job. Sun with a clock: next job, waiting. Dashed: later.';
+
+/**
+ * The next job and the one after it, from a week card's steps: the first two jobs not done (a job left undone in
+ * a legacy week is never a job). `waiting` is true when the next job's day has gone.
+ */
+export function nextJobs(card) {
+  const open = card.steps.filter((s) => s.kind !== 'done' && s.kind !== 'missed');
+  // The child's home names card.jobId. Mend marked done with fix-ups left is "done" here but still the job: put it first.
+  const job = card.jobId && !open.some((s) => s.id === card.jobId) ? card.steps.find((s) => s.id === card.jobId) : null;
+  if (job) open.unshift(job);
+  const one = open[0] || null;
+  const two = open[1] || null;
+  return { next: one, then: two, waiting: !!one && (one.kind === 'waiting' || one.kind === 'todaywait') };
+}
+/** "Next: Hello words (waiting). Then Fix it in." The next job comes first, a missed one before today's. '' when nothing is left. */
+export function nextLine(card) {
+  const { next, then, waiting } = nextJobs(card);
+  if (!next) return '';
+  return 'Next: ' + next.title + (waiting ? ' (waiting)' : '') + (then ? '. Then ' + then.title : '') + '.';
+}
+/** The stone that carries the sun: the next job, whether or not today has one. '' when none is left. */
+export const sunStep = (card) => { const { next } = nextJobs(card); return next ? next.id : ''; };
+
+/** How a child stands on the front page. key: 'noweek' 'ended' 'waiting' 'notstarted' 'ontrack' 'problem'. */
+export function glanceKey(overview, problem = '') {
+  if (problem) return { key: 'problem', waiting: 0 };
+  const k = overview && overview.current;
+  if (!k) return { key: 'noweek', waiting: 0 };
+  if (k.status === 'finished') return { key: 'ended', waiting: 0 };
+  if (k.chip.key === 'waiting') return { key: 'waiting', waiting: k.waiting };
+  return { key: k.chip.key === 'notstarted' ? 'notstarted' : 'ontrack', waiting: 0 };
+}
+/** A child who needs the grown-up: a job waiting, a week that has ended, or no week at all. */
+export const needsYou = (key) => key === 'waiting' || key === 'ended' || key === 'noweek';
+/** The first card that needs the grown-up (its one button is the green one), or -1. Order is the account's. */
+export const primaryIndex = (items) => items.findIndex((x) => needsYou(x.key));
+/** "Plan a week" leads only when no child needs attention. */
+export const planIsPrimary = (items) => primaryIndex(items) < 0;
+
+const COUNTS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const cap = (s) => s.replace(/^./, (c) => c.toUpperCase());
+const countWord = (n) => (n < COUNTS.length ? COUNTS[n] : String(n));
+const joinNames = (names) => (names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1]);
+/** One rule for a name: always 's, with a curly apostrophe (Chris’s week, James’s week). */
+export const possessive = (n) => n + '’s';
+function fragment(x) {
+  switch (x.key) {
+    case 'waiting': return x.name + (x.waiting === 1 ? ' has a job waiting' : ' has ' + x.waiting + ' jobs waiting');
+    case 'ended': return possessive(x.name) + ' week has ended';
+    case 'noweek': return x.name + ' has no week yet';
+    case 'notstarted': return x.name + ' is ready to start';
+    case 'problem': return possessive(x.name) + ' week did not load';
+    default: return x.name + ' is on track';
+  }
+}
+/**
+ * The one sentence under the heading. items: [{ name, key, waiting }] in the account's order.
+ * Up to three children: one short sentence each, the ones who need you first, those on track together
+ * ("Wren has a job waiting. Robin is on track."). From four: "Ben and Ellie need you. Three children are on track."
+ */
+export function glanceSummary(items) {
+  if (!items.length) return '';
+  const calm = (x) => x.key === 'ontrack' || x.key === 'notstarted';
+  if (items.length <= 3) {
+    const out = [];
+    items.filter((x) => !calm(x)).sort((a, b) => (needsYou(a.key) ? 0 : 1) - (needsYou(b.key) ? 0 : 1)).forEach((x) => out.push(fragment(x)));
+    const ok = items.filter(calm);
+    if (ok.length) {
+      if (ok.every((x) => x.key === 'ontrack')) out.push(joinNames(ok.map((x) => x.name)) + (ok.length === 1 ? ' is' : ' are') + ' on track');
+      else ok.forEach((x) => out.push(fragment(x)));
+    }
+    return out.map((s) => s + '.').join(' ');
+  }
+  const need = items.filter((x) => needsYou(x.key));
+  const calmN = items.filter(calm).length;
+  const bad = items.filter((x) => x.key === 'problem').length;
+  const parts = [];
+  if (need.length) parts.push(joinNames(need.map((x) => x.name)) + (need.length === 1 ? ' needs you.' : ' need you.'));
+  if (calmN === items.length) parts.push('All ' + countWord(calmN) + ' children are on track.');
+  else if (calmN) parts.push(cap(countWord(calmN)) + (calmN === 1 ? ' child is' : ' children are') + ' on track.');
+  if (bad) parts.push(cap(countWord(bad)) + (bad === 1 ? ' week' : ' weeks') + ' did not load.');
+  return parts.join(' ');
+}
+
+/** The one green button in the header row. items: [{ name, key }] in the account's order. */
+export function primaryAction(items) {
+  const i = primaryIndex(items);
+  if (i < 0) return { kind: 'plan', index: -1, label: 'Plan a week' };
+  const x = items[i];
+  if (x.key === 'noweek') return { kind: 'plan-child', index: i, label: 'Plan a week for ' + x.name };
+  if (x.key === 'ended') return { kind: 'plan-child', index: i, label: 'Plan ' + possessive(x.name) + ' next week' };
+  return { kind: 'see', index: i, label: 'See ' + possessive(x.name) + ' week' };
+}
+/** One or two children keep the full cards with stones; from three, one compact row each. */
+export const isCompact = (n) => n >= 3;
+/** The Waystead account's home (its children page is not a known address): "Add a child" and "Manage children". */
+export const accountHomeHref = (origin) => accountUrl(origin, 'adult');

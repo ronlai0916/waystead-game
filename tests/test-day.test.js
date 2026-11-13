@@ -117,9 +117,8 @@ test('nothing is hidden before the test or once it\'s done', () => {
   assert.equal(St.hiddenWords(due(), plus(4)).size, 0);
   assert.equal(St.hiddenWords(take(take(due(), 'fruit', plus(5)), 'earth', plus(5)), plus(5)).size, 0);
 });
-test('Pick words, Tricky words, playing a pick and Today\'s word all use the filter', () => {
+test('Pick words, Tricky words and playing a pick all use the filter (Today\'s word left the front page, SB3-F)', () => {
   const v = readFileSync(file('site/js/views.js'), 'utf8');
-  assert.match(v, /wordOfTheDay\(hiddenToday\(\)\)/);
   assert.match(v, /const all = withoutHidden\(D\.allWords\(\), hidden\)/);
   assert.match(v, /const tricky = withoutHidden\(S\.trickyWords\(\)/);
   assert.match(v, /const list = withoutHidden\(S\.trickyWords\(\)/);

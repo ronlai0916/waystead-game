@@ -245,7 +245,7 @@ test('grown-ups pages: no inline style or script, own stylesheet in the shell, a
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   assert.ok(sw.includes("'css/grownups.css'"));
   assert.match(readFileSync(file('site/index.html'), 'utf8'), /css\/grownups\.css/);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-13a'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-13d'/);
   const css = readFileSync(file('site/css/grownups.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   for (const rule of css.split('}').map((r) => r.split('{')[0].trim()).filter((s) => s && !s.startsWith('@') && !/^\d|^(from|to)/.test(s))) {
     for (const sel of rule.split(',').map((x) => x.trim())) assert.match(sel, /^\.gu|^@/, 'scoped to .gu: ' + sel);
@@ -346,4 +346,36 @@ test('S3: a date the grown-up picks must be after today; the passed-date line', 
   assert.doesNotMatch(views, /existing\.test > day \? existing\.test/);
   assert.match(views, /data-datepassed/);
   assert.ok(g);
+});
+
+// ---- the adult card and the child's home agree on the next job (SB3-F, F4) ---------------------
+test('nextJobs: Mend marked done with fix-ups still to do is still the next job', () => {
+  const card = { jobId: 'mend', steps: ['hello:Hello words', 'fix:Fix it in', 'games:Game day', 'story:Story day', 'practice:Practice day', 'test:Test day', 'mend:Mend and keep'].map((x) => ({ id: x.split(':')[0], title: x.split(':')[1], kind: 'done' })) };
+  assert.equal(P.nextLine(card), 'Next: Mend and keep.');
+  assert.equal(P.sunStep(card), 'mend');
+  assert.equal(P.sunStep({ jobId: '', steps: card.steps }), '', 'nothing left when the job id is empty');
+});
+test('the adult card names the same next job as the child\'s home, over generated weeks', () => {
+  let seed = 7;
+  const rnd = (m) => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed % m; };
+  const ids = ['hello', 'fix', 'games', 'story', 'practice', 'test', 'mend'];
+  let checked = 0;
+  for (let i = 0; i < 400; i += 1) {
+    let { d, g } = made(['fruit', 'earth'], plus(5));
+    const today = plus(rnd(9));
+    for (const id of ids) if (rnd(3) === 0) d = job(d, g, id, plus(rnd(9)));
+    if (rnd(2)) d = tr(d, g, 'fruit', plus(rnd(9)), { kind: 't', clean: false, tries: 2 });
+    g = W.groupById(d, 'g1');
+    const s = St.studyState(d, g, today);
+    const card = P.weekCard(d, g, today);
+    if (!s.job) continue;
+    checked += 1;
+    assert.equal(P.nextJobs(card).next.id, s.job, 'case ' + i + ' on ' + today);
+  }
+  assert.ok(checked > 100, 'enough generated weeks had a job: ' + checked);
+});
+test('a child\'s name always takes \'s, with a curly apostrophe', () => {
+  assert.equal(P.possessive('Chris'), 'Chris’s');
+  assert.equal(P.possessive('James'), 'James’s');
+  assert.equal(P.possessive('Robin'), 'Robin’s');
 });
