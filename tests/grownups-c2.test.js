@@ -137,7 +137,10 @@ test('the week name: School spellings for typed words, else the list\'s name', (
   assert.match(P.suggestName({ typedCount: 0, listName: '', test: plus(5) }), /^Words for/);
 });
 test('the child\'s year list, and where the planner starts', () => {
-  assert.deepEqual([3, 4, 5, 6].map(P.yearListFor), ['y34', 'y34', 'y56', 'y56']);
+  assert.deepEqual([3, 4, 5, 6].map((y) => P.yearListFor(y)), ['y3', 'y4', 'y5', 'y6']);
+  assert.deepEqual([1, 2].map((y) => P.yearListFor(y, ['y3', 'y4', 'y5', 'y6'])), ['y3', 'y3'], 'Years 1 and 2 are Year 3 until they have words');
+  assert.deepEqual([1, 2, 3, 7].map((y) => P.yearListFor(y, ['y1', 'y2', 'y3', 'y4', 'y5', 'y6'])), ['y1', 'y2', 'y3', 'y6']);
+  assert.equal(P.yearListFor(undefined), 'y3');
   assert.equal(P.firstStep({ children: 2, chosen: '', editing: false }), 1);
   assert.equal(P.firstStep({ children: 1, chosen: '', editing: false }), 2, 'one child: skip step 1');
   assert.equal(P.firstStep({ children: 2, chosen: 'k', editing: false }), 2);
@@ -245,7 +248,7 @@ test('grown-ups pages: no inline style or script, own stylesheet in the shell, a
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   assert.ok(sw.includes("'css/grownups.css'"));
   assert.match(readFileSync(file('site/index.html'), 'utf8'), /css\/grownups\.css/);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-13e'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-13f'/);
   const css = readFileSync(file('site/css/grownups.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   for (const rule of css.split('}').map((r) => r.split('{')[0].trim()).filter((s) => s && !s.startsWith('@') && !/^\d|^(from|to)/.test(s))) {
     for (const sel of rule.split(',').map((x) => x.trim())) assert.match(sel, /^\.gu|^@/, 'scoped to .gu: ' + sel);

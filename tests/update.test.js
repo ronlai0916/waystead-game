@@ -109,6 +109,8 @@ test('settled: a worker that fails to install ends the wait, and so does the tim
 test('only My words paths wait; the play paths that hold back a reload are unchanged', () => {
   for (const p of ['words', 'words/new', 'words/anything/else']) assert.ok(isWordsPath(p), p);
   for (const p of ['', 'wordsmith', 'y34', 'custom']) assert.ok(!isWordsPath(p), p);
+  for (const p of ['y3', 'y1/ch01', 'chapters']) assert.ok(isWordsPath(p), p);
+  for (const p of ['y3/ch01/test', 'y4/ch02/quiz', 'words/exam/abc', 'words/own/abc/quick']) assert.ok(isPlayPath(p), p);
   assert.ok(isPlayPath('words/g/abc/spell/3') && isPlayPath('words/g/abc/test') && isPlayPath('y34/ch01/test'));
   const app = read('js/app.js');
   assert.match(app, /if \(!isWordsPath\(path\)\) \{ V\.notFound\(main\); return; \}/);

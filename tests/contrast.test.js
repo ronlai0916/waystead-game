@@ -78,12 +78,16 @@ const TEXT = [
   ['--link', '--surface-2'], ['--text', '--surface-2'], ['--muted', '--surface-2'], ['--link', '--surface'], ['--stone-today-fg', '--stone-today'], ['--good', '--good-soft'], ['--surface', '--sb'], ['--text', '--accent-soft'],
   // The Wordbright card
   ['--wb', '--surface'], ['--wb', '--bg'],
+  // SB4, the tile screens: tile text on the tile, the placed letter on its box, "Nearly" text on its soft panel
+  ['--tile-fg', '--tile-bg'], ['--placed-fg', '--placed-bg'], ['--soft-fg', '--soft-bg'],
   // The Waystead Learning panel (its heading, text and Teal button)
   ['--learning', '--learning-soft'], ['--text', '--learning-soft'], ['#FFFFFF', '--learning-btn'],
 ];
 // Icons and outlines: 3:1 (WCAG 1.4.11). --sb is the spelling-part rail;
 // --petal-edge colours the lives dots.
-const UI = [['--sb', '--surface-2'], ['--stone-edge', '--surface'], ['--sb', '--accent-soft'], ['--stone-edge', '--stone-wait-bg'], ['--stone-edge', '--panel'], ['--stone-edge', '--surface'], ['--sb', '--panel'], ['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface']];
+const UI = [['--sb', '--surface-2'], ['--stone-edge', '--surface'], ['--sb', '--accent-soft'], ['--stone-edge', '--stone-wait-bg'], ['--stone-edge', '--panel'], ['--stone-edge', '--surface'], ['--sb', '--panel'], ['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface'],
+  // SB4, the tile screens: the tile's edge on the tray and on the page, the gap's edge on its fill and on the surface, the glow on the tray
+  ['--tile-edge', '--tray-bg'], ['--tile-edge', '--bg'], ['--gap-edge', '--gap-bg'], ['--gap-edge', '--surface'], ['--glow', '--tray-bg']];
 // The "Best 7/11" pill: dark amber by day, Amber at night.
 const WARM = { garden: ['--amber-700', '--warm-soft'], paint: ['--amber-700', '--warm-soft'], night: ['--amber', '--warm-soft'] };
 

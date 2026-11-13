@@ -7,6 +7,8 @@
 //   · a child signed in with their slip or a device code: that child;
 //   · an adult playing as one of their children (/play): that child;
 //   · an adult playing as themselves: the adult (no picture: the chip shows an initial).
+// A child's player also carries `year` (1..6) when the account says so (SB4):
+// the property is left out otherwise. `year` is never cached in `wa.player`.
 
 export const PLAYER_KEY = 'wa.player';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -16,15 +18,17 @@ const AVATAR_URL = /^https?:\/\/[a-z0-9.:-]+\/avatars\/[a-z][a-z-]{0,31}-128\.we
 export const avatarUrl = (origin, id) => (typeof id === 'string' && AVATAR_ID.test(id) ? origin + '/avatars/' + id + '-128.webp' : null);
 const cleanName = (s, fallback) => (typeof s === 'string' && s.trim() ? s.trim().slice(0, 40) : fallback);
 
+const yearOf = (y) => (Number.isInteger(y) && y >= 1 && y <= 6 ? { year: y } : {});
+
 export function playerFromMe(me, origin) {
   if (!me || me.signedIn !== true) return null;
   if (me.kind === 'child' && UUID.test(me.id)) {
-    return { id: me.id, name: cleanName(me.nickname, 'Player'), avatar: avatarUrl(origin, me.avatar), kind: 'child', canSwitch: false };
+    return { id: me.id, name: cleanName(me.nickname, 'Player'), avatar: avatarUrl(origin, me.avatar), kind: 'child', canSwitch: false, ...yearOf(me.year) };
   }
   if (me.kind === 'parent' && UUID.test(me.id)) {
     const k = me.playingAs;
     if (k && UUID.test(k.id)) {
-      return { id: k.id, name: cleanName(k.nickname, 'Player'), avatar: avatarUrl(origin, k.avatar), kind: 'child', canSwitch: true };
+      return { id: k.id, name: cleanName(k.nickname, 'Player'), avatar: avatarUrl(origin, k.avatar), kind: 'child', canSwitch: true, ...yearOf(k.year) };
     }
     return { id: me.id, name: cleanName(me.displayName, 'Grown-up'), avatar: null, kind: 'adult', canSwitch: true };
   }

@@ -66,11 +66,14 @@ test('summary line', () => {
 
 test('which year opens: the remembered one, else where the player is working', () => {
   const V = (mode) => ({ mode });
-  assert.equal(F.pickYear('y56', { y34: V('carry'), y56: V('start') }), 'y56');
-  assert.equal(F.pickYear('', { y34: V('carry'), y56: V('start') }), 'y34');
-  assert.equal(F.pickYear('', { y34: V('done'), y56: V('start') }), 'y56');
-  assert.equal(F.pickYear('', { y34: V('start'), y56: V('carry') }), 'y56');
-  assert.equal(F.pickYear('nonsense', { y34: V('start'), y56: V('start') }), 'y34');
+  const live = ['y3', 'y4', 'y5', 'y6'];
+  const all = (m) => Object.fromEntries(live.map((y) => [y, V(m[y] || 'start')]));
+  assert.equal(F.pickYear('y6', all({ y3: 'carry' }), 0, live), 'y6');
+  assert.equal(F.pickYear('', all({ y3: 'carry' }), 0, live), 'y3');
+  assert.equal(F.pickYear('', all({ y3: 'done', y4: 'carry' }), 0, live), 'y4');
+  assert.equal(F.pickYear('', all({ y3: 'start', y5: 'carry' }), 0, live), 'y5');
+  assert.equal(F.pickYear('nonsense', all({}), 0, live), 'y3');
+  assert.equal(F.pickYear('', all({ y3: 'carry' }), 5, live), 'y5', 'the child\'s own year comes before progress');
 });
 
 test('chapter steps: learn, then practise, then the test is the one next step', () => {

@@ -1,13 +1,13 @@
 // Loads the word list and the asset manifest once, and answers lookups from memory.
 
-const YEARS = {
-  y34: { key: 'year_3_4', label: 'Year 3 & 4', short: 'Y3–4' },
-  y56: { key: 'year_5_6', label: 'Year 5 & 6', short: 'Y5–6' },
-};
+import * as Ch from './chapters-doc.js';
 
 let curriculum = null;
 let byWord = new Map();
 let chaptersById = new Map();
+let byYear = {};
+let liveIds = [];
+let inChapters = new Map(); // word -> the ids of every chapter that has it
 let assets = { images: new Set(), audioWords: new Set(), audioLetters: new Set(), audioStories: new Set() };
 let audioVersion = '';
 
@@ -19,20 +19,24 @@ export async function loadData() {
   if (!cRes.ok) throw new Error('Word list did not load (HTTP ' + cRes.status + ')');
   curriculum = await cRes.json();
 
-  for (const [yearId, y] of Object.entries(YEARS)) {
-    const block = curriculum[y.key];
-    block.chapters.forEach((ch, i) => {
-      ch.yearId = yearId;
-      ch.index = i;
-      ch.slug = 'ch' + String(i + 1).padStart(2, '0');
-      chaptersById.set(ch.id, ch);
+  const built = Ch.buildYears(curriculum);
+  byYear = built.byYear;
+  chaptersById = built.byId;
+  liveIds = built.live;
+  byWord = new Map();
+  inChapters = new Map();
+  // The old blocks load first and the first entry for a word wins: a word in two chapters (busy) keeps its old audio and picture.
+  for (const block of Ch.LOAD_ORDER) {
+    for (const ch of (curriculum[block] && curriculum[block].chapters) || []) {
       for (const w of ch.words) {
         if (w.chunks.join('') !== w.word) {
           throw new Error('Chunks for "' + w.word + '" do not spell the word');
         }
-        byWord.set(w.word, { ...w, chapterId: ch.id, yearId });
+        if (!byWord.has(w.word)) byWord.set(w.word, { ...w, chapterId: ch.id, yearId: ch.yearId });
+        if (!inChapters.has(w.word)) inChapters.set(w.word, []);
+        inChapters.get(w.word).push(ch.id);
       }
-    });
+    }
   }
 
   if (aRes && aRes.ok) {
@@ -47,13 +51,20 @@ export async function loadData() {
   }
 }
 
-export const years = () => YEARS;
-export const yearBlock = (yearId) => curriculum[YEARS[yearId].key];
-export const chapters = (yearId) => yearBlock(yearId).chapters;
+export const years = () => Ch.YEAR_INFO;
+export const liveYears = () => liveIds;
+/** The year a picker starts on: Year 3, or the first live year. */
+export const defaultYear = () => (liveIds.includes('y3') ? 'y3' : liveIds[0]);
+export const yearBlock = (yearId) => curriculum[Ch.YEAR_INFO[yearId].block];
+export const chapters = (yearId) => byYear[yearId] || [];
 export const chapterBySlug = (yearId, slug) => chapters(yearId).find((c) => c.slug === slug) || null;
+/** Every chapter by id, for the old-link redirect (chapters-doc.js legacyHref). */
+export const chapterIds = () => chaptersById;
 export const allChapters = () => [...chaptersById.values()];
 export const chapterById = (id) => chaptersById.get(id) || null;
 export const entry = (word) => byWord.get(word) || null;
+/** Every chapter id that has this word (a few words, such as busy, are in two). */
+export const chaptersOf = (word) => (inChapters.get(word) || []).slice();
 export const allWords = () => [...byWord.values()];
 export const hasImage = (w) => assets.images.has(w.image);
 export const letterAudioUrl = (L) => 'assets/audio/letters/' + L.toUpperCase() + '.mp3' + (audioVersion ? '?v=' + audioVersion : '');
@@ -64,9 +75,8 @@ export const hasStoryAudio = (key) => assets.audioStories.has(key);
 export const hasLetterAudio = (L) => assets.audioLetters.has(L.toUpperCase());
 
 export function chapterTitle(ch) {
-  // "Chapter 1 — First steps" -> { n: 1, name: "First steps" }
-  const m = /^Chapter\s+(\d+)\s+[—-]\s+(.*)$/.exec(ch.title);
-  return m ? { n: Number(m[1]), name: m[2] } : { n: ch.index + 1, name: ch.title };
+  // "Chapter 1 — First steps" -> { n: 1, name: "First steps" }; n is the chapter's place in its year
+  return { n: ch.n, name: Ch.chapterName(ch) };
 }
 
 export function chapterBlurb(ch) {

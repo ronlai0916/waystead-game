@@ -7,8 +7,9 @@ import { REQUIRE_SIGN_IN, mustSignIn } from './account/config.js';
 // The one page open to a signed-out player.
 export const isOpenPath = (path) => path === 'about';
 export const isLocked = (path) => !isOpenPath(path);
-export const isPlayPath = (path) => /^y(34|56)\/ch\d\d\/(quick|practice|test)(\/|$)/.test(path) || path === 'custom/play'
-  || /^words\/g\/[^/]+\/(spell\/\d+|test|study\/[a-z]+(\/\d+)?|game\/[a-z]+)$/.test(path);
+export const isPlayPath = (path) => /^y([1-6]|34|56)\/ch\d\d\/(quick|practice|test|quiz)(\/|$)/.test(path) || path === 'custom/play'
+  || /^words\/g\/[^/]+\/(spell\/\d+|test|study\/[a-z]+(\/\d+)?|game\/[a-z]+)$/.test(path)
+  || /^words\/own\/[^/]+\/(quick|practice|test|quiz)(\/|$)/.test(path) || /^words\/exam\/[^/]+$/.test(path);
 // Pages that may belong to a release still on its way (update/update.js).
-export const isWordsPath = (path) => /^(words|grownups|chapters)(\/|$)/.test(path);
+export const isWordsPath = (path) => /^(words|grownups|chapters|y[1-6])(\/|$)/.test(path);
 export const needsSignIn = (path, player, flag = REQUIRE_SIGN_IN) => isPlayPath(path) && mustSignIn(player, flag);

@@ -14,6 +14,7 @@ import * as St from './study-doc.js';
 import { stepHref, stripHtml, comeBackHref, comeBackHtml } from './study-views.js';
 import { findEntry } from './word-info.js';
 import { getWeek, setWeek } from './week-choice.js';
+import { childYear } from './who.js';
 
 const PEEK_MS = 2000;
 const AGAIN_MS = 1600; // how long a finished word stays before it comes back
@@ -33,12 +34,19 @@ const JOB = {
 };
 
 // ---- the first group ---------------------------------------------------------------
-// The chapter the player is on: Year 3 & 4's first unpassed one, unless all of
-// those are passed or they have already started on Year 5 & 6.
+// The chapter the player is on: their own school year's first unpassed one when it is known, else the
+// first unpassed chapter of the furthest year they have started, else the first open one (Year 3 on).
 function currentChapter() {
+  const live = D.liveYears();
+  const order = [...['y3', 'y4', 'y5', 'y6'].filter((y) => live.includes(y)), ...['y1', 'y2'].filter((y) => live.includes(y))];
   const open = (y) => D.chapters(y).find((c) => !S.chapterProgress(c.id).passed);
-  const started = D.chapters('y56').some((c) => { const p = S.chapterProgress(c.id); return p.studied || p.practised || p.attempts > 0; });
-  return (started && open('y56')) || open('y34') || open('y56') || D.chapters('y56').at(-1);
+  const began = (y) => D.chapters(y).some((c) => { const p = S.chapterProgress(c.id); return p.studied || p.practised || p.attempts > 0; });
+  const own = 'y' + childYear();
+  if (live.includes(own) && open(own)) return open(own);
+  const furthest = [...order].reverse().find((y) => began(y) && open(y));
+  if (furthest) return open(furthest);
+  const first = order.find(open);
+  return first ? open(first) : D.chapters(order[order.length - 1]).at(-1);
 }
 export function ensureStarter() {
   if (!W.needsStarter(S.readWords())) return;
@@ -230,7 +238,7 @@ function groupForm(main, existing) {
   const chosen = existing ? [...existing.words] : [];
   let tab = 'chapter';
   let chapterId = currentChapter().id;
-  let yearId = 'y34';
+  let yearId = D.defaultYear();
   let typed = '';
   let note = '';
   let armed = false;
@@ -240,14 +248,14 @@ function groupForm(main, existing) {
   const source = () => (tab === 'chapter' ? D.chapterById(chapterId).words.map((w) => w.word)
     : tab === 'tricky' ? tricky
       : tab === 'year' ? D.chapters(yearId).flatMap((c) => c.words.map((w) => w.word)).sort((a, b) => a.localeCompare(b, 'en-GB', { sensitivity: 'base' })) : []);
-  const chapterOpts = () => ['y34', 'y56'].map((y) => '<optgroup label="' + esc(D.years()[y].label) + '">' + D.chapters(y).map((c) => '<option value="' + c.id + '"'
+  const chapterOpts = () => D.liveYears().map((y) => '<optgroup label="' + esc(D.years()[y].label) + '">' + D.chapters(y).map((c) => '<option value="' + c.id + '"'
     + (c.id === chapterId ? ' selected' : '') + '>' + esc(D.chapterTitle(c).n + '. ' + D.chapterTitle(c).name) + '</option>').join('') + '</optgroup>').join('');
 
   function picker() {
     const list = source();
     return '<div class="tabs" role="tablist">' + tabBtn('chapter', 'A chapter') + tabBtn('tricky', 'Tricky words (' + tricky.length + ')') + tabBtn('year', 'A year list') + tabBtn('typed', 'Type a word') + '</div>'
       + (tab === 'chapter' ? '<select class="field" aria-label="Chapter" data-chapter>' + chapterOpts() + '</select>' : '')
-      + (tab === 'year' ? '<select class="field" aria-label="Year list" data-year>' + ['y34', 'y56'].map((y) => '<option value="' + y + '"' + (y === yearId ? ' selected' : '') + '>' + esc(D.years()[y].label) + '</option>').join('') + '</select>' : '')
+      + (tab === 'year' ? '<select class="field" aria-label="Year list" data-year>' + D.liveYears().map((y) => '<option value="' + y + '"' + (y === yearId ? ' selected' : '') + '>' + esc(D.years()[y].label) + '</option>').join('') + '</select>' : '')
       + (tab === 'tricky' && !tricky.length ? '<div class="card empty"><p>No tricky words yet.</p></div>' : '')
       + (tab === 'typed' ? '<form class="btnrow" data-typeform><input class="field typedword" aria-label="Type a word" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="20" value="' + esc(typed) + '" data-typed>'
         + '<button type="submit" class="btn btn--quiet">Add</button></form>' + (note ? '<p class="small" role="status">' + esc(note) + '</p>' : '') : '')

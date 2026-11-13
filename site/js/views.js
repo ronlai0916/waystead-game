@@ -28,14 +28,22 @@ function cambridgeLink(w, cls) {
   return '<a class="btn ' + cls + '" href="https://dictionary.cambridge.org/dictionary/english/' + encodeURIComponent(w.word.toLowerCase())
     + '" target="_blank" rel="noopener noreferrer">' + ICON.external + 'Cambridge Dictionary<span class="sr"> (opens in a new tab)</span></a>';
 }
+/**
+ * The chapter a page is for, and the link to it: { ch, base } for a year's chapter ({ yearId, slug }), else null.
+ * (A later package adds a second branch here for a grown-up's own chapter.)
+ */
+export function chapterFrom(params) {
+  const ch = D.chapterBySlug(params.yearId, params.slug);
+  return ch ? { ch, base: href(params.yearId, params.slug) } : null;
+}
 function wordEntries(ch) { return ch.words.map((w) => D.entry(w.word)); }
 
 /* --------------------------------------------------------------- Study --- */
 export function study(main, { yearId, slug }) {
-  const ch = D.chapterBySlug(yearId, slug);
-  if (!ch || !isUnlocked(ch)) return notFound(main);
+  const from = chapterFrom({ yearId, slug });
+  if (!from || !isUnlocked(from.ch)) return notFound(main);
+  const { ch, base } = from;
   const t = D.chapterTitle(ch);
-  const base = href(yearId, slug);
   main.innerHTML = '<section class="wrap page">'
     + '<div class="pagehead"><span class="eyebrow">Chapter ' + t.n + ' · Study</span><h1>' + esc(t.name) + '</h1>'
     + '<p class="muted">Take your time with each word. Tap “Spell it out” to hear it letter by letter.</p></div>'
@@ -66,7 +74,8 @@ export function study(main, { yearId, slug }) {
 /* --------------------------------------------------------- Spell it out --- */
 export function spell(main, { yearId, slug, word }) {
   const w = D.entry(decodeURIComponent(word));
-  if (!w) return notFound(main);
+  const from = chapterFrom({ yearId, slug });
+  if (!w || !from) return notFound(main);
   main.innerHTML = '<section class="wrap page"><div class="card spell">'
     + picture(w)
     + '<div class="spell__word">' + chunked(w, '', { tricky: true }) + '</div>'
@@ -76,7 +85,7 @@ export function spell(main, { yearId, slug, word }) {
     + '<button type="button" class="btn btn--ghost" data-spell>' + ICON.spell + 'Spell it letter by letter</button></div>'
     + '<p>' + esc(w.meaning.definition) + '</p>'
     + '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>'
-    + '<div class="btnrow btnrow--center"><a class="btn btn--quiet btn--small" href="' + href(yearId, slug, 'quick', encodeURIComponent(w.word)) + '">' + ICON.game + 'Quick game with this word</a>'
+    + '<div class="btnrow btnrow--center"><a class="btn btn--quiet btn--small" href="' + from.base + '/quick/' + encodeURIComponent(w.word) + '">' + ICON.game + 'Quick game with this word</a>'
     + cambridgeLink(w, 'btn--quiet btn--small') + '</div>'
     + '</div></section>';
   const letters = main.querySelectorAll('.spell__word .chunked__letter');
@@ -92,10 +101,10 @@ export function spell(main, { yearId, slug, word }) {
 
 /* ---------------------------------------------- Quick game (chapter/one) --- */
 export function quick(main, { yearId, slug, word }) {
-  const ch = D.chapterBySlug(yearId, slug);
-  if (!ch || !isUnlocked(ch)) return notFound(main);
+  const from = chapterFrom({ yearId, slug });
+  if (!from || !isUnlocked(from.ch)) return notFound(main);
+  const { ch, base } = from;
   const t = D.chapterTitle(ch);
-  const base = href(yearId, slug);
   const single = word ? D.entry(decodeURIComponent(word)) : null;
   if (word && !single) return notFound(main);
   const back = single ? [] : backAgainFor(ch.words.map((x) => x.word));
@@ -121,10 +130,10 @@ export function quick(main, { yearId, slug, word }) {
 
 /* ------------------------------------------------------------ Practice --- */
 export function practice(main, { yearId, slug }) {
-  const ch = D.chapterBySlug(yearId, slug);
-  if (!ch || !isUnlocked(ch)) return notFound(main);
+  const from = chapterFrom({ yearId, slug });
+  if (!from || !isUnlocked(from.ch)) return notFound(main);
+  const { ch, base } = from;
   const t = D.chapterTitle(ch);
-  const base = href(yearId, slug);
   const back = backAgainFor(ch.words.map((x) => x.word));
   return runSession(main, {
     backAgain: back,
@@ -144,10 +153,10 @@ export function practice(main, { yearId, slug }) {
 
 /* ---------------------------------------------------------------- Test --- */
 export function test(main, { yearId, slug }) {
-  const ch = D.chapterBySlug(yearId, slug);
-  if (!ch || !isUnlocked(ch)) return notFound(main);
+  const from = chapterFrom({ yearId, slug });
+  if (!from || !isUnlocked(from.ch)) return notFound(main);
+  const { ch, base } = from;
   const t = D.chapterTitle(ch);
-  const base = href(yearId, slug);
   const words = shuffle(wordEntries(ch));
   const answers = [];
   let i = 0;
@@ -206,18 +215,22 @@ export function test(main, { yearId, slug }) {
     const passed = score === words.length;
     const chs = D.chapters(yearId);
     const nextCh = chs[ch.index + 1];
+    const live = D.liveYears();
+    const nextYear = nextCh ? '' : live[live.indexOf(ch.yearId) + 1] || ''; // the last chapter of a year leads on to the next year
     main.innerHTML = '<section class="wrap page">'
       + '<div class="pagehead' + (passed ? ' pagehead--pass' : '') + '"><span class="eyebrow">Chapter ' + t.n + ' · Test</span>'
       + (passed ? '<span class="celebrate passmark" aria-hidden="true"><span class="passmark__badge">' + ICON.star + '</span>' + burstHtml(16, 2) + '</span>' : '')
       + '<h1>' + (passed ? 'Passed — every word right' : score + ' of ' + words.length + ' right') + '</h1>'
       + '<p class="muted">' + (passed
-        ? (nextCh && !before ? 'Chapter ' + (t.n + 1) + ' is now open.' : 'Well done.')
+        ? (nextCh && !before ? 'Chapter ' + (t.n + 1) + ' is now open.' : !nextCh && nextYear ? 'You have finished ' + D.years()[ch.yearId].label + '.' : 'Well done.')
         : 'Get all ' + words.length + ' right to pass. The words you missed are in your tricky words.') + '</p></div>'
       + '<div class="list">' + answers.map((a) => '<div class="card listrow"><span><strong>' + esc(a.entry.word) + '</strong>'
         + (a.right ? '' : '<br><span class="muted small">You typed ' + esc(a.typed) + '</span>') + '</span>'
         + (a.right ? '<span class="pill pill--done">Right</span>' : '<span class="pill pill--warm">Missed</span>') + '</div>').join('') + '</div>'
       + '<div class="btnrow">'
-      + (passed && nextCh ? '<a class="btn btn--primary" href="' + href(yearId, nextCh.slug) + '">Next chapter' + ICON.arrow + '</a>' : '')
+      + (passed && nextCh ? '<a class="btn btn--primary" href="' + base.replace(/[^/]+$/, nextCh.slug) + '" data-next-chapter>Next chapter' + ICON.arrow + '</a>' : '')
+      + (passed && !nextCh && nextYear ? '<a class="btn btn--primary" href="' + href(nextYear, D.chapters(nextYear)[0].slug) + '" data-next-year>Start ' + esc(D.years()[nextYear].label) + ICON.arrow + '</a>' : '')
+      + (passed && !nextCh && !nextYear ? '<a class="btn btn--primary" href="#/chapters" data-back-practice>More practice' + ICON.arrow + '</a>' : '')
       + (!passed ? '<a class="btn btn--primary" href="' + base + '/practice">Practise again</a><a class="btn btn--ghost" href="' + base + '/test" data-retry>Take the test again</a>' : '')
       + '<a class="btn btn--ghost" href="#/chapters">All chapters</a></div></section>';
     placeBursts(main);
@@ -235,7 +248,7 @@ export function custom(main) {
   const all = withoutHidden(D.allWords(), hidden).sort((a, b) => a.word.localeCompare(b.word, 'en-GB', { sensitivity: 'base' }));
   const tricky = withoutHidden(S.trickyWords().map((t) => t.word).filter((w) => D.entry(w)), hidden);
   let tab = 'all';
-  let chapterId = D.chapters('y34')[0].id;
+  let chapterId = D.chapters(D.defaultYear())[0].id;
   let filter = '';
   const chosen = new Set();
 
@@ -247,7 +260,7 @@ export function custom(main) {
 
   function render() {
     const list = source();
-    const chapterOpts = ['y34', 'y56'].map((yid) => '<optgroup label="' + esc(D.years()[yid].label) + '">'
+    const chapterOpts = D.liveYears().map((yid) => '<optgroup label="' + esc(D.years()[yid].label) + '">'
       + D.chapters(yid).map((c) => '<option value="' + c.id + '"' + (c.id === chapterId ? ' selected' : '') + '>'
         + esc(D.chapterTitle(c).n + '. ' + D.chapterTitle(c).name) + '</option>').join('') + '</optgroup>').join('');
     main.innerHTML = '<section class="wrap page">'
@@ -384,7 +397,7 @@ export function progress(main) {
     + '<div class="pagehead"><span class="eyebrow">Progress</span><h1>How it\'s going</h1>'
     + '<p class="muted">' + (S.currentPlayer() ? 'Progress is saved to the player signed in, on every device they sign in on.' : 'Progress is saved in this browser on this device only.') + '</p></div>'
     + (S.currentPlayer() ? '<div class="btnrow"><a class="btn btn--ghost" href="#/words/progress">My word numbers' + ICON.arrow + '</a></div>' : '')
-    + '<div class="settings">' + yearBlockHtml('y34') + yearBlockHtml('y56')
+    + '<div class="settings">' + D.liveYears().map(yearBlockHtml).join('')
     + '<div class="card setting"><h2>Open every chapter</h2><p class="muted small">Normally a chapter opens when the one before it is passed. Turn this on to jump ahead.</p>'
     + '<label class="radios"><input type="checkbox" data-unlock' + (S.unlockAll() ? ' checked' : '') + '> Open all chapters</label></div>'
     + (document.body.classList.contains('is-adult') ? '<div class="card setting" data-startagain><h2>Start again</h2><p class="muted small">' + (S.currentPlayer() ? 'Clears chapter progress and tricky words for the player signed in, on every device.' : 'Clears chapter progress and tricky words in this browser.') + '</p>'
@@ -406,10 +419,11 @@ export function progress(main) {
 export function about(main) {
   main.innerHTML = '<section class="wrap page prose">'
     + '<span class="eyebrow">For parents</span><h1>About Spellbright</h1>'
-    + '<p>Spellbright covers every word in the statutory spelling list for Years 3 to 6 in the national curriculum for England (English Appendix 1). That is 109 words for Years 3–4 and 104 for Years 5–6, the same words schools teach and that 11+ spelling questions draw on.</p>'
+    + '<p>Years 3 to 6 use the statutory word lists for Years 3 and 4 and for Years 5 and 6. The official lists cover two years each; we split each list into two years ourselves.</p>'
+    + '<p>Word lists and spelling rules: Department for Education, English Appendix 1: Spelling. Contains public sector information licensed under the Open Government Licence v3.0.</p>'
     + '<h2>How a chapter works</h2>'
     + '<p>Each chapter has about ten words. Your child studies them (meaning, example, British pronunciation and the word split into spelling parts), plays a quick letter game where a flower loses a petal for each wrong guess, then a full practice game, then a test where they hear the word and type it. Every word right opens the next chapter.</p>'
-    + '<p>Year 3–4 chapters go from easier to harder. Year 5–6 chapters group words by spelling pattern, such as silent letters or double consonants.</p>'
+    + '<p>Years 3 and 4 chapters go from easier to harder. Years 5 and 6 chapters group words by spelling pattern, such as silent letters or double consonants. Each official list covers two years, so we split each one into two years of five chapters ourselves.</p>'
     + '<p>Every word has a British recording that comes with the game. If one cannot play, a signed-in player hears the Waystead voice instead: a recording made once by the Waystead account service with Google Cloud Text-to-Speech, which is sent only the word, never anything about your child. Signed out or offline, this device’s own voice says it.</p>'
     + '<h2>My words</h2>'
     + '<p>My words is a weekly list. Your child picks up to ten words and a test date, then practises a little each day: the word is spoken and hidden, and they spell it letter by letter. The day before the test is the last practice day. On test day there is no help and no checking until the end, and the day after, any words that slipped come back as fix-ups.</p>'

@@ -17,6 +17,7 @@
     "chapters": [
       {
         "id": "y34-ch01",
+        "year": 3,
         "title": "Chapter 1 — First steps",
         "description": "11 words to practise.",
         "words": [
@@ -178,6 +179,7 @@
       },
       {
         "id": "y34-ch02",
+        "year": 3,
         "title": "Chapter 2 — Short & sweet",
         "description": "11 words to practise.",
         "words": [
@@ -339,6 +341,7 @@
       },
       {
         "id": "y34-ch03",
+        "year": 3,
         "title": "Chapter 3 — Building up",
         "description": "11 words to practise.",
         "words": [
@@ -500,6 +503,7 @@
       },
       {
         "id": "y34-ch04",
+        "year": 3,
         "title": "Chapter 4 — Two-syllable words",
         "description": "11 words to practise.",
         "words": [
@@ -663,6 +667,7 @@
       },
       {
         "id": "y34-ch05",
+        "year": 3,
         "title": "Chapter 5 — Common but tricky",
         "description": "11 words to practise.",
         "words": [
@@ -828,6 +833,7 @@
       },
       {
         "id": "y34-ch06",
+        "year": 4,
         "title": "Chapter 6 — Longer everyday words",
         "description": "11 words to practise.",
         "words": [
@@ -992,6 +998,7 @@
       },
       {
         "id": "y34-ch07",
+        "year": 4,
         "title": "Chapter 7 — More syllables, more care",
         "description": "11 words to practise.",
         "words": [
@@ -1161,6 +1168,7 @@
       },
       {
         "id": "y34-ch08",
+        "year": 4,
         "title": "Chapter 8 — Spotting the traps",
         "description": "11 words to practise.",
         "words": [
@@ -1329,6 +1337,7 @@
       },
       {
         "id": "y34-ch09",
+        "year": 4,
         "title": "Chapter 9 — Real challenge",
         "description": "11 words to practise.",
         "words": [
@@ -1496,6 +1505,7 @@
       },
       {
         "id": "y34-ch10",
+        "year": 4,
         "title": "Chapter 10 — Toughest of all",
         "description": "10 words to practise.",
         "words": [
@@ -1663,6 +1673,7 @@
     "chapters": [
       {
         "id": "y56-ch01",
+        "year": 5,
         "title": "Chapter 1 — Everyday foundations",
         "description": "A gentle start with shorter but unusual everyday words.",
         "words": [
@@ -1810,6 +1821,7 @@
       },
       {
         "id": "y56-ch02",
+        "year": 5,
         "title": "Chapter 2 — Silent & unusual letters",
         "description": "Words containing silent letters or surprising spellings — the 'gh' in 'thorough', the 'lf' in 'twelfth'.",
         "words": [
@@ -1957,6 +1969,7 @@
       },
       {
         "id": "y56-ch03",
+        "year": 5,
         "title": "Chapter 3 — Double consonants",
         "description": "Many words double a consonant — learn to spot when and which.",
         "words": [
@@ -2114,6 +2127,7 @@
       },
       {
         "id": "y56-ch04",
+        "year": 5,
         "title": "Chapter 4 — More doubles & 'equ' family",
         "description": "Further double-letter patterns, plus the 'equ' family (equip, equipped, equipment).",
         "words": [
@@ -2270,6 +2284,7 @@
       },
       {
         "id": "y56-ch05",
+        "year": 5,
         "title": "Chapter 5 — Endings: -ent & -ence",
         "description": "These endings follow rules tied to root words — see Appendix 1.",
         "words": [
@@ -2424,6 +2439,7 @@
       },
       {
         "id": "y56-ch06",
+        "year": 6,
         "title": "Chapter 6 — Endings: -ate, -ise & long words",
         "description": "Verbs ending in -ate, -ise, and other long words built from common roots.",
         "words": [
@@ -2588,6 +2604,7 @@
       },
       {
         "id": "y56-ch07",
+        "year": 6,
         "title": "Chapter 7 — Greek & foreign-origin words",
         "description": "Words borrowed from Greek, French and Latin — they don't always follow English rules.",
         "words": [
@@ -2745,6 +2762,7 @@
       },
       {
         "id": "y56-ch08",
+        "year": 6,
         "title": "Chapter 8 — Schwa & vowel traps",
         "description": "Words where an unstressed vowel sounds like 'uh' — easy to misspell. Learn the parent word!",
         "words": [
@@ -2902,6 +2920,7 @@
       },
       {
         "id": "y56-ch09",
+        "year": 6,
         "title": "Chapter 9 — Tricky everyday long words",
         "description": "Long words used often in writing — worth learning thoroughly.",
         "words": [
@@ -3061,6 +3080,7 @@
       },
       {
         "id": "y56-ch10",
+        "year": 6,
         "title": "Chapter 10 — Final hardest set",
         "description": "The toughest words on the Year 5/6 list — once you can spell these, you can spell anything.",
         "words": [

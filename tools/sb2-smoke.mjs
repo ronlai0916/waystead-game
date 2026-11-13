@@ -10,10 +10,10 @@
 // the fake account follows the real /api/children replies. One scene turns the
 // flag off in what's served, to check that path still works.
 import { createServer } from 'node:http';
-import { readFileSync, existsSync, statSync, mkdirSync, rmSync } from 'node:fs';
+import { readFileSync, existsSync, statSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { join, extname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { fakeAccount } from '../shared/tests/fake-account.js';
 import * as W from '../site/js/words-doc.js';
@@ -39,6 +39,7 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
 let flagOn = true;
 let netDown = false;
 let blocked = ''; // a file name the site answers 404 to, for a scene about a failed load
+const overrides = new Map(); // H.serve(path, body): a file of the site served from a string for the scene (cleared before every scene)
 let storiesHidden = false; // the stories are approved in the repo: some scenes need them waiting
 const site = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, SITE).pathname);
@@ -46,6 +47,11 @@ const site = createServer((req, res) => {
   const base = m ? (m[1] === 'spellbright' ? 'site/' : 'wordbright/site/') : null;
   let file = base ? ROOT + base + (m[2] || 'index.html') : null;
   if (file && existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
+  if (m && m[1] === 'spellbright' && overrides.has(m[2])) {
+    res.writeHead(200, { 'Content-Type': TYPES[extname(m[2])] || 'application/octet-stream', 'Content-Security-Policy': csp, 'Cache-Control': 'no-store' });
+    res.end(overrides.get(m[2]));
+    return;
+  }
   if (blocked && path.endsWith(blocked)) file = null;
   if (!file || !existsSync(file)) { res.writeHead(404, { 'Content-Security-Policy': csp }); res.end('not here'); return; }
   let body = readFileSync(file);
@@ -58,16 +64,25 @@ const site = createServer((req, res) => {
 const acct = fakeAccount();
 acct.children = (id) => (id === ADULT ? [{ id: CHILD, nickname: 'Robin', year: 4, avatar: null }, { id: CHILD2, nickname: 'Wren', year: 6, avatar: null }] : []);
 const account = createServer(async (req, res) => {
-  const cors = { 'Access-Control-Allow-Origin': SITE, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS', Vary: 'Origin' };
+  const cors = { 'Access-Control-Allow-Origin': SITE, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'Retry-After', Vary: 'Origin' };
   if (req.method === 'OPTIONS') { res.writeHead(204, cors); res.end(); return; }
   if (acct.slowMe && req.url.startsWith('/api/me')) await new Promise((r) => setTimeout(r, acct.slowMe));
   if (acct.offline) { req.socket.destroy(); return; } // the network gone, as the browser sees it
   if (req.url.startsWith('/api/voice/')) { res.writeHead(404, cors); res.end(); return; }
   const chunks = [];
   for await (const c of req) chunks.push(c);
-  const r = await acct.fetch(ACCOUNT + req.url, { method: req.method, credentials: 'include', body: chunks.length ? Buffer.concat(chunks).toString() : undefined });
-  res.writeHead(r.status, { ...cors, 'Content-Type': 'application/json' });
+  // A scanned picture goes to the fake as the raw bytes with its own Content-Type; everything else as text.
+  const raw = req.url.startsWith('/api/scan/words');
+  const body = !chunks.length ? undefined : raw ? Buffer.concat(chunks) : Buffer.concat(chunks).toString();
+  const r = await acct.fetch(ACCOUNT + req.url, { method: req.method, credentials: 'include', body, ...(raw ? { headers: { 'Content-Type': req.headers['content-type'] || '' } } : {}) });
+  const retry = r.headers.get('Retry-After');
   const data = r.status === 204 ? null : await r.json();
+  if (typeof data === 'string') { // the fake answered text (a page, not JSON)
+    res.writeHead(r.status, { ...cors, 'Content-Type': 'text/html' });
+    res.end(data);
+    return;
+  }
+  res.writeHead(r.status, { ...cors, 'Content-Type': 'application/json', ...(retry ? { 'Retry-After': retry } : {}) });
   res.end(data === null ? '' : JSON.stringify(data));
 });
 
@@ -1487,7 +1502,7 @@ scene('grown-ups: plan a week in three steps', async () => {
   await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'step 2');
   ok(/Step 2 of 3/i.test(await text('[data-stepmark]')) && /Robin/i.test(await text('[data-stepmark]')), 'Step 2 of 3 for Robin');
   ok(await ev('document.querySelectorAll("[data-pick]").length') > 40, 'Robin\'s year list is the default: ' + await ev('document.querySelectorAll("[data-pick]").length'));
-  ok(await has('[data-pick="believe"]') || await has('[data-pick="build"]'), 'a Year 3 and 4 word');
+  ok(await has('[data-pick="height"]') && !await has('[data-pick="build"]'), 'a Year 4 word, and no Year 3 one (Robin is in Year 4)');
   ok(where1 === await pos(), 'Back and Next are in the same place on step 1 and step 2: ' + where1 + ' vs ' + await pos());
   await allViews('gu-plan2');
   ok(/Added tractor/.test(await typeWord('tractor')), 'a word on our lists is added');
@@ -1777,7 +1792,7 @@ scene('grown-ups: when things go wrong', async () => {
   await seedAdult();
   await until('document.querySelector("[data-child],[data-first],[data-noapi]")', 'home');
   step('409: the child saved first');
-  await toStart('guard');
+  await toStart('calendar');
   const newer = W.addTry(saved(), { id: 'late', word: 'earth', day: plus(2), group: 'g1', kind: 'p', tries: 0, peeks: 0, clean: true, now: Date.parse(plus(2) + 'T09:30:00') });
   const realFetch = acct.fetch;
   let raced = false; // the child's device saves between the page's read and its write
@@ -1794,7 +1809,7 @@ scene('grown-ups: when things go wrong', async () => {
   ok(childGroups().length === 2, 'and the plan');
 
   step('network: nothing half-saved, then try again');
-  await toStart('heard');
+  await toStart('enough');
   const before = JSON.stringify(acct.data.get(CHILD).get('spellbright/words'));
   netDown = true;
   acct.offline = true;
@@ -2297,6 +2312,51 @@ async function shotView(name) {
   const { writeFileSync } = await import('node:fs');
   writeFileSync(join(OUT, name + '.png'), Buffer.from(r.data, 'base64'));
 }
+/**
+ * The keyboard-fit checks for the page now on screen at the viewport already set (width(w, h)):
+ * the scene "keyboard fits in landscape" and any later scene use this one function.
+ * opts: { role: 'child'|'adult', page, style, w, h, dump?: object that collects the measurements,
+ * base?: the recorded keyboard positions for the portrait sizes (default KB_BASE) }.
+ * Returns the measurements, or null when KB_DUMP only measures (nothing is checked).
+ */
+async function kbFit({ role, page, style: s, w, h, dump = null, base = KB_BASE }) {
+  const m = await kbMeasure();
+  const id = role + ' ' + page + ' ' + s + ' ' + w + 'x' + h;
+  if (dump) dump[id] = m;
+  if (process.env.KB_DUMP) { if (h <= 1000 && w >= 820) await shotView('kb-' + id.replaceAll(' ', '-')); return null; } // KB_DUMP: measure only (the base values), with the pictures
+  ok(m.sw <= m.cw, id + ': scrolls sideways (' + m.sw + ' > ' + m.cw + ')');
+  ok(m.rows === '10,9,7' || m.rows === '10,9,8' || m.rows === '10,9,7', id + ': rows ' + m.rows);
+  ok(m.wrap === 'nowrap' && m.oneRow, id + ': a row wraps');
+  ok(m.hit.length === 0, id + ': overlap ' + m.hit.join('; '));
+  if (w >= 820 && h <= 1000) {
+    ok(m.minW >= 44 && m.minH >= 48, id + ': keys ' + m.minW + ' x ' + m.minH);
+    if (h > 400) {
+      ok(m.kb.y >= 0 && m.kb.b <= h, id + ': keyboard ' + Math.round(m.kb.y) + '..' + Math.round(m.kb.b) + ' of ' + h);
+      ok(m.boxes.y >= 0 && m.boxes.b <= h, id + ': letter boxes ' + Math.round(m.boxes.y) + '..' + Math.round(m.boxes.b) + ' of ' + h);
+      ok(m.ctlBottom <= h, id + ': controls reach ' + Math.round(m.ctlBottom) + ' of ' + h);
+    }
+    await shotView('kb-' + id.replaceAll(' ', '-'));
+  } else if (w < 820 && h < 500) { // a phone on its side: it may scroll, but the keyboard is reachable and nothing overlaps
+    ok(m.minW >= 30 && m.minH >= 44, id + ': keys ' + m.minW + ' x ' + m.minH);
+    await ev('document.querySelector(".keyboard").scrollIntoView({ block: "end" })');
+    const r = await ev('(() => { const r = document.querySelector(".keyboard").getBoundingClientRect(); return [r.top, r.bottom]; })()');
+    ok(r[1] <= h + 0.5 && r[0] >= -0.5, id + ': keyboard unreachable ' + r);
+    await ev('window.scrollTo(0, 0)');
+    await shotView('kb-' + id.replaceAll(' ', '-'));
+  } else {
+    const b = base[role + ' ' + page + ' ' + s + ' ' + w + 'x' + h];
+    ok(b, id + ': no base values recorded');
+    const now = [m.kb.x, m.kb.y, m.kb.w, m.kb.h, m.q.w, m.q.h].map((n) => Math.round(n * 10) / 10);
+    // An adult's page now has the Waystead Learning line in its foot (SB3-F): a tall page may gain a scroll bar, which makes the keyboard up to 17 px narrower. Where it sits is unchanged.
+    const same = role === 'adult' ? now.every((n, i) => (i === 2 || i === 4 ? n <= b[i] + 0.5 && n >= b[i] - 17 : i === 0 ? Math.abs(n - b[i]) <= 9 : n === b[i])) : JSON.stringify(now) === JSON.stringify(b);
+    ok(same, id + ': keyboard moved: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now));
+  }
+  if (role === 'child' && w >= 820 && h <= 1000 && (s === 'garden' || page === 'flower')) {
+    await ev('window.scrollTo(0, 0)');
+    for (const L of ['Q', 'P', 'I', 'A', 'M']) { const hits = await kbPop(L); ok(!hits.length, id + ': the pop-up for ' + L + ' covers ' + hits.join(' ')); }
+  }
+  return m;
+}
 scene('keyboard fits in landscape', async () => {
   const dump = {};
   const nextAt = [];
@@ -2309,42 +2369,7 @@ scene('keyboard fits in landscape', async () => {
         for (const [w, h] of [...KB_VIEWS, ...KB_PORTRAIT]) {
           await width(w, h);
           await sleep(120);
-          const m = await kbMeasure();
-          const id = role + ' ' + page + ' ' + s + ' ' + w + 'x' + h;
-          dump[id] = m;
-          if (process.env.KB_DUMP) { if (h <= 1000 && w >= 820) await shotView('kb-' + id.replaceAll(' ', '-')); continue; } // KB_DUMP: measure only (the base values), with the pictures
-          cases += 1;
-          ok(m.sw <= m.cw, id + ': scrolls sideways (' + m.sw + ' > ' + m.cw + ')');
-          ok(m.rows === '10,9,7' || m.rows === '10,9,8' || m.rows === '10,9,7', id + ': rows ' + m.rows);
-          ok(m.wrap === 'nowrap' && m.oneRow, id + ': a row wraps');
-          ok(m.hit.length === 0, id + ': overlap ' + m.hit.join('; '));
-          if (w >= 820 && h <= 1000) {
-            ok(m.minW >= 44 && m.minH >= 48, id + ': keys ' + m.minW + ' x ' + m.minH);
-            if (h > 400) {
-              ok(m.kb.y >= 0 && m.kb.b <= h, id + ': keyboard ' + Math.round(m.kb.y) + '..' + Math.round(m.kb.b) + ' of ' + h);
-              ok(m.boxes.y >= 0 && m.boxes.b <= h, id + ': letter boxes ' + Math.round(m.boxes.y) + '..' + Math.round(m.boxes.b) + ' of ' + h);
-              ok(m.ctlBottom <= h, id + ': controls reach ' + Math.round(m.ctlBottom) + ' of ' + h);
-            }
-            await shotView('kb-' + id.replaceAll(' ', '-'));
-          } else if (w < 820 && h < 500) { // a phone on its side: it may scroll, but the keyboard is reachable and nothing overlaps
-            ok(m.minW >= 30 && m.minH >= 44, id + ': keys ' + m.minW + ' x ' + m.minH);
-            await ev('document.querySelector(".keyboard").scrollIntoView({ block: "end" })');
-            const r = await ev('(() => { const r = document.querySelector(".keyboard").getBoundingClientRect(); return [r.top, r.bottom]; })()');
-            ok(r[1] <= h + 0.5 && r[0] >= -0.5, id + ': keyboard unreachable ' + r);
-            await ev('window.scrollTo(0, 0)');
-            await shotView('kb-' + id.replaceAll(' ', '-'));
-          } else {
-            const b = KB_BASE[role + ' ' + page + ' ' + s + ' ' + w + 'x' + h];
-            ok(b, id + ': no base values recorded');
-            const now = [m.kb.x, m.kb.y, m.kb.w, m.kb.h, m.q.w, m.q.h].map((n) => Math.round(n * 10) / 10);
-            // An adult's page now has the Waystead Learning line in its foot (SB3-F): a tall page may gain a scroll bar, which makes the keyboard up to 17 px narrower. Where it sits is unchanged.
-            const same = role === 'adult' ? now.every((n, i) => (i === 2 || i === 4 ? n <= b[i] + 0.5 && n >= b[i] - 17 : i === 0 ? Math.abs(n - b[i]) <= 9 : n === b[i])) : JSON.stringify(now) === JSON.stringify(b);
-            ok(same, id + ': keyboard moved: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now));
-          }
-          if (role === 'child' && w >= 820 && h <= 1000 && (s === 'garden' || page === 'flower')) {
-            await ev('window.scrollTo(0, 0)');
-            for (const L of ['Q', 'P', 'I', 'A', 'M']) { const hits = await kbPop(L); ok(!hits.length, id + ': the pop-up for ' + L + ' covers ' + hits.join(' ')); }
-          }
+          if (await kbFit({ role, page, style: s, w, h, dump: dump })) cases += 1;
         }
       }
     }
@@ -2686,6 +2711,12 @@ async function childWith(doc, hash, day = plus(2)) {
   await putProgress(CHILD, doc);
   await open(day, hash);
 }
+/** More practice on a given year (the smoke's child is in Year 4, so it opens on Year 4 unless a year was chosen). */
+async function showYear(y, day = plus(2)) {
+  await ev('localStorage.setItem("sb.chaptersYear", "' + y + '")');
+  await open(day, '#/chapters');
+  await until('document.querySelector("[data-yearpanel=' + y + ']")', 'Year ' + y);
+}
 async function adultWith(doc, hash, day = plus(2)) {
   await signedOutBlank(day);
   acct.who = adultMe;
@@ -2752,16 +2783,17 @@ function document_text(t) { return (t.toLowerCase().match(/[a-z]+/g) || []); }
 
 scene('SB3-F More practice as a child: chrome, one button, year switch, stones', async () => {
   await childWith(PROG_3, '#/chapters');
+  await showYear('y3');
   await until('document.querySelector("[data-chapters]")', 'More practice');
   ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
   const t = await text();
   ok(!/Learning|Start game|Today's word|Waystead/.test(t) , 'no advert, no Start game, no Today\'s word');
   ok(/^More practice/.test(t) && /Learn a chapter, then test it\./.test(t), 'the child\'s title and sentence');
   ok(await frontPrimaries() === 1 && /Carry on: Chapter 3/.test(await text('[data-carry]')) && /Practise/.test(await text('[data-carry] small')), 'ONE primary: Carry on: Chapter 3 (next step Practise)');
-  ok(await ev('document.querySelector("[data-carry]").getAttribute("href")') === '#/y34/ch03/practice', 'the button goes to the next step');
+  ok(await ev('document.querySelector("[data-carry]").getAttribute("href")') === '#/y3/ch03/practice', 'the button goes to the next step');
   const states = await ev('[...document.querySelectorAll(".stonelink")].map((a) => a.dataset.state)');
-  ok(states.join() === 'passed,passed,studying,todo,todo,todo,todo,todo,todo,todo', 'stone states: ' + states);
-  ok(/109 words in 10 chapters · 2 tests passed/.test(await text('.yearcard__sum')), 'the year line');
+  ok(states.join() === 'passed,passed,studying,todo,todo', 'stone states: ' + states);
+  ok(/55 words in 5 chapters · 2 tests passed/.test(await text('.yearcard__sum')), 'the year line');
   ok(await ev('[...document.querySelectorAll(".stonelink")].every((a) => { const r = a.getBoundingClientRect(); return r.height >= 48 && r.width >= 48; })'), 'stones are at least 48 px');
   ok(await ev('[...document.querySelectorAll(".stonelink")].every((a) => { const r = a.getBoundingClientRect(); return r.height >= 72 && r.width >= 60; })'), 'stones are about 64 x 72 at 390');
   ok(await ev('[...document.querySelectorAll(".stonelink__label")].every((e) => parseFloat(getComputedStyle(e).fontSize) >= 14)'), 'labels are at least 14 px');
@@ -2772,12 +2804,13 @@ scene('SB3-F More practice as a child: chrome, one button, year switch, stones',
   await click('[data-hear]');
   await until('globalThis.__lines.some((l) => /Learn a chapter/.test(l))', 'the sentence spoken');
   step('the year switch, remembered');
-  await click('.yearswitch__b[data-year=y56]');
-  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y56' && /Start: Chapter 1/.test(await text('[data-carry]')) && await frontPrimaries() === 1, 'Year 5 and 6: Start: Chapter 1, still one primary');
-  ok(await ev('document.querySelector(".yearswitch__b[data-year=y56]").getAttribute("aria-pressed")') === 'true', 'pressed state');
+  await click('.yearswitch__b[data-year=y5]');
+  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y5' && /Start: Chapter 1/.test(await text('[data-carry]')) && await frontPrimaries() === 1, 'Year 5 and 6: Start: Chapter 1, still one primary');
+  ok(await ev('document.querySelector(".yearswitch__b[data-year=y5]").getAttribute("aria-pressed")') === 'true', 'pressed state');
   await open(plus(2), '#/chapters');
-  await until('document.querySelector("[data-yearpanel=y56]")', 'the remembered year');
-  await click('.yearswitch__b[data-year=y34]');
+  await until('document.querySelector("[data-yearpanel=y5]")', 'the remembered year');
+  await click('[data-moreyears]');
+  await click('.yearswitch__b[data-year=y3]');
   await allViews('front-chapters-child');
   await width(1180, 640);
   ok(await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'no sideways scroll at 1180x640');
@@ -2787,13 +2820,14 @@ scene('SB3-F More practice as a child: chrome, one button, year switch, stones',
   step('every chapter is reachable, a closed one says what to pass first');
   await click('.stonelink[data-chapter=ch04]');
   await until('document.querySelector("[data-chapter-locked]")', 'the closed chapter');
-  ok(/Pass Chapter 3 first\./.test(await text()) && await ev('document.querySelector("[data-chapter-locked] a.btn").getAttribute("href")') === '#/y34/ch03', 'Pass Chapter 3 first, with a way there');
-  step('all ten passed');
-  await childWith(progDoc({}, Array.from({ length: 10 }, (_, i) => passedCh(i + 1))), '#/chapters');
-  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y56', 'with Year 3 and 4 all passed the page opens on Year 5 and 6');
-  await click('.yearswitch__b[data-year=y34]');
+  ok(/Pass Chapter 3 first\./.test(await text()) && await ev('document.querySelector("[data-chapter-locked] a.btn").getAttribute("href")') === '#/y3/ch03', 'Pass Chapter 3 first, with a way there');
+  step('all five passed');
+  await childWith(progDoc({}, Array.from({ length: 5 }, (_, i) => passedCh(i + 1))), '#/chapters');
+  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y4', 'a child in Year 4 opens on Year 4, whatever else is passed');
+  await click('[data-moreyears]');
+  await click('.yearswitch__b[data-year=y3]');
   await until('document.querySelector("[data-allpassed]")', 'the all-passed state');
-  ok(await frontPrimaries() === 0 && /All 10 passed/.test(await text('[data-allpassed]')), 'All ten passed, no button');
+  ok(await frontPrimaries() === 0 && /All 5 passed/.test(await text('[data-allpassed]')), 'All 5 passed, no button');
 });
 
 scene('SB3-F More practice as an adult: the adult header, no advert here, a place for the foot line', async () => {
@@ -2810,7 +2844,7 @@ scene('SB3-F More practice as an adult: the adult header, no advert here, a plac
 });
 
 scene('SB3-F one chapter: three steps, the test gated until practised, a test already allowed stays open', async () => {
-  await childWith(PROG_3, '#/y34/ch03');
+  await childWith(PROG_3, '#/y3/ch03');
   await until('document.querySelector("[data-chapterpage]")', 'the chapter');
   const st = await ev('[...document.querySelectorAll("[data-step]")].map((e) => e.dataset.step + ":" + e.dataset.state)');
   ok(st.join() === 'learn:done,practise:next,test:later', 'steps: ' + st);
@@ -2823,29 +2857,29 @@ scene('SB3-F one chapter: three steps, the test gated until practised, a test al
   ok(await visible('.chapterwords .wordchips span'), 'the word list opens from step 1');
   await allViews('front-chapter');
   step('practised: the test becomes the primary');
-  await childWith(progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 }, 'y34-ch02': { studiedAt: T0, practisedAt: T0 }, 'y34-ch03': { studiedAt: T0, practisedAt: T0 } }, [passedCh(1), passedCh(2)]), '#/y34/ch03');
+  await childWith(progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 }, 'y34-ch02': { studiedAt: T0, practisedAt: T0 }, 'y34-ch03': { studiedAt: T0, practisedAt: T0 } }, [passedCh(1), passedCh(2)]), '#/y3/ch03');
   await until('document.querySelector("[data-chapterpage]")', 'the chapter');
   ok(await has('[data-primary=test]') && await frontPrimaries() === 1 && !await has('[data-test-gated]'), 'Take the test is the one primary');
   step('tried before, never practised on this record: still openable');
-  await childWith(progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 }, 'y34-ch02': { studiedAt: T0, practisedAt: T0 } }, [passedCh(1), passedCh(2), { id: 'x3', c: 'y34-ch03', s: 3, t: 5, at: T0 + 9 }]), '#/y34/ch03');
+  await childWith(progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 }, 'y34-ch02': { studiedAt: T0, practisedAt: T0 } }, [passedCh(1), passedCh(2), { id: 'x3', c: 'y34-ch03', s: 3, t: 5, at: T0 + 9 }]), '#/y3/ch03');
   await until('document.querySelector("[data-chapterpage]")', 'the chapter');
-  ok(await ev('document.querySelector("[data-step-link=test]").getAttribute("href")') === '#/y34/ch03/test' && !await has('[data-test-gated]'), 'an attempted test stays openable');
+  ok(await ev('document.querySelector("[data-step-link=test]").getAttribute("href")') === '#/y3/ch03/test' && !await has('[data-test-gated]'), 'an attempted test stays openable');
   step('a passed chapter: its test opens again, Next chapter leads on');
-  await go('#/y34/ch01');
+  await go('#/y3/ch01');
   await until('document.querySelector("[data-chapterpage]")', 'chapter 1');
   ok(/Take the test again/.test(await text('[data-step-link=test]')) && await has('[data-next-chapter]'), 'Take the test again, and Next chapter');
   await click('[data-step-link=test]');
-  await until('location.hash === "#/y34/ch01/test"', 'the test opens');
+  await until('location.hash === "#/y3/ch01/test"', 'the test opens');
   step('learning marks the step done');
-  await childWith(PROG_3, '#/y34/ch03/study');
+  await childWith(PROG_3, '#/y3/ch03/study');
   await click('[data-done]');
-  await go('#/y34/ch03');
+  await go('#/y3/ch03');
   await until('document.querySelector("[data-chapterpage]")', 'the chapter');
   ok((await ev('document.querySelector("[data-step=practise]").dataset.state')) === 'next', 'practise is next');
   step('an adult may always open the test');
-  await adultWith(PROG_3, '#/y34/ch03');
+  await adultWith(PROG_3, '#/y3/ch03');
   await until('document.querySelector("[data-chapterpage]")', 'the chapter');
-  ok(await has('[data-test-gated]') && await ev('document.querySelector("[data-test-anyway]").getAttribute("href")') === '#/y34/ch03/test', 'Take the test anyway, for an adult');
+  ok(await has('[data-test-gated]') && await ev('document.querySelector("[data-test-anyway]").getAttribute("href")') === '#/y3/ch03/test', 'Take the test anyway, for an adult');
   ok(!await has('[data-hear]'), 'no Hear it for an adult');
 });
 
@@ -2858,7 +2892,7 @@ scene('SB3-F no "Start game" in the site, every old link still resolves, no test
   ok(!/Start game/.test(readFileSync(ROOT + 'site/index.html', 'utf8')), 'Start game in index.html');
   await childWith(PROG_3, '#/chapters');
   const seen = new Set();
-  for (const h of ['#/chapters', '#/y34', '#/y56', '#/y34/ch03', '#/y34/ch05', '#/custom', '#/tricky', '#/progress', '#/about', '#/words']) {
+  for (const h of ['#/chapters', '#/y34', '#/y56', '#/y3/ch03', '#/y3/ch05', '#/custom', '#/tricky', '#/progress', '#/about', '#/words']) {
     await go(h);
     await sleep(200);
     const t = await text();
@@ -2874,14 +2908,14 @@ scene('SB3-F no "Start game" in the site, every old link still resolves, no test
   }
   await go('#/y34');
   await until('location.hash === "#/chapters"', 'the old year page goes to More practice');
-  ok(await ev('document.querySelector(".yearswitch__b[data-year=y34]").getAttribute("aria-pressed")') === 'true', 'with the year chosen');
+  ok(await ev('document.querySelector(".yearswitch__b[data-year=y3]").getAttribute("aria-pressed")') === 'true', 'with the year chosen');
   await go('#/y56');
-  await until('document.querySelector("[data-yearpanel=y56]")', 'Year 5 and 6 chosen by its old link');
+  await until('document.querySelector("[data-yearpanel=y5]")', 'Year 5 and 6 chosen by its old link');
   step('test day: More practice and a chapter show no test word');
   await seedChild(studied(weekDoc()), plus(5));
   await putProgress(CHILD, PROG_3);
   await open(plus(5), '#/chapters');
-  for (const h of ['#/chapters', '#/y34/ch03', '#/y56']) {
+  for (const h of ['#/chapters', '#/y3/ch03', '#/y56']) {
     await go(h);
     await sleep(250);
     const t = (await text()).toLowerCase();
@@ -2930,7 +2964,7 @@ scene('SB3-F signed-out top bar: the mark and Sign in only; open pages keep a wa
 
 scene('SB3-F Back from a chapter page, and the year address, go to More practice, for an adult and a child', async () => {
   for (const who of ['adult', 'child']) {
-    if (who === 'adult') await adultWith(PROG_3, '#/y34/ch03'); else await childWith(PROG_3, '#/y34/ch03');
+    if (who === 'adult') await adultWith(PROG_3, '#/y3/ch03'); else await childWith(PROG_3, '#/y3/ch03');
     await until('document.querySelector("[data-chapterpage]")', who + ': the chapter page');
     const back = who === 'adult' ? '#back' : '#child-back';
     ok(await visible(back), who + ': Back is there on a chapter page');
@@ -3034,6 +3068,16 @@ scene('SB3-G: the parent switches the week choice off, the child has no switcher
   ok(await has('[data-week-change]'), 'on: the Change button is back');
 });
 
+// ---- plug-ins: tools/smoke-sb4/*.mjs, each `export default (H) => { H.scene(name, fn) }` ------------
+// A later work package adds its scenes in its own file there, so none edits this one.
+const H = {
+  scene, go, click, ev, ok, has, text, until, key, keys, sleep, shot, width, style, open, acct,
+  serve: (path, body) => { if (body === null) overrides.delete(path); else overrides.set(path, body); }, // a site file served from a string for this scene; null clears it
+  seedChild, signedOutBlank, childWith, adultWith, readDoc, readLocal, visible, rect,
+  KB_VIEWS, KB_PORTRAIT, CHILD, CHILD2, ADULT, MON, plus, W, kbFit,
+};
+for (const f of readdirSync(join(ROOT, 'tools/smoke-sb4')).filter((n) => n.endsWith('.mjs')).sort()) (await import(pathToFileURL(join(ROOT, 'tools/smoke-sb4', f)))).default(H);
+
 // ---- run ------------------------------------------------------------------------------------
 let failed = 0;
 async function main() {
@@ -3049,6 +3093,7 @@ async function main() {
   for (const s of SCENES) {
     if (ONLY && s.name !== ONLY) continue;
     console.log(s.name);
+    overrides.clear(); // H.serve is for one scene
     try { await s.fn(); console.log('  ok'); } catch (e) {
       failed += 1;
       console.log('  FAILED: ' + e.message);

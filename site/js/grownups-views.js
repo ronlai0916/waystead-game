@@ -405,9 +405,9 @@ function planForm(main, cid, gid) {
   let listName = '';
   let other = false; // "Other lists" open
   let tab = 'year';
-  let chapterId = D.chapters('y34')[0].id;
+  let chapterId = D.chapters(D.defaultYear())[0].id;
   let patternId = '';
-  let yearId = 'y34';
+  let yearId = D.defaultYear();
   let typed = '';
   let note = '';
   let message = '';
@@ -428,10 +428,10 @@ function planForm(main, cid, gid) {
       : tab === 'tricky' ? tricky() : yearWords(yearId));
   const sourceLabel = () => (tab === 'chapter' ? D.chapterTitle(D.chapterById(chapterId)).name : tab === 'pattern' ? ((patterns.find((p) => p.id === patternId) || {}).title || 'a spelling pattern')
     : tab === 'tricky' ? 'Tricky words' : D.years()[yearId].label + ' words');
-  const sourceHeading = () => (tab === 'year' ? 'Or tap words from ' + D.years()[yearId].label.replace('&', 'and') : tab === 'chapter' ? 'Or tap words from this chapter' : tab === 'pattern' ? 'Or tap words with this pattern' : 'Or tap this child\'s tricky words');
+  const sourceHeading = () => (tab === 'year' ? 'Or tap words from ' + D.years()[yearId].label : tab === 'chapter' ? 'Or tap words from this chapter' : tab === 'pattern' ? 'Or tap words with this pattern' : 'Or tap this child\'s tricky words');
 
   const tabBtn = (k, label) => '<button type="button" class="tab" role="tab" aria-selected="' + (tab === k) + '" data-tab="' + k + '">' + esc(label) + '</button>';
-  const chapterOpts = () => ['y34', 'y56'].map((y) => '<optgroup label="' + esc(D.years()[y].label) + '">' + D.chapters(y).map((x) => '<option value="' + x.id + '"' + (x.id === chapterId ? ' selected' : '') + '>' + esc(D.chapterTitle(x).n + '. ' + D.chapterTitle(x).name) + '</option>').join('') + '</optgroup>').join('');
+  const chapterOpts = () => D.liveYears().map((y) => '<optgroup label="' + esc(D.years()[y].label) + '">' + D.chapters(y).map((x) => '<option value="' + x.id + '"' + (x.id === chapterId ? ' selected' : '') + '>' + esc(D.chapterTitle(x).n + '. ' + D.chapterTitle(x).name) + '</option>').join('') + '</optgroup>').join('');
   const patternOpts = () => [['y34', 'Years 3 and 4'], ['y56', 'Years 5 and 6']].map(([s, label]) => '<optgroup label="' + label + '">' + patterns.filter((p) => p.stage === s).map((p) => '<option value="' + p.id + '"' + (p.id === patternId ? ' selected' : '') + '>' + esc(p.title) + '</option>').join('') + '</optgroup>').join('');
 
   const stepper = () => {
@@ -482,7 +482,7 @@ function planForm(main, cid, gid) {
       ? '<div class="gu-lists"><div class="tabs" role="tablist" aria-label="Lists">' + tabBtn('year', 'A year list') + tabBtn('chapter', 'A chapter') + tabBtn('pattern', 'A spelling pattern') + tabBtn('tricky', 'Tricky words (' + tricky().length + ')') + '</div>'
         + (tab === 'chapter' ? '<select class="field" aria-label="Chapter" data-chapter>' + chapterOpts() + '</select>' : '')
         + (tab === 'pattern' ? '<select class="field" aria-label="Spelling pattern" data-pattern>' + patternOpts() + '</select>' + (p ? '<p class="small muted">' + esc(p.rule) + '</p>' : '') + '<p class="foot__small">' + esc(credit) + '</p>' : '')
-        + (tab === 'year' ? '<select class="field" aria-label="Year list" data-year>' + ['y34', 'y56'].map((y) => '<option value="' + y + '"' + (y === yearId ? ' selected' : '') + '>' + esc(D.years()[y].label) + '</option>').join('') + '</select>' : '')
+        + (tab === 'year' ? '<select class="field" aria-label="Year list" data-year>' + D.liveYears().map((y) => '<option value="' + y + '"' + (y === yearId ? ' selected' : '') + '>' + esc(D.years()[y].label) + '</option>').join('') + '</select>' : '')
         + (tab === 'tricky' && !tricky().length ? '<p class="muted">No tricky words yet.</p>' : '') + '</div>' : '';
     main.innerHTML = page('Which words?', 'Type the school\'s words, or tap words from a list. Up to ' + W.MAX_WORDS + '. ' + St.DAILY_TIME_CAP + '.',
       '<div class="gu-plan gu-plan--two">'
@@ -532,7 +532,7 @@ function planForm(main, cid, gid) {
     }));
     main.querySelectorAll('[data-remove]').forEach((b) => b.addEventListener('click', () => { removeWord(b.dataset.remove); draw(); }));
     const o = q('[data-other]');
-    if (o) o.addEventListener('click', () => { other = !other; if (!other) { tab = 'year'; yearId = P.yearListFor(kid() ? kid().child.year : 4); } draw(); focusAfter('[data-other]'); });
+    if (o) o.addEventListener('click', () => { other = !other; if (!other) { tab = 'year'; yearId = P.yearListFor(kid() ? kid().child.year : 4, D.liveYears()); } draw(); focusAfter('[data-other]'); });
     if (q('[data-chapter]')) q('[data-chapter]').addEventListener('change', (e) => { chapterId = e.target.value; draw(); });
     if (q('[data-pattern]')) q('[data-pattern]').addEventListener('change', (e) => { patternId = e.target.value; draw(); });
     if (q('[data-year]')) q('[data-year]').addEventListener('change', (e) => { yearId = e.target.value; draw(); });
@@ -587,7 +587,7 @@ function planForm(main, cid, gid) {
     if (step === 1) {
       if (!chosenId) { message = 'Please choose a child.'; draw(); return; }
       step = 2;
-      yearId = P.yearListFor(kid().child.year);
+      yearId = P.yearListFor(kid().child.year, D.liveYears());
       draw(); window.scrollTo(0, 0);
     } else if (step === 2) {
       if (!words.length) { message = 'Please add at least one word.'; draw(); return; }
@@ -663,7 +663,7 @@ function planForm(main, cid, gid) {
       words = [...existing.words];
       listName = '';
     }
-    if (kid()) yearId = P.yearListFor(kid().child.year);
+    if (kid()) yearId = P.yearListFor(kid().child.year, D.liveYears());
     step = P.firstStep({ children: kids.length, chosen: chosenId && fixedId ? chosenId : '', editing: !!editing });
     draw();
   });

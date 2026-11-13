@@ -60,12 +60,33 @@ test('signed out: no player, nothing cached, the chip offers sign-in back to thi
 test('an adult, a child, and an adult playing as a child are each the right player', () => {
   assert.deepEqual(playerFromMe(ADULT, ORIGIN), { id: ADULT.id, name: 'Alex Green', avatar: null, kind: 'adult', canSwitch: true });
   assert.deepEqual(playerFromMe(CHILD_A, ORIGIN),
-    { id: KID_A.id, name: 'Sam', avatar: ORIGIN + '/avatars/ottie-128.webp', kind: 'child', canSwitch: false });
+    { id: KID_A.id, name: 'Sam', avatar: ORIGIN + '/avatars/ottie-128.webp', kind: 'child', canSwitch: false, year: 4 });
   assert.deepEqual(playerFromMe(playingAs(KID_B), ORIGIN),
-    { id: KID_B.id, name: 'Robin', avatar: ORIGIN + '/avatars/fizz-128.webp', kind: 'child', canSwitch: true });
+    { id: KID_B.id, name: 'Robin', avatar: ORIGIN + '/avatars/fizz-128.webp', kind: 'child', canSwitch: true, year: 6 });
   assert.equal(playerFromMe({ signedIn: false }, ORIGIN), null);
   assert.equal(playerFromMe({ signedIn: true, kind: 'child', id: 'not-a-uuid', nickname: 'x' }, ORIGIN), null);
   assert.equal(playerFromMe({ ...CHILD_A, avatar: '../../evil' }, ORIGIN).avatar, null, 'only a plain avatar id makes a picture URL');
+});
+
+test('SB4: a child player carries year 1..6 (own session and playingAs); 0, 7, "4", 4.5 and absent leave it out', () => {
+  assert.equal(playerFromMe({ ...CHILD_A, year: 1 }, ORIGIN).year, 1);
+  assert.equal(playerFromMe({ ...CHILD_A, year: 6 }, ORIGIN).year, 6);
+  assert.equal(playerFromMe(playingAs({ ...KID_A, year: 2 }), ORIGIN).year, 2);
+  const noYear = { ...CHILD_A };
+  delete noYear.year;
+  for (const bad of [0, 7, '4', 4.5, null, undefined]) {
+    assert.ok(!('year' in playerFromMe({ ...CHILD_A, year: bad }, ORIGIN)), 'child year ' + String(bad));
+    assert.ok(!('year' in playerFromMe(playingAs({ ...KID_A, year: bad }), ORIGIN)), 'playingAs year ' + String(bad));
+  }
+  assert.ok(!('year' in playerFromMe(noYear, ORIGIN)));
+  assert.ok(!('year' in playerFromMe({ ...ADULT, year: 4 }, ORIGIN)), 'an adult has no year');
+});
+
+test('SB4: the year is never cached in wa.player', () => {
+  const st = memoryStorage();
+  const p = playerFromMe(CHILD_A, ORIGIN);
+  st.setItem(PLAYER_KEY, JSON.stringify({ id: p.id, name: p.name, avatar: p.avatar }));
+  assert.ok(!('year' in cachedPlayer(st)));
 });
 
 test('only the player id, name and picture URL are kept on the device; no token, email or session id', async () => {
@@ -451,6 +472,15 @@ test('?signedout=1 and /api/me signed out: the player\'s copies go, the queue wi
     'gone: sb.progress, wb.game, wb.setup, wa.prefs, wa.import:*, the empty wa.sync, wa.player');
   assert.equal(page.win.location.href, 'https://game.waystead.co.uk/wordbright/?board=junior#/new');
   assert.deepEqual(uses, [KID_A.id, null], 'back to today\'s keys at once, even on a game screen');
+});
+
+test('SB4: forgetPlayer removes sb.year:<id> and leaves another player\'s', () => {
+  const local = memoryStorage();
+  local.setItem('sb.year:' + KID_A.id, '4');
+  local.setItem('sb.year:' + KID_B.id, '6');
+  const r = forgetPlayer(local, KID_A.id);
+  assert.deepEqual(r.removed, ['sb.year:' + KID_A.id]);
+  assert.equal(local.getItem('sb.year:' + KID_B.id), '6');
 });
 
 test('?signedout=1 with an empty queue: nothing of the player is left at all', () => {

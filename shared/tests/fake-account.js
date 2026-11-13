@@ -15,6 +15,9 @@ export function fakeAccount() {
     failNext: null, // { status, times } for the next data calls
     meStatus: 0, // e.g. 503 (the service down) or 401: what /api/me answers instead
     children: () => [], // adult id -> [{ id, nickname, year, avatar }]
+    // SB4 /api/scan/*: `missing` (the default) = the real endpoint does not exist yet, so every route is a 404.
+    // `reply(bytes, type)` may answer { status, body } in place of the usual words (a string body is sent as text).
+    scan: { missing: true, on: false, limit: 20, left: 20, hourLeft: 5, paused: false, consent: null, version: 'v1', vendor: 'Test vendor', reply: null },
   };
   const profile = () => {
     const me = acct.who;
@@ -26,16 +29,60 @@ export function fakeAccount() {
     ok: status >= 200 && status < 300, status,
     headers: { get: (k) => headers[k] ?? null },
     json: async () => body,
+    text: async () => (typeof body === 'string' ? body : JSON.stringify(body)),
   });
+  const firstOfNextMonth = () => {
+    const d = new Date();
+    const y = d.getUTCMonth() === 11 ? d.getUTCFullYear() + 1 : d.getUTCFullYear();
+    return y + '-' + String((d.getUTCMonth() + 1) % 12 + 1).padStart(2, '0') + '-01';
+  };
   const bytes = (v) => new TextEncoder().encode(JSON.stringify(v)).length;
+
+  const scanRoute = (u, method, init, rawBytes, rawType) => {
+    const sc = acct.scan;
+    if (sc.missing) return json(404, { error: 'not-found' });
+    const me = acct.who;
+    if (!me || !me.signedIn) return json(401, { signedIn: false });
+    const isChild = me.kind === 'child' || !!me.playingAs;
+    if (u.pathname === '/api/scan/allowance' && method === 'GET') {
+      return json(200, { on: sc.on, left: sc.left, limit: sc.limit, hourLeft: sc.hourLeft, resetsOn: firstOfNextMonth(), paused: sc.paused, consent: sc.consent, consentVersion: sc.version, vendor: sc.vendor });
+    }
+    if (u.pathname === '/api/scan/consent' && method === 'POST') {
+      const b = init.body ? JSON.parse(init.body) : {};
+      sc.consent = { at: new Date().toISOString(), version: b.version };
+      return json(200, { consent: sc.consent });
+    }
+    if (u.pathname === '/api/scan/words' && method === 'POST') {
+      if (isChild) return json(403, { error: 'adult-session-required' });
+      if (!sc.on) return json(404, { error: 'not-found' });
+      if (sc.paused) return json(503, { error: 'scan-paused' });
+      if (!sc.consent || sc.consent.version !== sc.version) return json(412, { error: 'consent-required', version: sc.version });
+      if (rawType !== 'image/jpeg') return json(415, { error: 'bad-image' });
+      if (rawBytes.length > 2097152) return json(413, { error: 'image-too-large' });
+      if (sc.hourLeft === 0) return json(429, { error: 'hourly-limit' }, { 'Retry-After': '3600' });
+      if (sc.left === 0) return json(429, { error: 'monthly-limit', resetsOn: firstOfNextMonth() });
+      sc.left -= 1;
+      sc.hourLeft -= 1;
+      if (sc.reply) { const r = sc.reply(rawBytes, rawType); return json(r.status, r.body); }
+      return json(200, { words: ['friend', 'because', 'island'], left: sc.left, resetsOn: firstOfNextMonth() });
+    }
+    return json(404, { error: 'not-found' });
+  };
 
   acct.fetch = async (url, init = {}) => {
     const u = new URL(url);
     const method = init.method || 'GET';
-    acct.calls.push({ method, path: u.pathname, credentials: init.credentials, body: init.body });
+    const isScan = u.pathname.startsWith('/api/scan/');
+    // A scanned picture is never kept: only its size and type are recorded.
+    const rawBytes = isScan && u.pathname === '/api/scan/words' && init.body != null ? Buffer.from(init.body) : null;
+    const rawType = rawBytes ? ((init.headers && (init.headers['Content-Type'] || init.headers['content-type'])) || '') : '';
+    acct.calls.push(rawBytes
+      ? { method, path: u.pathname, credentials: init.credentials, bytes: rawBytes.length, type: rawType }
+      : { method, path: u.pathname, credentials: init.credentials, body: init.body });
     if (init.credentials !== 'include') throw new Error('every call must send credentials: include');
     if (acct.offline) throw new TypeError('Failed to fetch');
     if (u.pathname === '/api/me') return acct.meStatus ? json(acct.meStatus, { error: 'forced' }) : json(200, acct.who || { signedIn: false });
+    if (isScan) return scanRoute(u, method, init, rawBytes, rawType);
     if (acct.failNext && acct.failNext.times > 0) {
       acct.failNext.times -= 1;
       return json(acct.failNext.status, { error: 'forced' });

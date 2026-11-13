@@ -4,12 +4,13 @@
 import * as D from './data.js';
 import * as S from './store.js';
 import * as F from './front-doc.js';
-import { kind, isChild } from './who.js';
+import * as Ch from './chapters-doc.js';
+import { kind, isChild, childYear } from './who.js';
 import { sayLine, stop } from './speech.js';
 import { esc, ICON } from './ui.js';
 
 const href = (...parts) => '#/' + parts.join('/');
-const yearName = (id) => D.years()[id].label.replace(/\s*&\s*/g, ' and '); // "Year 3 and 4", said as a child reads it
+const yearName = (id) => D.years()[id].label; // "Year 3"
 const YEAR_KEY = 'sb.chaptersYear'; // which year More practice opens on: a device convenience, never saved to the account
 
 export function notFound(main) {
@@ -63,7 +64,7 @@ export function signedOut(main, { signInHref = '' } = {}) {
 }
 
 /* -------------------------------------------------------------- More practice --- */
-function remembered() { try { return localStorage.getItem(YEAR_KEY) || ''; } catch (e) { return ''; } }
+function remembered(live) { try { return Ch.mapRemembered(localStorage.getItem(YEAR_KEY) || '', live); } catch (e) { return ''; } }
 export function rememberYear(id) { try { localStorage.setItem(YEAR_KEY, id); } catch (e) { /* the page opens on its own pick */ } }
 
 const progressOf = (c) => S.chapterProgress(c.id);
@@ -73,10 +74,30 @@ function stoneHtml(s, state) {
   const inner = state === 'passed' ? SVG.star + s.n : String(s.n);
   return '<span class="stone stone--' + { passed: 'done', studying: 'today', todo: 'later' }[state] + ' stone--' + (s.n % 4) + '" aria-hidden="true">' + inner + '</span>';
 }
-function yearPanel(id, yearId) {
+/** Which kinds of word a chapter or a year holds: 'statutory' (no set), 'cew', 'pattern'. */
+const kindsOf = (chs) => {
+  const k = new Set();
+  for (const c of chs) for (const w of c.words) k.add(w.set || 'statutory');
+  return k;
+};
+/** The small lines saying where a year's (or a chapter's) words come from. */
+function sourceLines(yearId, chs, focus) {
+  const n = D.years()[yearId].n;
+  const k = kindsOf(chs);
+  const lines = [];
+  if (k.has('statutory')) lines.push(Ch.sourceLine(n, 'statutory'));
+  if (k.has('cew')) lines.push(Ch.sourceLine(n, 'cew'));
+  if (k.has('pattern') && focus) lines.push(Ch.patternLabel(n, focus));
+  return lines.filter(Boolean);
+}
+const y12 = () => (childYear() === 1 || childYear() === 2 ? ' front--y12' : '');
+
+function yearPanel(id) {
   const chs = D.chapters(id);
   const v = viewOf(id);
   const sum = F.summaryLine(F.yearSummary(chs, progressOf));
+  const lines = sourceLines(id, chs.filter((c) => c.words.some((w) => !w.set || w.set === 'statutory' || w.set === 'cew')), '');
+  const note = id === 'y2' && kind() === 'adult' ? '<p class="yearsource" data-apostrophe>' + esc(Ch.APOSTROPHE_NOTE) + '</p>' : '';
   const stones = v.stones.map((s) => {
     const label = F.STONE_LABEL[s.state];
     const aria = 'Chapter ' + s.n + ', ' + label.toLowerCase() + (s.open ? '' : '. Opens after Chapter ' + (s.n - 1));
@@ -91,14 +112,20 @@ function yearPanel(id, yearId) {
     go = '<a class="btn btn--primary btn--carry" href="' + href(id, v.target.slug, dest) + '" data-carry><span class="btn__two"><b>' + esc(F.carryLabel(v)) + '</b><small>' + esc(v.target.label) + '</small></span>' + ICON.arrow + '</a>';
   }
   return '<section class="card yearcard" aria-label="' + esc(yearName(id)) + '" data-yearpanel="' + id + '">'
-    + '<p class="yearcard__sum">' + esc(sum) + '</p><ol class="stones" aria-label="Chapters">' + stones + '</ol>' + go + '</section>';
+    + '<p class="yearcard__sum">' + esc(sum) + '</p>'
+    + lines.map((l) => '<p class="yearsource" data-source>' + esc(l) + '</p>').join('') + note
+    + '<ol class="stones" aria-label="Chapters">' + stones + '</ol>' + go + '</section>';
 }
 
-/** #/chapters: "More practice". One year at a time, its ten stones, ONE primary button, then three quiet rows. */
+/** #/chapters: "More practice". One school year at a time, its stones, ONE primary button, then three quiet rows. */
 export function chapters(main) {
   const child = isChild();
   const adult = kind() === 'adult';
-  let year = F.pickYear(remembered(), { y34: viewOf('y34'), y56: viewOf('y56') });
+  const live = D.liveYears();
+  const views = Object.fromEntries(live.map((id) => [id, viewOf(id)]));
+  let year = F.pickYear(remembered(live), views, childYear(), live);
+  const tabs = Ch.yearTabs(childYear(), adult, live);
+  let moreOpen = tabs.more.includes(year); // the chosen year is never hidden
   const tricky = S.trickyWords().length;
   const sentence = child ? 'Learn a chapter, then test it.' : 'Each chapter: learn the words, practise them, then take the chapter test.';
   const rows = [
@@ -106,28 +133,43 @@ export function chapters(main) {
     ['#/tricky', SVG.alert, 'Tricky words', tricky ? tricky + ' to go back to' : 'None yet'],
     ['#/progress', SVG.bars, 'Progress', 'Chapters you have passed'],
   ];
-  main.innerHTML = '<section class="wrap page front chapterspage" data-chapters data-for="' + (child ? 'child' : 'adult') + '">'
+  main.innerHTML = '<section class="wrap page front chapterspage' + y12() + '" data-chapters data-for="' + (child ? 'child' : 'adult') + '">'
     + '<div class="pagehead">' + (child ? '' : '<p class="eyebrow">More practice</p>')
     + '<h1>' + (child ? 'More practice' : 'Practise chapter by chapter') + '</h1>'
     + '<div class="front__sentence"><p class="front__lede">' + esc(sentence) + '</p>' + (child ? hearBtn : '') + '</div></div>'
-    + '<div class="yearswitch" role="group" aria-label="Year group">'
-    + F.YEARS.map((id) => '<button type="button" class="yearswitch__b" data-year="' + id + '" aria-pressed="' + (id === year) + '">' + esc(yearName(id)) + '</button>').join('') + '</div>'
+    + '<div class="yearswitch" role="group" aria-label="Year group" data-yearswitch></div>'
     + '<div data-yearslot></div>'
     + '<h2 class="morehead">More to do</h2>'
     + '<ul class="morerows">' + rows.map(([to, icon, name, sub]) => '<li><a class="morerow" href="' + to + '"><span class="morerow__ico" aria-hidden="true">' + icon + '</span>'
       + '<span class="morerow__text"><b>' + name + '</b><span>' + esc(sub) + '</span></span><span class="morerow__go" aria-hidden="true">' + SVG.chevron + '</span></a></li>').join('') + '</ul>'
     + '</section>';
   const slot = main.querySelector('[data-yearslot]');
+  const sw = main.querySelector('[data-yearswitch]');
+  // An adult with more than four years sees Y3 (read as "Year 3"), so six buttons fit a phone.
+  const short = adult && live.length > 4;
+  const btn = (id) => '<button type="button" class="yearswitch__b" data-year="' + id + '" aria-pressed="' + (id === year) + '"'
+    + (short ? ' aria-label="' + esc(yearName(id)) + '"' : '') + '>' + esc(short ? D.years()[id].short : yearName(id)) + '</button>';
+  const drawSwitch = () => {
+    const hasMore = tabs.more.length > 0;
+    sw.innerHTML = '<div class="yearswitch__row">' + tabs.main.map(btn).join('')
+      + (hasMore ? '<button type="button" class="yearswitch__b yearswitch__more" data-moreyears aria-expanded="' + moreOpen + '" aria-controls="yearmore">Other years</button>' : '') + '</div>'
+      + (hasMore ? '<div class="yearswitch__row" id="yearmore"' + (moreOpen ? '' : ' hidden') + '>' + (moreOpen ? tabs.more.map(btn).join('') : '') + '</div>' : '');
+    sw.querySelectorAll('[data-year]').forEach((b) => b.addEventListener('click', () => pick(b.dataset.year)));
+    const more = sw.querySelector('[data-moreyears]');
+    if (more) more.addEventListener('click', () => { moreOpen = !moreOpen; drawSwitch(); sw.querySelector('[data-moreyears]').focus(); });
+  };
   const draw = () => {
     slot.innerHTML = yearPanel(year);
-    main.querySelectorAll('.yearswitch__b').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.year === year)));
+    drawSwitch();
   };
-  draw();
-  main.querySelectorAll('.yearswitch__b').forEach((b) => b.addEventListener('click', () => {
-    year = b.dataset.year;
+  const pick = (id) => {
+    year = id;
     rememberYear(year);
     draw();
-  }));
+    const h1 = main.querySelector('h1'); // the page changed under the player: focus goes to its heading
+    if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
+  };
+  draw();
   const hear = main.querySelector('[data-hear]');
   if (hear) hear.addEventListener('click', () => sayLine(sentence));
   return stop;
@@ -155,7 +197,7 @@ export function chapter(main, { yearId, slug }) {
   const label = yearName(yearId);
   if (!isUnlocked(ch)) {
     const prev = D.chapters(yearId)[ch.index - 1];
-    main.innerHTML = '<section class="wrap page front chapterpage" data-chapter-locked><div class="pagehead"><p class="eyebrow">' + esc(label) + '</p><h1>Chapter ' + t.n + '</h1>'
+    main.innerHTML = '<section class="wrap page front chapterpage' + y12() + '" data-chapter-locked><div class="pagehead"><p class="eyebrow">' + esc(label) + '</p><h1>Chapter ' + t.n + '</h1>'
       + '<p class="front__lede">Pass Chapter ' + (t.n - 1) + ' first.</p></div>'
       + '<a class="btn btn--primary btn--lead" href="' + href(yearId, prev.slug) + '">Go to Chapter ' + (t.n - 1) + ICON.arrow + '</a></section>';
     return undefined;
@@ -181,8 +223,9 @@ export function chapter(main, { yearId, slug }) {
     return '<a class="btn btn--quiet" href="' + base + '/' + r.to + '" data-step-link="' + id + '">' + (state === 'done' ? r.again : r.go) + '</a>';
   };
   const next = !st.next && yearId && D.chapters(yearId)[ch.index + 1];
-  main.innerHTML = '<section class="wrap page front chapterpage" data-chapterpage data-for="' + (child ? 'child' : 'adult') + '">'
-    + '<div class="pagehead"><p class="eyebrow">' + esc(label) + ' · ' + esc(t.name) + '</p><h1>Chapter ' + t.n + '</h1>'
+  main.innerHTML = '<section class="wrap page front chapterpage' + y12() + '" data-chapterpage data-for="' + (child ? 'child' : 'adult') + '">'
+    + '<div class="pagehead"><p class="eyebrow">' + esc(label) + ' · ' + esc(t.name) + '</p>'
+    + sourceLines(yearId, [ch], ch.focus).map((l) => '<p class="eyebrow eyebrow--source" data-source>' + esc(l) + '</p>').join('') + '<h1>Chapter ' + t.n + '</h1>'
     + '<div class="front__sentence"><p class="front__lede">' + esc(sentence) + '</p>' + (child ? hearBtn : '') + '</div></div>'
     + '<ol class="stepcards">' + ['learn', 'practise', 'test'].map((id) => {
       const state = st[id];

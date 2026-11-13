@@ -7,7 +7,7 @@
 // Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-13e';
+const VERSION = 'spellbright-2026-11-13f';
 
 const SHELL = [
   './',
@@ -85,6 +85,22 @@ const SHELL = [
   'assets/characters/pip-portrait-256.webp',
   'assets/characters/pip-thinking-256.webp',
   'assets/characters/pip-happy-256.webp',
+  // SB4-WP1 files
+  'js/chapters-doc.js',
+
+  // SB4-WP2 files
+
+  // SB4-WP3 files
+
+  // SB4-WP4 files
+
+  // SB4-WP5 files
+
+  // SB4-WP6 files
+
+  // SB4-WP7 files
+
+  // SB4-WP8 files
 ];
 
 // Install the app shell only, so a new version takes over within seconds.

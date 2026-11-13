@@ -1,5 +1,6 @@
 // Entry point: load data, route by the URL hash, wire the header.
 import * as D from './data.js';
+import * as Ch from './chapters-doc.js';
 import { loadData } from './data.js';
 import { testGuard } from './test-guard.js';
 import { wireThemeMenu } from './thememenu.js';
@@ -65,6 +66,14 @@ const ROUTES = [
   ['grownups/child/:cid/week/:gid', GU.childDashboard],
   ['grownups/child/:cid/plan', GU.planWeek],
   ['grownups/child/:cid/plan/:gid', GU.editWeek],
+  // SB4-WP5 routes
+
+  // SB4-WP6 routes
+
+  // SB4-WP7 routes
+
+  // SB4-WP8 routes
+
   [':yearId', FV.year],
   [':yearId/:slug', FV.chapter],
   [':yearId/:slug/study', V.study],
@@ -91,7 +100,7 @@ function match(path) {
       if (seg.startsWith(':')) params[seg.slice(1)] = parts[i];
       else if (seg !== parts[i]) ok = false;
     });
-    if (ok && params.yearId && !/^y(34|56)$/.test(params.yearId)) ok = false;
+    if (ok && params.yearId && !(/^y([1-6]|34|56)$/.test(params.yearId) && D.liveYears().includes(params.yearId))) ok = false; // a year with no words yet is not a page
     if (ok && params.slug && !/^ch\d\d$/.test(params.slug)) ok = false;
     if (ok) return { view, params, pattern };
   }
@@ -101,11 +110,12 @@ function match(path) {
 // Back goes one level up the page tree, so it never leaves the site.
 function parentOf(path) {
   const parts = path.split('/').filter(Boolean);
+  // SB4-WP7 parentOf
   if (parts[0] === 'custom' && parts[1] === 'play') return '#/custom';
   if (parts[0] === 'grownups') return parts.length > 3 ? '#/grownups/child/' + parts[2] : parts.length > 1 ? '#/grownups' : '#/';
   if (parts[0] === 'words' && parts.length > 3) return '#/words/g/' + parts[2];
   if (parts[0] === 'words' && parts.length > 1) return '#/words';
-  if (/^y(34|56)$/.test(parts[0]) && parts.length <= 2) return '#/chapters'; // a year or a chapter page: back to More practice
+  if (/^y[1-6]$/.test(parts[0]) && parts.length <= 2) return '#/chapters'; // a year or a chapter page: back to More practice
   parts.pop();
   return '#/' + parts.join('/');
 }
@@ -155,6 +165,13 @@ function render() {
   chrome();
   if (hadSheet) setTimeout(settleFocus, 0);
   if (gated(path)) return;
+  // The two old year blocks are gone: y34/ch07 is Year 4, Chapter 2 now; a bare y34 or y56 goes to More practice on its first year.
+  const old = Ch.legacyHref(path, D.chapterIds());
+  if (old) {
+    if (old.remember) FV.rememberYear(old.remember);
+    location.replace(old.href);
+    return;
+  }
   const found = match(path);
   if (found && found.pattern === 'settings' && !isChild()) { location.replace('#/'); return; }
   backBtn.hidden = path === '';
@@ -264,7 +281,7 @@ function wireAccount() {
   let knownKind = '';
   account.session.on(({ player }) => {
     const k = (player && player.kind) || '';
-    if (k !== knownKind) { knownKind = k; if (drawn) chrome(); if (drawn && /^(grownups|chapters$|y(34|56)(\/ch\d\d)?$|$)/.test(currentPath())) render(); } // no other page depends on it: never wipe a half-filled form
+    if (k !== knownKind) { knownKind = k; if (drawn) chrome(); if (drawn && /^(grownups|chapters$|y[1-6](\/ch\d\d)?$|$)/.test(currentPath())) render(); } // no other page depends on it: never wipe a half-filled form
   });
 }
 

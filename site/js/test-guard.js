@@ -24,6 +24,13 @@ export const RULES = {
   'words/g/:gid': 'first', 'words/g/:gid/test': 'safe', 'words/g/:gid/path': 'safe', settings: 'safe',
   'words/g/:gid/spell/:n': 'group', 'words/g/:gid/study/:step': 'group', 'words/g/:gid/study/:step/:n': 'group', 'words/g/:gid/games': 'group', 'words/g/:gid/game/:game': 'group',
   grownups: 'adult', 'grownups/stories': 'adult', 'grownups/plan': 'adult', 'grownups/child/:cid/week/:gid': 'adult', 'grownups/child/:cid': 'adult', 'grownups/child/:cid/plan': 'adult', 'grownups/child/:cid/plan/:gid': 'adult',
+  // SB4-WP5 rules
+
+  // SB4-WP6 rules
+
+  // SB4-WP7 rules
+
+  // SB4-WP8 rules
 };
 
 /** The group to show instead of this page, or null. chapterWords(yearId, slug) -> its words. */

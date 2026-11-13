@@ -30,7 +30,7 @@ export const JOBS = [
 ];
 
 // ---- More practice ---------------------------------------------------------------------
-export const YEARS = ['y34', 'y56'];
+export { YEARS, pickYear } from './chapters-doc.js';
 const started = (p) => !!(p.studied || p.practised || p.passed || p.attempts > 0);
 
 /** A chapter stone's state: 'passed' (star and number), 'studying' (a sun) or 'todo' (dashed). */
@@ -79,16 +79,6 @@ export function yearView(chs, progressOf, unlockedOf) {
   return { mode: begun ? 'carry' : 'start', stones, target: { n: at + 1, slug: chs[at].slug, step, label: STEP_LABEL[step] } };
 }
 export const carryLabel = (v) => (v.mode === 'start' ? 'Start: Chapter ' : 'Carry on: Chapter ') + v.target.n;
-
-/** Which year the page opens on: the remembered one, else the year the player is working in. */
-export function pickYear(remembered, views) {
-  if (YEARS.includes(remembered)) return remembered;
-  const a = views.y34;
-  const b = views.y56;
-  if (a.mode === 'done') return 'y56';
-  if (a.mode === 'start' && b.mode === 'carry') return 'y56';
-  return 'y34';
-}
 
 // ---- One chapter -----------------------------------------------------------------------
 /**

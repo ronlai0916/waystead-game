@@ -93,6 +93,19 @@
   /* SB3-C2, Grown-ups: "Needs help" is soft plum, so honey only ever means "waiting". */
   --help-bg: #EFE6F7;
   --help-fg: #5B3390;
+
+  /* SB4, tiles: honey tile, pale tray, Plum gap. Nothing uses these yet. */
+  --tile-bg: #FFD95E;
+  --tile-fg: #1B1A20;
+  --tile-edge: #7A5200;
+  --tray-bg: #FFF0C9;
+  --gap-edge: #6B3FA0;
+  --gap-bg: #F3EEF9;
+  --placed-bg: #F3EEF9;
+  --placed-fg: #1B1A20;
+  --glow: #6B3FA0;
+  --soft-bg: #FDF4E1;
+  --soft-fg: #8F5A06;
   color-scheme: light;
 }
 

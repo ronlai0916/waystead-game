@@ -239,8 +239,14 @@ export const atCap = (words) => words.length >= W.MAX_WORDS;
 export const isShortWeek = (start, test) => W.daysBetween(start, test) < FULL_WEEK_DAYS;
 /** "Fri 27 Nov", for the date written beside the date field. '' for no date. */
 export const dateWords = (test) => (/^\d{4}-\d{2}-\d{2}$/.test(test || '') ? W.dayLabel(test) : '');
-/** The year list a child's words come from first: Years 3 and 4, or 5 and 6. */
-export const yearListFor = (year) => (Number(year) >= 5 ? 'y56' : 'y34');
+/** The year list a child's words come from first: their own school year, kept to the years that have words (Year 1 and 2 are Year 3 until they do). */
+export function yearListFor(year, live = ['y3', 'y4', 'y5', 'y6']) {
+  const n = Math.min(6, Math.max(1, Math.round(Number(year)) || 3));
+  if (!live.length) return 'y' + n;
+  let best = live[0];
+  for (const id of live) if (Math.abs(Number(id.slice(1)) - n) < Math.abs(Number(best.slice(1)) - n)) best = id;
+  return best;
+}
 /** The week's name: "School spellings" once a typed word is in, else the list's name, else the date's. */
 export function suggestName({ typedCount = 0, listName = '', test }) {
   if (typedCount > 0) return 'School spellings';
