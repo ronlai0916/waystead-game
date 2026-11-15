@@ -25,8 +25,10 @@ export const RULES = {
   'words/g/:gid/spell/:n': 'group', 'words/g/:gid/study/:step': 'group', 'words/g/:gid/study/:step/:n': 'group', 'words/g/:gid/games': 'group', 'words/g/:gid/game/:game': 'group',
   grownups: 'adult', 'grownups/stories': 'adult', 'grownups/plan': 'adult', 'grownups/child/:cid/week/:gid': 'adult', 'grownups/child/:cid': 'adult', 'grownups/child/:cid/plan': 'adult', 'grownups/child/:cid/plan/:gid': 'adult',
   // SB4-WP5 rules
+  'words/exam/:eid': 'any', 'words/g/:gid/quiz': 'group', ':yearId/:slug/quiz': 'chapter',
 
   // SB4-WP6 rules
+  'grownups/overview': 'adult', 'grownups/child/:cid/spelling': 'adult', 'grownups/child/:cid/exam': 'adult', 'grownups/child/:cid/exam/:eid': 'adult',
 
   // SB4-WP7 rules
 

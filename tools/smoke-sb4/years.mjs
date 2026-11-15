@@ -175,13 +175,13 @@ export default function (H) {
   // Take a chapter's test, typing every word right (the smoke's audio records the word it was asked to say).
   async function passTest() {
     for (let n = 0; n < 24; n += 1) {
-      await until('document.querySelector("#ans") || document.querySelector(".passmark, [data-next-year], [data-back-practice], [data-next-chapter]")', 'a word or the score');
-      if (!await has('#ans')) break;
+      await until('document.querySelector("[data-answer]") || document.querySelector(".passmark, [data-next-year], [data-back-practice], [data-next-chapter]")', 'a word or the score');
+      if (!await has('[data-answer]')) break;
       await ev('globalThis.__said.length = 0');
       await click('[data-hear]');
       await until('globalThis.__said.length', 'the word spoken');
       const w = await ev('globalThis.__said.at(-1)');
-      await ev('(() => { const i = document.querySelector("#ans"); i.value = ' + JSON.stringify(w) + '; document.querySelector("form").requestSubmit(); })()');
+      await H.keys(w);
       await click('[data-next]');
     }
   }

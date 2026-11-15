@@ -15,6 +15,10 @@ import { esc, ICON, chunked, keyboard, toast, RETRY_LINE } from './ui.js';
 import * as C from './child-doc.js';
 import { dotsListHtml } from './study-views.js';
 import { modeSwitch } from './words-views.js';
+import * as A from './assess-doc.js';
+import * as Tr from './tray.js';
+import { hearInSentence, canSentence } from './sentence.js';
+import { childYear } from './who.js';
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -28,6 +32,30 @@ function pageHtml(ctx, title, n, body) {
 // The same Hear and Skip rows as practice: one big "Hear the word", Skip as a link.
 const heard = () => '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
   + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>';
+
+// SB4-WP4: the letter-tray screens (levels 1 to 4) of Missing letters and Quick-fire share these.
+const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+const tileBody = (spec, lv) => Tr.lineHtml(Tr.instructionFor(lv), Tr.moreFor(spec, lv))
+  + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: spec.tricky }) + '<button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button></div>'
+  + '<div data-slot>' + Tr.colHtml(Tr.trayHtml(spec),
+    '<div class="btnrow btnrow--center testbtns testbtns--tray"><button type="button" class="btn btn--primary" data-check disabled>' + TICK + 'Check</button>'
+    + '<button type="button" class="btn btn--ghost" data-skip>Skip for now<span class="sr">. It comes back later.</span></button></div>') + '</div>';
+/** Mounts the tray on the page just drawn. Returns the controller; onRight(pass) when a Check is right. */
+function wireTiles(main, spec, entry, { lv, pf, onRight, onSkip }) {
+  const rules = A.RULES.practice[pf] || A.RULES.practice.normal;
+  const hearNow = () => (rules.sentence === 'auto' && canSentence(entry) ? hearInSentence(entry) : speak(entry.word));
+  const ctrl = Tr.mountTray(main, spec, {
+    glowAfter: rules.glowAfter, xs: pf === 'sen',
+    onChange: (st) => { const c = main.querySelector('[data-check]'); if (c) c.disabled = !st.full || st.right; },
+  });
+  main.querySelector('[data-hear]').addEventListener('click', hearNow);
+  main.querySelector('[data-skip]').addEventListener('click', onSkip);
+  main.querySelector('[data-check]').addEventListener('click', () => { const r = ctrl.check(); if (r && r.right) onRight(passOf(r, lv)); });
+  return { ctrl, hearNow, rules };
+}
+/** A tile pass as a game records it: clean only when the first Check was right and the tray filled nothing. */
+function passOf(s, lv) { return { tries: s.tries, clean: !s.tries && !s.helped, lv, ...(s.helped ? { h: 1 } : {}) }; }
+const leftPass = (ctrl, lv) => { const s = ctrl.state(); return s.tries || s.helped ? passOf(s, lv) : null; };
 
 function wordDone(ctx, slot, w, clean, next, last) {
   slot.innerHTML = '<div class="card result ' + (clean ? 'result--good' : 'result--bad') + '"><div class="result__head">'
@@ -47,12 +75,36 @@ function missing(main, ctx, done) {
   let blanks = [];
   let run = null;
   let live = false;
+  let tiles = null; // the letter tray, on level 1 to 4
+  let level = 5;
   function show(line = '') {
     const e = entryFor(words[0]);
     w = e.word;
     blanks = G.blanksFor(e);
     run = G.newMissing(w, blanks);
     live = true;
+    if (tiles) { tiles.ctrl.destroy(); tiles = null; }
+    const { lv, pf } = S.helpNow(childYear());
+    level = lv;
+    const spec = lv < 5 ? Tr.specFor(e, lv, { pf, gaps: blanks }) : null;
+    if (spec) {
+      main.innerHTML = pageHtml(ctx, { id: 'missing', text: G.GAMES.missing.title }, ctx.leftLine(words), tileBody({ ...spec, tricky: e.tricky }, lv));
+      tiles = wireTiles(main, spec, e, {
+        lv, pf, onSkip: skip,
+        onRight(p) {
+          live = false;
+          ctx.record(w, p);
+          words = G.afterPass(words, p.clean);
+          if (!p.clean) { show(RETRY_LINE); return; }
+          wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (words.length ? show() : done()), !words.length);
+          speak(w);
+        },
+      });
+      if (line) tiles.ctrl.say(line);
+      tiles.hearNow();
+      window.scrollTo(0, 0);
+      return;
+    }
     main.innerHTML = pageHtml(ctx, { id: 'missing', text: G.GAMES.missing.title }, ctx.leftLine(words),
       '<div class="spellboxes" aria-label="The word with letters missing">' + [...w].map((c, n) => '<span class="spellbox' + (blanks.includes(n) ? '" data-gap="' + blanks.indexOf(n) + '">' : ' is-filled">' + esc(c)) + '</span>').join('') + '</div>'
       + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
@@ -89,19 +141,28 @@ function missing(main, ctx, done) {
   }
   function skip() {
     if (!live) return;
-    if (R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false });
+    if (tiles) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); } else if (R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false });
     ctx.skip(w);
     words = G.afterSkip(words);
     show();
   }
   function onKey(e) {
-    if (plainKey(e) && /^[a-z]$/i.test(e.key)) { e.preventDefault(); letter(e.key); }
+    if (!plainKey(e)) return;
+    if (tiles) {
+      if (!live) return;
+      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); tiles.ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); tiles.ctrl.back(); }
+      return;
+    }
+    if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); letter(e.key); }
   }
   document.addEventListener('keydown', onKey);
   show();
   return () => {
     document.removeEventListener('keydown', onKey);
-    if (live && R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false }); // left halfway after a mistake
+    if (tiles) {
+      if (live) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); }
+      tiles.ctrl.destroy();
+    } else if (live && R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false }); // left halfway after a mistake
   };
 }
 
@@ -232,10 +293,42 @@ function quick(main, ctx, done) {
   let typed = '';
   let live = false;
   let timer = null;
+  let tiles = null;
+  let level = 5;
   function ask(line = '') {
-    w = entryFor(words[0]).word;
+    const e = entryFor(words[0]);
+    w = e.word;
     typed = '';
     live = true;
+    if (tiles) { tiles.ctrl.destroy(); tiles = null; }
+    const { lv, pf } = S.helpNow(childYear());
+    level = lv;
+    const spec = lv < 5 ? Tr.specFor(e, lv, { pf }) : null;
+    if (spec) {
+      const bar = (A.RULES.practice[pf] || A.RULES.practice.normal).quickBar;
+      main.innerHTML = pageHtml(ctx, { id: 'quick', text: G.GAMES.quick.title }, ctx.leftLine(words), (bar ? '<div class="gentlebar" aria-hidden="true"><span data-bar></span></div>' : '') + tileBody({ ...spec, tricky: e.tricky }, lv));
+      tiles = wireTiles(main, spec, e, {
+        lv, pf, onSkip: skip,
+        onRight(p) {
+          live = false;
+          clearTimeout(timer);
+          ctx.record(w, p);
+          words = G.afterPass(words, p.clean);
+          if (!p.clean) { ask(RETRY_LINE); return; }
+          wordDone(ctx, main.querySelector('[data-slot]'), w, p.clean, () => (words.length ? ask() : done()), !words.length);
+          speak(w);
+        },
+      });
+      if (line) tiles.ctrl.say(line);
+      const secs = G.quickSeconds(w);
+      const barEl = main.querySelector('[data-bar]');
+      if (barEl) barEl.style.setProperty('--secs', secs + 's');
+      clearTimeout(timer);
+      timer = setTimeout(() => { if (!live) return; tiles.ctrl.say('Take your time.'); tiles.hearNow(); }, secs * 1000);
+      tiles.hearNow();
+      window.scrollTo(0, 0);
+      return;
+    }
     main.innerHTML = pageHtml(ctx, { id: 'quick', text: G.GAMES.quick.title }, ctx.leftLine(words),
       '<div class="gentlebar" aria-hidden="true"><span data-bar></span></div>'
       + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
@@ -277,20 +370,32 @@ function quick(main, ctx, done) {
     if (!live) return;
     live = false;
     clearTimeout(timer);
+    if (tiles) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); }
     ctx.skip(w);
     words = G.afterSkip(words);
     ask();
   }
   function onKey(e) {
     if (!plainKey(e)) return;
+    if (tiles) {
+      if (!live) return;
+      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); tiles.ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); tiles.ctrl.back(); }
+      return;
+    }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); put(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); del(); } else if (e.key === 'Enter' && live) { e.preventDefault(); submit(); }
   }
   document.addEventListener('keydown', onKey);
   ask();
-  return () => { clearTimeout(timer); document.removeEventListener('keydown', onKey); };
+  return () => {
+    clearTimeout(timer);
+    document.removeEventListener('keydown', onKey);
+    if (tiles) { if (live) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); } tiles.ctrl.destroy(); }
+  };
 }
 
 const PLAY = { missing, unjumble, match, quick };
+/** The games to offer for these words: G.gamesFor for the letter games (a word of one letter has none), the others as before. */
+const offeredGame = (words, id) => !['missing', 'unjumble'].includes(id) || G.gamesFor(words.map(entryFor), {}, [id]).length > 0;
 
 /**
  * Play these games in turn with the group's words (those back again too).
@@ -302,10 +407,15 @@ export function playGames(main, g, { eyebrow, games = G.GAME_IDS, part = '', onD
   let stopped = false;
   const record = (word, pass) => {
     const day = today();
-    S.updateWords((d) => G.recordPass(d, g, word, pass, { id: S.newId(), day, now: Date.now() }));
+    // As G.recordPass, with the tile help a pass carries (lv 1 to 4, h 1 when the tray filled a letter).
+    S.updateWords((d) => {
+      const source = pass.source || 'g';
+      return W.addTry(d, { id: S.newId(), word, day, group: g.id, kind: source === 'm' ? 'p' : W.kindOn(d, g, word, day), tries: pass.tries, peeks: 0, clean: pass.clean, source, now: Date.now(), lv: pass.lv, h: pass.h });
+    });
   };
-  const left = part ? games.filter((id) => !W.stepDay(S.readWords(), g, part + ':' + id)) : [...games];
-  const list = left.length ? left : [...games];
+  const offered = (id) => offeredGame(words, id);
+  const left = (part ? games.filter((id) => !W.stepDay(S.readWords(), g, part + ':' + id)) : [...games]).filter(offered);
+  const list = left.length ? left : games.filter(offered);
   let n = 0;
   function next() {
     if (stopped) return;
@@ -314,7 +424,8 @@ export function playGames(main, g, { eyebrow, games = G.GAME_IDS, part = '', onD
     n += 1;
     const skip = (word) => { const day = today(); S.updateWords((d) => W.addSkip(d, { id: S.newId(), group: g.id, word, day, flow: 'g:' + id, now: Date.now() })); };
     // Today's skipped words wait at the end, here and on another device.
-    const order = () => W.inTurn(S.readWords(), g, G.shuffled(words), today(), 'g:' + id);
+    const pool = words.filter((x) => G.playable(entryFor(x), id)); // a one-letter word is not jumbled or gapped
+    const order = () => W.inTurn(S.readWords(), g, G.shuffled(pool), today(), 'g:' + id);
     const leftLine = (l) => plural(l.length, 'word') + ' to go';
     const ctx = { eyebrow: eyebrow + (list.length > 1 ? ' · game ' + n + ' of ' + list.length : ''), words, record, skip, order, leftLine };
     end = PLAY[id](main, ctx, () => {
@@ -336,7 +447,7 @@ export function gameMode(main, { gid }) {
   if (!g) { location.replace('#/'); return; }
   main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>' + esc(g.name) + '</h1>'
     + '<p class="muted">The same words, any time.</p></div>' + modeSwitch(g, 'game')
-    + '<div class="shortcuts gamecards">' + G.GAME_IDS.map((k) => '<a class="card shortcut" href="' + groupHref(id) + '/game/' + k + '"><span><strong>' + esc(G.GAMES[k].title) + '</strong><br><span class="muted small">' + esc(G.GAMES[k].line) + '</span></span>' + ICON.arrow + '</a>').join('') + '</div>'
+    + '<div class="shortcuts gamecards">' + G.GAME_IDS.filter((k) => offeredGame(W.rows(g), k)).map((k) => '<a class="card shortcut" href="' + groupHref(id) + '/game/' + k + '"><span><strong>' + esc(G.GAMES[k].title) + '</strong><br><span class="muted small">' + esc(G.GAMES[k].line) + '</span></span>' + ICON.arrow + '</a>').join('') + '</div>'
       + '<h2 class="sectionhead">Practise 3 times</h2>' + dotsListHtml(W.allDots(d, g, today()), false)
     + '</section>';
 }

@@ -5,12 +5,15 @@ import * as S from './store.js';
 import * as W from './words-doc.js';
 import { speak, spellOut, stop } from './speech.js';
 import { runSession, summaryHtml } from './play.js';
-import { esc, ICON, picture, chunked, chunkText, boldWord, redact, shuffle, toast, meter, applyMeters } from './ui.js';
+import { esc, ICON, picture, chunked, chunkText, boldWord, shuffle, toast, meter, applyMeters } from './ui.js';
 import { dayStyleHtml, wireDayStyle } from './daystyle.js';
-import { burstHtml, placeBursts } from './celebrate.js';
 import { backAgainFor, hiddenToday } from './words-views.js';
 import { isUnlocked, notFound, chapters } from './front-views.js';
+import { playable } from './games-doc.js';
 import { withoutHidden, DAILY_TIME, DAILY_TIME_CAP, ROW_LINE } from './study-doc.js';
+import * as A from './assess-doc.js';
+import { runCheck } from './assess-views.js';
+import { childYear } from './who.js';
 
 const MAX_PICK = 30;
 
@@ -108,7 +111,8 @@ export function quick(main, { yearId, slug, word }) {
   const single = word ? D.entry(decodeURIComponent(word)) : null;
   if (word && !single) return notFound(main);
   const back = single ? [] : backAgainFor(ch.words.map((x) => x.word));
-  const words = single ? [single] : shuffle([...wordEntries(ch), ...back]);
+  const words = (single ? [single] : shuffle([...wordEntries(ch), ...back])).filter((e) => playable(e, 'flower')); // SB4-WP4: "a" and "I" are not played on a flower
+  if (!words.length) return notFound(main);
   return runSession(main, {
     backAgain: back,
     eyebrow: 'Chapter ' + t.n + ' · Quick game',
@@ -139,7 +143,7 @@ export function practice(main, { yearId, slug }) {
     backAgain: back,
     eyebrow: 'Chapter ' + t.n + ' · Practice',
     title: t.name,
-    words: shuffle([...wordEntries(ch), ...back]),
+    words: shuffle([...wordEntries(ch), ...back]).filter((e) => playable(e, 'flower')), // SB4-WP4
     mode: 'full',
     onFinish: (results) => {
       S.markPractised(ch.id);
@@ -152,94 +156,39 @@ export function practice(main, { yearId, slug }) {
 
 
 /* ---------------------------------------------------------------- Test --- */
-export function test(main, { yearId, slug }) {
-  const from = chapterFrom({ yearId, slug });
+export function test(main, params) {
+  const from = chapterFrom(params);
   if (!from || !isUnlocked(from.ch)) return notFound(main);
   const { ch, base } = from;
   const t = D.chapterTitle(ch);
-  const words = shuffle(wordEntries(ch));
-  const answers = [];
-  let i = 0;
-
-  function ask() {
-    const w = words[i];
-    main.innerHTML = '<section class="wrap page">'
-      + '<div class="pagehead"><span class="eyebrow">Chapter ' + t.n + ' · Test</span><h1>' + esc(t.name) + '</h1></div>'
-      + '<form class="card testcard" novalidate>'
-      + '<span class="progressline">Word ' + (i + 1) + ' of ' + words.length + '</span>'
-      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear the word</button></div>'
-      + '<p><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span> ' + esc(w.meaning.definition) + '</p>'
-      + '<p class="example">' + redact(w.meaning.example, w.word) + '</p>'
-      + '<label class="small muted" for="ans">Type the word</label>'
-      + '<input id="ans" class="answer" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done">'
-      + '<div class="btnrow"><button type="submit" class="btn btn--primary">Check</button></div>'
-      + '</form></section>';
-    const input = main.querySelector('#ans');
-    main.querySelector('[data-hear]').addEventListener('click', () => { speak(w.word); input.focus(); });
-    main.querySelector('form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const typed = input.value.trim();
-      if (!typed) { toast('Type the word first'); input.focus(); return; }
-      check(w, typed);
-    });
-    input.focus();
-    speak(w.word);
-  }
-
-  function check(w, typed) {
-    const right = typed.toLowerCase() === w.word.toLowerCase();
-    answers.push({ entry: w, typed, right });
-    if (right) S.noteCorrect(w.word); else S.noteMissed(w.word, ch.id);
-    const last = i === words.length - 1;
-    main.querySelector('form').outerHTML = '<div class="card result ' + (right ? 'result--good' : 'result--bad') + '">'
-      + '<div class="result__head">' + (right ? '<span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(10, 1.2) + '</span>' : '<span class="result__badge">×</span>')
-      + '<h2>' + (right ? 'Correct' : 'Not quite') + '</h2></div>'
-      + '<div class="result__grid">' + picture(w) + '<div class="stack">'
-      + '<div class="result__word">' + chunked(w) + '</div>'
-      + (right ? '' : '<p>You typed <b>' + esc(typed) + '</b>. It\'s been added to your tricky words.</p>')
-      + '<p class="ipa">' + esc(w.ipa) + '</p></div></div>'
-      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-next>' + (last ? 'See your score' : 'Next word') + ICON.arrow + '</button></div></div>';
-    placeBursts(main);
-    const next = main.querySelector('[data-next]');
-    next.focus();
-    next.addEventListener('click', () => {
-      stop();
-      if (last) finish(); else { i += 1; ask(); window.scrollTo(0, 0); }
-    });
-  }
-
-  function finish() {
-    const score = answers.filter((a) => a.right).length;
-    const before = S.chapterProgress(ch.id).passed;
-    S.recordTest(ch.id, score, words.length);
-    const passed = score === words.length;
-    const chs = D.chapters(yearId);
-    const nextCh = chs[ch.index + 1];
-    const live = D.liveYears();
-    const nextYear = nextCh ? '' : live[live.indexOf(ch.yearId) + 1] || ''; // the last chapter of a year leads on to the next year
-    main.innerHTML = '<section class="wrap page">'
-      + '<div class="pagehead' + (passed ? ' pagehead--pass' : '') + '"><span class="eyebrow">Chapter ' + t.n + ' · Test</span>'
-      + (passed ? '<span class="celebrate passmark" aria-hidden="true"><span class="passmark__badge">' + ICON.star + '</span>' + burstHtml(16, 2) + '</span>' : '')
-      + '<h1>' + (passed ? 'Passed — every word right' : score + ' of ' + words.length + ' right') + '</h1>'
-      + '<p class="muted">' + (passed
-        ? (nextCh && !before ? 'Chapter ' + (t.n + 1) + ' is now open.' : !nextCh && nextYear ? 'You have finished ' + D.years()[ch.yearId].label + '.' : 'Well done.')
-        : 'Get all ' + words.length + ' right to pass. The words you missed are in your tricky words.') + '</p></div>'
-      + '<div class="list">' + answers.map((a) => '<div class="card listrow"><span><strong>' + esc(a.entry.word) + '</strong>'
-        + (a.right ? '' : '<br><span class="muted small">You typed ' + esc(a.typed) + '</span>') + '</span>'
-        + (a.right ? '<span class="pill pill--done">Right</span>' : '<span class="pill pill--warm">Missed</span>') + '</div>').join('') + '</div>'
-      + '<div class="btnrow">'
-      + (passed && nextCh ? '<a class="btn btn--primary" href="' + base.replace(/[^/]+$/, nextCh.slug) + '" data-next-chapter>Next chapter' + ICON.arrow + '</a>' : '')
-      + (passed && !nextCh && nextYear ? '<a class="btn btn--primary" href="' + href(nextYear, D.chapters(nextYear)[0].slug) + '" data-next-year>Start ' + esc(D.years()[nextYear].label) + ICON.arrow + '</a>' : '')
-      + (passed && !nextCh && !nextYear ? '<a class="btn btn--primary" href="#/chapters" data-back-practice>More practice' + ICON.arrow + '</a>' : '')
-      + (!passed ? '<a class="btn btn--primary" href="' + base + '/practice">Practise again</a><a class="btn btn--ghost" href="' + base + '/test" data-retry>Take the test again</a>' : '')
-      + '<a class="btn btn--ghost" href="#/chapters">All chapters</a></div></section>';
-    placeBursts(main);
-    const retry = main.querySelector('[data-retry]');
-    if (retry) retry.addEventListener('click', (e) => { e.preventDefault(); window.dispatchEvent(new HashChangeEvent('hashchange')); });
-  }
-
-  ask();
-  return stop;
+  const year = childYear();
+  const { lv, pf } = S.helpNow(year);
+  const chs = D.chapters(ch.yearId);
+  const nextCh = chs[ch.index + 1];
+  const live = D.liveYears();
+  const nextYear = nextCh ? '' : live[live.indexOf(ch.yearId) + 1] || ''; // the last chapter of a year leads on to the next year
+  // SB4-WP5: the shared runner. Feedback comes at the end; the pass rule, what is stored and the end buttons stay.
+  return runCheck(main, {
+    kind: 'test', scope: {}, showMeaning: true, words: shuffle(wordEntries(ch)), pf, lv, year, backHref: base, title: D.years()[ch.yearId].label + ' · Chapter ' + t.n,
+    save: (a) => { if (a.ok) S.noteCorrect(a.w); else S.noteMissed(a.w, ch.id); },
+    done: (r) => {
+      const passed = A.passes(pf, r.right, r.of);
+      S.recordTest(ch.id, r.right, r.of, {
+        passed,
+        ...(pf !== 'normal' ? { pf } : {}), ...(r.lv < 5 ? { lv: r.lv } : {}),
+        ...(r.hr > 0 ? { hr: r.hr } : {}), ...(r.hn > 0 ? { hn: r.hn } : {}),
+      });
+      return {
+        buttons: [
+          ...(passed && nextCh ? [{ label: 'Next chapter', href: base.replace(/[^/]+$/, nextCh.slug), primary: true, attr: 'data-next-chapter' }] : []),
+          ...(passed && !nextCh && nextYear ? [{ label: 'Start ' + D.years()[nextYear].label, href: href(nextYear, D.chapters(nextYear)[0].slug), primary: true, attr: 'data-next-year' }] : []),
+          ...(passed && !nextCh && !nextYear ? [{ label: 'More practice', href: '#/chapters', primary: true, attr: 'data-back-practice' }] : []),
+          ...(!passed ? [{ label: 'Practise again', href: base + '/practice', primary: true }, { label: 'Take the test again', href: base + '/test', again: true, attr: 'data-retry' }] : []),
+          { label: 'All chapters', href: '#/chapters' },
+        ],
+      };
+    },
+  });
 }
 
 /* ---------------------------------------------------------- Pick words --- */
@@ -338,6 +287,7 @@ export function customPlay(main) {
     mode: 'mini',
     onFinish: (results) => {
       for (const r of results) {
+        if (r.tiles) continue; // a tiled round is not a spelling from memory: it does not mark a word tricky
         if (r.won) S.noteCorrect(r.entry.word); else S.noteMissed(r.entry.word, r.entry.chapterId);
       }
       const missed = results.filter((r) => !r.won).map((r) => r.entry.word);

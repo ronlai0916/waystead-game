@@ -65,13 +65,14 @@ export async function listChildren(api) {
   return r.ok && r.data && Array.isArray(r.data.children) ? { children: r.data.children } : { problem: problemOf(r) };
 }
 
-/** { words, progress, version } for a child of this adult, or { problem }. */
+/** { words, setup, progress, version } for a child of this adult, or { problem }. */
 export async function readChild(api, id) {
   const r = await api.game(id);
   if (!r.ok || !r.data || typeof r.data.items !== 'object') return { problem: problemOf(r) };
   const item = r.data.items[W.DOC_KEY];
   const p = r.data.items.progress;
-  return { words: W.normalise(item ? item.value : null), progress: normaliseProgress(p ? p.value : null), version: item ? item.version : 0 };
+  const words = W.normalise(item ? item.value : null);
+  return { words, setup: W.setupOf(words), progress: normaliseProgress(p ? p.value : null), version: item ? item.version : 0 };
 }
 
 /**
@@ -95,4 +96,15 @@ export async function changeWords(api, id, change, { tries = 4, now = () => Date
     updated = true;
   }
   return { problem: 'busy' };
+}
+
+/**
+ * Change the child's setup (SB4): change(setup) answers { setup } or { error }. It is kept inside the child's words
+ * value, so this is changeWords with the same 409 retry and the same answers ({ ok, doc, updated }, { error }, { problem }).
+ */
+export function changeSetup(api, id, change, opts) {
+  return changeWords(api, id, (words) => {
+    const r = change(W.setupOf(words));
+    return r.error ? { error: r.error } : { doc: W.withSetup(words, r.setup) };
+  }, opts);
 }

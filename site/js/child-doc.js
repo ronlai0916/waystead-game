@@ -6,6 +6,9 @@
 // fewer; an audio button says "Hear it" (the word's own button: "Hear the word").
 import * as W from './words-doc.js';
 import * as St from './study-doc.js';
+import * as Su from './setup-doc.js';
+import * as P from './progress-doc.js';
+import * as A from './assess-doc.js';
 
 export const CHILD_TIME = 'About 15 minutes';
 export const SAVED_LINE = 'Your place is saved.';
@@ -16,6 +19,7 @@ export const PEEK_HINT = 'Peeking starts your count again.';
 export const PEEKED_LINE = 'Peeked. Start your count again.';
 export const SPELL_INSTRUCTION = 'Listen, then type the word.';
 export const HELLO_INSTRUCTION = 'Meet this word. Hear it.';
+export const QUIZ_ROW = 'Try a quick quiz';
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 /** "Tuesday", for a day like 2026-11-17. */
@@ -198,4 +202,19 @@ export function weekChoice(d, today, chosenSaved = '') {
     group, chosen: !!mine, next: next && allowed ? { id: next.g.id, name: next.g.name } : null, stale: !!chosen && !mine, weeks, canSwitch: allowed && weeks.length >= 2, allowed,
     due: info.filter((x) => x.due && (!group || x.g.id !== group.id)).map((x) => ({ id: x.g.id, name: x.g.name })),
   };
+}
+
+// ---- the big test / exam on the home (SB4-WP5) ---------------------------------------------
+/**
+ * The one quiet row on a child's home for a test a grown-up set: the earliest live one that is ready today
+ * (its date has come and it is not done, or was reopened), else null. `setup` is the child's setup, `progress` their
+ * progress doc. Nothing when the grown-up has turned exams off. Pure.
+ */
+export function examLine(setup, progress, today, year, pf) {
+  if (!Su.offers(setup).exam) return null;
+  for (const e of Su.liveExams(setup)) {
+    if (P.examState(progress, e.id, e, today).state !== 'ready') continue;
+    return { eid: e.id, line: A.examHomeLine(A.kindName('exam', pf, year)), href: '#/words/exam/' + encodeURIComponent(e.id) };
+  }
+  return null;
 }

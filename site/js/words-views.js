@@ -12,9 +12,13 @@ import { esc, ICON, keyboard, shuffle, toast, dotsHtml, rowCountHtml, inARowHtml
 import * as C from './child-doc.js';
 import * as St from './study-doc.js';
 import { stepHref, stripHtml, comeBackHref, comeBackHtml } from './study-views.js';
-import { findEntry } from './word-info.js';
+import { findEntry, entryFor } from './word-info.js';
 import { getWeek, setWeek } from './week-choice.js';
 import { childYear } from './who.js';
+import * as Tr from './tray.js';
+import { hearInSentence, canSentence } from './sentence.js';
+import * as A from './assess-doc.js';
+import * as AV from './assess-views.js';
 
 const PEEK_MS = 2000;
 const AGAIN_MS = 1600; // how long a finished word stays before it comes back
@@ -170,6 +174,11 @@ function fixupList(d, g, day) {
 
 /** The signed-in player's role as the page chrome knows it: only a grown-up may delete a week (SB3-G). */
 const roleNow = () => (document.body.classList.contains('is-adult') ? 'adult' : document.body.classList.contains('is-child') ? 'child' : 'unknown');
+/** SB4-WP5: a quiet "Try a quick quiz" once Practice day is done, if the grown-up allows it, and never while this week's test is due. */
+function quizRow(d, g, day, job) {
+  if (job === 'test' || !St.doneDay(d, g, 'practice') || !S.helpNow(childYear()).offer.quiz) return '';
+  return '<p class="quizrow"><a class="linkbtn" href="' + groupHref(g.id) + '/quiz" data-quizrow>' + C.QUIZ_ROW + '</a></p>';
+}
 function drawGroup(main, g, others = []) {
   const d = S.readWords();
   const day = today();
@@ -186,6 +195,7 @@ function drawGroup(main, g, others = []) {
     + modeSwitch(g, 'study')
     + studyCard(d, g, day)
     + stripHtml(St.studyState(d, g, day).steps, day)
+    + quizRow(d, g, day, job)
     + (job === 'fixups' || job === 'fixed-today' ? fixupList(d, g, day) : '')
     + (testing ? '' : comeBackHtml(g, W.comeBack(d, g, day)))
     + (after ? resultsCard(d, g) : '')
@@ -362,20 +372,40 @@ export function spellWord(main, { gid, n }) {
   const flow = kind;
   const list = fixing ? W.fixups(d0, g) : W.rows(g);
 
+  // SB4-WP4: a child on level 1 to 4 spells with the letter tray; level 5 (almost everyone) keeps today's keyboard page exactly.
+  const { lv, pf } = S.helpNow(childYear());
+  const entry = findEntry(w) || { word: w, chunks: [w] };
+  const spec = lv < 5 ? Tr.specFor(entry, lv, { pf }) : null;
+  const rules = A.RULES.practice[pf] || A.RULES.practice.normal;
+  const hearNow = () => (spec && rules.sentence === 'auto' && canSentence(entry) ? hearInSentence(entry) : speak(w));
+  let ctrl = null;
+  let recorded = false; // this tile pass is already saved (the pause before the next one)
   let run = R.newRun(w);
   let hold = false; // a peek on show, or the pause before the next spelling
   let done = false;
   let timer = null;
   const count = () => W.sessionCount(S.readWords(), g, w, day, flow);
 
-  main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead"><span class="eyebrow">Word ' + (list.indexOf(w) + 1) + ' of ' + list.length + (g.back.includes(w) ? ' · back again' : '') + '</span>'
-    + '<h1>' + C.SPELL_INSTRUCTION + '</h1><button type="button" class="linkbtn linkbtn--start" data-instruct>Read it to me</button><p class="rowcount" data-row></p></div>'
-    + '<p class="peek" data-peek aria-live="polite"></p>'
-    + boxesHtml(w)
-    + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
-    + '<div data-slot><div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
-    + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
-    + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>' + keyboard() + '</div></section>';
+  const eyebrow = '<span class="eyebrow">Word ' + (list.indexOf(w) + 1) + ' of ' + list.length + (g.back.includes(w) ? ' · back again' : '') + '</span>';
+  if (spec) {
+    main.innerHTML = '<section class="wrap page spellpage tilepage"><div class="pagehead">' + eyebrow + '<h1 class="sr">Spell the word</h1><p class="rowcount" data-row></p></div>'
+      + Tr.lineHtml(Tr.instructionFor(lv), Tr.moreFor(spec, lv))
+      + '<p class="peek" data-peek aria-live="polite"></p>'
+      + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: entry.tricky }) + '<button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button></div>'
+      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>' + Tr.EYE_ICON + 'Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+      + '<div data-slot>' + Tr.colHtml(Tr.trayHtml(spec),
+        '<div class="btnrow btnrow--center testbtns testbtns--tray"><button type="button" class="btn btn--primary" data-check disabled>' + TICK + 'Check</button>'
+        + '<button type="button" class="btn btn--ghost" data-skip>Skip for now<span class="sr">. It comes back later.</span></button></div>') + '</div></section>';
+  } else {
+    main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead">' + eyebrow
+      + '<h1>' + C.SPELL_INSTRUCTION + '</h1><button type="button" class="linkbtn linkbtn--start" data-instruct>Read it to me</button><p class="rowcount" data-row></p></div>'
+      + '<p class="peek" data-peek aria-live="polite"></p>'
+      + boxesHtml(w)
+      + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
+      + '<div data-slot><div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
+      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+      + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>' + keyboard() + '</div></section>';
+  }
 
   const line = (s) => { main.querySelector('[data-line]').textContent = s; };
   const showRow = (n2) => { main.querySelector('[data-row]').innerHTML = inARowHtml(n2); };
@@ -383,7 +413,10 @@ export function spellWord(main, { gid, n }) {
   const markNext = () => {
     main.querySelectorAll('[data-box]').forEach((b) => b.classList.toggle('is-next', Number(b.dataset.box) === run.at));
   };
-  const record = (r, clean) => S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w, day, group: id, kind, tries: r.tries, peeks: r.peeks, clean, now: Date.now() }));
+  const record = (r, clean, extra = {}) => S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w, day, group: id, kind, tries: r.tries, peeks: r.peeks, clean, now: Date.now(), ...extra }));
+  // A tile pass: t = the letters not right at each Check, summed; clean only when the first Check was right with no peek and no fill.
+  const tileRun = () => { const s = ctrl.state(); return { tries: s.tries, peeks: run.peeks, helped: s.helped }; };
+  const recordTiles = () => { const r = tileRun(); const clean = !r.tries && !r.peeks && !r.helped; record(r, clean, { lv, ...(r.helped ? { h: 1 } : {}) }); return clean; };
   const nextHref = () => { const left = W.queue(S.readWords(), g, day, flow).filter((x) => x !== w); return left.length ? spellHref(g, left[0]) : ''; };
 
   function finish() {
@@ -397,27 +430,43 @@ export function spellWord(main, { gid, n }) {
       + '<div class="btnrow"><a class="btn btn--primary" href="' + (next || groupHref(id)) + '" data-next>' + (next ? 'Next word' : 'Back to my words') + ICON.arrow + '</a>'
       + (next ? '<a class="btn btn--ghost" href="' + groupHref(id) + '">Back to my words</a>' : '') + '</div></div>';
     placeBursts(main);
-    line('');
+    if (spec) { const pr = main.querySelector('.peekrow'); if (pr) pr.remove(); } else line('');
     main.querySelector('[data-next]').focus({ preventScroll: true });
   }
 
   // The same word, straight back: after a slip, or until it has its 3 in a row.
   function nextPass(say) {
     hold = true;
-    line(say);
+    if (!spec) line(say);
     timer = setTimeout(() => {
       hold = false;
       run = R.again(run);
-      clearBoxes();
-      markNext();
-      line('');
+      if (spec) { recorded = false; ctrl.reset(); ctrl.say(say); } else {
+        clearBoxes();
+        markNext();
+        line('');
+      }
       main.querySelector('[data-hint]').textContent = C.PEEK_HINT;
-      speak(w);
+      hearNow();
     }, AGAIN_MS);
   }
   function endPass() {
     const clean = R.isClean(run);
     record(run, clean);
+    const n2 = count();
+    showRow(n2);
+    if (n2 >= W.ROW_NEEDED && clean) { finish(); return; }
+    nextPass(clean ? 'Clean! Now again, all on your own.' : RETRY_LINE);
+  }
+
+  // Tiles: Check once every gap is full.
+  function onCheck() {
+    if (hold || done) return;
+    const r = ctrl.check();
+    if (!r) return;
+    if (!r.right) { showRow(0); return; }
+    const clean = recordTiles();
+    recorded = true;
     const n2 = count();
     showRow(n2);
     if (n2 >= W.ROW_NEEDED && clean) { finish(); return; }
@@ -444,17 +493,37 @@ export function spellWord(main, { gid, n }) {
 
   function onKey(e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (spec) {
+      if (hold || done) return;
+      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); ctrl.back(); }
+      return;
+    }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); letter(e.key); }
   }
   // Leaving halfway after a mistake or a peek still counts as this word's try.
   function leave() {
+    if (spec) {
+      if (done || !ctrl || recorded) return;
+      const r = tileRun();
+      if (r.tries || r.peeks || r.helped) { record(r, false, { lv, ...(r.helped ? { h: 1 } : {}) }); run = R.again(run); ctrl.reset(); }
+      return;
+    }
     if (!done && R.mustRecord(run)) { record(run, false); run = R.again(run); }
   }
   document.addEventListener('keydown', onKey);
   window.addEventListener('pagehide', leave);
-  main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => letter(k.dataset.letter)));
-  main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
-  main.querySelector('[data-instruct]').addEventListener('click', () => sayLine(C.SPELL_INSTRUCTION));
+  if (spec) {
+    ctrl = Tr.mountTray(main, spec, {
+      glowAfter: rules.glowAfter, xs: pf === 'sen',
+      onChange: (s) => { const c = main.querySelector('[data-check]'); if (c) c.disabled = !s.full || s.right; },
+    });
+    main.querySelector('[data-check]').addEventListener('click', onCheck);
+    main.querySelector('[data-hear]').addEventListener('click', () => hearNow());
+  } else {
+    main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => letter(k.dataset.letter)));
+    main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
+    main.querySelector('[data-instruct]').addEventListener('click', () => sayLine(C.SPELL_INSTRUCTION));
+  }
   main.querySelector('[data-skip]').addEventListener('click', () => {
     if (done) return;
     leave();
@@ -471,18 +540,21 @@ export function spellWord(main, { gid, n }) {
     hold = true;
     peekBtn.disabled = true;
     main.querySelector('[data-peek]').textContent = w;
+    if (ctrl) ctrl.lock(true);
     timer = setTimeout(() => {
       hold = false;
       peekBtn.disabled = false;
       main.querySelector('[data-peek]').textContent = '';
-    }, PEEK_MS);
+      if (ctrl) ctrl.lock(false);
+    }, spec ? 3000 : PEEK_MS);
   });
   showRow(count());
-  markNext();
-  speak(w);
+  if (!spec) markNext();
+  hearNow();
   return () => {
     clearTimeout(timer);
     leave();
+    if (ctrl) ctrl.destroy();
     document.removeEventListener('keydown', onKey);
     window.removeEventListener('pagehide', leave);
     stop();
@@ -498,46 +570,26 @@ export function testDay(main, { gid }) {
   const day = today();
   if (W.jobFor(d0, g, day) !== 'test') { toGroup(id); return; }
   const total = g.words.length;
-  const t = R.createTest(shuffle(W.testLeft(d0, g)));
-  let typed = '';
-
-  function ask() {
-    const w = t.current();
-    typed = '';
-    main.innerHTML = '<section class="wrap page spellpage"><div class="pagehead"><span class="eyebrow">Word ' + (total - t.remaining() + 1) + ' of ' + total + '</span>'
-      + '<h1>' + C.SPELL_INSTRUCTION + '</h1><button type="button" class="linkbtn linkbtn--start" data-instruct>Read it to me</button></div>'
-      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
-      + '<p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
-      + keyboard({ del: true })
-      + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--primary btn--wide" data-next>Next' + ICON.arrow + '</button></div></section>';
-    main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
-    main.querySelector('[data-instruct]').addEventListener('click', () => sayLine(C.SPELL_INSTRUCTION));
-    main.querySelector('[data-del]').addEventListener('click', del);
-    main.querySelector('[data-next]').addEventListener('click', next);
-    main.querySelectorAll('.key[data-letter]').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
-    speak(w);
-  }
-  const show = () => { main.querySelector('[data-answer]').textContent = typed; };
-  function put(L) { if (typed.length < 24) { typed += L.toLowerCase(); show(); } }
-  function del() { typed = typed.slice(0, -1); show(); }
-  function next() {
-    const w = t.current();
-    if (!w) return;
-    if (!typed) { toast('Type the word first'); return; }
-    const right = R.checkAnswer(w, typed);
-    // Saved now, so one go stays one go if the test is left halfway. Nothing is shown until the end.
-    S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w, day, group: id, kind: 't', tries: right ? 0 : 1, peeks: 0, clean: right, now: Date.now() }));
-    const e = D.entry(w);
-    if (e) { if (right) S.noteCorrect(w); else S.noteMissed(w, e.chapterId); }
-    if (t.answer(typed).next) { ask(); window.scrollTo(0, 0); } else location.hash = groupHref(id);
-  }
-  function onKey(e) {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
-    if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); put(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); del(); } else if (e.key === 'Enter') { e.preventDefault(); next(); }
-  }
-  document.addEventListener('keydown', onKey);
-  ask();
-  return () => { document.removeEventListener('keydown', onKey); stop(); };
+  const left = shuffle(W.testLeft(d0, g)); // a test left halfway carries on with the words still to do
+  const year = childYear();
+  const { lv, pf } = S.helpNow(year);
+  // SB4-WP5: the shared runner. One go at each word, saved at once, so one go stays one go if the test is left halfway.
+  return AV.runCheck(main, {
+    kind: 'test', scope: { weekly: true }, words: left.map(entryFor), pf, lv, year, backHref: groupHref(id), title: g.name,
+    base: { done: total - left.length, of: total },
+    save: (a) => {
+      S.updateWords((d) => W.addTry(d, { id: S.newId(), word: a.w, day, group: id, kind: 't', tries: a.ok ? 0 : 1, peeks: 0, clean: !!a.ok, now: Date.now(), lv: a.lv, hr: a.hr, hn: a.hn, pf }));
+      const e = D.entry(a.w);
+      if (e) { if (a.ok) S.noteCorrect(a.w); else S.noteMissed(a.w, e.chapterId); }
+    },
+    done: () => {
+      const res = W.testResults(S.readWords(), g);
+      return {
+        right: res.filter((x) => x.result && x.result.right).length, of: total, miss: res.filter((x) => x.result && !x.result.right).map((x) => x.word),
+        buttons: [{ label: 'Back to my words', href: groupHref(id), primary: true }],
+      };
+    },
+  });
 }
 
 // ---- the numbers -----------------------------------------------------------------

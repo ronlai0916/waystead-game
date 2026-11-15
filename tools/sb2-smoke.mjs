@@ -514,8 +514,10 @@ async function week() {
     await key('Enter');
     await sleep(50);
   }
-  await until('location.hash.endsWith("/g1")', 'the results');
-  ok(/3 of 4 right/.test(await text()), 'three of four right: ' + await text());
+  await until('document.querySelector("[data-assess=end]")', 'the results');
+  ok(/3 of 4/.test(await text()), 'three of four right: ' + await text());
+  await go('#/words/g/g1');
+  await until('/3 of 4 right in the test/.test(document.querySelector("main").innerText)', 'the results card');
 
   step('Day 7: Mend and keep');
   await open(plus(6), '#/');
@@ -2140,18 +2142,18 @@ const KB_BASE = {
   "child practice night 820x1180": [160,903,500,264,46,56],
   "child practice night 834x1194": [167,917,500,264,46,56],
   "child practice night 1920x1080": [710,803,500,264,46,56],
-  "child test garden 390x844": [6,481.7,378,264,35.1,56],
-  "child test garden 768x1024": [134,661.7,500,264,46,56],
-  "child test garden 1024x1366": [262,1003.7,500,264,46,56],
-  "child test garden 820x1180": [160,817.7,500,264,46,56],
-  "child test garden 834x1194": [167,831.7,500,264,46,56],
-  "child test garden 1920x1080": [710,717.7,500,264,46,56],
-  "child test night 390x844": [6,478.2,378,264,35.1,56],
-  "child test night 768x1024": [134,658.2,500,264,46,56],
-  "child test night 1024x1366": [262,1000.2,500,264,46,56],
-  "child test night 820x1180": [160,814.2,500,264,46,56],
-  "child test night 834x1194": [167,828.2,500,264,46,56],
-  "child test night 1920x1080": [710,714.2,500,264,46,56],
+  "child test garden 390x844": [6,485.7,378,264,35.1,56],
+  "child test garden 768x1024": [134,665.7,500,264,46,56],
+  "child test garden 1024x1366": [262,1007.7,500,264,46,56],
+  "child test garden 820x1180": [160,821.7,500,264,46,56],
+  "child test garden 834x1194": [167,835.7,500,264,46,56],
+  "child test garden 1920x1080": [710,721.7,500,264,46,56],
+  "child test night 390x844": [6,482.2,378,264,35.1,56],
+  "child test night 768x1024": [134,662.2,500,264,46,56],
+  "child test night 1024x1366": [262,1004.2,500,264,46,56],
+  "child test night 820x1180": [160,818.2,500,264,46,56],
+  "child test night 834x1194": [167,832.2,500,264,46,56],
+  "child test night 1920x1080": [710,718.2,500,264,46,56],
   "child quick garden 390x844": [6,485.7,378,264,35.1,56],
   "child quick garden 768x1024": [134,665.7,500,264,46,56],
   "child quick garden 1024x1366": [262,1007.7,500,264,46,56],
@@ -2200,18 +2202,18 @@ const KB_BASE = {
   "adult practice night 820x1180": [146,560.5,528,176,46,54],
   "adult practice night 834x1194": [153,560.5,528,176,46,54],
   "adult practice night 1920x1080": [696,560.5,528,176,46,54],
-  "adult test garden 390x844": [16,334.2,358,154.4,31.3,46.8],
-  "adult test garden 768x1024": [120,355.5,528,176,46,54],
-  "adult test garden 1024x1366": [248,355.5,528,176,46,54],
-  "adult test garden 820x1180": [146,355.5,528,176,46,54],
-  "adult test garden 834x1194": [153,355.5,528,176,46,54],
-  "adult test garden 1920x1080": [696,355.5,528,176,46,54],
-  "adult test night 390x844": [16,329.2,358,154.4,31.3,46.8],
-  "adult test night 768x1024": [120,350.5,528,176,46,54],
-  "adult test night 1024x1366": [248,350.5,528,176,46,54],
-  "adult test night 820x1180": [146,350.5,528,176,46,54],
-  "adult test night 834x1194": [153,350.5,528,176,46,54],
-  "adult test night 1920x1080": [696,350.5,528,176,46,54],
+  "adult test garden 390x844": [16,403.1,358,154.4,31.3,46.8],
+  "adult test garden 768x1024": [120,424.5,528,176,46,54],
+  "adult test garden 1024x1366": [248,424.5,528,176,46,54],
+  "adult test garden 820x1180": [146,424.5,528,176,46,54],
+  "adult test garden 834x1194": [153,424.5,528,176,46,54],
+  "adult test garden 1920x1080": [696,424.5,528,176,46,54],
+  "adult test night 390x844": [16,396.7,358,154.4,31.3,46.8],
+  "adult test night 768x1024": [112.5,418,528,176,46,54],
+  "adult test night 1024x1366": [248,418,528,176,46,54],
+  "adult test night 820x1180": [146,418,528,176,46,54],
+  "adult test night 834x1194": [153,418,528,176,46,54],
+  "adult test night 1920x1080": [696,418,528,176,46,54],
   "adult quick garden 390x844": [16,412,358,154.4,31.3,46.8],
   "adult quick garden 768x1024": [120,433.4,528,176,46,54],
   "adult quick garden 1024x1366": [248,433.4,528,176,46,54],

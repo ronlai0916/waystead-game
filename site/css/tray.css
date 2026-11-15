@@ -1,0 +1,146 @@
+/* SB4-WP4: the letter-tile tray, its boxes and the line card. Colours are tokens only (garden, paint, night each define them).
+   The tray reuses .keyboard / .keyboard-row, so the two-column rules for a wide but short screen apply with no new media query.
+   Loaded after child.css: the rules below are scoped under .keyboard--tray / .tileboxes / .tileline / .keyboard--pad. */
+
+.keyboard--tray, .keyboard--pad { --tw: 52px; --th: 60px; --tgap: 8px; --tfs: 30px; }
+@media (min-width: 768px) { .keyboard--tray, .keyboard--pad { --tw: 60px; --th: 68px; --tgap: 12px; --tfs: 34px; } }
+
+body.is-child .keyboard--tray, body.is-child .keyboard--pad { gap: var(--tgap); }
+body.is-child .keyboard--tray::before { display: none; }
+body.is-child .keyboard--tray { padding: 10px 6px; background: var(--tray-bg); border-radius: var(--r); box-sizing: border-box; }
+body.is-child .keyboard--tray .keyboard-row, body.is-child .keyboard--pad .keyboard-row { gap: var(--tgap); justify-content: center; }
+.keyboard--tray { gap: var(--tgap); align-items: center; background: var(--tray-bg); border-radius: var(--r); padding: 10px 6px; box-sizing: border-box; }
+.keyboard--tray .keyboard-row { gap: var(--tgap); justify-content: center; }
+@media (max-width: 480px) { body.is-child .spellpage .keyboard--tray { width: 100%; margin-inline: auto; } }
+/* Under 360 px wide (a 320 px phone): a smaller page margin and tray, at most 5 tiles to a row (tile 48 wide), nothing scrolls sideways. */
+@media (max-width: 359.98px) {
+  body.is-child main > section.wrap.page.tilepage, body.is-child main > section.wrap.page.game { padding-left: 12px; padding-right: 12px; }
+  .keyboard--tray, .keyboard--pad { --tw: 48px; --th: 56px; --tgap: 6px; --tfs: 28px; }
+  body.is-child .keyboard--tray { padding: 8px 4px; }
+  .tileboxes.tileboxes.tileboxes { --lmin: 20px; --lg: 2px; } /* a 12-letter word on a 320 px phone: the only place a box goes under 26 px, so nothing scrolls sideways */
+}
+/* The tray and the buttons under it travel together (portrait: at the foot of the screen, 24 px below the Peek line). */
+.traycol { margin-top: auto; padding-top: 24px; width: 100%; box-sizing: border-box; }
+.traycol > .keyboard--tray { margin: 0; width: 100%; max-width: none; }
+.ltile, .lgap, .tray-back { touch-action: manipulation; }
+
+.keyboard--tray .ltile {
+  flex: none; width: var(--tw); height: var(--th); padding: 0; box-sizing: border-box; display: inline-grid; place-items: center;
+  border: 2px solid var(--tile-edge); border-radius: 12px; background: var(--tile-bg); color: var(--tile-fg);
+  font-family: var(--f-ipa); font-weight: 700; font-size: var(--tfs); line-height: 1; cursor: pointer;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+}
+.keyboard--tray .ltile:active:not(:disabled) { filter: brightness(0.92); }
+.keyboard--tray .ltile.is-used, .keyboard--tray .ltile.is-used:disabled {
+  background: transparent; border-style: dashed; box-shadow: none; opacity: 0.3; color: transparent; cursor: default;
+}
+.keyboard--tray .ltile.is-glow { box-shadow: 0 0 0 4px var(--tray-bg), 0 0 0 7px var(--glow); }
+.keyboard--tray .ltile:disabled:not(.is-used) { opacity: 0.55; cursor: default; }
+.ltile--fly {
+  position: fixed; z-index: 40; pointer-events: none; margin: 0; width: var(--tw, 52px); height: var(--th, 60px); box-sizing: border-box; display: grid; place-items: center;
+  border: 2px solid var(--tile-edge); border-radius: 12px; background: var(--tile-bg); color: var(--tile-fg); font-family: var(--f-ipa); font-weight: 700; font-size: var(--tfs, 30px);
+}
+.tray-actions { margin-top: 4px; }
+.keyboard--tray .tray-back { min-height: 56px; min-width: 160px; }
+.keyboard--tray .tray-back svg { width: 24px; height: 24px; }
+.testbtns--tray, main > .page.spellpage > [data-slot] > .traycol > .btnrow.testbtns--tray { margin-top: 24px; }
+.testbtns--tray .btn, .testbtns--tray .btn:first-child { min-height: 56px; height: 56px; min-width: 48px; }
+.testbtns--tray .btn:first-child { flex: 1; }
+
+/* The letter boxes: the word whole, on ONE line, never wrapped. The box width comes from the box row's own width (a container query):
+   (row - gaps) / letters, at most --lmax for the word's size class, so 12 letters (accidentally) fit a 390 px phone at about 26 px. */
+.tileboxes {
+  --n: 12; --lmax: 40px; --lh: 52px; --lfs: 34px; --lg: 3px; container-type: inline-size; width: 100%;
+  --lw: max(var(--lmin, 26px), min(var(--lmax), calc((100cqw - (var(--n) - 1) * var(--lg)) / var(--n))));
+  display: flex; flex-wrap: nowrap; gap: var(--lg); justify-content: center; margin: 4px 0 8px; font-family: var(--f-ipa);
+}
+.tileboxes.tb-40 { --lmax: 40px; --lg: 4px; }
+.tileboxes.tb-36 { --lmax: 36px; --lg: 4px; }
+.tileboxes.tb-32 { --lmax: 32px; --lfs: 30px; }
+.tileboxes.tb-28 { --lmax: 28px; --lfs: 26px; }
+.tileboxes.tb-26 { --lmax: 26px; --lfs: 24px; }
+@media (min-width: 768px) {
+  .tileboxes { --lh: 64px; --lfs: 38px; }
+  .tileboxes.tb-40 { --lmax: 52px; --lg: 8px; }
+  .tileboxes.tb-36 { --lmax: 50px; --lg: 8px; }
+  .tileboxes.tb-32 { --lmax: 48px; --lg: 6px; }
+  .tileboxes.tb-28 { --lmax: 46px; --lfs: 34px; --lg: 6px; }
+  .tileboxes.tb-26 { --lmax: 44px; --lfs: 32px; --lg: 6px; }
+}
+.tileboxes.tn-1 { --n: 1; } .tileboxes.tn-2 { --n: 2; } .tileboxes.tn-3 { --n: 3; } .tileboxes.tn-4 { --n: 4; } .tileboxes.tn-5 { --n: 5; }
+.tileboxes.tn-6 { --n: 6; } .tileboxes.tn-7 { --n: 7; } .tileboxes.tn-8 { --n: 8; } .tileboxes.tn-9 { --n: 9; } .tileboxes.tn-10 { --n: 10; }
+.tileboxes.tn-11 { --n: 11; } .tileboxes.tn-12 { --n: 12; } .tileboxes.tn-13 { --n: 13; } .tileboxes.tn-14 { --n: 14; } .tileboxes.tn-15 { --n: 15; }
+.tileboxes.tn-16 { --n: 16; } .tileboxes.tn-17 { --n: 17; } .tileboxes.tn-18 { --n: 18; } .tileboxes.tn-19 { --n: 19; } .tileboxes.tn-20 { --n: 20; }
+.tileboxes .lshown, .tileboxes .lgap {
+  flex: none; width: var(--lw); height: var(--lh); box-sizing: border-box; display: inline-grid; place-items: center; padding: 0;
+  border-radius: 9px; font-family: var(--f-ipa); font-weight: 700; font-size: min(var(--lfs), calc(var(--lw) * 0.82)); line-height: 1; color: var(--text);
+}
+.tileboxes .lshown { background: var(--surface); border: 2px solid var(--line); box-shadow: none; }
+.tileboxes .lgap { background: var(--gap-bg); border: 2px dashed var(--gap-edge); }
+.tileboxes .lgap.is-filled { background: var(--placed-bg); color: var(--placed-fg); border: 2px solid var(--gap-edge); }
+.tileboxes .lgap:disabled { opacity: 1; cursor: default; }
+.tileboxes .lgap.is-filled:not(:disabled) { cursor: pointer; }
+.tileboxes .lgap.is-next { border-width: 4px; border-style: dashed; }
+.tileboxes .lgap.is-pulse { border-width: 4px; animation: lgap-pulse 280ms ease-out 1; }
+.tileboxes .lgap.is-right { background: var(--good-soft); border: 2px solid var(--good); color: var(--text); }
+.tileboxes .lgap.is-arriving { color: transparent; }
+.tileboxes .lgap.is-pop { animation: lgap-pop 200ms ease-out 1; }
+.tileboxes__rail { display: inline-flex; gap: var(--lg); padding-bottom: 6px; border-bottom: 4px solid var(--sb); }
+@keyframes lgap-pop { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@keyframes lgap-pulse { 0% { box-shadow: 0 0 0 0 var(--gap-edge); } 100% { box-shadow: 0 0 0 8px transparent; } }
+@keyframes lgap-fade { from { opacity: 0; } to { opacity: 1; } }
+/* Reduced motion, and Extra support: no movement, a 100 ms fade only. Nothing flashes. */
+@media (prefers-reduced-motion: reduce) {
+  .tileboxes .lgap.is-pop, .tileboxes .lgap.is-pulse { animation: lgap-fade 100ms linear 1 !important; transform: none !important; }
+}
+body.is-xs .tileboxes .lgap.is-pop, body.is-xs .tileboxes .lgap.is-pulse { animation: lgap-fade 100ms linear 1 !important; transform: none !important; }
+
+/* The line card: the instruction or what happened, with its Hear button. Right: a tick, text and leaf green. Not yet: arrow, text and soft honey. */
+.tileline { display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 16px; min-height: 68px; box-sizing: border-box; border-radius: var(--r); background: var(--surface); border: var(--card-border); text-align: left; }
+.tileline__body { flex: 1; min-width: 0; display: flex; align-items: center; min-height: 2.5em; } /* room for two lines, so a line that wraps moves nothing */
+.tileline__text { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.3rem; line-height: 1.25; }
+.tileline__icon { flex: none; display: inline-grid; }
+.tileline__icon:empty { display: none; }
+.tileline__icon svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.tileline--soft { background: var(--soft-bg); border: 2px solid var(--soft-fg); color: var(--soft-fg); }
+.tileline--soft .tileline__text { color: var(--soft-fg); }
+.tileline--ok { background: var(--good-soft); border: 2px solid var(--good); color: var(--good); }
+.tileline--ok .tileline__text { color: var(--good); }
+.tilepage .peek { margin: 0; }
+/* The peeked word: Andika, big, in the word's place. */
+main > .page.spellpage.tilepage .peek { font-family: var(--f-ipa); font-size: 2rem; line-height: 44px; min-height: 44px; font-weight: 700; }
+.tileword { display: grid; gap: 12px; justify-items: stretch; padding: 12px 4px; }
+.tileword .tileboxes { justify-self: center; }
+.tileword .btn { width: 100%; min-height: 56px; }
+.tilepage .peekrow { margin-top: 24px; }
+.tilepage .peekrow .btn svg { width: 22px; height: 22px; }
+.tilepage .peekrow .btn { min-height: 56px; min-width: 48px; }
+.tilepage .tileline { margin-bottom: 8px; }
+
+/* The flower game's letters (levels 1 to 4): bigger keys, rows of at most 6; a letter that is not in the word greys out, no strike. */
+body.is-child .keyboard.keyboard--pad .key, .keyboard.keyboard--pad .key { width: var(--tw); height: var(--th); font-size: var(--tfs); flex: none; }
+.keyboard--pad .key.miss { text-decoration: none; }
+.keyboard--pad .keyboard-row { gap: var(--tgap); }
+
+@media (min-width: 820px) and (max-height: 1000px) {
+  body.is-child main > section.wrap.page .keyboard--pad { width: min(520px, 58vw); }
+  /* The tray column: the tray with Check and Skip directly under it, in the second column. */
+  main > section.wrap.page.spellpage > [data-slot] > .traycol {
+    grid-column: 2; grid-row: 1 / 12; align-self: end; justify-self: start; width: min(520px, 58vw); max-width: none; margin: 0 0 0 24px; padding-top: 0;
+    position: sticky; bottom: 8px;
+  }
+  main > section.wrap.page.spellpage > [data-slot] > .traycol > .keyboard--tray { position: static; margin: 0; width: 100%; max-width: none; }
+  main > section.wrap.page.spellpage > [data-slot] > .traycol > .testbtns--tray { margin: 12px 0 0; width: 100%; max-width: none; }
+}
+/* A narrower tray where the left column needs the room (a phone on its side, a small tablet): the long words still fit on one line. */
+@media (min-width: 820px) and (max-width: 999.98px) and (max-height: 1000px) {
+  main > section.wrap.page.spellpage > [data-slot] > .traycol { width: min(380px, 46vw); }
+  .traycol .keyboard--tray { --tw: 52px; --th: 60px; --tgap: 8px; --tfs: 30px; }
+}
+@media (min-width: 820px) and (max-height: 520px) {
+  main > section.wrap.page.spellpage > [data-slot] > .traycol { position: sticky; top: 76px; bottom: auto; align-self: start; }
+}
+
+/* A word that took more than one go (Fix it in): soft honey, never red. */
+.result--soft { border-color: var(--soft-fg); }
+.result--soft .result__badge { background: var(--soft-fg); color: var(--soft-bg); }

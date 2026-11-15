@@ -5,6 +5,7 @@
 // sb.unlockAll ("Open all chapters") stays this device's setting either way.
 import * as P from './progress-doc.js';
 import * as W from './words-doc.js';
+import * as Su from './setup-doc.js';
 
 const KEYS = { progress: 'sb.progress', tricky: 'sb.tricky', unlockAll: 'sb.unlockAll', theme: 'sb.theme', dayStyle: 'sb.dayStyle' };
 
@@ -32,6 +33,24 @@ export const writeWords = (d, id = player) => write(wordsKey(id), d);
 export function updateWords(fn) {
   writeWords(fn(readWords()));
   if (changed) changed(W.DOC_KEY);
+}
+
+// SB4: the child's setup (setup-doc.js) lives inside the words value.
+export const readSetup = (id = player) => W.setupOf(readWords(id));
+// The test hook for the smoke: tile help on only on localhost with sb.tilesTest = '1'. Never true on the live site.
+function tilesTest() {
+  try { return location.hostname === 'localhost' && localStorage.getItem('sb.tilesTest') === '1'; } catch (e) { return false; }
+}
+/** What the child's setup means now: { lv: tile level 1..5, pf: help name, offer: { quiz, exam } }. */
+export function helpNow(year) {
+  const setup = readSetup();
+  const live = Su.TILES_LIVE || tilesTest();
+  return { lv: Su.effectiveLevel(setup, year, live), pf: Su.effectiveProfile(setup, live), offer: Su.offers(setup) };
+}
+/** A quiz or exam record (signed in only): rec = { c, k, s, t, d, miss?, lv?, pf?, hr?, hn?, pk? }. */
+export function addCheck(rec) {
+  if (!player) return;
+  update((d) => P.addCheck(d, rec, Date.now(), newId()));
 }
 
 export const newId = () => 'r' + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -65,13 +84,13 @@ function patch(id, changes) {
 }
 export const markStudied = (id) => (player ? update((d) => P.mark(d, id, 'studiedAt', Date.now())) : patch(id, { studied: true }));
 export const markPractised = (id) => (player ? update((d) => P.mark(d, id, 'practisedAt', Date.now())) : patch(id, { practised: true }));
-export function recordTest(id, score, total) {
-  if (player) { update((d) => P.recordTest(d, id, score, total, Date.now(), newId())); return; }
+export function recordTest(id, score, total, extra = {}) {
+  if (player) { update((d) => P.recordTest(d, id, score, total, Date.now(), newId(), extra)); return; }
   const p = chapterProgress(id);
   patch(id, {
     attempts: p.attempts + 1,
     best: Math.max(p.best, score),
-    passed: p.passed || score === total,
+    passed: p.passed || (extra.passed ?? score === total),
     lastAt: new Date().toISOString(),
   });
 }

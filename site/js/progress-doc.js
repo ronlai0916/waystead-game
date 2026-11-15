@@ -7,6 +7,13 @@
 //     chapters: { [id]: { studiedAt, practisedAt } },
 //     results:  [{ id, c: chapter, s: score, t: out of, at }],   one per test
 //               (an imported total instead: { id, c, n, best, passed, at })
+//               SB4: a test result may also have pf 'sen'|'top', lv 1..4, hr, hn (the help it was taken with), and
+//               passed (boolean): `passed` is always written, and wins over s === t (a Standard pass can be 70%).
+//               SB4 quiz and exam records are results of the same list, under their own `c`, which is never a
+//               real chapter id (an old app keeps them whole and never reads them):
+//                 { id, c: 'q:<src>' | 'e:<eid>', k: 'q'|'e', s: right, t: of, at, d: day, miss?: [≤20 right
+//                   spellings of words to practise, never what was typed], lv?, pf?, hr?, hn?, pk? }
+//                 <src> = a chapter id (y34-ch03, own-<oid>) or 'g-<groupId>'. They fold under their own `c`.
 //     folded:   { [chapter]: { n, best, passed, through } },     old tests, folded
 //     tricky:   { [word]: { n, c: chapter, at } } }              n 0: removed
 //
@@ -86,8 +93,36 @@ export function anyProgress(d) {
 export function mark(d, id, field, now) {
   return { ...d, chapters: { ...d.chapters, [id]: { ...(d.chapters[id] || {}), [field]: now } } };
 }
-export function recordTest(d, id, score, total, now, resultId) {
-  return { ...d, results: [...d.results, { id: resultId, c: id, s: score, t: total, at: now }] };
+const KEEP = ['pf', 'lv', 'hr', 'hn'];
+/** extra ⊆ { passed, pf, lv, hr, hn }; `passed` is always a boolean (explicit, else every word right). */
+export function recordTest(d, id, score, total, now, resultId, extra = {}) {
+  const more = {};
+  for (const k of KEEP) if (extra[k] !== undefined && extra[k] !== null) more[k] = extra[k];
+  const passed = typeof extra.passed === 'boolean' ? extra.passed : score === total;
+  return { ...d, results: [...d.results, { id: resultId, c: id, s: score, t: total, at: now, passed, ...more }] };
+}
+
+// ---- SB4: quiz and exam records ---------------------------------------------------
+/** A quiz ('q') or an exam ('e') run: rec = { c, k, s, t, d, miss?, lv?, pf?, hr?, hn?, pk? }. */
+export function addCheck(d, rec, now, id) {
+  return { ...d, results: [...d.results, { ...rec, id, at: now }] };
+}
+/** The runs under one key (newest first), and the fold's count and time if older ones were folded. */
+export function checksOf(d, c) {
+  const f = d.folded[c];
+  return {
+    runs: d.results.filter((r) => r.c === c && live(d, r.at)).sort((a, b) => b.at - a.at || (a.id < b.id ? 1 : -1)),
+    folded: f && f.n > 0 && f.through > d.resetAt ? { n: f.n, through: f.through } : null,
+  };
+}
+/** An exam's state today: 'later' (before its date), 'done' (a run, or a fold, after it was last reopened), else 'ready'. */
+export function examState(d, eid, exam, today) {
+  const { runs, folded } = checksOf(d, 'e:' + eid);
+  const last = runs[0] || null;
+  if (exam.date > today) return { state: 'later', last };
+  const after = exam.reopen || 0;
+  const done = (last && last.at > after) || (folded && folded.through > after);
+  return { state: done ? 'done' : 'ready', last };
 }
 function trickyEntry(d, word) {
   const t = d.tricky[word];

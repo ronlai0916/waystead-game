@@ -378,9 +378,9 @@ test('games: today\'s skipped words wait at the end on coming back, or on anothe
 });
 test('games: all three spelling games retry and skip; none needs 3 in a row', () => {
   const src = readFileSync(file('site/js/games-views.js'), 'utf8');
-  assert.equal(src.match(/words = G\.afterPass\(words, p\.clean\);/g).length, 3);
+  assert.equal(src.match(/words = G\.afterPass\(words, p\.clean\);/g).length, 5); // SB4-WP4: Missing letters and Quick-fire each have a tray branch too
   assert.equal(src.match(/words = G\.afterSkip\(words\);/g).length, 3);
-  assert.equal(src.match(/RETRY_LINE\); return;/g).length, 3);
+  assert.equal(src.match(/RETRY_LINE\); return;/g).length, 5);
   assert.doesNotMatch(src, /ROW_NEEDED|sessionCount/);
 });
 test('Meaning match is unchanged: no retry queue, no skip', () => {

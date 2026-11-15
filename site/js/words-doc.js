@@ -14,6 +14,14 @@
 //     skips:   [{ id, g: group, w: word, d: day, f: flow, at }],   "Skip for now"
 //     weekPick?: { on: boolean, at: ms } }   OPTIONAL (SB3-G): a grown-up's switch, "Your child can choose which
 //                                            week to study". Absent = on (today's behaviour); old docs unchanged.
+//     setup?:  { help?, profile?, offer?, exams?, own? }  OPTIONAL (SB4): a child's setup (setup-doc.js), written
+//                                            by grown-up pages only. Absent = today's behaviour.
+//     own?:    { [oid]: { name, words, src, at, gone?, to } }  OPTIONAL (SB4): on a GROWN-UP's words value, their own
+//                                            word lists (own-doc.js), sent to children as copies in `setup.own`.
+//   Optional fields on a try (SB4, tile help; absent = a keyboard try, as today): lv 1..4 (the tile level used),
+//   h: 1 (the tray filled a letter itself), hn (first-letter hints), hr (hears after the first; tests only),
+//   pf 'sen'|'top' (the help used, on a k:'t' try only). A try with lv 1..3, h or hn is "assisted": it still earns
+//   dots, stars and jobs, but it can't make a word remembered. No new `k`, no new `s`.
 //
 //   k: 'p' practice, 't' the test, 'f' a fix-up. A practice or fix-up try may
 //   also have s: 'x' (Fix it in), 'g' (a spelling game) or 'm' (Meaning match);
@@ -36,11 +44,16 @@
 //   · resetAt: the later one; anything before it goes;
 //   · weekPick: the copy with the later `at` wins (a tie: the larger JSON); absent loses to present. It is not
 //     cleared by resetAt: "Clear my progress" keeps it (reset(now, d)), so it can't be used to get round the switch;
+//   · setup, own: each merged by its own rules (setup-doc.js, own-doc.js); never cleared by resetAt, and kept by
+//     reset(now, d), so "Clear my progress" can't undo a grown-up's setup;
 //   · steps: the first time a job was done; clues: the newest; notes, skips: by id.
 // SIZE: a value may be at most 64 KB. Past 48 KB the oldest tries are folded
 // (per group and word) until it is under 40 KB, and deleted groups older than
-// 90 days are dropped first. Remembered words are not affected by folding.
+// 90 days are dropped first. Remembered words are not affected by folding. `setup` and `own` are never folded:
+// only their own old deleted entries go (setup-doc.js, own-doc.js).
 import { mergeLog, foldOldest, newest } from './account/merge.js';
+import * as Su from './setup-doc.js';
+import * as Ow from './own-doc.js';
 
 export const DOC_KEY = 'words';
 export const TRIM_AT = 48 * 1024;
@@ -61,6 +74,11 @@ const CLEAN = 2; // spelled clean at some point that day
 const TEST_RIGHT = 4;
 const TEST_WRONG = 8;
 const FIX_FIRST = 16; // a fix-up's first try that day was clean
+// SB4: remembered from a folded day. A day folded in this release has ERA; RECALL says the day counts towards
+// remembered (a first go, or a right test answer, with no tile help). A day folded before has neither bit and counts
+// as it always did: FIRST or TEST_RIGHT.
+const RECALL = 16384;
+const ERA = 32768;
 // Practise 3 times: 3 clean spellings in a row that day, by flow.
 const ROW = { p: 2048, x: 4096, f: 8192 }; // the grid, Fix it in, fix-ups
 const ROW_BITS = ROW.p | ROW.x | ROW.f;
@@ -108,6 +126,10 @@ export function normalise(d) {
   out.skips = (Array.isArray(d.skips) ? d.skips : []).filter((x) => isObj(x) && typeof x.id === 'string' && typeof x.g === 'string'
     && typeof x.w === 'string' && typeof x.f === 'string' && isDay(x.d) && num(x.at));
   if (isObj(d.weekPick) && typeof d.weekPick.on === 'boolean' && num(d.weekPick.at)) out.weekPick = { on: d.weekPick.on, at: d.weekPick.at };
+  const setup = Su.normalise(d.setup);
+  if (!Su.isEmpty(setup)) out.setup = setup;
+  const own = Ow.normalise(d.own);
+  if (!Ow.isEmpty(own)) out.own = own;
   return out;
 }
 
@@ -233,11 +255,23 @@ export function restoreGroup(d, id, now) {
 
 // ---- tries ---------------------------------------------------------------------
 /** One try: { id, word, day, group, kind: 'p'|'t'|'f', tries, peeks, clean, source?: 'x'|'g', now }. */
-export function addTry(d, { id, word, day, group, kind, tries, peeks, clean, source, now }) {
-  return { ...d, results: [...d.results, { id, w: word, d: day, g: group, k: kind, t: tries, p: peeks, c: clean ? 1 : 0, ...(source ? { s: source } : {}), at: now }] };
+export function addTry(d, { id, word, day, group, kind, tries, peeks, clean, source, now, lv, h, hn, hr, pf }) {
+  // SB4 optional fields: written only when set, never undefined or 0. Absent = a keyboard try.
+  const extra = {
+    ...(Number.isInteger(lv) && lv >= 1 && lv <= 4 ? { lv } : {}),
+    ...(h ? { h: 1 } : {}),
+    ...(hn > 0 ? { hn } : {}),
+    ...(hr > 0 ? { hr } : {}),
+    ...(kind === 't' && (pf === 'sen' || pf === 'top') ? { pf } : {}),
+  };
+  return { ...d, results: [...d.results, { id, w: word, d: day, g: group, k: kind, t: tries, p: peeks, c: clean ? 1 : 0, ...(source ? { s: source } : {}), ...extra, at: now }] };
 }
 const byTime = (a, b) => a.at - b.at || (a.id < b.id ? -1 : 1);
 const unaided = (r) => !!r.c && !r.t && !r.p;
+/** Tile help (SB4): the letters were mostly given (lv 1..3), the tray filled one, or a first-letter hint. Absent fields: a keyboard try. */
+export const assisted = (r) => (r.lv >= 1 && r.lv <= 3) || !!r.h || r.hn > 0;
+/** Unaided and not assisted: this counts towards remembered. */
+export const recall = (r) => unaided(r) && !assisted(r);
 const cellKey = (g, w) => g + '|' + w;
 const wordOfKey = (key) => key.slice(key.indexOf('|') + 1);
 
@@ -248,8 +282,12 @@ function flagsOf(r, first) {
   if (isMatch(r)) return MATCH | (unaided(r) ? MATCH_CLEAN : 0);
   const test = r.k === 't' ? (r.c ? TEST_RIGHT : TEST_WRONG) : 0;
   const fix = first && r.k === 'f' && unaided(r) ? FIX_FIRST : 0;
-  return (first && unaided(r) ? FIRST : 0) | (r.c ? CLEAN : 0) | test | fix | SPELT;
+  const rec = (first && recall(r)) || (r.k === 't' && r.c && !assisted(r)) ? RECALL : 0;
+  return (first && unaided(r) ? FIRST : 0) | (r.c ? CLEAN : 0) | test | fix | SPELT | ERA | rec;
 }
+/** A day folded before SB4 has no ERA bit: bring it up (it counted FIRST or TEST_RIGHT) so it can join a newer one. */
+const eraOf = (flags) => (!flags || flags & ERA ? flags : flags | ERA | (flags & (FIRST | TEST_RIGHT) ? RECALL : 0));
+const countsFold = (flags) => (flags & ERA ? !!(flags & RECALL) : !!(flags & (FIRST | TEST_RIGHT)));
 
 /** The flow a try belongs to: 'p', 'x', 'f', or '' for a game or the test. */
 export function flowOf(r) {
@@ -270,7 +308,7 @@ function ledger(d) {
   for (const [key, f] of Object.entries(d.folded)) {
     cells.set(key, { ...f.days });
     const m = dayMap(wordOfKey(key));
-    for (const [day, flags] of Object.entries(f.days)) if (!(flags & MATCH) || flags & SPELT) m[day] = !!m[day] || !!(flags & (FIRST | TEST_RIGHT));
+    for (const [day, flags] of Object.entries(f.days)) if (!(flags & MATCH) || flags & SPELT) m[day] = !!m[day] || countsFold(flags);
   }
   for (const r of [...d.results].sort(byTime)) {
     const key = cellKey(r.g, r.w);
@@ -288,8 +326,8 @@ function ledger(d) {
     }
     if (isMatch(r)) continue;
     const m = dayMap(r.w);
-    if (!(r.d in m)) m[r.d] = unaided(r);
-    if (r.k === 't' && r.c) m[r.d] = true; // a word right in the test always counts
+    if (!(r.d in m)) m[r.d] = recall(r);
+    if (r.k === 't' && r.c && !assisted(r)) m[r.d] = true; // a word right in the test always counts (unless tiles helped)
   }
   return { cells, days, runs };
 }
@@ -526,8 +564,13 @@ const LOG = {
   // A fold or a try. Only the day flags: a try already counted must not count twice.
   absorb(f, r) {
     const days = { ...f.days };
-    if (r.days) for (const [day, flags] of Object.entries(r.days)) days[day] = (days[day] || 0) | flags;
-    else days[r.d] = (days[r.d] || 0) | flagsOf(r, firstOf(days, r.d));
+    if (r.days) {
+      for (const [day, flags] of Object.entries(r.days)) {
+        // two folds of one day: if either is from this release, both are read as such
+        const both = days[day] && (days[day] & ERA) !== (flags & ERA) ? [eraOf(days[day]), eraOf(flags)] : [days[day] || 0, flags];
+        days[day] = both[0] | both[1];
+      }
+    } else days[r.d] = eraOf(days[r.d] || 0) | flagsOf(r, firstOf(days, r.d));
     return { ...f, days };
   },
   emptyFold: () => ({ n: 0, t: 0, p: 0, through: 0, days: {} }),
@@ -558,6 +601,10 @@ export function merge(a, b) {
   out.skips = byId([...x.skips, ...y.skips]);
   const wp = [x.weekPick, y.weekPick].filter(Boolean).sort((p, q) => q.at - p.at || (JSON.stringify(q) > JSON.stringify(p) ? 1 : -1))[0];
   if (wp) out.weekPick = wp;
+  const setup = Su.merge(x.setup, y.setup);
+  if (!Su.isEmpty(setup)) out.setup = setup;
+  const own = Ow.merge(x.own, y.own);
+  if (!Ow.isEmpty(own)) out.own = own;
   return out;
 }
 
@@ -574,11 +621,60 @@ export function trim(d, now) {
     const cell = L.cells.get(key) || {};
     return [key, { ...f, days: Object.fromEntries(Object.entries(f.days).map(([day, flags]) => [day, flags | ((cell[day] || 0) & ROW_BITS)])) }];
   }));
-  return { ...out, folded };
+  const kept = { ...out, folded };
+  delete kept.setup;
+  delete kept.own;
+  const setup = Su.trim(d.setup, now);
+  if (!Su.isEmpty(setup)) kept.setup = setup;
+  const own = Ow.trim(d.own, now);
+  if (!Ow.isEmpty(own)) kept.own = own;
+  return kept;
 }
 
 /** Clear my progress. A grown-up's week-choice switch is not progress: it is kept (SB3-G), so a reset never gives a child the choice back. */
-export const reset = (now, prev) => ({ ...emptyDoc(), resetAt: now, ...(prev && prev.weekPick ? { weekPick: prev.weekPick } : {}) });
+export const reset = (now, prev) => ({ ...emptyDoc(), resetAt: now, ...(prev && prev.weekPick ? { weekPick: prev.weekPick } : {}), ...(prev && prev.setup ? { setup: prev.setup } : {}), ...(prev && prev.own ? { own: prev.own } : {}) });
+
+// ---- SB4: setup and own lists (the field is kept exactly like weekPick) ----------------
+export const setupOf = (d) => (d && d.setup) || {};
+/** The words value with this setup; the field goes when it is empty. */
+export function withSetup(d, su) {
+  const { setup, ...rest } = d;
+  return Su.isEmpty(su) ? rest : { ...rest, setup: su };
+}
+export const ownOf = (d) => (d && d.own) || {};
+export function withOwn(d, own) {
+  const { own: old, ...rest } = d;
+  return Ow.isEmpty(own) ? rest : { ...rest, own };
+}
+
+// ---- SB4: how much tile help a word has had, and whether a level is ready to go up --------------
+/** Over the group's tries for the word: the lowest level used (5 = keyboard), tries the tray helped, hints, hears. */
+export function helpOf(d, g, w) {
+  const rs = d.results.filter((r) => r.g === g.id && r.w === w && !isMatch(r));
+  return {
+    minLv: rs.reduce((m, r) => Math.min(m, r.lv >= 1 && r.lv <= 4 ? r.lv : 5), 5),
+    helped: rs.filter((r) => r.h).length,
+    hints: rs.reduce((n, r) => n + (r.hn > 0 ? r.hn : 0), 0),
+    hears: rs.reduce((n, r) => n + (r.hr > 0 ? r.hr : 0), 0),
+  };
+}
+/** At least 80% of the group's words have, on some day and flow, 3 unaided tries in a row all at level `lv` (absent lv = 5). */
+export function levelReady(d, g, lv) {
+  const runs = new Map();
+  const got = new Set();
+  const inGroup = new Set(g.words);
+  for (const r of [...d.results].sort(byTime)) {
+    if (r.g !== g.id || !inGroup.has(r.w) || r.k === 't') continue;
+    const flow = flowOf(r);
+    if (!flow) continue;
+    const k = runKey(r.g, r.w, r.d, flow);
+    const here = unaided(r) && (r.lv >= 1 && r.lv <= 4 ? r.lv : 5) === lv;
+    const n = here ? (runs.get(k) || 0) + 1 : 0;
+    runs.set(k, n);
+    if (n >= ROW_NEEDED) got.add(r.w);
+  }
+  return g.words.length > 0 && got.size * 5 >= g.words.length * 4;
+}
 
 // ---- the grown-up's week-choice switch (SB3-G) ----------------------------------------
 /** True unless a grown-up switched it off. Absent field = on. */

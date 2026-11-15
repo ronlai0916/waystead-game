@@ -293,6 +293,38 @@ into each site by `node tools/sync-shared.mjs` (the sites are separate roots and
 must work offline). Tests: `node --test shared/tests/` (a fake account API).
 On localhost the games look for the account at `http://localhost:3000`.
 
+## Scan
+
+A signed-in grown-up photographs a printed spelling list; the Waystead account reads the words with an AI
+service; the grown-up ticks, corrects and saves them as an own chapter. The game shows nothing about
+scanning unless `GET /api/scan/allowance` answers `200` with `on: true`; a 404, a network error, a
+non-JSON answer or `on` missing or false all mean off. The client is `site/js/scan-doc.js` (pure rules and
+wording) and `site/js/scan-data.js` (the three calls; `shared/account/api.js` is JSON-only, so the photo
+goes through its own `fetch`). The endpoint lives in the account repo; this is its spec, and
+`shared/tests/fake-account.js` follows it.
+
+- `GET /api/scan/allowance` -> `200 { on: boolean, left, limit: 20, hourLeft, resetsOn: 'YYYY-MM-01', paused: boolean, consent: { at, version } | null, consentVersion: 'v1', vendor: '<name>' }`. `on` is the account's switch: the game shows scanning only when it is exactly `true`.
+- `POST /api/scan/consent`, body `{ version }` -> `200 { consent: { at, version } }`.
+- `POST /api/scan/words`, `Content-Type: image/jpeg`, the raw bytes as the body (no JSON, no base64), at most 2,097,152 bytes, `credentials: 'include'` -> `200 { words: string[], left, resetsOn }`. At most 40 words, each matching `^[A-Za-z][A-Za-z'-]{0,24}$`, no repeats ignoring case, in reading order.
+- Errors: `401` signed out; `403 { error: 'adult-session-required' }` (a child, or an adult playing as a child); `404` scanning not switched on; `412 { error: 'consent-required', version }`; `413 { error: 'image-too-large' }`; `415 { error: 'bad-image' }`; `429 { error: 'hourly-limit' }` with `Retry-After`; `429 { error: 'monthly-limit', resetsOn }`; `503 { error: 'scan-paused' }` (kill switch or spend ceiling); `502 { error: 'read-failed' }` (vendor error, or the server's own 25 s timeout).
+- Counting: a scan is used only when the vendor is called. The month is the Europe/London calendar month; the hour is a rolling 60 minutes; 20 a month and 5 an hour per adult.
+- Server duties: the image is held in memory only, never stored, never logged (log only adult id, time, status and word count); the vendor key is in Vault; the model's output is parsed and filtered to the regex (anything else becomes `[]`); CORS allows the game origin with credentials, `POST` and `Content-Type`; no child name or id is sent to the vendor.
+- Security: all three routes are adult-session only. Consent is refused unless `version` equals the server's `consentVersion`. CORS names the exact game origin with `Access-Control-Allow-Credentials: true`, never `*`, plus `Vary: Origin`. The POSTs check the `Origin` header and require the exact `Content-Type` (a guard against forged requests). The 2 MB limit is enforced while the body is read, not by trusting `Content-Length`. `415` is decided by the JPEG magic bytes. The vendor is set to retain nothing and not to train on the photo (to be confirmed in Ron's data-protection assessment).
+- Client duties: the photo is shrunk on the device (longest side 1600 at JPEG quality 0.85, then 0.7, then 1280 at 0.7), sent once, never stored and cleared on leaving. The client never trusts the answer (`clean` keeps only words matching the pattern, drops repeats, caps at 40). `SCAN_VENDOR` and `PRIVACY_HREF` in `scan-doc.js` are empty until Ron fills them in before switching on; while empty the consent text says "an AI service".
+
+## Release notes
+
+### SB4-B (spellbright-2026-11-15a): letter tiles and grown-up set-up
+
+- Letter tiles: a child can be set to "Some letters" for a word. The tiles sit in a tray beside the keyboard; Back and tapping a box undo; a third miss fills the letter in.
+- A "How <child> spells" card for each child (the child's name goes in): letters or keyboard, help in tests, and which tests to offer.
+- Quiz after a chapter, and a big test or exam that a grown-up sets for a day. The report shows the score, the words to practise and "with letter tiles" when tiles were used.
+- Honest report lines, the overview and print for grown-ups.
+- **The chapter test now gives its feedback at the end**, not word by word.
+- **A Year 1 or 2 child with no setting now gets letter tiles.** A Year 3 or older child with no setting keeps the keyboard.
+- An older copy of the app still on a device plays on the keyboard and may not show the new setting until it updates. Any updated device puts the setting back.
+- Days folded by an older app still count as remembered, as before.
+
 ## Deploy (waystead-prod)
 
 Wired like the parent site: its own Compose project, nginx on the external

@@ -5,6 +5,10 @@
 import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import { trickyWords } from './progress-doc.js';
+import * as PR from './progress-doc.js';
+import * as Su from './setup-doc.js';
+import * as A from './assess-doc.js';
+import * as F from './front-doc.js';
 import { switchUrl, accountUrl } from './account/config.js';
 import { stoneView } from './child-doc.js';
 
@@ -22,6 +26,7 @@ export const PROBLEM_TEXT = {
   'too-big': 'This child\'s saved words are full. Please try a shorter plan, or ask us for help.',
   'signed-out': 'You\'ve been signed out. Please sign in again.',
   'no-child': 'That child isn\'t on your account.',
+  playing: 'You\'re playing as a child. Switch back to yourself first, then try again.',
   other: 'Something went wrong on our side. Please try again.',
 };
 
@@ -91,16 +96,19 @@ const times = (n) => (n === 1 ? 'once' : n === 2 ? 'twice' : n + ' times');
  *   tries    wrong letters so far (the app counts letters, not goes), peeks  peeks so far
  *   slipped  wrong in the test and still to fix; passed  right in the test or remembered
  *   any      the word has been tried at all
+ *   assisted (SB4) every try that counted used letter tiles (levels 1 to 3), a fill or a hint
  * Got it needs the 3 in a row (or a test passed): it wins over earlier mistakes, so a word that
  * has been mended stops showing as help.
  */
-export function classify({ dots = 0, tries = 0, peeks = 0, slipped = false, passed = false, any = false, remembered = false }) {
+export function classify({ dots = 0, tries = 0, peeks = 0, slipped = false, passed = false, any = false, remembered = false, assisted = false }) {
   if (slipped) {
     const why = ['slipped in the test'];
     if (peeks) why.push('peeked ' + times(peeks));
     return { key: 'help', label: STATUS_LABEL.help, reason: why.join(', ') };
   }
   if (remembered) return { key: 'got', label: STATUS_LABEL.got, reason: 'remembered' };
+  // SB4: every try that counted used letter tiles (levels 1 to 3), a fill or a hint: honest, so not "Got it" yet.
+  if ((dots >= W.ROW_NEEDED || passed) && assisted) return { key: 'getting', label: STATUS_LABEL.getting, reason: 'tiles' };
   if (dots >= W.ROW_NEEDED || passed) return { key: 'got', label: STATUS_LABEL.got, reason: passed && dots < W.ROW_NEEDED ? 'right in the test' : '' };
   if (tries >= 2 || peeks >= 1) {
     const why = [];
@@ -148,8 +156,8 @@ export function weekWords(d, g, today) {
     const r = results.get(x.word);
     const slipped = toFix.has(x.word);
     const rh = recentHelp(d, g, x.word);
-    const st = classify({ dots: dots.get(x.word) || 0, tries: rh.tries, peeks: rh.peeks, slipped, passed: !!(r && r.right), any: x.tries > 0 || x.peeks > 0 || x.status === 'practising', remembered: x.status === 'remembered' && !(r && !r.right) });
-    return { word: x.word, back: x.back, dots: dots.get(x.word) || 0, tries: rh.tries, peeks: rh.peeks, status: st.key, label: st.label, reason: st.reason, i,
+    const st = classify({ dots: dots.get(x.word) || 0, tries: rh.tries, peeks: rh.peeks, slipped, passed: !!(r && r.right), any: x.tries > 0 || x.peeks > 0 || x.status === 'practising', remembered: x.status === 'remembered' && !(r && !r.right), assisted: assistedWord(d, g, x.word) });
+    return { word: x.word, back: x.back, dots: dots.get(x.word) || 0, tries: rh.tries, peeks: rh.peeks, status: st.key, label: st.label, reason: st.reason === 'tiles' ? tilesReason(dots.get(x.word) || 0) : st.reason, i,
       notes: noticed({ back: x.back, skipped: skipped.has(x.word), clue: W.clueFor(d, x.word), slipped, rightInTest: !!(r && r.right) }) };
   });
   return rows.sort((a, b) => (a.status === 'help' ? 0 : 1) - (b.status === 'help' ? 0 : 1) || a.i - b.i);
@@ -385,3 +393,223 @@ export const weekPickHelp = (nick, on) => on
   ? nick + ' can pick which week to study when there is more than one. Switch it off and ' + nick + ' sees the week the app picks.'
   : nick + ' sees the week the app picks. A week ' + nick + ' chose on the device is ignored until you switch this back on.';
 export const weekPickFlash = (on) => (on ? 'Your child can choose which week to study again.' : 'Your child now sees the week the app picks.');
+
+// ====================================================================================================
+// SB4-WP6: how a child spells, exams, honest result lines, the overview. All pure: the day and the
+// time come in as arguments. Grown-up copy: no jargon, sentences of 20 words or fewer.
+// ====================================================================================================
+const plural2 = (n, one, many = one + 's') => n + ' ' + (n === 1 ? one : many);
+const isDayText = (x) => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x);
+/** "12 Nov": a date without its weekday, from a time in milliseconds. */
+export const shortDate = (ms) => W.dayLabel(W.localDay(ms)).replace(/^\w+ /, '');
+
+// ---- statuses: letter tiles are honest -------------------------------------------------------------
+export const tilesReason = (dots) => (dots >= W.ROW_NEEDED ? W.ROW_NEEDED + ' in a row with letter tiles' : 'right in the test with letter tiles');
+/** Every try of the word that counted (spelled with no slip, in a practice flow or the test) used tile help or a hint; there is at least one. */
+export function assistedWord(d, g, word) {
+  const rs = d.results.filter((r) => r.g === g.id && r.w === word && r.s !== 'm' && (r.k === 't' || W.flowOf(r)) && r.c && !r.t && !r.p);
+  return rs.length > 0 && rs.every((r) => W.assisted(r));
+}
+
+// ---- the card: How <name> spells ---------------------------------------------------------------------
+export const spellTitle = (name) => 'How ' + name + ' spells';
+export const spellLevelLine = (lv) => 'Letters or keyboard: ' + A.LEVEL_NAME[lv];
+export const spellHelpLine = (pf) => 'Help in tests: ' + A.PROFILE_NAME[pf];
+export const usualLine = (year) => 'Using \'' + A.LEVEL_NAME[A.SUGGEST[year].lv] + '\', the usual start for Year ' + year + '. You can change it.';
+/** What the card says: two lines, who changed it and when (when known), and the usual-start line for Year 1 and 2 with nothing saved. */
+export function spellCard(setup, year, name) {
+  const s = setup || {};
+  const lv = Su.effectiveLevel(s, year, true);
+  const pf = Su.effectiveProfile(s, true);
+  const saved = [Su.helpOf(s), Su.profileOf(s)].filter(Boolean).sort((a, b) => b.at - a.at)[0];
+  const changed = saved ? 'Last changed ' + (saved.by ? 'by ' + saved.by + ', ' : '') + shortDate(saved.at) : '';
+  return {
+    title: spellTitle(name),
+    lines: [spellLevelLine(lv), spellHelpLine(pf)],
+    changed,
+    usual: (year === 1 || year === 2) && !Su.helpOf(s) ? usualLine(year) : '',
+    lv,
+    pf,
+  };
+}
+/** { next, line } when the child is ready for fewer letters (and is on tiles), else null. The app never changes the level itself. */
+export function levelHint(d, today, setup, year, name) {
+  const lv = Su.effectiveLevel(setup || {}, year, true);
+  if (lv >= 5) return null;
+  const g = W.currentGroup(d, today);
+  if (!g || !W.levelReady(d, g, lv)) return null;
+  return { next: lv + 1, line: name + ' is ready for fewer letters. Try \'' + A.LEVEL_NAME[lv + 1] + '\'?' };
+}
+export const SPELL_TILES_NOTE = 'Words spelled with letter tiles count as remembered only at \'All the letters\' and \'Keyboard\'.';
+export const examOfferText = (name, year, pf) => (A.kindName('exam', pf, year) === 'Exam'
+  ? 'You set these yourself, with a date. ' + name + ' sees \'Exam\'.'
+  : 'You set these yourself, with a date. ' + name + ' sees \'Big test\'.');
+export const QUIZ_OFFER_TEXT = 'A short practice check. Nothing is marked.';
+export const TEST_OFFER_TEXT = 'The weekly test and chapter tests are always on.';
+export const spellSub = (name, year) => (year ? name + ' is in Year ' + year + '. ' : '') + 'Each choice saves as soon as you tap it.';
+export const stretchNote = (lv) => 'Stretch is keyboard only in quizzes and tests. Practice still uses \'' + A.LEVEL_NAME[lv] + '\'.';
+
+// ---- exams ------------------------------------------------------------------------------------------------
+const yearNum = (ch) => Number(String(ch.yearId || '').slice(1)) || 0;
+export const chapterLabel = (ch) => 'Year ' + yearNum(ch) + ', Chapter ' + ch.n;
+/**
+ * The places an exam can draw words from. A chapter is ready once it has been attempted or passed; a week once its
+ * test is done. Anything else is listed (the child's own year, and every week) but not ready: it never shows a word.
+ * chapters: [{ id, yearId, n, words: [{ word }] }]; progress: the child's progress; d: their words.
+ */
+export function examSources({ chapters, progress, d, year, today }) {
+  const out = [];
+  const yid = 'y' + year;
+  for (const ch of chapters || []) {
+    const cp = PR.chapterProgress(progress, ch.id);
+    const ready = cp.passed || cp.attempts > 0;
+    if (!ready && ch.yearId !== yid) continue;
+    out.push({ key: ch.id, kind: 'chapter', label: chapterLabel(ch), ready, at: cp.lastAt ? Date.parse(cp.lastAt) : 0, words: ch.words.map((w) => w.word), yearId: ch.yearId, n: ch.n });
+  }
+  out.sort((a, b) => (a.yearId < b.yearId ? -1 : a.yearId > b.yearId ? 1 : a.n - b.n));
+  for (const g of W.liveGroups(d)) {
+    out.push({ key: 'g-' + g.id, kind: 'week', label: g.name, ready: W.testDone(d, g), at: g.at || 0, words: g.words.slice(), yearId: '', n: 0 });
+  }
+  void today;
+  return out;
+}
+/** What a choice of sources makes: how many words, from how many chapters and weeks, and the pools to draw from. */
+export function examPlan(sources, keys, pf) {
+  const pick = sources.filter((s) => s.ready && keys.includes(s.key));
+  const distinct = new Set();
+  for (const s of pick) for (const w of s.words) distinct.add(String(w).toLowerCase());
+  const cap = A.rulesFor('exam', pf).words;
+  return {
+    n: Math.min(cap, distinct.size),
+    chapters: pick.filter((s) => s.kind === 'chapter').length,
+    weeks: pick.filter((s) => s.kind === 'week').length,
+    keys: pick.map((s) => s.key),
+    pools: pick.map((s) => ({ src: s.key, words: s.words, at: s.at })),
+  };
+}
+export function examSummary(plan) {
+  const parts = [];
+  if (plan.chapters) parts.push(plural2(plan.chapters, 'chapter'));
+  if (plan.weeks) parts.push(plural2(plan.weeks, 'week'));
+  return parts.length ? plural2(plan.n, 'word') + ' from ' + parts.join(' and ') : 'Nothing chosen yet.';
+}
+export const EXAM_NOT_DONE = 'Test not done yet';
+export const examDefaultName = (date) => ('Big test, ' + W.dayLabel(date).replace(/^\w+ /, '')).slice(0, Su.MAX_NAME);
+export const examPlanLimit = () => 'You already have ' + Su.MAX_EXAMS + ' exams. Delete one first.';
+export function examProblem({ keys, date, today, liveCount }) {
+  if (!keys || !keys.length) return 'Choose at least one chapter or week.';
+  if (!isDayText(date) || date < today) return 'Choose today or a later date.';
+  if (liveCount >= Su.MAX_EXAMS) return examPlanLimit();
+  return '';
+}
+/** The state of an exam, in words: Opens on <date> / Ready / Done on <date>. */
+export function examStateLine(state, exam, last) {
+  if (state === 'later') return 'Opens on ' + W.dayLabel(exam.date);
+  if (state === 'done') return last ? 'Done on ' + W.dayLabel(isDayText(last.d) ? last.d : W.localDay(last.at)) : 'Done';
+  return 'Ready';
+}
+export const examChip = (state) => (state === 'done' ? 'finished' : state === 'later' ? 'notstarted' : 'waiting');
+/** The result line of an exam's newest run. */
+export function examResultLine(exam, last) {
+  return A.resultLine({ kind: 'exam', scope: exam.name, right: last.s, of: last.t, pf: last.pf, lv: last.lv, hr: last.hr, hn: last.hn, pk: last.pk });
+}
+export const examMissLine = (last) => (last && Array.isArray(last.miss) && last.miss.length ? 'Words to practise: ' + last.miss.join(', ') : '');
+/** An exam's state and last run for a child, from their progress. */
+export const examNow = (progress, exam, today) => PR.examState(progress, exam.id, exam, today);
+
+// ---- honest result lines ----------------------------------------------------------------------------------
+/** A tested week: the line says how the test was taken. Only when every word has its answer. */
+export function weekTestLine(d, g) {
+  if (!W.testDone(d, g) || !g.words.length) return '';
+  const tests = { results: d.results.filter((r) => r.k === 't') };
+  const mine = tests.results.filter((r) => r.g === g.id && g.words.includes(r.w));
+  const res = W.testResults(d, g);
+  const right = res.filter((x) => x.result && x.result.right).length;
+  // How the test was taken is only known while every word still has its test try: after folding, say nothing about it.
+  if (!g.words.every((w) => mine.some((r) => r.w === w))) return g.name + ' test · ' + right + ' of ' + g.words.length;
+  let lv = 5;
+  let hr = 0;
+  let hn = 0;
+  for (const w of g.words) {
+    const h = W.helpOf(tests, g, w);
+    lv = Math.min(lv, h.minLv);
+    hr += h.hears;
+    hn += h.hints;
+  }
+  const pf = (mine.find((r) => r.pf === 'sen' || r.pf === 'top') || {}).pf || 'normal';
+  return A.resultLine({ kind: 'test', scope: g.name, right, of: g.words.length, pf, lv, hr, hn });
+}
+/** The newest chapter test: { line, passed } or null. */
+export function chapterTestLine(progress, ch, scope) {
+  const rs = progress.results.filter((r) => r.c === ch.id && r.at > progress.resetAt && typeof r.s === 'number' && typeof r.t === 'number')
+    .sort((a, b) => b.at - a.at || (a.id < b.id ? 1 : -1));
+  if (!rs.length) return null;
+  const r = rs[0];
+  return { line: A.resultLine({ kind: 'test', scope, right: r.s, of: r.t, pf: r.pf, lv: r.lv, hr: r.hr, hn: r.hn }), passed: PR.chapterProgress(progress, ch.id).passed, at: r.at };
+}
+/** The newest three quiz runs: [{ line, at }]. nameOf(src) gives the chapter or week a quiz was about. */
+export function quizLines(progress, nameOf, n = 3) {
+  const keys = [...new Set(progress.results.filter((r) => r.k === 'q' && /^q:/.test(r.c)).map((r) => r.c))];
+  const runs = [];
+  for (const c of keys) for (const r of PR.checksOf(progress, c).runs) runs.push({ c, r });
+  runs.sort((a, b) => b.r.at - a.r.at || (a.r.id < b.r.id ? 1 : -1));
+  return runs.slice(0, n).map(({ c, r }) => ({
+    at: r.at,
+    line: A.resultLine({ kind: 'quiz', scope: nameOf(c.slice(2)), right: r.s, of: r.t, pf: r.pf, lv: r.lv, hr: r.hr, hn: r.hn, pk: r.pk }),
+  }));
+}
+/** One year's counts: passed, studying, to do (the same stones the child sees). */
+export function yearCounts(chs, progress) {
+  const of = (c) => PR.chapterProgress(progress, c.id);
+  const sum = F.yearSummary(chs, of);
+  let studying = 0;
+  let todo = 0;
+  for (const c of chs) {
+    const st = F.stoneState(of(c));
+    if (st === 'studying') studying += 1;
+    else if (st === 'todo') todo += 1;
+  }
+  return { total: sum.total, passed: sum.passed, studying, todo };
+}
+export const yearCountsLine = (c) => c.passed + ' passed · ' + c.studying + ' studying · ' + c.todo + ' to do';
+/** The child's own chapters ("From you"): name and state, from progress under own-<oid>. */
+export function ownRows(setup, progress) {
+  return Su.liveOwn(setup).map((o) => ({ id: o.id, name: o.name, state: F.stoneState(PR.chapterProgress(progress, 'own-' + o.id)) }));
+}
+export const stateText = (s) => F.STONE_LABEL[s] || '';
+
+// ---- the overview: one row for each child, in the account's order ----------------------------------------
+export const OVERVIEW_CAPTION = 'One row for each child, in the order on your account. This is not a ranking.';
+export const OVERVIEW_MAX = 5;
+/** The newest test line, a week's or a chapter's. chapters: every chapter [{ id, yearId, n }]. */
+export function lastTestLine(d, progress, chapters) {
+  let best = null;
+  const take = (at, line) => { if (line && (!best || at > best.at)) best = { at, line }; };
+  for (const g of W.liveGroups(d)) {
+    const day = W.testDayOf(W.testResults(d, g));
+    if (day) take(Date.parse(day + 'T12:00:00Z'), weekTestLine(d, g));
+  }
+  for (const ch of chapters || []) {
+    const t = chapterTestLine(progress, ch, 'Chapter ' + ch.n);
+    if (t) take(t.at, t.line);
+  }
+  return best ? best.line : '';
+}
+export function nextExam(setup, progress, today) {
+  for (const e of Su.liveExams(setup)) {
+    if (e.date < today) continue;
+    if (PR.examState(progress, e.id, e, today).state !== 'done') return e;
+  }
+  return null;
+}
+export function overviewRow({ name, words, progress, setup, chapters, today, now }) {
+  const o = childOverview(words, today, now);
+  const exam = nextExam(setup, progress, today);
+  return {
+    name,
+    week: o.current ? o.current.name : 'No week planned',
+    test: lastTestLine(words, progress, chapters) || 'No test yet',
+    passed: (chapters || []).filter((c) => PR.chapterProgress(progress, c.id).passed).length,
+    exam: exam ? exam.name + ', ' + W.dayLabel(exam.date) : 'None',
+  };
+}

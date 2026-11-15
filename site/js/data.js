@@ -1,6 +1,7 @@
 // Loads the word list and the asset manifest once, and answers lookups from memory.
 
 import * as Ch from './chapters-doc.js';
+import * as T from './tiles-doc.js';
 
 let curriculum = null;
 let byWord = new Map();
@@ -18,6 +19,7 @@ export async function loadData() {
   ]);
   if (!cRes.ok) throw new Error('Word list did not load (HTTP ' + cRes.status + ')');
   curriculum = await cRes.json();
+  lexiconSet = null;
 
   const built = Ch.buildYears(curriculum);
   byYear = built.byYear;
@@ -66,6 +68,9 @@ export const entry = (word) => byWord.get(word) || null;
 /** Every chapter id that has this word (a few words, such as busy, are in two). */
 export const chaptersOf = (word) => (inChapters.get(word) || []).slice();
 export const allWords = () => [...byWord.values()];
+// SB4-WP4: every curriculum word, lower case, plus the homophones (tiles-doc.js): a tray must never let another word be built. Built once.
+let lexiconSet = null;
+export const lexicon = () => lexiconSet || (lexiconSet = T.lexiconOf(allWords().map((e) => e.word)));
 export const hasImage = (w) => assets.images.has(w.image);
 export const letterAudioUrl = (L) => 'assets/audio/letters/' + L.toUpperCase() + '.mp3' + (audioVersion ? '?v=' + audioVersion : '');
 export const wordAudioUrl = (word) => 'assets/audio/words/' + word.toLowerCase() + '.mp3' + (audioVersion ? '?v=' + audioVersion : '');

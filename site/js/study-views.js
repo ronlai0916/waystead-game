@@ -15,6 +15,11 @@ import { burstHtml, placeBursts } from './celebrate.js';
 import { runSession } from './play.js';
 import { esc, ICON, chunked, boldWord, keyboard, toast, dotsHtml, rowCountHtml, inARowHtml, pictureState, picture } from './ui.js';
 import * as C from './child-doc.js';
+import * as G from './games-doc.js';
+import * as A from './assess-doc.js';
+import * as Tr from './tray.js';
+import { hearInSentence, canSentence } from './sentence.js';
+import { childYear } from './who.js';
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -87,10 +92,12 @@ function wireWordCard(main, w) {
   if (mean) mean.addEventListener('click', () => sayLine(w.meaning.definition));
 }
 
+const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const segsHtml = (i, n) => '<div class="segs" role="img" aria-label="Word ' + (i + 1) + ' of ' + n + '">' + Array.from({ length: n }, (_, k) => '<i class="' + (k < i ? 'is-done' : k === i ? 'is-now' : '') + '"></i>').join('') + '</div>';
 
 function hello(main, g) {
-  const list = W.rows(g);
+  const list = W.rows(g).filter((x) => G.playable(entryFor(x), 'flower')); // "a" and "I" cannot be played on a flower
+  if (!list.length) { finishStep(main, g, 'hello'); return () => {}; } // a group of only "a" and "I": nothing to play
   let i = firstLeft(S.readWords(), g, 'hello', list.length);
   let stopped = false;
   let endGame = null;
@@ -136,11 +143,13 @@ function fix(main, g, start) {
   let phase = 'look';
   let slipped = false; // this word needed another go
   let timer = null;
+  let ctrl = null; // the letter tray, on level 1 to 4
   const w = () => entryFor(word);
   const count = () => W.sessionCount(S.readWords(), g, word, today(), 'x');
   const skipBtn = '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>';
-  const page = (title, body, n = count()) => {
-    main.innerHTML = '<section class="wrap page spellpage">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (rows.indexOf(word) + 1) + ' of ' + rows.length + '</p><p class="rowcount" data-row>' + inARowHtml(n) + '</p>') + body + '</section>';
+  const page = (title, body, n = count(), cls = '') => {
+    if (ctrl) { ctrl.destroy(); ctrl = null; }
+    main.innerHTML = '<section class="wrap page spellpage' + cls + '">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (rows.indexOf(word) + 1) + ' of ' + rows.length + '</p><p class="rowcount" data-row>' + inARowHtml(n) + '</p>') + body + '</section>';
     const b = main.querySelector('[data-skip]');
     if (b) b.addEventListener('click', skip);
     window.scrollTo(0, 0);
@@ -167,10 +176,33 @@ function fix(main, g, start) {
     button('[data-hear]', () => speak(w().word));
     button('[data-written]', type);
   }
+  function typeTiles(line, lv, pf, spec) {
+    const rules = A.RULES.practice[pf] || A.RULES.practice.normal;
+    const entry = w();
+    page('Now spell it', Tr.lineHtml(Tr.instructionFor(lv), Tr.moreFor(spec, lv)) + '<p class="peek" data-peek aria-live="polite"></p>'
+      + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: entry.tricky }) + '<button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button></div>'
+      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>' + Tr.EYE_ICON + 'Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+      + '<div data-slot>' + Tr.colHtml(Tr.trayHtml(spec),
+        '<div class="btnrow btnrow--center testbtns testbtns--tray"><button type="button" class="btn btn--primary" data-check disabled>' + TICK + 'Check</button>'
+        + '<button type="button" class="btn btn--ghost" data-skip>Skip for now<span class="sr">. It comes back later.</span></button></div>') + '</div>', count(), ' tilepage');
+    ctrl = Tr.mountTray(main, spec, {
+      glowAfter: rules.glowAfter, xs: pf === 'sen',
+      onChange: (st) => { const c = main.querySelector('[data-check]'); if (c) c.disabled = !st.full || st.right; },
+    });
+    if (line) ctrl.say(line);
+    const hearNow = () => (rules.sentence === 'auto' && canSentence(entry) ? hearInSentence(entry) : speak(entry.word));
+    button('[data-hear]', hearNow);
+    button('[data-peekbtn]', peek);
+    button('[data-check]', () => { const r = ctrl.check(); if (r && r.right) check({ tries: r.tries, helped: r.helped }); });
+    hearNow();
+  }
   function type(line = '') {
     phase = 'type';
     typed = '';
     peeks = 0;
+    const { lv, pf } = S.helpNow(childYear());
+    const spec = lv < 5 ? Tr.specFor(w(), lv, { pf }) : null;
+    if (spec) { typeTiles(typeof line === 'string' ? line : '', lv, pf, spec); return; }
     page('Now type it', '<p class="peek" data-peek aria-live="polite"></p><p class="spellline" role="status">' + esc(typeof line === 'string' ? line : '') + '</p><p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
       + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
@@ -180,7 +212,7 @@ function fix(main, g, start) {
     button('[data-hear]', () => speak(w().word));
     button('[data-peekbtn]', peek);
     button('[data-del]', del);
-    button('[data-check]', check);
+    button('[data-check]', () => check());
     speak(w().word);
   }
   function peek() {
@@ -189,31 +221,40 @@ function fix(main, g, start) {
     main.querySelector('[data-hint]').textContent = C.PEEKED_LINE;
     main.querySelector('[data-peek]').textContent = w().word;
     main.querySelector('[data-peekbtn]').disabled = true;
+    if (ctrl) ctrl.lock(true);
     clearTimeout(timer);
     timer = setTimeout(() => {
       if (phase !== 'type') return;
       main.querySelector('[data-peek]').textContent = '';
       main.querySelector('[data-peekbtn]').disabled = false;
-    }, 2000);
+      if (ctrl) ctrl.lock(false);
+    }, ctrl ? 3000 : 2000);
   }
   const show = () => { main.querySelector('[data-answer]').textContent = typed; };
   function put(L) { if (typed.length < 24) { typed += L.toLowerCase(); show(); } }
   function del() { typed = typed.slice(0, -1); show(); }
-  function record(right) {
+  // info: a tile pass { tries, helped } (the letters not right at each Check, and whether the tray filled one).
+  function record(right, info = null) {
     const day = today();
-    S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w().word, day, group: g.id, kind: 'p', tries: right ? 0 : 1, peeks, clean: right && !peeks, source: 'x', now: Date.now() }));
+    const { lv } = S.helpNow(childYear());
+    const extra = info ? { lv, ...(info.helped ? { h: 1 } : {}) } : {};
+    S.updateWords((d) => W.addTry(d, { id: S.newId(), word: w().word, day, group: g.id, kind: 'p', tries: info ? info.tries : (right ? 0 : 1), peeks, clean: right && !peeks && !(info && (info.tries || info.helped)), source: 'x', now: Date.now(), ...extra }));
   }
-  function check() {
-    if (!typed) { toast('Type the word first'); return; }
+  // Leaving the typing step after a peek, or after letters the tray sent back, still ends the run.
+  function recordLeave() {
+    if (phase !== 'type') return;
+    if (ctrl) { const st = ctrl.state(); if (peeks || st.tries || st.helped) record(false, { tries: st.tries, helped: st.helped }); } else if (peeks) record(true);
+  }
+  function check(info = null) {
+    if (!info && !typed) { toast('Type the word first'); return; }
     phase = 'check';
-    const right = R.checkAnswer(w().word, typed);
-    record(right);
-    const clean = right && !peeks;
+    const right = info ? true : R.checkAnswer(w().word, typed);
+    record(right, info);
+    const clean = right && !peeks && !(info && (info.tries || info.helped));
     if (clean && count() < W.ROW_NEEDED) { type('Clean! Now again, all on your own.'); return; }
     if (!clean) slipped = true;
-    page(clean ? 'Check' : 'Let\'s try that one again', '<div class="card result ' + (clean ? 'result--good' : 'result--bad') + '"><div class="result__head"><span class="result__badge">' + (clean ? '✓' : '×') + '</span><h2>' + (clean ? 'That\'s it' : right ? 'Right, with a peek' : 'Not quite yet') + '</h2></div>'
+    page(clean ? 'Check' : 'Let\'s try that one again', '<div class="card result ' + (clean ? 'result--good' : 'result--soft') + '"><div class="result__head"><span class="result__badge">' + (clean ? '✓' : '•') + '</span><h2>' + (clean ? 'That\'s it' : peeks && right ? 'Right, with a peek' : right ? 'You got there' : 'Nearly') + '</h2></div>'
       + '<div class="result__word">' + chunked(w(), '', { tricky: true }) + '</div>'
-      + (right ? '' : '<p class="muted">You wrote: <b>' + esc(typed) + '</b></p>')
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-go>' + (clean ? 'Next' : 'Look again') + ICON.arrow + '</button></div></div>');
     button('[data-go]', clean ? afterWord : () => look());
     main.querySelector('[data-go]').focus({ preventScroll: true });
@@ -243,7 +284,7 @@ function fix(main, g, start) {
   // The word moves to the end of today's list. With nothing else left, back to the list: the job stays open.
   function skip() {
     const day = today();
-    if (phase === 'type' && peeks) record(true); // a peek still ends the run, as leaving does
+    recordLeave(); // a peek still ends the run, as leaving does
     S.updateWords((d) => W.addSkip(d, { id: S.newId(), group: g.id, word, day, flow: 'x', now: Date.now() }));
     const others = left().filter((x) => x !== word);
     phase = 'end';
@@ -254,13 +295,18 @@ function fix(main, g, start) {
   }
   function onKey(e) {
     if (e.metaKey || e.ctrlKey || e.altKey || phase !== 'type') return;
+    if (ctrl) {
+      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); ctrl.back(); }
+      return;
+    }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); put(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); del(); } else if (e.key === 'Enter') { e.preventDefault(); check(); }
   }
   document.addEventListener('keydown', onKey);
   look();
   return () => {
     clearTimeout(timer);
-    if (phase === 'type' && peeks) record(true); // left after a peek: that still ends the run
+    recordLeave(); // left after a peek: that still ends the run
+    if (ctrl) { ctrl.destroy(); ctrl = null; }
     document.removeEventListener('keydown', onKey);
     stop();
   };

@@ -14,6 +14,7 @@ import { CHOICES, currentChoice, choose } from './thememenu.js';
 import { announce } from './daystyle.js';
 import { getWeek, setWeek } from './week-choice.js';
 import { esc, ICON } from './ui.js';
+import { childYear } from './who.js';
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -85,6 +86,10 @@ export function childHome(main) {
     ? '<p class="homego__due" data-duetest>Your test for ' + esc(due.name) + ' is ready.</p><a class="btn btn--ghost" href="' + groupHref(due.id) + '/test" data-taketest>Take the test</a>' : '';
   const nextLine = !due && pick.next
     ? '<p class="homego__due" data-nextweek>' + esc(pick.next.name) + ' has a job waiting.</p><button type="button" class="btn btn--ghost" data-go-week="' + esc(pick.next.id) + '">Go to that week</button>' : '';
+  // SB4-WP5: one quiet row for a big test or exam a grown-up set, when its day has come, no test is due and the grown-up allows it.
+  const year = childYear();
+  const exam = St.dueGroups(d, day).length === 0 ? C.examLine(S.readSetup(), S.readDoc(), day, year, S.helpNow(year).pf) : null;
+  const examRow = exam ? '<a class="btn btn--quiet homego__exam" href="' + exam.href + '" data-examrow>' + esc(exam.line) + ICON.arrow + '</a>' : '';
   const back = v.comeBack.map((x) => '<a class="linkbtn" href="' + comeBackHref(g, x.word, x.flow) + '" data-comeback>Come back to this: ' + esc(x.word) + '</a>').join('');
   main.innerHTML = '<section class="wrap page room childhome" data-room="' + r.status + '">'
     + (takeSaved() ? '<p class="savedline" role="status" data-saved>' + C.SAVED_LINE + '</p>' : '')
@@ -92,7 +97,7 @@ export function childHome(main) {
     + (v.catchUp ? '<div class="homesay__text" data-catchup>' + say + '</div>' : '<div class="homesay__text">' + say + '</div>')
     + '<button type="button" class="btn btn--quiet hearit" data-hear>' + SVG.hear + 'Hear it</button></div>'
     + weekLine + '<div class="homego"><a class="btn btn--primary btn--hero" href="' + href + '"' + attr + '>' + esc(v.button.label) + ICON.arrow + '</a>'
-    + (v.note ? '<p class="homego__note">' + esc(v.note) + '</p>' : '') + dueLine + nextLine + (back ? '<div class="comeback">' + back + '</div>' : '') + '</div>'
+    + (v.note ? '<p class="homego__note">' + esc(v.note) + '</p>' : '') + dueLine + nextLine + examRow + (back ? '<div class="comeback">' + back + '</div>' : '') + '</div>'
     + card + '</section>';
   main.querySelector('[data-hear]').addEventListener('click', () => sayLine(v.say));
   const change = main.querySelector('[data-week-change]');

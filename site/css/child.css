@@ -274,3 +274,55 @@ button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer;
   body.is-child main > section.wrap.page:is(.play, .spellpage) .keyboard { margin: 0 0 0 24px; max-width: none; width: min(520px, 58vw); }
   body.is-child .spellpage .spellline { margin: 4px 0; }
 }
+
+/* ---- SB4-WP5: the one runner for a quiz, a test and an exam ----------------------------------------------------------
+   The screens with no keyboard (ready, rest, wait, the quiz's after-word card, the end) are one calm column. A word screen is the
+   spelling page (.spellpage), so the two-column rules for a wide but short screen apply as they do on the practice pages. Colours are tokens only. */
+.assess--card { display: grid; gap: 16px; align-content: start; padding-top: 16px; max-width: 560px; margin-inline: auto; }
+.assess__card { display: grid; gap: 12px; padding: 20px 18px; text-align: left; background: var(--surface); border: var(--card-border); border-radius: var(--r); }
+.assess__card h1, .assess--finish .pagehead h1 { font-size: clamp(1.6rem, 7vw, 2.1rem); }
+.assess__says { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.assess__says p, .assess__line { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.35rem; line-height: 1.3; }
+.assess--y12 .assess__says p, .assess--y12 .assess__line { font-size: 22px; }
+.assess__go { margin-top: 4px; }
+.assess .passmark { justify-self: start; margin: 0; }
+.assess__prog { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
+.assess__prog .progressline { flex: none; font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; color: var(--text); }
+.assess__prog .meter { flex: 1 1 120px; min-width: 120px; height: 10px; }
+.assess__tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 12px; margin: 8px 0 0; }
+.assess__tools .btn { min-height: 48px; min-width: 48px; }
+.assess__tools .btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.assess__heard:empty { display: none; }
+.assess__heard { margin: 4px 0 0; color: var(--muted); font-weight: 600; }
+/* After a word in a quiz: a tick and "You spelled it!" in leaf green, or an arrow and "Nearly!" in soft honey, never red. */
+.assess__fb { display: flex; align-items: center; gap: 12px; min-height: 68px; padding: 10px 12px 10px 16px; box-sizing: border-box; border-radius: var(--r); text-align: left; }
+.assess__fb h1 { flex: 1; margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.3rem; line-height: 1.25; }
+.assess__fbicon { flex: none; width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.assess__fb--ok { background: var(--good-soft); border: 2px solid var(--good); color: var(--good); }
+.assess__fb--soft { background: var(--soft-bg); border: 2px solid var(--soft-fg); color: var(--soft-fg); }
+.assess__how { display: grid; gap: 12px; justify-items: center; padding: 16px 12px; }
+.assess__how .chunked { font-size: 2rem; }
+/* The end: what was spelled, then the words to practise as cards (the right spelling, with Hear), then the way on. */
+.assess__cards { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.assess__pcard { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 72px; padding: 12px 12px 12px 16px; background: var(--surface); border: var(--card-border); border-radius: var(--r); }
+.assess__pcard .chunked { font-size: 1.7rem; }
+.assess__end { display: grid; gap: 12px; }
+.assess__end .btn { width: 100%; min-height: 56px; }
+.quizrow { margin: 10px 0 0; text-align: center; }
+.homego__exam { margin-top: 8px; min-height: 48px; }
+/* The exam is a plain paper: the surface, the word's number on the left, a ruled line under the answer, no Pip. */
+.exampaper { background: var(--surface); border: var(--card-border); border-radius: var(--r); }
+.paperno { flex: none; min-width: 2ch; font-family: var(--f-display); font-weight: 700; font-size: 1.6rem; line-height: 1.2; color: var(--muted); text-align: left; }
+.paperrow { display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; }
+.paperrow .answerline { flex: 1; min-width: 0; margin: 0; max-width: none; text-align: left; border-bottom: 2px solid var(--muted); }
+.paperrow .tileboxes { flex: 1; min-width: 0; width: auto; }
+.paperlines { display: grid; gap: 22px; margin-top: 4px; }
+.paperlines span { padding-bottom: 4px; font-weight: 700; color: var(--muted); border-bottom: 2px solid var(--muted); }
+.paperlist { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.paperlist__row { display: flex; align-items: flex-end; gap: 12px; width: 100%; min-height: 48px; padding: 8px 4px; box-sizing: border-box; font: inherit; color: var(--text); text-align: left; background: none; border: 0; border-bottom: 2px solid var(--muted); cursor: pointer; }
+.paperans { flex: 1; font-family: var(--f-display); font-weight: 700; font-size: 1.4rem; overflow-wrap: anywhere; }
+
+.assess--sen .assess__says p, .assess--sen .assess__line, .assess--sen .assess__mean, .assess--sen .assess__heard { font-size: 22px; }
+.assess__mean { margin: 4px 0; text-align: center; }
+.assess__cardhead { margin: 4px 0 0; font-family: var(--f-display); font-size: 1.2rem; text-align: left; }
+@media (max-width: 480px) { .exampaper { border: 0; background: none; } .exampaper .assess__card { border: 0; background: none; padding-inline: 0; } }

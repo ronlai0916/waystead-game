@@ -39,9 +39,24 @@ export function recordPass(d, g, word, { tries, clean, source = 'g' }, { id, day
 }
 
 // ---- Missing letters -----------------------------------------------------------------
-/** The letters to blank: the tricky ones; else one syllable; else the middle of the word. */
+const isCapital = (ch) => ch !== ch.toLowerCase() && ch === ch.toUpperCase();
+/**
+ * The letters to blank: the tricky ones; else one syllable; else the middle of the word.
+ * A one-letter word blanks its letter, a two-letter word its second; a capital is never blanked.
+ */
 export function blanksFor(entry, rand = Math.random) {
   const w = entry.word;
+  const raw = rawBlanks(entry, rand);
+  const lower = raw.filter((i) => !isCapital(w[i]));
+  if (lower.length || (w.length === 1 && raw.length)) return lower.length ? lower : raw;
+  const next = [...w].findIndex((ch, i) => i >= (raw[0] || 0) && !isCapital(ch));
+  const any = next >= 0 ? next : [...w].findIndex((ch) => !isCapital(ch));
+  return any >= 0 ? [any] : raw;
+}
+function rawBlanks(entry, rand) {
+  const w = entry.word;
+  if (w.length === 1) return [0];
+  if (w.length === 2) return [1];
   const at = entry.tricky ? w.indexOf(entry.tricky) : -1;
   if (at >= 0) return range(at, entry.tricky.length);
   const chunks = entry.chunks || [w];
@@ -51,16 +66,40 @@ export function blanksFor(entry, rand = Math.random) {
   }
   return w.length < 4 ? [1] : range(Math.floor(w.length / 3), Math.ceil(w.length / 3));
 }
+/** Games that need two letters or more to make sense ("a" and "I" can't be gapped, jumbled or typed on a flower). */
+const NEEDS_LETTERS = ['flower', 'missing', 'unjumble'];
+export const playable = (entry, game) => !(NEEDS_LETTERS.includes(game) && [...entry.word].length < 2);
+/** The games to offer for a chapter's words. */
+export function gamesFor(entries, chapter = {}, games = GAME_IDS) {
+  const defined = entries.filter((e) => e.meaning && e.meaning.definition).length;
+  return games.filter((g) => {
+    if (g === 'match') return !chapter.noMatch && defined >= MATCH_SIZE;
+    if (NEEDS_LETTERS.includes(g)) return entries.some((e) => playable(e, g));
+    return true;
+  });
+}
 /** The blanks' letters, typed in turn: wrong ones count, as they do on the grid. */
 export const newMissing = (word, blanks) => R.newRun(blanks.map((i) => word[i]).join(''));
 
 // ---- Unjumble ------------------------------------------------------------------------
-/** The word's letters out of order (a word of one repeated letter can't be). */
+/**
+ * The word's letters out of order (a word of one repeated letter can't be). A capital
+ * stays where it is ("Monday" keeps its M first); only the other letters move.
+ */
 export function jumble(word, rand = Math.random) {
   const letters = [...word];
+  const moving = letters.map((ch, i) => i).filter((i) => !isCapital(letters[i]));
   for (let i = 0; i < 20; i += 1) {
-    const out = shuffled(letters, rand);
+    const out = [...letters];
+    shuffled(moving.map((k) => letters[k]), rand).forEach((ch, n) => { out[moving[n]] = ch; });
     if (out.join('') !== word) return out;
+  }
+  // a stuck shuffle (two letters, an unlucky `rand`): swap the first two different movable letters
+  const a = moving.find((k) => letters[k] !== letters[moving[0]]);
+  if (a !== undefined) {
+    const out = [...letters];
+    [out[moving[0]], out[a]] = [out[a], out[moving[0]]];
+    return out;
   }
   return letters;
 }

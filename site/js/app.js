@@ -15,6 +15,8 @@ import { useWho, kind, isChild, isKnownChild, isAdult } from './who.js';
 import { applyAdult, useAdultTools } from './adult-chrome.js';
 import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools, closeMenu } from './child-views.js';
 import * as GU from './grownups-views.js';
+import * as SU from './setup-views.js'; // SB4-WP6
+import * as AV from './assess-views.js'; // SB4-WP5
 import { storyReview } from './story-views.js';
 import * as W from './words-doc.js';
 import { weekGuard } from './child-doc.js';
@@ -67,8 +69,15 @@ const ROUTES = [
   ['grownups/child/:cid/plan', GU.planWeek],
   ['grownups/child/:cid/plan/:gid', GU.editWeek],
   // SB4-WP5 routes
+  ['words/exam/:eid', AV.examPage],
+  ['words/g/:gid/quiz', AV.groupQuiz],
+  [':yearId/:slug/quiz', AV.chapterQuiz],
 
   // SB4-WP6 routes
+  ['grownups/overview', SU.overview],
+  ['grownups/child/:cid/spelling', SU.spellingPage],
+  ['grownups/child/:cid/exam', SU.examForm],
+  ['grownups/child/:cid/exam/:eid', SU.examReport],
 
   // SB4-WP7 routes
 

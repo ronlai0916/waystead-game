@@ -8,6 +8,7 @@ import * as Ch from './chapters-doc.js';
 import { kind, isChild, childYear } from './who.js';
 import { sayLine, stop } from './speech.js';
 import { esc, ICON } from './ui.js';
+import * as C from './child-doc.js';
 
 const href = (...parts) => '#/' + parts.join('/');
 const yearName = (id) => D.years()[id].label; // "Year 3"
@@ -223,6 +224,9 @@ export function chapter(main, { yearId, slug }) {
     return '<a class="btn btn--quiet" href="' + base + '/' + r.to + '" data-step-link="' + id + '">' + (state === 'done' ? r.again : r.go) + '</a>';
   };
   const next = !st.next && yearId && D.chapters(yearId)[ch.index + 1];
+  // SB4-WP5: a quiet row once step 2 (Practise) is done, if the grown-up allows quizzes. A child only; never a word on it.
+  const quizRow = child && st.practise === 'done' && S.helpNow(childYear()).offer.quiz
+    ? '<p class="quizrow"><a class="linkbtn" href="' + base + '/quiz" data-quizrow>' + C.QUIZ_ROW + '</a></p>' : '';
   main.innerHTML = '<section class="wrap page front chapterpage' + y12() + '" data-chapterpage data-for="' + (child ? 'child' : 'adult') + '">'
     + '<div class="pagehead"><p class="eyebrow">' + esc(label) + ' · ' + esc(t.name) + '</p>'
     + sourceLines(yearId, [ch], ch.focus).map((l) => '<p class="eyebrow eyebrow--source" data-source>' + esc(l) + '</p>').join('') + '<h1>Chapter ' + t.n + '</h1>'
@@ -234,6 +238,7 @@ export function chapter(main, { yearId, slug }) {
         + (id === 'learn' ? words : '') + '<div class="stepcard__act">' + action(id) + '</div></li>';
     }).join('') + '</ol>'
     + (next ? '<a class="btn btn--primary btn--lead" href="' + href(yearId, next.slug) + '" data-next-chapter>Next chapter' + ICON.arrow + '</a>' : '')
+    + quizRow
     + '<p class="chapterfoot"><a class="linkbtn" href="' + base + '/quick" data-quick>Quick game with all ' + ch.words.length + ' words</a></p>'
     + '</section>';
   const hear = main.querySelector('[data-hear]');
