@@ -1,0 +1,818 @@
+{
+ "status": "signed off by Ron",
+ "year": 2,
+ "batch": "y2-a",
+ "chapters": [
+  {
+   "id": "y2-ch01",
+   "year": 2,
+   "title": "Chapter 1 — dge and ge",
+   "focus": "dge, ge",
+   "re": "(dge|ge)",
+   "description": "Words where the j sound is spelt dge after a short vowel or ge elsewhere, plus seven Year 2 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "find",
+     "ipa": "/faɪnd/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To discover something or see where it is.",
+      "example": "I can find my red hat."
+     },
+     "chunks": [
+      "f",
+      "ind"
+     ],
+     "tricky": "i",
+     "set": "cew"
+    },
+    {
+     "word": "kind",
+     "ipa": "/kaɪnd/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Friendly and caring towards other people.",
+      "example": "She was kind and shared her toys."
+     },
+     "chunks": [
+      "k",
+      "ind"
+     ],
+     "tricky": "i",
+     "set": "cew"
+    },
+    {
+     "word": "mind",
+     "ipa": "/maɪnd/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The part of you that thinks.",
+      "example": "Keep a happy picture in your mind."
+     },
+     "chunks": [
+      "m",
+      "ind"
+     ],
+     "tricky": "i",
+     "set": "cew"
+    },
+    {
+     "word": "behind",
+     "ipa": "/bɪˈhaɪnd/",
+     "meaning": {
+      "partOfSpeech": "preposition",
+      "definition": "At the back of something.",
+      "example": "The cat hid behind the big chair."
+     },
+     "chunks": [
+      "be",
+      "hind"
+     ],
+     "tricky": "i",
+     "set": "cew"
+    },
+    {
+     "word": "child",
+     "ipa": "/tʃaɪld/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A young boy or girl.",
+      "example": "Each child had a red balloon."
+     },
+     "chunks": [
+      "ch",
+      "ild"
+     ],
+     "tricky": "i",
+     "set": "cew"
+    },
+    {
+     "word": "children",
+     "ipa": "/ˈtʃɪldrən/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "More than one child.",
+      "example": "The children played in the park."
+     },
+     "chunks": [
+      "chil",
+      "dren"
+     ],
+     "tricky": "i",
+     "set": "cew"
+    },
+    {
+     "word": "wild",
+     "ipa": "/waɪld/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Living free in nature, not looked after by people.",
+      "example": "We saw a wild fox in the field."
+     },
+     "chunks": [
+      "w",
+      "ild"
+     ],
+     "tricky": "i",
+     "set": "cew"
+    },
+    {
+     "word": "badge",
+     "ipa": "/bædʒ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A small sign you pin on your clothes.",
+      "example": "She pinned a gold badge on her coat."
+     },
+     "chunks": [
+      "ba",
+      "dge"
+     ],
+     "tricky": "dge",
+     "set": "pattern"
+    },
+    {
+     "word": "bridge",
+     "ipa": "/brɪdʒ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A way across a river or a road.",
+      "example": "We walked over the bridge to the park."
+     },
+     "chunks": [
+      "bri",
+      "dge"
+     ],
+     "tricky": "dge",
+     "set": "pattern"
+    },
+    {
+     "word": "page",
+     "ipa": "/peɪdʒ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "One side of a sheet of paper in a book.",
+      "example": "Turn the page to read more."
+     },
+     "chunks": [
+      "pa",
+      "ge"
+     ],
+     "tricky": "ge",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y2-ch02",
+   "year": 2,
+   "title": "Chapter 2 — Soft c",
+   "focus": "c before e, i and y",
+   "re": "c[eiy]",
+   "description": "Words where the letter c makes an s sound because an e, i or y follows it, plus six Year 2 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "climb",
+     "ipa": "/klaɪm/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To go up using your hands and feet.",
+      "example": "I like to climb the big tree."
+     },
+     "chunks": [
+      "cl",
+      "imb"
+     ],
+     "tricky": "b",
+     "set": "cew"
+    },
+    {
+     "word": "most",
+     "ipa": "/məʊst/",
+     "meaning": {
+      "partOfSpeech": "determiner",
+      "definition": "The largest number or amount.",
+      "example": "Most of us like cake."
+     },
+     "chunks": [
+      "m",
+      "ost"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "only",
+     "ipa": "/ˈəʊnli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "Just one and no more.",
+      "example": "I have only one red pen."
+     },
+     "chunks": [
+      "on",
+      "ly"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "both",
+     "ipa": "/bəʊθ/",
+     "meaning": {
+      "partOfSpeech": "determiner",
+      "definition": "The two together.",
+      "example": "She held a kite in both hands."
+     },
+     "chunks": [
+      "b",
+      "oth"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "old",
+     "ipa": "/əʊld/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Having lived or been around for a long time.",
+      "example": "My old toy bear is very soft."
+     },
+     "chunks": [
+      "o",
+      "ld"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "cold",
+     "ipa": "/kəʊld/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not warm.",
+      "example": "The water in the lake was cold."
+     },
+     "chunks": [
+      "c",
+      "old"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "city",
+     "ipa": "/ˈsɪti/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A very big town with lots of buildings.",
+      "example": "We took the train to the city."
+     },
+     "chunks": [
+      "ci",
+      "ty"
+     ],
+     "tricky": "c",
+     "set": "pattern"
+    },
+    {
+     "word": "ice",
+     "ipa": "/aɪs/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Water that has frozen hard.",
+      "example": "The ice on the car window was thick."
+     },
+     "chunks": [
+      "i",
+      "ce"
+     ],
+     "tricky": "c",
+     "set": "pattern"
+    },
+    {
+     "word": "face",
+     "ipa": "/feɪs/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The front of your head, with eyes and a nose.",
+      "example": "She drew a smiling face on the card."
+     },
+     "chunks": [
+      "fa",
+      "ce"
+     ],
+     "tricky": "c",
+     "set": "pattern"
+    },
+    {
+     "word": "fence",
+     "ipa": "/fens/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A wooden wall that goes round a garden.",
+      "example": "A white fence goes round our garden."
+     },
+     "chunks": [
+      "fen",
+      "ce"
+     ],
+     "tricky": "c",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y2-ch03",
+   "year": 2,
+   "title": "Chapter 3 — kn, gn and wr",
+   "focus": "kn, gn, wr",
+   "re": "(kn|gn|wr)",
+   "description": "Words that begin with a silent first letter: kn and gn sound like n, wr sounds like r; plus six Year 2 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "gold",
+     "ipa": "/ɡəʊld/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A shiny yellow metal.",
+      "example": "The crown was made of gold."
+     },
+     "chunks": [
+      "g",
+      "old"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "hold",
+     "ipa": "/həʊld/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To keep something in your hands.",
+      "example": "Hold my hand when we cross the road."
+     },
+     "chunks": [
+      "h",
+      "old"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "told",
+     "ipa": "/təʊld/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Said something to someone, from the word tell.",
+      "example": "Dad told us a funny story."
+     },
+     "chunks": [
+      "t",
+      "old"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "every",
+     "ipa": "/ˈevri/",
+     "meaning": {
+      "partOfSpeech": "determiner",
+      "definition": "Each one of them.",
+      "example": "We go to the park every day."
+     },
+     "chunks": [
+      "ev",
+      "e",
+      "ry"
+     ],
+     "tricky": "e",
+     "set": "cew"
+    },
+    {
+     "word": "everybody",
+     "ipa": "/ˈevribɒdi/",
+     "meaning": {
+      "partOfSpeech": "pronoun",
+      "definition": "All the people.",
+      "example": "Everybody sang at the end of the show."
+     },
+     "chunks": [
+      "ev",
+      "e",
+      "ry",
+      "bo",
+      "dy"
+     ],
+     "tricky": "e",
+     "set": "cew"
+    },
+    {
+     "word": "even",
+     "ipa": "/ˈiːvən/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "A number like 2, 4 or 6 that makes two equal groups.",
+      "example": "Two, four and six are even numbers."
+     },
+     "chunks": [
+      "ev",
+      "en"
+     ],
+     "tricky": "e",
+     "set": "cew"
+    },
+    {
+     "word": "gnat",
+     "ipa": "/næt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A tiny flying insect.",
+      "example": "A little gnat buzzed round the lamp."
+     },
+     "chunks": [
+      "gn",
+      "at"
+     ],
+     "tricky": "gn",
+     "set": "pattern"
+    },
+    {
+     "word": "wrist",
+     "ipa": "/rɪst/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The part where your hand joins your arm.",
+      "example": "She wore a red watch on her wrist."
+     },
+     "chunks": [
+      "wr",
+      "ist"
+     ],
+     "tricky": "wr",
+     "set": "pattern"
+    },
+    {
+     "word": "wren",
+     "ipa": "/ren/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A very small brown bird.",
+      "example": "A wren sang in the bush."
+     },
+     "chunks": [
+      "wr",
+      "en"
+     ],
+     "tricky": "wr",
+     "set": "pattern"
+    },
+    {
+     "word": "knock",
+     "ipa": "/nɒk/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To tap on a door.",
+      "example": "Please knock before you open the door."
+     },
+     "chunks": [
+      "kn",
+      "ock"
+     ],
+     "tricky": "kn",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y2-ch04",
+   "year": 2,
+   "title": "Chapter 4 — Word endings le, el, al, il",
+   "focus": "le, el, al, il at the end",
+   "re": "(le|el|al|il)$",
+   "description": "Words that end in the same sound spelt le, el, al or il, plus six Year 2 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "great",
+     "ipa": "/ɡreɪt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very good, or very big.",
+      "example": "We had a great day at the beach."
+     },
+     "chunks": [
+      "gr",
+      "eat"
+     ],
+     "tricky": "ea",
+     "set": "cew"
+    },
+    {
+     "word": "break",
+     "ipa": "/breɪk/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To make something come apart.",
+      "example": "Be careful not to break the cup."
+     },
+     "chunks": [
+      "br",
+      "eak"
+     ],
+     "tricky": "ea",
+     "set": "cew"
+    },
+    {
+     "word": "steak",
+     "ipa": "/steɪk/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A thick slice of meat.",
+      "example": "Dad cooked a steak for dinner."
+     },
+     "chunks": [
+      "st",
+      "eak"
+     ],
+     "tricky": "ea",
+     "set": "cew"
+    },
+    {
+     "word": "pretty",
+     "ipa": "/ˈprɪti/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Nice to look at.",
+      "example": "She wore a pretty blue dress."
+     },
+     "chunks": [
+      "pre",
+      "tty"
+     ],
+     "tricky": "e",
+     "set": "cew"
+    },
+    {
+     "word": "beautiful",
+     "ipa": "/ˈbjuːtɪfl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very lovely to look at.",
+      "example": "The garden looks beautiful in spring."
+     },
+     "chunks": [
+      "beau",
+      "ti",
+      "ful"
+     ],
+     "tricky": "eau",
+     "set": "cew"
+    },
+    {
+     "word": "people",
+     "ipa": "/ˈpiːpl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Men, women and children.",
+      "example": "Lots of people came to the fair."
+     },
+     "chunks": [
+      "peo",
+      "ple"
+     ],
+     "tricky": "eo",
+     "set": "cew"
+    },
+    {
+     "word": "apple",
+     "ipa": "/ˈæpl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A round fruit that is red or green.",
+      "example": "I ate a crunchy apple at lunch."
+     },
+     "chunks": [
+      "ap",
+      "ple"
+     ],
+     "tricky": "le",
+     "set": "pattern"
+    },
+    {
+     "word": "camel",
+     "ipa": "/ˈkæməl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A big animal with one or two humps on its back.",
+      "example": "We saw a camel at the zoo."
+     },
+     "chunks": [
+      "cam",
+      "el"
+     ],
+     "tricky": "el",
+     "set": "pattern"
+    },
+    {
+     "word": "animal",
+     "ipa": "/ˈænɪml/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A living creature, such as a dog or a horse.",
+      "example": "The zoo has many kinds of animal."
+     },
+     "chunks": [
+      "an",
+      "i",
+      "mal"
+     ],
+     "tricky": "al",
+     "set": "pattern"
+    },
+    {
+     "word": "pencil",
+     "ipa": "/ˈpensl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A thin tool for writing and drawing.",
+      "example": "I drew a house with my pencil."
+     },
+     "chunks": [
+      "pen",
+      "cil"
+     ],
+     "tricky": "il",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y2-ch05",
+   "year": 2,
+   "title": "Chapter 5 — y at the end",
+   "focus": "y at the end; y to ies",
+   "re": "(y|ies)$",
+   "description": "Words that end in y, and plurals where y changes to ies, plus seven Year 2 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "after",
+     "ipa": "/ˈɑːftə/",
+     "meaning": {
+      "partOfSpeech": "preposition",
+      "definition": "Later than something else.",
+      "example": "We play after we finish lunch."
+     },
+     "chunks": [
+      "af",
+      "ter"
+     ],
+     "tricky": "er",
+     "set": "cew"
+    },
+    {
+     "word": "fast",
+     "ipa": "/fɑːst/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Moving very quickly.",
+      "example": "The cheetah is a fast animal."
+     },
+     "chunks": [
+      "f",
+      "ast"
+     ],
+     "tricky": "a",
+     "set": "cew"
+    },
+    {
+     "word": "last",
+     "ipa": "/lɑːst/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Coming at the end.",
+      "example": "She was the last one in line."
+     },
+     "chunks": [
+      "l",
+      "ast"
+     ],
+     "tricky": "a",
+     "set": "cew"
+    },
+    {
+     "word": "past",
+     "ipa": "/pɑːst/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The time before now.",
+      "example": "Long ago, in the past, people rode horses."
+     },
+     "chunks": [
+      "p",
+      "ast"
+     ],
+     "tricky": "a",
+     "set": "cew"
+    },
+    {
+     "word": "father",
+     "ipa": "/ˈfɑːðə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A man who has a child; a dad.",
+      "example": "My father reads me a story."
+     },
+     "chunks": [
+      "fa",
+      "ther"
+     ],
+     "tricky": "a",
+     "set": "cew"
+    },
+    {
+     "word": "class",
+     "ipa": "/klɑːs/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A group of children who learn together.",
+      "example": "Our class sings every Friday."
+     },
+     "chunks": [
+      "cl",
+      "ass"
+     ],
+     "tricky": "a",
+     "set": "cew"
+    },
+    {
+     "word": "grass",
+     "ipa": "/ɡrɑːs/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Green plants that grow on lawns and fields.",
+      "example": "We sat on the soft grass."
+     },
+     "chunks": [
+      "gr",
+      "ass"
+     ],
+     "tricky": "a",
+     "set": "cew"
+    },
+    {
+     "word": "sky",
+     "ipa": "/skaɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The space above us where we see clouds and the sun.",
+      "example": "We saw a rainbow in the sky."
+     },
+     "chunks": [
+      "sk",
+      "y"
+     ],
+     "tricky": "y",
+     "set": "pattern"
+    },
+    {
+     "word": "fly",
+     "ipa": "/flaɪ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To move through the air.",
+      "example": "Birds fly high over the trees."
+     },
+     "chunks": [
+      "fl",
+      "y"
+     ],
+     "tricky": "y",
+     "set": "pattern"
+    },
+    {
+     "word": "babies",
+     "ipa": "/ˈbeɪbiz/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "More than one baby.",
+      "example": "The babies giggled in their cots."
+     },
+     "chunks": [
+      "ba",
+      "bies"
+     ],
+     "tricky": "ies",
+     "set": "pattern"
+    }
+   ]
+  }
+ ]
+}

@@ -76,6 +76,23 @@ test('the Menu rows and the switch rows', () => {
   assert.equal(A.playAsLine(['A', 'B', 'C', 'D', 'E'].map(kid)), 'A, B, C and 2 more');
   assert.equal(A.playAsLine([]), '');
 });
+test('the Menu says which years have chapters, and every row has its own icon (SB4-E/F)', () => {
+  const sub = (years) => A.menuRows(years).find((r) => r.id === 'chapters').sub;
+  assert.equal(sub(['y1', 'y2', 'y3', 'y4', 'y5', 'y6']), 'Year 1 to Year 6 chapters');
+  assert.equal(sub(['y3', 'y4', 'y5', 'y6']), 'Year 3 to Year 6 chapters');
+  assert.equal(sub([2, 3]), 'Year 2 to Year 6 chapters');
+  assert.equal(sub(['y6']), 'Year 6 chapters');
+  assert.equal(sub([]), 'Year 3 to Year 6 chapters', 'nothing loaded yet: the old line');
+  assert.equal(A.MENU_ROWS.find((r) => r.id === 'chapters').sub, 'Year 1 to Year 6 chapters', 'the plain list matches the real one');
+  assert.deepEqual(A.menuRows(['y1']).filter((r) => r.id !== 'chapters'), A.MENU_ROWS.filter((r) => r.id !== 'chapters'));
+  // the page draws the live years, and each row id has an icon of its own
+  const src = read('site/js/adult-chrome.js');
+  assert.match(src, /D\.menuRows\(liveYears\(\)\)/);
+  assert.equal(new Set(A.MENU_ROWS.map((r) => r.id)).size, A.MENU_ROWS.length, 'no two rows share an id (and so an icon)');
+  for (const r of A.MENU_ROWS) assert.match(src, new RegExp('\\n  ' + r.id + ': svg\\('), 'icon for ' + r.id);
+  assert.equal(A.MENU_ROWS.find((r) => r.title === 'Your own chapters').id, 'own');
+  assert.equal(A.MENU_ROWS.find((r) => r.title === 'For teachers').id, 'teach');
+});
 test('the files: no inline style, the bar is a Spellbright-only mode, the shared nav is not changed', () => {
   for (const f of ['site/js/adult-chrome.js', 'site/js/adult-doc.js', 'site/js/grownups-views.js']) assert.doesNotMatch(read(f), /\sstyle="/, f);
   const css = read('site/css/adult.css');
@@ -86,5 +103,5 @@ test('the files: no inline style, the bar is a Spellbright-only mode, the shared
   assert.equal(read('shared/topbar/nav.js'), read('site/js/nav/nav.js'));
   const sw = read('site/sw.js');
   for (const f of ['css/adult.css', 'js/adult-doc.js', 'js/adult-chrome.js']) assert.ok(sw.includes("'" + f + "'"), f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-16b'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-16c'/);
 });

@@ -1,0 +1,854 @@
+{
+ "status": "signed off by Ron",
+ "year": 5,
+ "batch": "y5-new",
+ "chapters": [
+  {
+   "id": "y5-n01",
+   "year": 5,
+   "title": "Chapter 6 — Words ending -cious and -tious",
+   "focus": "-cious, -tious",
+   "re": "(cious|tious)$",
+   "description": "Words that end with a 'shus' sound spelt -cious or -tious; our examples show which fits.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "vicious",
+     "ipa": "/ˈvɪʃ.əs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very cruel and fierce, ready to hurt.",
+      "example": "In the story, a vicious troll guarded the bridge."
+     },
+     "chunks": [
+      "vi",
+      "cious"
+     ],
+     "tricky": "ci",
+     "set": "pattern"
+    },
+    {
+     "word": "precious",
+     "ipa": "/ˈpreʃ.əs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very valuable or loved, and not to be wasted.",
+      "example": "She kept the precious ring in a small box."
+     },
+     "chunks": [
+      "pre",
+      "cious"
+     ],
+     "tricky": "ci",
+     "set": "pattern"
+    },
+    {
+     "word": "gracious",
+     "ipa": "/ˈɡreɪ.ʃəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Kind, polite and generous in the way you treat people.",
+      "example": "The queen gave a gracious smile to the crowd."
+     },
+     "chunks": [
+      "gra",
+      "cious"
+     ],
+     "tricky": "ci",
+     "set": "pattern"
+    },
+    {
+     "word": "spacious",
+     "ipa": "/ˈspeɪ.ʃəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Having lots of room inside.",
+      "example": "We moved into a spacious flat with big windows."
+     },
+     "chunks": [
+      "spa",
+      "cious"
+     ],
+     "tricky": "ci",
+     "set": "pattern"
+    },
+    {
+     "word": "cautious",
+     "ipa": "/ˈkɔː.ʃəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Careful to avoid danger or problems.",
+      "example": "The cautious cat crept slowly across the wall."
+     },
+     "chunks": [
+      "cau",
+      "tious"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "delicious",
+     "ipa": "/dɪˈlɪʃəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Tasting or smelling very good.",
+      "example": "The soup smelled delicious."
+     },
+     "chunks": [
+      "de",
+      "li",
+      "cious"
+     ],
+     "tricky": "ci",
+     "set": "pattern"
+    },
+    {
+     "word": "ambitious",
+     "ipa": "/æmˈbɪʃ.əs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Wanting very much to do well and achieve something.",
+      "example": "The ambitious girl hopes to win the race."
+     },
+     "chunks": [
+      "am",
+      "bi",
+      "tious"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "nutritious",
+     "ipa": "/njuːˈtrɪʃ.əs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Full of the goodness that helps you grow and stay healthy.",
+      "example": "Beans and carrots make a nutritious dinner."
+     },
+     "chunks": [
+      "nu",
+      "tri",
+      "tious"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "suspicious",
+     "ipa": "/səˈspɪʃ.əs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Feeling that something is not quite right.",
+      "example": "The dog gave the new cat a suspicious sniff."
+     },
+     "chunks": [
+      "sus",
+      "pi",
+      "cious"
+     ],
+     "tricky": "ci",
+     "set": "pattern"
+    },
+    {
+     "word": "infectious",
+     "ipa": "/ɪnˈfek.ʃəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Able to spread easily from one person to another.",
+      "example": "Her laugh was so infectious that we all joined in."
+     },
+     "chunks": [
+      "in",
+      "fec",
+      "tious"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y5-n02",
+   "year": 5,
+   "title": "Chapter 7 — Words ending -cial and -tial",
+   "focus": "-cial, -tial",
+   "re": "(cial|tial)$",
+   "description": "Words that end with a 'shul' sound spelt -cial or -tial; our examples show which fits.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "social",
+     "ipa": "/ˈsəʊ.ʃəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Connected with meeting and spending time with other people.",
+      "example": "The club holds a social evening every Friday."
+     },
+     "chunks": [
+      "so",
+      "cial"
+     ],
+     "tricky": "cia",
+     "set": "pattern"
+    },
+    {
+     "word": "commercial",
+     "ipa": "/kəˈmɜː.ʃəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "To do with buying, selling and business.",
+      "example": "A commercial bakery makes bread for many shops."
+     },
+     "chunks": [
+      "com",
+      "mer",
+      "cial"
+     ],
+     "tricky": "cia",
+     "set": "pattern"
+    },
+    {
+     "word": "facial",
+     "ipa": "/ˈfeɪ.ʃəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "To do with the face.",
+      "example": "His facial expression showed he was surprised."
+     },
+     "chunks": [
+      "fa",
+      "cial"
+     ],
+     "tricky": "cia",
+     "set": "pattern"
+    },
+    {
+     "word": "crucial",
+     "ipa": "/ˈkruː.ʃəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Extremely important, so that everything depends on it.",
+      "example": "Practice is crucial if you want to play well."
+     },
+     "chunks": [
+      "cru",
+      "cial"
+     ],
+     "tricky": "cia",
+     "set": "pattern"
+    },
+    {
+     "word": "official",
+     "ipa": "/əˈfɪʃ.əl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Approved by someone in charge.",
+      "example": "The official start time is nine in the morning."
+     },
+     "chunks": [
+      "of",
+      "fi",
+      "cial"
+     ],
+     "tricky": "cia",
+     "set": "pattern"
+    },
+    {
+     "word": "initial",
+     "ipa": "/ɪˈnɪʃ.əl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Happening first, at the very beginning.",
+      "example": "Our initial plan was to walk to the park."
+     },
+     "chunks": [
+      "i",
+      "ni",
+      "tial"
+     ],
+     "tricky": "tia",
+     "set": "pattern"
+    },
+    {
+     "word": "partial",
+     "ipa": "/ˈpɑː.ʃəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not complete; only a part of the whole.",
+      "example": "We only had a partial view of the stage."
+     },
+     "chunks": [
+      "par",
+      "tial"
+     ],
+     "tricky": "tia",
+     "set": "pattern"
+    },
+    {
+     "word": "essential",
+     "ipa": "/ɪˈsen.ʃəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Absolutely needed; you cannot do without it.",
+      "example": "Water is essential for all living things."
+     },
+     "chunks": [
+      "es",
+      "sen",
+      "tial"
+     ],
+     "tricky": "tia",
+     "set": "pattern"
+    },
+    {
+     "word": "potential",
+     "ipa": "/pəˈten.ʃəl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "What someone or something could become with time.",
+      "example": "The young player has great potential."
+     },
+     "chunks": [
+      "po",
+      "ten",
+      "tial"
+     ],
+     "tricky": "tia",
+     "set": "pattern"
+    },
+    {
+     "word": "artificial",
+     "ipa": "/ˌɑː.tɪˈfɪʃ.əl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Made by people, not found in nature.",
+      "example": "The shop sold artificial flowers that never die."
+     },
+     "chunks": [
+      "ar",
+      "ti",
+      "fi",
+      "cial"
+     ],
+     "tricky": "cia",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y5-n03",
+   "year": 5,
+   "title": "Chapter 8 — Words ending -ant, -ance and -ancy",
+   "focus": "-ant, -ance, -ancy",
+   "re": "(ant|ance|ancy)$",
+   "description": "Words ending in -ant, -ance or -ancy, where the vowel sound is hard to hear; our examples show the rule.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "distant",
+     "ipa": "/ˈdɪs.tənt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Far away in space or time.",
+      "example": "We could see distant hills through the mist."
+     },
+     "chunks": [
+      "dis",
+      "tant"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "instant",
+     "ipa": "/ˈɪn.stənt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Happening straight away, with no waiting.",
+      "example": "The magic trick was an instant success."
+     },
+     "chunks": [
+      "in",
+      "stant"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "pleasant",
+     "ipa": "/ˈplez.ənt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Nice, enjoyable and friendly.",
+      "example": "We spent a pleasant afternoon by the river."
+     },
+     "chunks": [
+      "pleas",
+      "ant"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "elegant",
+     "ipa": "/ˈel.ɪ.ɡənt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Graceful and stylish in the way it looks.",
+      "example": "The swan looked elegant as it glided past."
+     },
+     "chunks": [
+      "el",
+      "e",
+      "gant"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "brilliant",
+     "ipa": "/ˈbrɪl.jənt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very clever, or extremely bright and shining.",
+      "example": "The brilliant sunshine lit up the whole beach."
+     },
+     "chunks": [
+      "bril",
+      "liant"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "distance",
+     "ipa": "/ˈdɪs.təns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The amount of space between two places.",
+      "example": "The distance from here to school is a mile."
+     },
+     "chunks": [
+      "dis",
+      "tance"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "balance",
+     "ipa": "/ˈbæl.əns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Staying steady without falling over.",
+      "example": "She kept her balance on the narrow wall."
+     },
+     "chunks": [
+      "bal",
+      "ance"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "importance",
+     "ipa": "/ɪmˈpɔː.təns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "How much something matters.",
+      "example": "The teacher explained the importance of good manners."
+     },
+     "chunks": [
+      "im",
+      "por",
+      "tance"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "attendance",
+     "ipa": "/əˈten.dəns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "How often someone is present, for example at school.",
+      "example": "Our class had the best attendance this term."
+     },
+     "chunks": [
+      "at",
+      "ten",
+      "dance"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    },
+    {
+     "word": "vacancy",
+     "ipa": "/ˈveɪ.kən.si/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A job or room that is free and not yet taken.",
+      "example": "The hotel had a vacancy for one night."
+     },
+     "chunks": [
+      "va",
+      "can",
+      "cy"
+     ],
+     "tricky": "an",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y5-n04",
+   "year": 5,
+   "title": "Chapter 9 — Words ending -able and -ably",
+   "focus": "-able, -ably",
+   "re": "(able|ably)$",
+   "description": "Words ending in -able or -ably, which are often added to a whole word; our examples show the rule.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "valuable",
+     "ipa": "/ˈvæl.ju.əb.əl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Worth a lot of money or very useful.",
+      "example": "The museum keeps a valuable painting in a glass case."
+     },
+     "chunks": [
+      "val",
+      "u",
+      "a",
+      "ble"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "adorable",
+     "ipa": "/əˈdɔː.rə.bəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "So sweet and lovely that everyone wants to cuddle it.",
+      "example": "The adorable puppy wagged its tail."
+     },
+     "chunks": [
+      "a",
+      "dor",
+      "a",
+      "ble"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "remarkably",
+     "ipa": "/rɪˈmɑː.kə.bli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a way that is surprising and worth noticing.",
+      "example": "The tiny boat was remarkably fast."
+     },
+     "chunks": [
+      "re",
+      "mark",
+      "a",
+      "bly"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "enjoyable",
+     "ipa": "/ɪnˈdʒɔɪ.ə.bəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Giving you pleasure and fun.",
+      "example": "We had an enjoyable day at the seaside."
+     },
+     "chunks": [
+      "en",
+      "joy",
+      "a",
+      "ble"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "reasonable",
+     "ipa": "/ˈriː.zən.ə.bəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Fair and sensible.",
+      "example": "It is reasonable to ask for a turn."
+     },
+     "chunks": [
+      "rea",
+      "son",
+      "a",
+      "ble"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "noticeable",
+     "ipa": "/ˈnəʊ.tɪ.sə.bəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Easy to see or spot.",
+      "example": "There was a noticeable crack in the old cup."
+     },
+     "chunks": [
+      "no",
+      "tice",
+      "a",
+      "ble"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "comfortable",
+     "ipa": "/ˈkʌm.fə.tə.bəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Soft and relaxing, so that you feel at ease.",
+      "example": "The sofa was big and comfortable."
+     },
+     "chunks": [
+      "com",
+      "fort",
+      "a",
+      "ble"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "fashionable",
+     "ipa": "/ˈfæʃ.ən.ə.bəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Popular and in style at the moment.",
+      "example": "She wore a fashionable hat to the party."
+     },
+     "chunks": [
+      "fash",
+      "ion",
+      "a",
+      "ble"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "comfortably",
+     "ipa": "/ˈkʌm.fə.tə.bli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a relaxed way, feeling at ease.",
+      "example": "The cat slept comfortably on the warm rug."
+     },
+     "chunks": [
+      "com",
+      "fort",
+      "a",
+      "bly"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    },
+    {
+     "word": "reasonably",
+     "ipa": "/ˈriː.zən.ə.bli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a fair and sensible way.",
+      "example": "The new bike was reasonably cheap."
+     },
+     "chunks": [
+      "rea",
+      "son",
+      "a",
+      "bly"
+     ],
+     "tricky": "ab",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y5-n05",
+   "year": 5,
+   "title": "Chapter 10 — Adding endings to words ending -fer",
+   "focus": "-fer words with -ed, -ing, -ence",
+   "re": "(refer|prefer|transfer)",
+   "description": "Words built on refer, prefer and transfer: whether the r doubles depends on where the stress falls; our examples show this.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "referee",
+     "ipa": "/ˌref.əˈriː/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The person who makes sure players keep to the rules.",
+      "example": "The referee blew the whistle at half time."
+     },
+     "chunks": [
+      "ref",
+      "er",
+      "ee"
+     ],
+     "tricky": "ee",
+     "set": "pattern"
+    },
+    {
+     "word": "prefer",
+     "ipa": "/prɪˈfɜː/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To like one thing better than another.",
+      "example": "I prefer toast to cereal."
+     },
+     "chunks": [
+      "pre",
+      "fer"
+     ],
+     "tricky": "r",
+     "set": "pattern"
+    },
+    {
+     "word": "reference",
+     "ipa": "/ˈref.ər.əns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A mention of something, or a note of where to look.",
+      "example": "The teacher made a reference to our trip."
+     },
+     "chunks": [
+      "ref",
+      "er",
+      "ence"
+     ],
+     "tricky": "r",
+     "set": "pattern"
+    },
+    {
+     "word": "preference",
+     "ipa": "/ˈpref.ər.əns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Liking one thing better than another.",
+      "example": "Her preference is for blue rather than green."
+     },
+     "chunks": [
+      "pref",
+      "er",
+      "ence"
+     ],
+     "tricky": "r",
+     "set": "pattern"
+    },
+    {
+     "word": "referred",
+     "ipa": "/rɪˈfɜːd/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Mentioned something or pointed someone to it.",
+      "example": "He referred to his notes during the talk."
+     },
+     "chunks": [
+      "re",
+      "ferred"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    },
+    {
+     "word": "referring",
+     "ipa": "/rɪˈfɜː.rɪŋ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Mentioning something or pointing someone to it.",
+      "example": "She is referring to the last chapter."
+     },
+     "chunks": [
+      "re",
+      "fer",
+      "ring"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    },
+    {
+     "word": "preferred",
+     "ipa": "/prɪˈfɜːd/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Liked one thing better than another.",
+      "example": "We preferred the red kite to the green one."
+     },
+     "chunks": [
+      "pre",
+      "ferred"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    },
+    {
+     "word": "preferring",
+     "ipa": "/prɪˈfɜː.rɪŋ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Liking one thing better than another.",
+      "example": "Preferring the quiet seat, he sat by the window."
+     },
+     "chunks": [
+      "pre",
+      "fer",
+      "ring"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    },
+    {
+     "word": "transferred",
+     "ipa": "/trænsˈfɜːd/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Moved from one place or person to another.",
+      "example": "The photos were transferred onto the new computer."
+     },
+     "chunks": [
+      "trans",
+      "ferred"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    },
+    {
+     "word": "transferring",
+     "ipa": "/trænsˈfɜː.rɪŋ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Moving something from one place or person to another.",
+      "example": "Dad is transferring the water into a jug."
+     },
+     "chunks": [
+      "trans",
+      "fer",
+      "ring"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,838 @@
+{
+ "status": "signed off by Ron",
+ "year": 3,
+ "batch": "y3-new",
+ "chapters": [
+  {
+   "id": "y3-n01",
+   "year": 3,
+   "title": "Chapter 6 — Un-, dis- and mis-",
+   "focus": "prefixes un-, dis-, mis-",
+   "re": "^(un|dis|mis)",
+   "description": "Adding un-, dis- or mis- to the start of a word changes its meaning, and the rest of the word stays the same, as in our examples.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "unkind",
+     "ipa": "/ʌnˈkaɪnd/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not kind; mean or hurtful to other people.",
+      "example": "It is unkind to laugh at someone who has fallen."
+     },
+     "chunks": [
+      "un",
+      "kind"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "unfair",
+     "ipa": "/ʌnˈfeə/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not right or equal; not treating everyone the same.",
+      "example": "It felt unfair that only one team got a prize."
+     },
+     "chunks": [
+      "un",
+      "fair"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "untidy",
+     "ipa": "/ʌnˈtaɪdi/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Messy; not neat.",
+      "example": "Her untidy bedroom had toys all over the floor."
+     },
+     "chunks": [
+      "un",
+      "ti",
+      "dy"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "unlock",
+     "ipa": "/ʌnˈlɒk/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To open something using a key.",
+      "example": "Dad used a key to unlock the shed."
+     },
+     "chunks": [
+      "un",
+      "lock"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "dislike",
+     "ipa": "/dɪsˈlaɪk/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To not enjoy or care for something.",
+      "example": "I dislike cold porridge but I love toast."
+     },
+     "chunks": [
+      "dis",
+      "like"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "disagree",
+     "ipa": "/ˌdɪsəˈɡriː/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To think differently from someone else.",
+      "example": "We disagree about which film to watch tonight."
+     },
+     "chunks": [
+      "dis",
+      "a",
+      "gree"
+     ],
+     "tricky": "ee",
+     "set": "pattern"
+    },
+    {
+     "word": "misspell",
+     "ipa": "/ˌmɪsˈspel/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To spell a word without getting the letters right.",
+      "example": "Check your work so you do not misspell any words."
+     },
+     "chunks": [
+      "mis",
+      "spell"
+     ],
+     "tricky": "ss",
+     "set": "pattern"
+    },
+    {
+     "word": "mislead",
+     "ipa": "/ˌmɪsˈliːd/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To give someone a false idea so they believe something untrue.",
+      "example": "Muddled signs can mislead people on a walk."
+     },
+     "chunks": [
+      "mis",
+      "lead"
+     ],
+     "tricky": "ea",
+     "set": "pattern"
+    },
+    {
+     "word": "dishonest",
+     "ipa": "/dɪsˈɒnɪst/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not telling the truth; likely to cheat or lie.",
+      "example": "A dishonest player hid the card up his sleeve."
+     },
+     "chunks": [
+      "dis",
+      "hon",
+      "est"
+     ],
+     "tricky": "h",
+     "set": "pattern"
+    },
+    {
+     "word": "misbehave",
+     "ipa": "/ˌmɪsbɪˈheɪv/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To act badly or not follow the rules.",
+      "example": "The puppy tends to misbehave when visitors arrive."
+     },
+     "chunks": [
+      "mis",
+      "be",
+      "have"
+     ],
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y3-n02",
+   "year": 3,
+   "title": "Chapter 7 — Re-, sub- and super-",
+   "focus": "prefixes re-, sub-, super-",
+   "re": "^(re|sub|super)",
+   "description": "The prefixes re- (again), sub- (under) and super- (above or very big) are added to a whole word, as in our examples.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "replay",
+     "ipa": "/ˌriːˈpleɪ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To play something again.",
+      "example": "Can we replay that funny video one more time?"
+     },
+     "chunks": [
+      "re",
+      "play"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "reheat",
+     "ipa": "/ˌriːˈhiːt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To make food hot again.",
+      "example": "Mum will reheat the soup for lunch."
+     },
+     "chunks": [
+      "re",
+      "heat"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "rewrite",
+     "ipa": "/ˌriːˈraɪt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To write something again, often to make it better.",
+      "example": "I will rewrite my story with a new ending."
+     },
+     "chunks": [
+      "re",
+      "write"
+     ],
+     "tricky": "wr",
+     "set": "pattern"
+    },
+    {
+     "word": "rebuild",
+     "ipa": "/ˌriːˈbɪld/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To build something again.",
+      "example": "We helped rebuild the sandcastle after the wave hit it."
+     },
+     "chunks": [
+      "re",
+      "build"
+     ],
+     "tricky": "ui",
+     "set": "pattern"
+    },
+    {
+     "word": "subway",
+     "ipa": "/ˈsʌbweɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A path or tunnel under a road or the ground.",
+      "example": "We walked through the subway to cross the busy road."
+     },
+     "chunks": [
+      "sub",
+      "way"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "superstar",
+     "ipa": "/ˈsuːpəstɑː/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A very famous and brilliant singer, player or performer.",
+      "example": "The football superstar signed shirts for the fans."
+     },
+     "chunks": [
+      "su",
+      "per",
+      "star"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "subtract",
+     "ipa": "/səbˈtrækt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To take one number away from another.",
+      "example": "You subtract four from nine to get five."
+     },
+     "chunks": [
+      "sub",
+      "tract"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "superhero",
+     "ipa": "/ˈsuːpəˌhɪərəʊ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A character with amazing powers who helps people.",
+      "example": "My favourite superhero can fly high above the city."
+     },
+     "chunks": [
+      "su",
+      "per",
+      "he",
+      "ro"
+     ],
+     "tricky": "er",
+     "set": "pattern"
+    },
+    {
+     "word": "submarine",
+     "ipa": "/ˌsʌbməˈriːn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A ship that can travel underwater.",
+      "example": "The submarine dived deep beneath the waves."
+     },
+     "chunks": [
+      "sub",
+      "ma",
+      "rine"
+     ],
+     "tricky": "ar",
+     "set": "pattern"
+    },
+    {
+     "word": "supermarket",
+     "ipa": "/ˈsuːpəˌmɑːkɪt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A big shop that sells food and many other things.",
+      "example": "We buy our fruit at the supermarket."
+     },
+     "chunks": [
+      "su",
+      "per",
+      "mar",
+      "ket"
+     ],
+     "tricky": "ar",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y3-n03",
+   "year": 3,
+   "title": "Chapter 8 — Adding -ly",
+   "focus": "-ly, including -ily and -ally",
+   "re": "ly$",
+   "description": "Adding -ly turns a describing word into one that says how something is done; words ending in y change to -ily and words ending in -ic add -ally, as in our examples.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "gently",
+     "ipa": "/ˈdʒentli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a soft, kind and careful way.",
+      "example": "She gently stroked the sleepy kitten."
+     },
+     "chunks": [
+      "gent",
+      "ly"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "quickly",
+     "ipa": "/ˈkwɪkli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "At a fast speed.",
+      "example": "She quickly put on her coat and ran outside."
+     },
+     "chunks": [
+      "quick",
+      "ly"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "happily",
+     "ipa": "/ˈhæpɪli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a glad and cheerful way.",
+      "example": "The children played happily in the park."
+     },
+     "chunks": [
+      "hap",
+      "pi",
+      "ly"
+     ],
+     "tricky": "ily",
+     "set": "pattern"
+    },
+    {
+     "word": "easily",
+     "ipa": "/ˈiːzɪli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "Without trouble or hard work.",
+      "example": "He lifted the small box easily."
+     },
+     "chunks": [
+      "ea",
+      "si",
+      "ly"
+     ],
+     "tricky": "ily",
+     "set": "pattern"
+    },
+    {
+     "word": "noisily",
+     "ipa": "/ˈnɔɪzɪli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a loud way that makes a lot of sound.",
+      "example": "The geese honked noisily by the pond."
+     },
+     "chunks": [
+      "noi",
+      "si",
+      "ly"
+     ],
+     "tricky": "ily",
+     "set": "pattern"
+    },
+    {
+     "word": "angrily",
+     "ipa": "/ˈæŋɡrɪli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a cross way, showing you are very annoyed.",
+      "example": "He stamped angrily when the tower fell down."
+     },
+     "chunks": [
+      "an",
+      "gri",
+      "ly"
+     ],
+     "tricky": "ily",
+     "set": "pattern"
+    },
+    {
+     "word": "basically",
+     "ipa": "/ˈbeɪsɪkli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In the most important ways; mostly.",
+      "example": "A tomato is basically a fruit."
+     },
+     "chunks": [
+      "ba",
+      "si",
+      "cal",
+      "ly"
+     ],
+     "tricky": "cal",
+     "set": "pattern"
+    },
+    {
+     "word": "magically",
+     "ipa": "/ˈmædʒɪkli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a way that seems done by magic.",
+      "example": "The rabbit magically appeared from the hat."
+     },
+     "chunks": [
+      "mag",
+      "i",
+      "cal",
+      "ly"
+     ],
+     "tricky": "cal",
+     "set": "pattern"
+    },
+    {
+     "word": "fantastically",
+     "ipa": "/fænˈtæstɪkli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a wonderful, amazing way.",
+      "example": "The team played fantastically in the final."
+     },
+     "chunks": [
+      "fan",
+      "tas",
+      "ti",
+      "cal",
+      "ly"
+     ],
+     "tricky": "cal",
+     "set": "pattern"
+    },
+    {
+     "word": "dramatically",
+     "ipa": "/drəˈmætɪkli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In a sudden and exciting way.",
+      "example": "The sky dramatically darkened before the storm."
+     },
+     "chunks": [
+      "dra",
+      "ma",
+      "ti",
+      "cal",
+      "ly"
+     ],
+     "tricky": "cal",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y3-n04",
+   "year": 3,
+   "title": "Chapter 9 — Words ending -ation",
+   "focus": "the ending -ation",
+   "re": "ation$",
+   "description": "The ending -ation sounds like 'shun' and is spelt a-t-i-o-n, as in our examples.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "nation",
+     "ipa": "/ˈneɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A country and all its people.",
+      "example": "The whole nation cheered when the team won."
+     },
+     "chunks": [
+      "na",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "donation",
+     "ipa": "/dəʊˈneɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A gift of money or things to help others.",
+      "example": "We gave a donation to the school fair."
+     },
+     "chunks": [
+      "do",
+      "na",
+      "tion"
+     ],
+     "tricky": "tio",
+     "set": "pattern"
+    },
+    {
+     "word": "creation",
+     "ipa": "/kriˈeɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Something new that someone has made.",
+      "example": "Her clay creation was shown at school."
+     },
+     "chunks": [
+      "cre",
+      "a",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "exploration",
+     "ipa": "/ˌekspləˈreɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Travelling through a place to find out about it.",
+      "example": "Our exploration of the woods found a hidden stream."
+     },
+     "chunks": [
+      "ex",
+      "plo",
+      "ra",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "invitation",
+     "ipa": "/ˌɪnvɪˈteɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A request to come to a party or event.",
+      "example": "I got an invitation to a birthday party."
+     },
+     "chunks": [
+      "in",
+      "vi",
+      "ta",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "decoration",
+     "ipa": "/ˌdekəˈreɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Something pretty used to make a place look nice.",
+      "example": "A paper star was the best decoration on the tree."
+     },
+     "chunks": [
+      "dec",
+      "o",
+      "ra",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "education",
+     "ipa": "/ˌedʒuˈkeɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Learning and teaching, usually at school.",
+      "example": "Education helps us learn new things every day."
+     },
+     "chunks": [
+      "ed",
+      "u",
+      "ca",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "information",
+     "ipa": "/ˌɪnfəˈmeɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Facts or details about something.",
+      "example": "The sign gave information about the bus times."
+     },
+     "chunks": [
+      "in",
+      "for",
+      "ma",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "celebration",
+     "ipa": "/ˌselɪˈbreɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A special event to enjoy a happy day.",
+      "example": "There was a big celebration at the school fair."
+     },
+     "chunks": [
+      "cel",
+      "e",
+      "bra",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    },
+    {
+     "word": "imagination",
+     "ipa": "/ɪˌmædʒɪˈneɪʃn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The ability to picture new things in your mind.",
+      "example": "Her imagination turned the box into a rocket."
+     },
+     "chunks": [
+      "i",
+      "mag",
+      "i",
+      "na",
+      "tion"
+     ],
+     "tricky": "ti",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y3-n05",
+   "year": 3,
+   "title": "Chapter 10 — Odd ou and y",
+   "focus": "ou for the u sound (young, touch) and y for the i sound (gym, myth)",
+   "re": "(ou|[^aeiou]y[^aeiou])",
+   "description": "In these words the letters ou make the short 'u' sound and the letter y makes the short 'i' sound, as in our examples.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "gym",
+     "ipa": "/dʒɪm/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A room or hall with equipment for exercise.",
+      "example": "We play games in the gym on rainy days."
+     },
+     "chunks": [
+      "gym"
+     ],
+     "tricky": "y",
+     "set": "pattern"
+    },
+    {
+     "word": "myth",
+     "ipa": "/mɪθ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "An old story about gods or heroes that is not true.",
+      "example": "We read a Greek myth about a winged horse."
+     },
+     "chunks": [
+      "myth"
+     ],
+     "tricky": "y",
+     "set": "pattern"
+    },
+    {
+     "word": "young",
+     "ipa": "/jʌŋ/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not old; having lived for only a short time.",
+      "example": "A young lamb followed its mother across the field."
+     },
+     "chunks": [
+      "young"
+     ],
+     "tricky": "ou",
+     "set": "pattern"
+    },
+    {
+     "word": "touch",
+     "ipa": "/tʌtʃ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To put your hand on something.",
+      "example": "Please do not touch the hot oven."
+     },
+     "chunks": [
+      "touch"
+     ],
+     "tricky": "ou",
+     "set": "pattern"
+    },
+    {
+     "word": "double",
+     "ipa": "/ˈdʌbl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Twice as much or twice as many.",
+      "example": "I would like a double scoop of ice cream."
+     },
+     "chunks": [
+      "dou",
+      "ble"
+     ],
+     "tricky": "ou",
+     "set": "pattern"
+    },
+    {
+     "word": "cousin",
+     "ipa": "/ˈkʌzn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The child of your aunt or uncle.",
+      "example": "My cousin came to stay for the weekend."
+     },
+     "chunks": [
+      "cou",
+      "sin"
+     ],
+     "tricky": "ou",
+     "set": "pattern"
+    },
+    {
+     "word": "trouble",
+     "ipa": "/ˈtrʌbl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A difficulty or problem.",
+      "example": "We had trouble finding the way back to the car."
+     },
+     "chunks": [
+      "trou",
+      "ble"
+     ],
+     "tricky": "ou",
+     "set": "pattern"
+    },
+    {
+     "word": "country",
+     "ipa": "/ˈkʌntri/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A land with its own people and rules, like France.",
+      "example": "Which country would you most like to visit?"
+     },
+     "chunks": [
+      "coun",
+      "try"
+     ],
+     "tricky": "ou",
+     "set": "pattern"
+    },
+    {
+     "word": "mystery",
+     "ipa": "/ˈmɪstəri/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Something strange that nobody can explain yet.",
+      "example": "The missing biscuits stayed a mystery all day."
+     },
+     "chunks": [
+      "mys",
+      "te",
+      "ry"
+     ],
+     "tricky": "y",
+     "set": "pattern"
+    },
+    {
+     "word": "pyramid",
+     "ipa": "/ˈpɪrəmɪd/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A shape with a flat base and sloping sides meeting at a point.",
+      "example": "Long ago, people built a huge pyramid from stone."
+     },
+     "chunks": [
+      "pyr",
+      "a",
+      "mid"
+     ],
+     "tricky": "y",
+     "set": "pattern"
+    }
+   ]
+  }
+ ]
+}

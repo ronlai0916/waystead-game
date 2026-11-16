@@ -19,6 +19,7 @@ import * as A from './assess-doc.js';
 import * as Tr from './tray.js';
 import { hearInSentence, canSentence } from './sentence.js';
 import { childYear } from './who.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -441,7 +442,7 @@ export function playGames(main, g, { eyebrow, games = G.GAME_IDS, part = '', onD
 
 /* ------------------------------------------------------------- Game mode --- */
 export function gameMode(main, { gid }) {
-  const id = decodeURIComponent(gid);
+  const id = safeDecode(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
   if (!g) { location.replace('#/'); return; }
@@ -453,7 +454,7 @@ export function gameMode(main, { gid }) {
 }
 
 export function oneGame(main, { gid, game }) {
-  const id = decodeURIComponent(gid);
+  const id = safeDecode(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
   if (!g) { location.replace('#/'); return undefined; }

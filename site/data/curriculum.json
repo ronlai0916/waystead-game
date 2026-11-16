@@ -9,7 +9,3148 @@
       "year_5_6": "pattern-based (themed by spelling rule)"
     },
     "version": 4,
-    "schema_notes": "Each word is now an object with fields: word, ipa, meaning {partOfSpeech, definition, example}, image. Meanings and IPA are embedded so the app needs no dictionary API at runtime. Image is the filename the app expects in assets/images/. v4 adds 'chunks': an array of 1-4 letter spelling chunks. Used by the Spell-Aloud feature to teach pronunciation chunk by chunk. Most chunks come from pyphen British English syllabification; single-syllable and pedagogically tricky words use manual overrides."
+    "schema_notes": "Each word is now an object with fields: word, ipa, meaning {partOfSpeech, definition, example}, image. Meanings and IPA are embedded so the app needs no dictionary API at runtime. Image is the filename the app expects in assets/images/. v4 adds 'chunks': an array of 1-4 letter spelling chunks. Used by the Spell-Aloud feature to teach pronunciation chunk by chunk. Most chunks come from pyphen British English syllabification; single-syllable and pedagogically tricky words use manual overrides.",
+    "credit": "Department for Education, English Appendix 1: Spelling. Open Government Licence v3.0."
+  },
+  "year_1": {
+    "title": "Year 1",
+    "subtitle": "Common exception words and spelling patterns",
+    "chapters": [
+      {
+        "id": "y1-ch01",
+        "year": 1,
+        "title": "Chapter 1 — Double letters",
+        "focus": "ff, ll, ss, zz, ck",
+        "re": "(ff|ll|ss|zz|ck)",
+        "description": "Words ending in a double f, l, s or z, or in ck, plus five of the Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "the",
+            "ipa": "/ðə/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "A little word we use before a thing, like the cat.",
+              "example": "We looked up and saw the moon."
+            },
+            "chunks": [
+              "the"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "a",
+            "ipa": "/ə/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "A little word that means one thing, like a cat.",
+              "example": "Mum gave me a red apple."
+            },
+            "chunks": [
+              "a"
+            ],
+            "set": "cew"
+          },
+          {
+            "word": "I",
+            "ipa": "/aɪ/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "The word you use to talk about yourself.",
+              "example": "I can ride my bike."
+            },
+            "chunks": [
+              "I"
+            ],
+            "set": "cew"
+          },
+          {
+            "word": "is",
+            "ipa": "/ɪz/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word that tells us about one person or thing.",
+              "example": "The sky is blue today."
+            },
+            "chunks": [
+              "is"
+            ],
+            "tricky": "s",
+            "set": "cew"
+          },
+          {
+            "word": "his",
+            "ipa": "/hɪz/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "Belonging to a boy or a man.",
+              "example": "The boy put on his coat."
+            },
+            "chunks": [
+              "his"
+            ],
+            "tricky": "s",
+            "set": "cew"
+          },
+          {
+            "word": "puff",
+            "ipa": "/pʌf/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A small gust of air, wind or smoke.",
+              "example": "The wind gave a puff and the leaves moved."
+            },
+            "chunks": [
+              "pu",
+              "ff"
+            ],
+            "tricky": "ff",
+            "set": "pattern"
+          },
+          {
+            "word": "bell",
+            "ipa": "/bel/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A metal cup that makes a ringing sound when it is hit.",
+              "example": "The school bell rings at nine."
+            },
+            "chunks": [
+              "be",
+              "ll"
+            ],
+            "tricky": "ll",
+            "set": "pattern"
+          },
+          {
+            "word": "kiss",
+            "ipa": "/kɪs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A gentle touch on the cheek with your lips.",
+              "example": "Gran gave me a kiss goodnight."
+            },
+            "chunks": [
+              "ki",
+              "ss"
+            ],
+            "tricky": "ss",
+            "set": "pattern"
+          },
+          {
+            "word": "buzz",
+            "ipa": "/bʌz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The humming sound a bee makes.",
+              "example": "I heard a buzz by the flowers."
+            },
+            "chunks": [
+              "bu",
+              "zz"
+            ],
+            "tricky": "zz",
+            "set": "pattern"
+          },
+          {
+            "word": "duck",
+            "ipa": "/dʌk/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A bird with a flat beak that swims on water.",
+              "example": "A duck swam across the pond."
+            },
+            "chunks": [
+              "du",
+              "ck"
+            ],
+            "tricky": "ck",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch02",
+        "year": 1,
+        "title": "Chapter 2 — Words ending nk",
+        "focus": "nk",
+        "re": "nk",
+        "description": "Words that end in nk, plus five Year 1 common exception words that end in the long e sound.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "he",
+            "ipa": "/hiː/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "A word for a boy or a man you are talking about.",
+              "example": "He can run very fast."
+            },
+            "chunks": [
+              "he"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "me",
+            "ipa": "/miː/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "The word for yourself, as in give it to me.",
+              "example": "Please give the ball to me."
+            },
+            "chunks": [
+              "me"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "she",
+            "ipa": "/ʃiː/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "A word for a girl or a woman you are talking about.",
+              "example": "She likes to paint pictures."
+            },
+            "chunks": [
+              "she"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "we",
+            "ipa": "/wiː/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "The word for you and other people together.",
+              "example": "We play in the park."
+            },
+            "chunks": [
+              "we"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "be",
+            "ipa": "/biː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word for what someone is or will become.",
+              "example": "I want to be a doctor."
+            },
+            "chunks": [
+              "be"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "bank",
+            "ipa": "/bæŋk/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A place where people keep and borrow money.",
+              "example": "Dad went to the bank at lunch."
+            },
+            "chunks": [
+              "ba",
+              "nk"
+            ],
+            "tricky": "nk",
+            "set": "pattern"
+          },
+          {
+            "word": "pink",
+            "ipa": "/pɪŋk/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "A pale red colour, like a flamingo.",
+              "example": "She wore a pink hat."
+            },
+            "chunks": [
+              "pi",
+              "nk"
+            ],
+            "tricky": "nk",
+            "set": "pattern"
+          },
+          {
+            "word": "drink",
+            "ipa": "/drɪŋk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To take a liquid into your mouth and swallow it.",
+              "example": "I like to drink cold water."
+            },
+            "chunks": [
+              "dri",
+              "nk"
+            ],
+            "tricky": "nk",
+            "set": "pattern"
+          },
+          {
+            "word": "thank",
+            "ipa": "/θæŋk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To tell someone you are glad for what they did.",
+              "example": "Please thank Gran for the lovely card."
+            },
+            "chunks": [
+              "tha",
+              "nk"
+            ],
+            "tricky": "nk",
+            "set": "pattern"
+          },
+          {
+            "word": "trunk",
+            "ipa": "/trʌŋk/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The long nose of an elephant, or the thick stem of a tree.",
+              "example": "The elephant lifted a log with its trunk."
+            },
+            "chunks": [
+              "tru",
+              "nk"
+            ],
+            "tricky": "nk",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch03",
+        "year": 1,
+        "title": "Chapter 3 — Words ending tch",
+        "focus": "tch",
+        "re": "tch",
+        "description": "Words that end in tch after a short vowel, plus five Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "has",
+            "ipa": "/hæz/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word that shows who owns or holds something.",
+              "example": "My sister has a new bag."
+            },
+            "chunks": [
+              "has"
+            ],
+            "tricky": "s",
+            "set": "cew"
+          },
+          {
+            "word": "was",
+            "ipa": "/wɒz/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word that tells us something happened before now.",
+              "example": "It was sunny all day."
+            },
+            "chunks": [
+              "was"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "of",
+            "ipa": "/ɒv/",
+            "meaning": {
+              "partOfSpeech": "preposition",
+              "definition": "A little word that joins things, like a cup of tea.",
+              "example": "I drank a cup of milk."
+            },
+            "chunks": [
+              "of"
+            ],
+            "tricky": "f",
+            "set": "cew"
+          },
+          {
+            "word": "to",
+            "ipa": "/tuː/",
+            "meaning": {
+              "partOfSpeech": "preposition",
+              "definition": "A little word that shows where someone is going.",
+              "example": "We walk to the shop."
+            },
+            "chunks": [
+              "to"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "do",
+            "ipa": "/duː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To carry out an action or a job.",
+              "example": "I will do my homework now."
+            },
+            "chunks": [
+              "do"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "catch",
+            "ipa": "/kætʃ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To grab something that is thrown or falling.",
+              "example": "Can you catch the ball?"
+            },
+            "chunks": [
+              "ca",
+              "tch"
+            ],
+            "tricky": "tch",
+            "set": "pattern"
+          },
+          {
+            "word": "match",
+            "ipa": "/mætʃ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A game between two teams.",
+              "example": "We won the football match."
+            },
+            "chunks": [
+              "ma",
+              "tch"
+            ],
+            "tricky": "tch",
+            "set": "pattern"
+          },
+          {
+            "word": "patch",
+            "ipa": "/pætʃ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A piece of cloth sewn over a hole.",
+              "example": "Mum sewed a patch on my jeans."
+            },
+            "chunks": [
+              "pa",
+              "tch"
+            ],
+            "tricky": "tch",
+            "set": "pattern"
+          },
+          {
+            "word": "fetch",
+            "ipa": "/fetʃ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To go and bring something back.",
+              "example": "Please fetch my bag from the car."
+            },
+            "chunks": [
+              "fe",
+              "tch"
+            ],
+            "tricky": "tch",
+            "set": "pattern"
+          },
+          {
+            "word": "stitch",
+            "ipa": "/stɪtʃ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "One loop of thread made with a needle.",
+              "example": "She sewed one more stitch in the cloth."
+            },
+            "chunks": [
+              "sti",
+              "tch"
+            ],
+            "tricky": "tch",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch04",
+        "year": 1,
+        "title": "Chapter 4 — The v sound at the end",
+        "focus": "ve",
+        "re": "ve$",
+        "description": "English words do not end in v, so a silent e follows it: five Year 1 exception words and five that show the rule.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "love",
+            "ipa": "/lʌv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To like someone or something very much.",
+              "example": "I love my little brother."
+            },
+            "chunks": [
+              "love"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "come",
+            "ipa": "/kʌm/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To move towards a person or place.",
+              "example": "Please come and sit by me."
+            },
+            "chunks": [
+              "come"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "some",
+            "ipa": "/sʌm/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "A few, or a part of something.",
+              "example": "May I have some grapes?"
+            },
+            "chunks": [
+              "some"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "one",
+            "ipa": "/wʌn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The number 1.",
+              "example": "I have one sister."
+            },
+            "chunks": [
+              "one"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "once",
+            "ipa": "/wʌns/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "One time only.",
+              "example": "We went to the sea once."
+            },
+            "chunks": [
+              "once"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "have",
+            "ipa": "/hæv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To own or hold something.",
+              "example": "We have a cat at home."
+            },
+            "chunks": [
+              "ha",
+              "ve"
+            ],
+            "tricky": "ve",
+            "set": "pattern"
+          },
+          {
+            "word": "give",
+            "ipa": "/ɡɪv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To hand something to someone.",
+              "example": "Please give me a turn on the swing."
+            },
+            "chunks": [
+              "gi",
+              "ve"
+            ],
+            "tricky": "ve",
+            "set": "pattern"
+          },
+          {
+            "word": "five",
+            "ipa": "/faɪv/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The number 5.",
+              "example": "A hand has five fingers."
+            },
+            "chunks": [
+              "fi",
+              "ve"
+            ],
+            "tricky": "ve",
+            "set": "pattern"
+          },
+          {
+            "word": "glove",
+            "ipa": "/ɡlʌv/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A warm cover for your hand with places for your fingers.",
+              "example": "Put a glove on each hand."
+            },
+            "chunks": [
+              "glo",
+              "ve"
+            ],
+            "tricky": "ve",
+            "set": "pattern"
+          },
+          {
+            "word": "dive",
+            "ipa": "/daɪv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To jump into water head first.",
+              "example": "She can dive into the pool."
+            },
+            "chunks": [
+              "di",
+              "ve"
+            ],
+            "tricky": "ve",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch05",
+        "year": 1,
+        "title": "Chapter 5 — Adding s and es",
+        "focus": "adding s and es",
+        "re": "(s|es)$",
+        "description": "Plural words made by adding s or es to the end, plus five Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "you",
+            "ipa": "/juː/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "The word for the person you are talking to.",
+              "example": "I can see you over there."
+            },
+            "chunks": [
+              "you"
+            ],
+            "tricky": "ou",
+            "set": "cew"
+          },
+          {
+            "word": "your",
+            "ipa": "/jɔː/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "Belonging to the person you are talking to.",
+              "example": "Is this your pencil?"
+            },
+            "chunks": [
+              "your"
+            ],
+            "tricky": "our",
+            "set": "cew"
+          },
+          {
+            "word": "they",
+            "ipa": "/ðeɪ/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "The word for other people or things together.",
+              "example": "They are playing in the garden."
+            },
+            "chunks": [
+              "they"
+            ],
+            "tricky": "ey",
+            "set": "cew"
+          },
+          {
+            "word": "are",
+            "ipa": "/ɑː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word that tells us about you, we or more than one.",
+              "example": "We are at home."
+            },
+            "chunks": [
+              "are"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "were",
+            "ipa": "/wɜː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word that tells us about more than one thing before now.",
+              "example": "The birds were singing this morning."
+            },
+            "chunks": [
+              "were"
+            ],
+            "tricky": "ere",
+            "set": "cew"
+          },
+          {
+            "word": "dogs",
+            "ipa": "/dɒɡz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one dog.",
+              "example": "Two dogs ran along the beach."
+            },
+            "chunks": [
+              "dog",
+              "s"
+            ],
+            "tricky": "s",
+            "set": "pattern"
+          },
+          {
+            "word": "hens",
+            "ipa": "/henz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one hen, which is a farm bird.",
+              "example": "The hens lay eggs on the farm."
+            },
+            "chunks": [
+              "hen",
+              "s"
+            ],
+            "tricky": "s",
+            "set": "pattern"
+          },
+          {
+            "word": "boxes",
+            "ipa": "/bɒksɪz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one box.",
+              "example": "We packed the toys in three boxes."
+            },
+            "chunks": [
+              "box",
+              "es"
+            ],
+            "tricky": "es",
+            "set": "pattern"
+          },
+          {
+            "word": "dishes",
+            "ipa": "/dɪʃɪz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one dish, the plates and bowls we eat from.",
+              "example": "Dad washed the dishes after tea."
+            },
+            "chunks": [
+              "dish",
+              "es"
+            ],
+            "tricky": "es",
+            "set": "pattern"
+          },
+          {
+            "word": "foxes",
+            "ipa": "/fɒksɪz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one fox, a wild animal with a bushy tail.",
+              "example": "Two foxes ran across the field."
+            },
+            "chunks": [
+              "fox",
+              "es"
+            ],
+            "tricky": "es",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch06",
+        "year": 1,
+        "title": "Chapter 6 — Adding ing, ed, er",
+        "focus": "adding ing, ed, er (no change to the root)",
+        "re": "(ing|ed|er)$",
+        "description": "Children add ing, ed and er to a root word without changing the root, plus three Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "said",
+            "ipa": "/sed/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Spoke words out loud.",
+              "example": "She said hello to her teacher."
+            },
+            "chunks": [
+              "said"
+            ],
+            "tricky": "ai",
+            "set": "cew"
+          },
+          {
+            "word": "says",
+            "ipa": "/sez/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Speaks words out loud right now.",
+              "example": "My dad says it is time for tea."
+            },
+            "chunks": [
+              "says"
+            ],
+            "tricky": "ay",
+            "set": "cew"
+          },
+          {
+            "word": "ask",
+            "ipa": "/ɑːsk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To put a question to someone.",
+              "example": "I will ask Mum for a drink."
+            },
+            "chunks": [
+              "ask"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "jumping",
+            "ipa": "/ˈdʒʌmpɪŋ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Pushing yourself up off the ground into the air.",
+              "example": "The frog is jumping into the pond."
+            },
+            "chunks": [
+              "jump",
+              "ing"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "helped",
+            "ipa": "/helpt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Did something nice to make a job easier.",
+              "example": "Tom helped me carry the bag."
+            },
+            "chunks": [
+              "help",
+              "ed"
+            ],
+            "tricky": "ed",
+            "set": "pattern"
+          },
+          {
+            "word": "walking",
+            "ipa": "/ˈwɔːkɪŋ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Moving along on your feet.",
+              "example": "We are walking to the park."
+            },
+            "chunks": [
+              "walk",
+              "ing"
+            ],
+            "tricky": "al",
+            "set": "pattern"
+          },
+          {
+            "word": "painter",
+            "ipa": "/ˈpeɪntə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Someone who paints pictures or walls.",
+              "example": "The painter made the door bright red."
+            },
+            "chunks": [
+              "paint",
+              "er"
+            ],
+            "tricky": "ai",
+            "set": "pattern"
+          },
+          {
+            "word": "kicked",
+            "ipa": "/kɪkt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Hit something with your foot.",
+              "example": "She kicked the ball over the wall."
+            },
+            "chunks": [
+              "kick",
+              "ed"
+            ],
+            "tricky": "ed",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch07",
+        "year": 1,
+        "title": "Chapter 7 — ai, oi, ay, oy",
+        "focus": "ai/oi and ay/oy",
+        "re": "(ai|oi|ay|oy)",
+        "description": "Children spell the sounds ai, oi, ay and oy, plus five Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "no",
+            "ipa": "/nəʊ/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "The opposite of yes.",
+              "example": "No, I do not want any more peas."
+            },
+            "chunks": [
+              "no"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "go",
+            "ipa": "/ɡəʊ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To move from one place to another.",
+              "example": "We can go to the shops."
+            },
+            "chunks": [
+              "go"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "so",
+            "ipa": "/səʊ/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Very much, or for that reason.",
+              "example": "The cake smells so good."
+            },
+            "chunks": [
+              "so"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "by",
+            "ipa": "/baɪ/",
+            "meaning": {
+              "partOfSpeech": "preposition",
+              "definition": "Next to something, or done by someone.",
+              "example": "The cat sat by the fire."
+            },
+            "chunks": [
+              "by"
+            ],
+            "tricky": "y",
+            "set": "cew"
+          },
+          {
+            "word": "my",
+            "ipa": "/maɪ/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "Belonging to me.",
+              "example": "This is my red coat."
+            },
+            "chunks": [
+              "my"
+            ],
+            "tricky": "y",
+            "set": "cew"
+          },
+          {
+            "word": "train",
+            "ipa": "/treɪn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A long vehicle that runs on rails.",
+              "example": "The train stopped at the station."
+            },
+            "chunks": [
+              "tr",
+              "ain"
+            ],
+            "tricky": "ai",
+            "set": "pattern"
+          },
+          {
+            "word": "soil",
+            "ipa": "/sɔɪl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The earth that plants grow in.",
+              "example": "Seeds grow well in warm soil."
+            },
+            "chunks": [
+              "s",
+              "oil"
+            ],
+            "tricky": "oi",
+            "set": "pattern"
+          },
+          {
+            "word": "play",
+            "ipa": "/pleɪ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To have fun with toys or games.",
+              "example": "We play ball after school."
+            },
+            "chunks": [
+              "pl",
+              "ay"
+            ],
+            "tricky": "ay",
+            "set": "pattern"
+          },
+          {
+            "word": "boy",
+            "ipa": "/bɔɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A male child.",
+              "example": "The boy rode his bike to the park."
+            },
+            "chunks": [
+              "b",
+              "oy"
+            ],
+            "tricky": "oy",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch08",
+        "year": 1,
+        "title": "Chapter 8 — Long vowel sounds",
+        "focus": "a-e, i-e, o-e, u-e; ee and ea",
+        "re": "(a.e|i.e|o.e|u.e|ee|ea)",
+        "description": "Children spell long vowel sounds with a-e, i-e, o-e, u-e, ee and ea, plus five Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "here",
+            "ipa": "/hɪə/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In this place.",
+              "example": "Come and sit here next to me."
+            },
+            "chunks": [
+              "here"
+            ],
+            "tricky": "ere",
+            "set": "cew"
+          },
+          {
+            "word": "there",
+            "ipa": "/ðeə/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In that place, not here.",
+              "example": "Put your shoes over there by the door."
+            },
+            "chunks": [
+              "there"
+            ],
+            "tricky": "ere",
+            "set": "cew"
+          },
+          {
+            "word": "where",
+            "ipa": "/weə/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In what place.",
+              "example": "Where did you put my hat?"
+            },
+            "chunks": [
+              "where"
+            ],
+            "tricky": "wh",
+            "set": "cew"
+          },
+          {
+            "word": "house",
+            "ipa": "/haʊs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A building where people live.",
+              "example": "Our house has a blue door."
+            },
+            "chunks": [
+              "house"
+            ],
+            "tricky": "ou",
+            "set": "cew"
+          },
+          {
+            "word": "our",
+            "ipa": "/ˈaʊə/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "Belonging to us.",
+              "example": "We water our plants every day."
+            },
+            "chunks": [
+              "our"
+            ],
+            "tricky": "ou",
+            "set": "cew"
+          },
+          {
+            "word": "cake",
+            "ipa": "/keɪk/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A sweet food baked in an oven.",
+              "example": "We ate a big cake at the party."
+            },
+            "chunks": [
+              "c",
+              "ake"
+            ],
+            "tricky": "ake",
+            "set": "pattern"
+          },
+          {
+            "word": "kite",
+            "ipa": "/kaɪt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A toy that flies on a long string.",
+              "example": "The kite flew high in the wind."
+            },
+            "chunks": [
+              "k",
+              "ite"
+            ],
+            "tricky": "ite",
+            "set": "pattern"
+          },
+          {
+            "word": "home",
+            "ipa": "/həʊm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The place where you live.",
+              "example": "I go home after school."
+            },
+            "chunks": [
+              "h",
+              "ome"
+            ],
+            "tricky": "ome",
+            "set": "pattern"
+          },
+          {
+            "word": "tube",
+            "ipa": "/tjuːb/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A long hollow pipe or container.",
+              "example": "Squeeze the tube to get some paste."
+            },
+            "chunks": [
+              "t",
+              "ube"
+            ],
+            "tricky": "ube",
+            "set": "pattern"
+          },
+          {
+            "word": "leaf",
+            "ipa": "/liːf/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A flat green part of a plant.",
+              "example": "A leaf fell from the tree."
+            },
+            "chunks": [
+              "l",
+              "ea",
+              "f"
+            ],
+            "tricky": "ea",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch09",
+        "year": 1,
+        "title": "Chapter 9 — wh, ph and k",
+        "focus": "wh, ph; k before e, i, y",
+        "re": "(wh|ph|ke|ki|ky)",
+        "description": "Children spell wh and ph, and the letter k before e, i or y, plus four Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "friend",
+            "ipa": "/frend/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Someone you like and who likes you.",
+              "example": "My friend came to play today."
+            },
+            "chunks": [
+              "fri",
+              "end"
+            ],
+            "tricky": "ie",
+            "set": "cew"
+          },
+          {
+            "word": "school",
+            "ipa": "/skuːl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A place where children go to learn.",
+              "example": "We read books at school."
+            },
+            "chunks": [
+              "sch",
+              "ool"
+            ],
+            "tricky": "ch",
+            "set": "cew"
+          },
+          {
+            "word": "put",
+            "ipa": "/pʊt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To place something somewhere.",
+              "example": "Put your coat on the hook."
+            },
+            "chunks": [
+              "put"
+            ],
+            "tricky": "u",
+            "set": "cew"
+          },
+          {
+            "word": "push",
+            "ipa": "/pʊʃ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To press something away from you.",
+              "example": "Push the door to open it."
+            },
+            "chunks": [
+              "push"
+            ],
+            "tricky": "u",
+            "set": "cew"
+          },
+          {
+            "word": "wheel",
+            "ipa": "/wiːl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A round thing that turns, like on a bike.",
+              "example": "The bike has a flat wheel."
+            },
+            "chunks": [
+              "wh",
+              "eel"
+            ],
+            "tricky": "wh",
+            "set": "pattern"
+          },
+          {
+            "word": "phone",
+            "ipa": "/fəʊn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A thing you use to talk to people far away.",
+              "example": "Mum called Gran on the phone."
+            },
+            "chunks": [
+              "ph",
+              "one"
+            ],
+            "tricky": "ph",
+            "set": "pattern"
+          },
+          {
+            "word": "dolphin",
+            "ipa": "/ˈdɒlfɪn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A clever grey animal that swims in the sea.",
+              "example": "The dolphin jumped out of the water."
+            },
+            "chunks": [
+              "dol",
+              "ph",
+              "in"
+            ],
+            "tricky": "ph",
+            "set": "pattern"
+          },
+          {
+            "word": "kitten",
+            "ipa": "/ˈkɪtən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A baby cat.",
+              "example": "The kitten drank some milk."
+            },
+            "chunks": [
+              "kit",
+              "ten"
+            ],
+            "tricky": "ki",
+            "set": "pattern"
+          },
+          {
+            "word": "king",
+            "ipa": "/kɪŋ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A man who rules a country.",
+              "example": "The king wore a gold crown."
+            },
+            "chunks": [
+              "k",
+              "ing"
+            ],
+            "tricky": "ki",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y1-ch10",
+        "year": 1,
+        "title": "Chapter 10 — Days of the week",
+        "focus": "days of the week (Monday to Sunday)",
+        "re": "day$",
+        "description": "Children spell the seven days of the week with their capital letters, plus three Year 1 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "Monday",
+            "ipa": "/ˈmʌndeɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The first day of the school week.",
+              "example": "We have music on Monday."
+            },
+            "chunks": [
+              "Mon",
+              "day"
+            ],
+            "tricky": "o",
+            "set": "pattern"
+          },
+          {
+            "word": "Tuesday",
+            "ipa": "/ˈtjuːzdeɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The day after Monday.",
+              "example": "I swim every Tuesday."
+            },
+            "chunks": [
+              "Tues",
+              "day"
+            ],
+            "tricky": "ue",
+            "set": "pattern"
+          },
+          {
+            "word": "Wednesday",
+            "ipa": "/ˈwenzdeɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The day after Tuesday.",
+              "example": "We go to the library on Wednesday."
+            },
+            "chunks": [
+              "Wednes",
+              "day"
+            ],
+            "tricky": "dn",
+            "set": "pattern"
+          },
+          {
+            "word": "Thursday",
+            "ipa": "/ˈθɜːzdeɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The day after Wednesday.",
+              "example": "Gran comes to tea on Thursday."
+            },
+            "chunks": [
+              "Thurs",
+              "day"
+            ],
+            "tricky": "ur",
+            "set": "pattern"
+          },
+          {
+            "word": "Friday",
+            "ipa": "/ˈfraɪdeɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The day after Thursday.",
+              "example": "We have fish and chips on Friday."
+            },
+            "chunks": [
+              "Fri",
+              "day"
+            ],
+            "tricky": "i",
+            "set": "pattern"
+          },
+          {
+            "word": "Saturday",
+            "ipa": "/ˈsætədeɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The first day of the weekend.",
+              "example": "On Saturday we play in the park."
+            },
+            "chunks": [
+              "Satur",
+              "day"
+            ],
+            "tricky": "ur",
+            "set": "pattern"
+          },
+          {
+            "word": "Sunday",
+            "ipa": "/ˈsʌndeɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The last day of the week.",
+              "example": "We visit Grandad on Sunday."
+            },
+            "chunks": [
+              "Sun",
+              "day"
+            ],
+            "tricky": "u",
+            "set": "pattern"
+          },
+          {
+            "word": "today",
+            "ipa": "/təˈdeɪ/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "This very day.",
+              "example": "I am six years old today."
+            },
+            "chunks": [
+              "to",
+              "day"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "pull",
+            "ipa": "/pʊl/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To bring something towards you.",
+              "example": "Pull the rope as hard as you can."
+            },
+            "chunks": [
+              "pull"
+            ],
+            "tricky": "u",
+            "set": "cew"
+          },
+          {
+            "word": "full",
+            "ipa": "/fʊl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Holding as much as it can.",
+              "example": "The jug is full of milk."
+            },
+            "chunks": [
+              "full"
+            ],
+            "tricky": "u",
+            "set": "cew"
+          }
+        ]
+      }
+    ]
+  },
+  "year_2": {
+    "title": "Year 2",
+    "subtitle": "Common exception words and spelling patterns",
+    "chapters": [
+      {
+        "id": "y2-ch01",
+        "year": 2,
+        "title": "Chapter 1 — dge and ge",
+        "focus": "dge, ge",
+        "re": "(dge|ge)",
+        "description": "Words where the j sound is spelt dge after a short vowel or ge elsewhere, plus seven Year 2 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "find",
+            "ipa": "/faɪnd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To discover something or see where it is.",
+              "example": "I can find my red hat."
+            },
+            "chunks": [
+              "f",
+              "ind"
+            ],
+            "tricky": "i",
+            "set": "cew"
+          },
+          {
+            "word": "kind",
+            "ipa": "/kaɪnd/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Friendly and caring towards other people.",
+              "example": "She was kind and shared her toys."
+            },
+            "chunks": [
+              "k",
+              "ind"
+            ],
+            "tricky": "i",
+            "set": "cew"
+          },
+          {
+            "word": "mind",
+            "ipa": "/maɪnd/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part of you that thinks.",
+              "example": "Keep a happy picture in your mind."
+            },
+            "chunks": [
+              "m",
+              "ind"
+            ],
+            "tricky": "i",
+            "set": "cew"
+          },
+          {
+            "word": "behind",
+            "ipa": "/bɪˈhaɪnd/",
+            "meaning": {
+              "partOfSpeech": "preposition",
+              "definition": "At the back of something.",
+              "example": "The cat hid behind the big chair."
+            },
+            "chunks": [
+              "be",
+              "hind"
+            ],
+            "tricky": "i",
+            "set": "cew"
+          },
+          {
+            "word": "child",
+            "ipa": "/tʃaɪld/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A young boy or girl.",
+              "example": "Each child had a red balloon."
+            },
+            "chunks": [
+              "ch",
+              "ild"
+            ],
+            "tricky": "i",
+            "set": "cew"
+          },
+          {
+            "word": "children",
+            "ipa": "/ˈtʃɪldrən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one child.",
+              "example": "The children played in the park."
+            },
+            "chunks": [
+              "chil",
+              "dren"
+            ],
+            "tricky": "i",
+            "set": "cew"
+          },
+          {
+            "word": "wild",
+            "ipa": "/waɪld/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Living free in nature, not looked after by people.",
+              "example": "We saw a wild fox in the field."
+            },
+            "chunks": [
+              "w",
+              "ild"
+            ],
+            "tricky": "i",
+            "set": "cew"
+          },
+          {
+            "word": "badge",
+            "ipa": "/bædʒ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A small sign you pin on your clothes.",
+              "example": "She pinned a gold badge on her coat."
+            },
+            "chunks": [
+              "ba",
+              "dge"
+            ],
+            "tricky": "dge",
+            "set": "pattern"
+          },
+          {
+            "word": "bridge",
+            "ipa": "/brɪdʒ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A way across a river or a road.",
+              "example": "We walked over the bridge to the park."
+            },
+            "chunks": [
+              "bri",
+              "dge"
+            ],
+            "tricky": "dge",
+            "set": "pattern"
+          },
+          {
+            "word": "page",
+            "ipa": "/peɪdʒ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "One side of a sheet of paper in a book.",
+              "example": "Turn the page to read more."
+            },
+            "chunks": [
+              "pa",
+              "ge"
+            ],
+            "tricky": "ge",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch02",
+        "year": 2,
+        "title": "Chapter 2 — Soft c",
+        "focus": "c before e, i and y",
+        "re": "c[eiy]",
+        "description": "Words where the letter c makes an s sound because an e, i or y follows it, plus six Year 2 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "climb",
+            "ipa": "/klaɪm/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To go up using your hands and feet.",
+              "example": "I like to climb the big tree."
+            },
+            "chunks": [
+              "cl",
+              "imb"
+            ],
+            "tricky": "b",
+            "set": "cew"
+          },
+          {
+            "word": "most",
+            "ipa": "/məʊst/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "The largest number or amount.",
+              "example": "Most of us like cake."
+            },
+            "chunks": [
+              "m",
+              "ost"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "only",
+            "ipa": "/ˈəʊnli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Just one and no more.",
+              "example": "I have only one red pen."
+            },
+            "chunks": [
+              "on",
+              "ly"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "both",
+            "ipa": "/bəʊθ/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "The two together.",
+              "example": "She held a kite in both hands."
+            },
+            "chunks": [
+              "b",
+              "oth"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "old",
+            "ipa": "/əʊld/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Having lived or been around for a long time.",
+              "example": "My old toy bear is very soft."
+            },
+            "chunks": [
+              "o",
+              "ld"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "cold",
+            "ipa": "/kəʊld/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not warm.",
+              "example": "The water in the lake was cold."
+            },
+            "chunks": [
+              "c",
+              "old"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "city",
+            "ipa": "/ˈsɪti/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A very big town with lots of buildings.",
+              "example": "We took the train to the city."
+            },
+            "chunks": [
+              "ci",
+              "ty"
+            ],
+            "tricky": "c",
+            "set": "pattern"
+          },
+          {
+            "word": "ice",
+            "ipa": "/aɪs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Water that has frozen hard.",
+              "example": "The ice on the car window was thick."
+            },
+            "chunks": [
+              "i",
+              "ce"
+            ],
+            "tricky": "c",
+            "set": "pattern"
+          },
+          {
+            "word": "face",
+            "ipa": "/feɪs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The front of your head, with eyes and a nose.",
+              "example": "She drew a smiling face on the card."
+            },
+            "chunks": [
+              "fa",
+              "ce"
+            ],
+            "tricky": "c",
+            "set": "pattern"
+          },
+          {
+            "word": "fence",
+            "ipa": "/fens/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A wooden wall that goes round a garden.",
+              "example": "A white fence goes round our garden."
+            },
+            "chunks": [
+              "fen",
+              "ce"
+            ],
+            "tricky": "c",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch03",
+        "year": 2,
+        "title": "Chapter 3 — kn, gn and wr",
+        "focus": "kn, gn, wr",
+        "re": "(kn|gn|wr)",
+        "description": "Words that begin with a silent first letter: kn and gn sound like n, wr sounds like r; plus six Year 2 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "gold",
+            "ipa": "/ɡəʊld/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A shiny yellow metal.",
+              "example": "The crown was made of gold."
+            },
+            "chunks": [
+              "g",
+              "old"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "hold",
+            "ipa": "/həʊld/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To keep something in your hands.",
+              "example": "Hold my hand when we cross the road."
+            },
+            "chunks": [
+              "h",
+              "old"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "told",
+            "ipa": "/təʊld/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Said something to someone, from the word tell.",
+              "example": "Dad told us a funny story."
+            },
+            "chunks": [
+              "t",
+              "old"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "every",
+            "ipa": "/ˈevri/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "Each one of them.",
+              "example": "We go to the park every day."
+            },
+            "chunks": [
+              "ev",
+              "e",
+              "ry"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "everybody",
+            "ipa": "/ˈevribɒdi/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "All the people.",
+              "example": "Everybody sang at the end of the show."
+            },
+            "chunks": [
+              "ev",
+              "e",
+              "ry",
+              "bo",
+              "dy"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "even",
+            "ipa": "/ˈiːvən/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "A number like 2, 4 or 6 that makes two equal groups.",
+              "example": "Two, four and six are even numbers."
+            },
+            "chunks": [
+              "ev",
+              "en"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "gnat",
+            "ipa": "/næt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A tiny flying insect.",
+              "example": "A little gnat buzzed round the lamp."
+            },
+            "chunks": [
+              "gn",
+              "at"
+            ],
+            "tricky": "gn",
+            "set": "pattern"
+          },
+          {
+            "word": "wrist",
+            "ipa": "/rɪst/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part where your hand joins your arm.",
+              "example": "She wore a red watch on her wrist."
+            },
+            "chunks": [
+              "wr",
+              "ist"
+            ],
+            "tricky": "wr",
+            "set": "pattern"
+          },
+          {
+            "word": "wren",
+            "ipa": "/ren/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A very small brown bird.",
+              "example": "A wren sang in the bush."
+            },
+            "chunks": [
+              "wr",
+              "en"
+            ],
+            "tricky": "wr",
+            "set": "pattern"
+          },
+          {
+            "word": "knock",
+            "ipa": "/nɒk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To tap on a door.",
+              "example": "Please knock before you open the door."
+            },
+            "chunks": [
+              "kn",
+              "ock"
+            ],
+            "tricky": "kn",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch04",
+        "year": 2,
+        "title": "Chapter 4 — Word endings le, el, al, il",
+        "focus": "le, el, al, il at the end",
+        "re": "(le|el|al|il)$",
+        "description": "Words that end in the same sound spelt le, el, al or il, plus six Year 2 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "great",
+            "ipa": "/ɡreɪt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very good, or very big.",
+              "example": "We had a great day at the beach."
+            },
+            "chunks": [
+              "gr",
+              "eat"
+            ],
+            "tricky": "ea",
+            "set": "cew"
+          },
+          {
+            "word": "break",
+            "ipa": "/breɪk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To make something come apart.",
+              "example": "Be careful not to break the cup."
+            },
+            "chunks": [
+              "br",
+              "eak"
+            ],
+            "tricky": "ea",
+            "set": "cew"
+          },
+          {
+            "word": "steak",
+            "ipa": "/steɪk/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A thick slice of meat.",
+              "example": "Dad cooked a steak for dinner."
+            },
+            "chunks": [
+              "st",
+              "eak"
+            ],
+            "tricky": "ea",
+            "set": "cew"
+          },
+          {
+            "word": "pretty",
+            "ipa": "/ˈprɪti/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Nice to look at.",
+              "example": "She wore a pretty blue dress."
+            },
+            "chunks": [
+              "pre",
+              "tty"
+            ],
+            "tricky": "e",
+            "set": "cew"
+          },
+          {
+            "word": "beautiful",
+            "ipa": "/ˈbjuːtɪfl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very lovely to look at.",
+              "example": "The garden looks beautiful in spring."
+            },
+            "chunks": [
+              "beau",
+              "ti",
+              "ful"
+            ],
+            "tricky": "eau",
+            "set": "cew"
+          },
+          {
+            "word": "people",
+            "ipa": "/ˈpiːpl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Men, women and children.",
+              "example": "Lots of people came to the fair."
+            },
+            "chunks": [
+              "peo",
+              "ple"
+            ],
+            "tricky": "eo",
+            "set": "cew"
+          },
+          {
+            "word": "apple",
+            "ipa": "/ˈæpl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A round fruit that is red or green.",
+              "example": "I ate a crunchy apple at lunch."
+            },
+            "chunks": [
+              "ap",
+              "ple"
+            ],
+            "tricky": "le",
+            "set": "pattern"
+          },
+          {
+            "word": "camel",
+            "ipa": "/ˈkæməl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A big animal with one or two humps on its back.",
+              "example": "We saw a camel at the zoo."
+            },
+            "chunks": [
+              "cam",
+              "el"
+            ],
+            "tricky": "el",
+            "set": "pattern"
+          },
+          {
+            "word": "animal",
+            "ipa": "/ˈænɪml/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A living creature, such as a dog or a horse.",
+              "example": "The zoo has many kinds of animal."
+            },
+            "chunks": [
+              "an",
+              "i",
+              "mal"
+            ],
+            "tricky": "al",
+            "set": "pattern"
+          },
+          {
+            "word": "pencil",
+            "ipa": "/ˈpensl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A thin tool for writing and drawing.",
+              "example": "I drew a house with my pencil."
+            },
+            "chunks": [
+              "pen",
+              "cil"
+            ],
+            "tricky": "il",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch05",
+        "year": 2,
+        "title": "Chapter 5 — y at the end",
+        "focus": "y at the end; y to ies",
+        "re": "(y|ies)$",
+        "description": "Words that end in y, and plurals where y changes to ies, plus seven Year 2 common exception words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "after",
+            "ipa": "/ˈɑːftə/",
+            "meaning": {
+              "partOfSpeech": "preposition",
+              "definition": "Later than something else.",
+              "example": "We play after we finish lunch."
+            },
+            "chunks": [
+              "af",
+              "ter"
+            ],
+            "tricky": "er",
+            "set": "cew"
+          },
+          {
+            "word": "fast",
+            "ipa": "/fɑːst/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Moving very quickly.",
+              "example": "The cheetah is a fast animal."
+            },
+            "chunks": [
+              "f",
+              "ast"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "last",
+            "ipa": "/lɑːst/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Coming at the end.",
+              "example": "She was the last one in line."
+            },
+            "chunks": [
+              "l",
+              "ast"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "past",
+            "ipa": "/pɑːst/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The time before now.",
+              "example": "Long ago, in the past, people rode horses."
+            },
+            "chunks": [
+              "p",
+              "ast"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "father",
+            "ipa": "/ˈfɑːðə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A man who has a child; a dad.",
+              "example": "My father reads me a story."
+            },
+            "chunks": [
+              "fa",
+              "ther"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "class",
+            "ipa": "/klɑːs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A group of children who learn together.",
+              "example": "Our class sings every Friday."
+            },
+            "chunks": [
+              "cl",
+              "ass"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "grass",
+            "ipa": "/ɡrɑːs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Green plants that grow on lawns and fields.",
+              "example": "We sat on the soft grass."
+            },
+            "chunks": [
+              "gr",
+              "ass"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "sky",
+            "ipa": "/skaɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The space above us where we see clouds and the sun.",
+              "example": "We saw a rainbow in the sky."
+            },
+            "chunks": [
+              "sk",
+              "y"
+            ],
+            "tricky": "y",
+            "set": "pattern"
+          },
+          {
+            "word": "fly",
+            "ipa": "/flaɪ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To move through the air.",
+              "example": "Birds fly high over the trees."
+            },
+            "chunks": [
+              "fl",
+              "y"
+            ],
+            "tricky": "y",
+            "set": "pattern"
+          },
+          {
+            "word": "babies",
+            "ipa": "/ˈbeɪbiz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "More than one baby.",
+              "example": "The babies giggled in their cots."
+            },
+            "chunks": [
+              "ba",
+              "bies"
+            ],
+            "tricky": "ies",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch06",
+        "year": 2,
+        "title": "Chapter 6 — Adding endings",
+        "focus": "adding ed, ing, er, est: drop the e, double the letter",
+        "re": "(ed|ing|er|est)",
+        "description": "Children learn how a word changes when ed, ing, er or est is added, such as dropping an e or doubling the last letter.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "pass",
+            "ipa": "/pɑːs/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To go past, or to hand something to someone.",
+              "example": "Please pass me the salt at lunch."
+            },
+            "chunks": [
+              "pass"
+            ],
+            "tricky": "ss",
+            "set": "cew"
+          },
+          {
+            "word": "plant",
+            "ipa": "/plɑːnt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A living thing that grows in soil.",
+              "example": "We water the plant on the windowsill."
+            },
+            "chunks": [
+              "pl",
+              "a",
+              "nt"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "path",
+            "ipa": "/pɑːθ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A narrow way for walking.",
+              "example": "The path goes through the park."
+            },
+            "chunks": [
+              "p",
+              "a",
+              "th"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "bath",
+            "ipa": "/bɑːθ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A big tub you sit in to get clean.",
+              "example": "I have a warm bath before bed."
+            },
+            "chunks": [
+              "b",
+              "a",
+              "th"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "half",
+            "ipa": "/hɑːf/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "One of two equal parts.",
+              "example": "I ate half of the apple."
+            },
+            "chunks": [
+              "ha",
+              "l",
+              "f"
+            ],
+            "tricky": "l",
+            "set": "cew"
+          },
+          {
+            "word": "hour",
+            "ipa": "/ˈaʊə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Sixty minutes.",
+              "example": "We played in the garden for an hour."
+            },
+            "chunks": [
+              "h",
+              "our"
+            ],
+            "tricky": "h",
+            "set": "cew"
+          },
+          {
+            "word": "hopped",
+            "ipa": "/hɒpt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Moved along in small jumps.",
+              "example": "The rabbit hopped across the grass."
+            },
+            "chunks": [
+              "hop",
+              "ped"
+            ],
+            "tricky": "pp",
+            "set": "pattern"
+          },
+          {
+            "word": "baking",
+            "ipa": "/ˈbeɪ.kɪŋ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Cooking food in an oven.",
+              "example": "Gran is baking a cake for tea."
+            },
+            "chunks": [
+              "bak",
+              "ing"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "bigger",
+            "ipa": "/ˈbɪɡ.ə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Larger than something else.",
+              "example": "My dog is bigger than the cat."
+            },
+            "chunks": [
+              "big",
+              "ger"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "biggest",
+            "ipa": "/ˈbɪɡ.ɪst/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Larger than all the others.",
+              "example": "That is the biggest pumpkin in the shop."
+            },
+            "chunks": [
+              "big",
+              "gest"
+            ],
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch07",
+        "year": 2,
+        "title": "Chapter 7 — Odd a and o",
+        "focus": "a after w and qu; o for the u sound",
+        "re": "(wa|qua|oth|mon)",
+        "description": "Children learn that a after w or qu sounds like o, and that o can sound like u.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "move",
+            "ipa": "/muːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To go from one place to another.",
+              "example": "Please move your bag off the seat."
+            },
+            "chunks": [
+              "m",
+              "o",
+              "ve"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "prove",
+            "ipa": "/pruːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To show that something is true.",
+              "example": "I can prove that I can swim."
+            },
+            "chunks": [
+              "pr",
+              "o",
+              "ve"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "improve",
+            "ipa": "/ɪmˈpruːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To get better at something.",
+              "example": "I want to improve my reading."
+            },
+            "chunks": [
+              "im",
+              "pr",
+              "o",
+              "ve"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "sure",
+            "ipa": "/ʃɔː/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Certain about something.",
+              "example": "I am sure it is time for lunch."
+            },
+            "chunks": [
+              "s",
+              "ure"
+            ],
+            "tricky": "s",
+            "set": "cew"
+          },
+          {
+            "word": "sugar",
+            "ipa": "/ˈʃʊɡ.ə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A sweet food used in cakes and drinks.",
+              "example": "Mum put sugar in the cake mix."
+            },
+            "chunks": [
+              "s",
+              "u",
+              "g",
+              "ar"
+            ],
+            "tricky": "s",
+            "set": "cew"
+          },
+          {
+            "word": "water",
+            "ipa": "/ˈwɔː.tə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The clear liquid we drink.",
+              "example": "I drink a glass of water each morning."
+            },
+            "chunks": [
+              "wa",
+              "ter"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "money",
+            "ipa": "/ˈmʌn.i/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Coins and notes used to buy things.",
+              "example": "I save my money in a jar."
+            },
+            "chunks": [
+              "mon",
+              "ey"
+            ],
+            "tricky": "o",
+            "set": "cew"
+          },
+          {
+            "word": "want",
+            "ipa": "/wɒnt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To wish for something.",
+              "example": "I want a drink of juice."
+            },
+            "chunks": [
+              "w",
+              "a",
+              "nt"
+            ],
+            "tricky": "a",
+            "set": "pattern"
+          },
+          {
+            "word": "squash",
+            "ipa": "/skwɒʃ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To press something hard until it goes flat.",
+              "example": "Do not squash the sandwiches in your bag."
+            },
+            "chunks": [
+              "squ",
+              "a",
+              "sh"
+            ],
+            "tricky": "a",
+            "set": "pattern"
+          },
+          {
+            "word": "brother",
+            "ipa": "/ˈbrʌð.ə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A boy who has the same parents as you.",
+              "example": "My brother and I built a sandcastle."
+            },
+            "chunks": [
+              "br",
+              "o",
+              "th",
+              "er"
+            ],
+            "tricky": "o",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch08",
+        "year": 2,
+        "title": "Chapter 8 — Word endings",
+        "focus": "ment, ness, ful, less, ly",
+        "re": "(ment|ness|ful|less|ly)",
+        "description": "Children practise adding the endings ment, ness, ful, less and ly to root words.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "could",
+            "ipa": "/kʊd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Was able to do something.",
+              "example": "I could see the moon last night."
+            },
+            "chunks": [
+              "c",
+              "ould"
+            ],
+            "tricky": "oul",
+            "set": "cew"
+          },
+          {
+            "word": "should",
+            "ipa": "/ʃʊd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word for what is the right thing to do.",
+              "example": "We should wash our hands before dinner."
+            },
+            "chunks": [
+              "sh",
+              "ould"
+            ],
+            "tricky": "oul",
+            "set": "cew"
+          },
+          {
+            "word": "would",
+            "ipa": "/wʊd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "A word for what might happen.",
+              "example": "I would like a biscuit please."
+            },
+            "chunks": [
+              "w",
+              "ould"
+            ],
+            "tricky": "oul",
+            "set": "cew"
+          },
+          {
+            "word": "who",
+            "ipa": "/huː/",
+            "meaning": {
+              "partOfSpeech": "pronoun",
+              "definition": "A word used to ask which person.",
+              "example": "Who is knocking at the door?"
+            },
+            "chunks": [
+              "wh",
+              "o"
+            ],
+            "tricky": "wh",
+            "set": "cew"
+          },
+          {
+            "word": "whole",
+            "ipa": "/həʊl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "All of something, with nothing left out.",
+              "example": "I ate the whole sandwich."
+            },
+            "chunks": [
+              "wh",
+              "o",
+              "le"
+            ],
+            "tricky": "wh",
+            "set": "cew"
+          },
+          {
+            "word": "eye",
+            "ipa": "/aɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part of the face you see with.",
+              "example": "I got a speck of dust in my eye."
+            },
+            "chunks": [
+              "eye"
+            ],
+            "tricky": "ey",
+            "set": "cew"
+          },
+          {
+            "word": "payment",
+            "ipa": "/ˈpeɪ.mənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Money that you give to buy something.",
+              "example": "Dad made the payment at the shop."
+            },
+            "chunks": [
+              "pay",
+              "ment"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "kindness",
+            "ipa": "/ˈkaɪnd.nəs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Being nice and caring to other people.",
+              "example": "She showed kindness to the new girl."
+            },
+            "chunks": [
+              "kind",
+              "ness"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "carefully",
+            "ipa": "/ˈkeə.fə.li/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Taking care so that nothing gets broken or spilt.",
+              "example": "Carry the eggs carefully to the table."
+            },
+            "chunks": [
+              "care",
+              "ful",
+              "ly"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "spotless",
+            "ipa": "/ˈspɒt.ləs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very clean, without a single mark.",
+              "example": "After tidying, my room was spotless."
+            },
+            "chunks": [
+              "spot",
+              "less"
+            ],
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch09",
+        "year": 2,
+        "title": "Chapter 9 — The tion ending",
+        "focus": "tion",
+        "re": "tion",
+        "description": "Children learn that the sh sound at the end of a word is often spelt tion.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "any",
+            "ipa": "/ˈen.i/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "One or some, no matter which.",
+              "example": "Do you have any crayons?"
+            },
+            "chunks": [
+              "a",
+              "ny"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "many",
+            "ipa": "/ˈmen.i/",
+            "meaning": {
+              "partOfSpeech": "determiner",
+              "definition": "A lot of.",
+              "example": "There are many stars in the sky tonight."
+            },
+            "chunks": [
+              "m",
+              "a",
+              "ny"
+            ],
+            "tricky": "a",
+            "set": "cew"
+          },
+          {
+            "word": "clothes",
+            "ipa": "/kləʊðz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The things you wear.",
+              "example": "I put my clothes on the chair."
+            },
+            "chunks": [
+              "cl",
+              "o",
+              "th",
+              "es"
+            ],
+            "tricky": "es",
+            "set": "cew"
+          },
+          {
+            "word": "busy",
+            "ipa": "/ˈbɪz.i/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Having a lot to do; full of activity.",
+              "example": "Mum is busy cooking dinner right now."
+            },
+            "image": "busy.jpg",
+            "chunks": [
+              "busy"
+            ],
+            "set": "cew"
+          },
+          {
+            "word": "again",
+            "ipa": "/əˈɡen/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "One more time.",
+              "example": "Can we sing the song again?"
+            },
+            "chunks": [
+              "a",
+              "g",
+              "ai",
+              "n"
+            ],
+            "tricky": "ai",
+            "set": "cew"
+          },
+          {
+            "word": "because",
+            "ipa": "/bɪˈkɒz/",
+            "meaning": {
+              "partOfSpeech": "conjunction",
+              "definition": "A word that gives the reason for something.",
+              "example": "I am happy because it is my birthday."
+            },
+            "chunks": [
+              "be",
+              "c",
+              "au",
+              "se"
+            ],
+            "tricky": "au",
+            "set": "cew"
+          },
+          {
+            "word": "station",
+            "ipa": "/ˈsteɪ.ʃən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A place where trains stop for people to get on.",
+              "example": "We waited for the train at the station."
+            },
+            "chunks": [
+              "sta",
+              "tion"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "action",
+            "ipa": "/ˈæk.ʃən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something that you do.",
+              "example": "Clapping is a happy action."
+            },
+            "chunks": [
+              "ac",
+              "tion"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "lotion",
+            "ipa": "/ˈləʊ.ʃən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A soft cream you rub on your skin.",
+              "example": "Mum put lotion on my arms."
+            },
+            "chunks": [
+              "lo",
+              "tion"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "potion",
+            "ipa": "/ˈpəʊ.ʃən/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A magic drink in a story.",
+              "example": "The wizard mixed a bubbly green potion."
+            },
+            "chunks": [
+              "po",
+              "tion"
+            ],
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y2-ch10",
+        "year": 2,
+        "title": "Chapter 10 — Tall a words",
+        "focus": "a before l and ll (all, walk, always)",
+        "re": "(al)",
+        "description": "Children learn that a before l or ll often sounds like or, as in all, walk and always.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "door",
+            "ipa": "/dɔː/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "What you open to go into a room.",
+              "example": "Please shut the door behind you."
+            },
+            "chunks": [
+              "d",
+              "oor"
+            ],
+            "tricky": "oor",
+            "set": "cew"
+          },
+          {
+            "word": "floor",
+            "ipa": "/flɔː/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part of a room that you walk on.",
+              "example": "The toys are all over the floor."
+            },
+            "chunks": [
+              "fl",
+              "oor"
+            ],
+            "tricky": "oor",
+            "set": "cew"
+          },
+          {
+            "word": "poor",
+            "ipa": "/pɔː/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Having very little money.",
+              "example": "The story is about a poor farmer."
+            },
+            "chunks": [
+              "p",
+              "oor"
+            ],
+            "tricky": "oor",
+            "set": "cew"
+          },
+          {
+            "word": "Mr",
+            "ipa": "/ˈmɪs.tə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A short word put before a man's name.",
+              "example": "Mr Green is my teacher."
+            },
+            "chunks": [
+              "Mr"
+            ],
+            "set": "cew"
+          },
+          {
+            "word": "Mrs",
+            "ipa": "/ˈmɪs.ɪz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A short word put before a married lady's name.",
+              "example": "Mrs Patel is waiting at the gate."
+            },
+            "chunks": [
+              "Mrs"
+            ],
+            "set": "cew"
+          },
+          {
+            "word": "parents",
+            "ipa": "/ˈpeə.rənts/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A mum and dad, or those who look after a child.",
+              "example": "My parents take me to school."
+            },
+            "chunks": [
+              "p",
+              "ar",
+              "ents"
+            ],
+            "tricky": "ar",
+            "set": "cew"
+          },
+          {
+            "word": "Christmas",
+            "ipa": "/ˈkrɪs.məs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The festival on 25 December when people give presents.",
+              "example": "We hang a star on the tree at Christmas."
+            },
+            "chunks": [
+              "Christ",
+              "mas"
+            ],
+            "tricky": "h",
+            "set": "cew"
+          },
+          {
+            "word": "small",
+            "ipa": "/smɔːl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Little; not big.",
+              "example": "A small mouse ran under the bed."
+            },
+            "chunks": [
+              "sm",
+              "all"
+            ],
+            "tricky": "a",
+            "set": "pattern"
+          },
+          {
+            "word": "walk",
+            "ipa": "/wɔːk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To move along on your feet.",
+              "example": "We walk to the park after lunch."
+            },
+            "chunks": [
+              "wa",
+              "lk"
+            ],
+            "tricky": "l",
+            "set": "pattern"
+          },
+          {
+            "word": "always",
+            "ipa": "/ˈɔːl.weɪz/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "At all times, every single time.",
+              "example": "I always brush my teeth at night."
+            },
+            "chunks": [
+              "al",
+              "ways"
+            ],
+            "set": "pattern"
+          }
+        ]
+      }
+    ]
   },
   "year_3_4": {
     "title": "Year 3 & 4",
@@ -1664,6 +4805,1681 @@
             ]
           }
         ]
+      },
+      {
+        "id": "y3-n01",
+        "year": 3,
+        "title": "Chapter 6 — Un-, dis- and mis-",
+        "focus": "prefixes un-, dis-, mis-",
+        "re": "^(un|dis|mis)",
+        "description": "Adding un-, dis- or mis- to the start of a word changes its meaning, and the rest of the word stays the same, as in our examples.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "unkind",
+            "ipa": "/ʌnˈkaɪnd/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not kind; mean or hurtful to other people.",
+              "example": "It is unkind to laugh at someone who has fallen."
+            },
+            "chunks": [
+              "un",
+              "kind"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "unfair",
+            "ipa": "/ʌnˈfeə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not right or equal; not treating everyone the same.",
+              "example": "It felt unfair that only one team got a prize."
+            },
+            "chunks": [
+              "un",
+              "fair"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "untidy",
+            "ipa": "/ʌnˈtaɪdi/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Messy; not neat.",
+              "example": "Her untidy bedroom had toys all over the floor."
+            },
+            "chunks": [
+              "un",
+              "ti",
+              "dy"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "unlock",
+            "ipa": "/ʌnˈlɒk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To open something using a key.",
+              "example": "Dad used a key to unlock the shed."
+            },
+            "chunks": [
+              "un",
+              "lock"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "dislike",
+            "ipa": "/dɪsˈlaɪk/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To not enjoy or care for something.",
+              "example": "I dislike cold porridge but I love toast."
+            },
+            "chunks": [
+              "dis",
+              "like"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "disagree",
+            "ipa": "/ˌdɪsəˈɡriː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To think differently from someone else.",
+              "example": "We disagree about which film to watch tonight."
+            },
+            "chunks": [
+              "dis",
+              "a",
+              "gree"
+            ],
+            "tricky": "ee",
+            "set": "pattern"
+          },
+          {
+            "word": "misspell",
+            "ipa": "/ˌmɪsˈspel/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To spell a word without getting the letters right.",
+              "example": "Check your work so you do not misspell any words."
+            },
+            "chunks": [
+              "mis",
+              "spell"
+            ],
+            "tricky": "ss",
+            "set": "pattern"
+          },
+          {
+            "word": "mislead",
+            "ipa": "/ˌmɪsˈliːd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To give someone a false idea so they believe something untrue.",
+              "example": "Muddled signs can mislead people on a walk."
+            },
+            "chunks": [
+              "mis",
+              "lead"
+            ],
+            "tricky": "ea",
+            "set": "pattern"
+          },
+          {
+            "word": "dishonest",
+            "ipa": "/dɪsˈɒnɪst/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not telling the truth; likely to cheat or lie.",
+              "example": "A dishonest player hid the card up his sleeve."
+            },
+            "chunks": [
+              "dis",
+              "hon",
+              "est"
+            ],
+            "tricky": "h",
+            "set": "pattern"
+          },
+          {
+            "word": "misbehave",
+            "ipa": "/ˌmɪsbɪˈheɪv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To act badly or not follow the rules.",
+              "example": "The puppy tends to misbehave when visitors arrive."
+            },
+            "chunks": [
+              "mis",
+              "be",
+              "have"
+            ],
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y3-n02",
+        "year": 3,
+        "title": "Chapter 7 — Re-, sub- and super-",
+        "focus": "prefixes re-, sub-, super-",
+        "re": "^(re|sub|super)",
+        "description": "The prefixes re- (again), sub- (under) and super- (above or very big) are added to a whole word, as in our examples.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "replay",
+            "ipa": "/ˌriːˈpleɪ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To play something again.",
+              "example": "Can we replay that funny video one more time?"
+            },
+            "chunks": [
+              "re",
+              "play"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "reheat",
+            "ipa": "/ˌriːˈhiːt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To make food hot again.",
+              "example": "Mum will reheat the soup for lunch."
+            },
+            "chunks": [
+              "re",
+              "heat"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "rewrite",
+            "ipa": "/ˌriːˈraɪt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To write something again, often to make it better.",
+              "example": "I will rewrite my story with a new ending."
+            },
+            "chunks": [
+              "re",
+              "write"
+            ],
+            "tricky": "wr",
+            "set": "pattern"
+          },
+          {
+            "word": "rebuild",
+            "ipa": "/ˌriːˈbɪld/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To build something again.",
+              "example": "We helped rebuild the sandcastle after the wave hit it."
+            },
+            "chunks": [
+              "re",
+              "build"
+            ],
+            "tricky": "ui",
+            "set": "pattern"
+          },
+          {
+            "word": "subway",
+            "ipa": "/ˈsʌbweɪ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A path or tunnel under a road or the ground.",
+              "example": "We walked through the subway to cross the busy road."
+            },
+            "chunks": [
+              "sub",
+              "way"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "superstar",
+            "ipa": "/ˈsuːpəstɑː/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A very famous and brilliant singer, player or performer.",
+              "example": "The football superstar signed shirts for the fans."
+            },
+            "chunks": [
+              "su",
+              "per",
+              "star"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "subtract",
+            "ipa": "/səbˈtrækt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To take one number away from another.",
+              "example": "You subtract four from nine to get five."
+            },
+            "chunks": [
+              "sub",
+              "tract"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "superhero",
+            "ipa": "/ˈsuːpəˌhɪərəʊ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A character with amazing powers who helps people.",
+              "example": "My favourite superhero can fly high above the city."
+            },
+            "chunks": [
+              "su",
+              "per",
+              "he",
+              "ro"
+            ],
+            "tricky": "er",
+            "set": "pattern"
+          },
+          {
+            "word": "submarine",
+            "ipa": "/ˌsʌbməˈriːn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A ship that can travel underwater.",
+              "example": "The submarine dived deep beneath the waves."
+            },
+            "chunks": [
+              "sub",
+              "ma",
+              "rine"
+            ],
+            "tricky": "ar",
+            "set": "pattern"
+          },
+          {
+            "word": "supermarket",
+            "ipa": "/ˈsuːpəˌmɑːkɪt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A big shop that sells food and many other things.",
+              "example": "We buy our fruit at the supermarket."
+            },
+            "chunks": [
+              "su",
+              "per",
+              "mar",
+              "ket"
+            ],
+            "tricky": "ar",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y3-n03",
+        "year": 3,
+        "title": "Chapter 8 — Adding -ly",
+        "focus": "-ly, including -ily and -ally",
+        "re": "ly$",
+        "description": "Adding -ly turns a describing word into one that says how something is done; words ending in y change to -ily and words ending in -ic add -ally, as in our examples.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "gently",
+            "ipa": "/ˈdʒentli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a soft, kind and careful way.",
+              "example": "She gently stroked the sleepy kitten."
+            },
+            "chunks": [
+              "gent",
+              "ly"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "quickly",
+            "ipa": "/ˈkwɪkli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "At a fast speed.",
+              "example": "She quickly put on her coat and ran outside."
+            },
+            "chunks": [
+              "quick",
+              "ly"
+            ],
+            "set": "pattern"
+          },
+          {
+            "word": "happily",
+            "ipa": "/ˈhæpɪli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a glad and cheerful way.",
+              "example": "The children played happily in the park."
+            },
+            "chunks": [
+              "hap",
+              "pi",
+              "ly"
+            ],
+            "tricky": "ily",
+            "set": "pattern"
+          },
+          {
+            "word": "easily",
+            "ipa": "/ˈiːzɪli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Without trouble or hard work.",
+              "example": "He lifted the small box easily."
+            },
+            "chunks": [
+              "ea",
+              "si",
+              "ly"
+            ],
+            "tricky": "ily",
+            "set": "pattern"
+          },
+          {
+            "word": "noisily",
+            "ipa": "/ˈnɔɪzɪli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a loud way that makes a lot of sound.",
+              "example": "The geese honked noisily by the pond."
+            },
+            "chunks": [
+              "noi",
+              "si",
+              "ly"
+            ],
+            "tricky": "ily",
+            "set": "pattern"
+          },
+          {
+            "word": "angrily",
+            "ipa": "/ˈæŋɡrɪli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a cross way, showing you are very annoyed.",
+              "example": "He stamped angrily when the tower fell down."
+            },
+            "chunks": [
+              "an",
+              "gri",
+              "ly"
+            ],
+            "tricky": "ily",
+            "set": "pattern"
+          },
+          {
+            "word": "basically",
+            "ipa": "/ˈbeɪsɪkli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In the most important ways; mostly.",
+              "example": "A tomato is basically a fruit."
+            },
+            "chunks": [
+              "ba",
+              "si",
+              "cal",
+              "ly"
+            ],
+            "tricky": "cal",
+            "set": "pattern"
+          },
+          {
+            "word": "magically",
+            "ipa": "/ˈmædʒɪkli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a way that seems done by magic.",
+              "example": "The rabbit magically appeared from the hat."
+            },
+            "chunks": [
+              "mag",
+              "i",
+              "cal",
+              "ly"
+            ],
+            "tricky": "cal",
+            "set": "pattern"
+          },
+          {
+            "word": "fantastically",
+            "ipa": "/fænˈtæstɪkli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a wonderful, amazing way.",
+              "example": "The team played fantastically in the final."
+            },
+            "chunks": [
+              "fan",
+              "tas",
+              "ti",
+              "cal",
+              "ly"
+            ],
+            "tricky": "cal",
+            "set": "pattern"
+          },
+          {
+            "word": "dramatically",
+            "ipa": "/drəˈmætɪkli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a sudden and exciting way.",
+              "example": "The sky dramatically darkened before the storm."
+            },
+            "chunks": [
+              "dra",
+              "ma",
+              "ti",
+              "cal",
+              "ly"
+            ],
+            "tricky": "cal",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y3-n04",
+        "year": 3,
+        "title": "Chapter 9 — Words ending -ation",
+        "focus": "the ending -ation",
+        "re": "ation$",
+        "description": "The ending -ation sounds like 'shun' and is spelt a-t-i-o-n, as in our examples.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "nation",
+            "ipa": "/ˈneɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A country and all its people.",
+              "example": "The whole nation cheered when the team won."
+            },
+            "chunks": [
+              "na",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "donation",
+            "ipa": "/dəʊˈneɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A gift of money or things to help others.",
+              "example": "We gave a donation to the school fair."
+            },
+            "chunks": [
+              "do",
+              "na",
+              "tion"
+            ],
+            "tricky": "tio",
+            "set": "pattern"
+          },
+          {
+            "word": "creation",
+            "ipa": "/kriˈeɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something new that someone has made.",
+              "example": "Her clay creation was shown at school."
+            },
+            "chunks": [
+              "cre",
+              "a",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "exploration",
+            "ipa": "/ˌekspləˈreɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Travelling through a place to find out about it.",
+              "example": "Our exploration of the woods found a hidden stream."
+            },
+            "chunks": [
+              "ex",
+              "plo",
+              "ra",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "invitation",
+            "ipa": "/ˌɪnvɪˈteɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A request to come to a party or event.",
+              "example": "I got an invitation to a birthday party."
+            },
+            "chunks": [
+              "in",
+              "vi",
+              "ta",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "decoration",
+            "ipa": "/ˌdekəˈreɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something pretty used to make a place look nice.",
+              "example": "A paper star was the best decoration on the tree."
+            },
+            "chunks": [
+              "dec",
+              "o",
+              "ra",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "education",
+            "ipa": "/ˌedʒuˈkeɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Learning and teaching, usually at school.",
+              "example": "Education helps us learn new things every day."
+            },
+            "chunks": [
+              "ed",
+              "u",
+              "ca",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "information",
+            "ipa": "/ˌɪnfəˈmeɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Facts or details about something.",
+              "example": "The sign gave information about the bus times."
+            },
+            "chunks": [
+              "in",
+              "for",
+              "ma",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "celebration",
+            "ipa": "/ˌselɪˈbreɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A special event to enjoy a happy day.",
+              "example": "There was a big celebration at the school fair."
+            },
+            "chunks": [
+              "cel",
+              "e",
+              "bra",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "imagination",
+            "ipa": "/ɪˌmædʒɪˈneɪʃn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The ability to picture new things in your mind.",
+              "example": "Her imagination turned the box into a rocket."
+            },
+            "chunks": [
+              "i",
+              "mag",
+              "i",
+              "na",
+              "tion"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y3-n05",
+        "year": 3,
+        "title": "Chapter 10 — Odd ou and y",
+        "focus": "ou for the u sound (young, touch) and y for the i sound (gym, myth)",
+        "re": "(ou|[^aeiou]y[^aeiou])",
+        "description": "In these words the letters ou make the short 'u' sound and the letter y makes the short 'i' sound, as in our examples.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "gym",
+            "ipa": "/dʒɪm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A room or hall with equipment for exercise.",
+              "example": "We play games in the gym on rainy days."
+            },
+            "chunks": [
+              "gym"
+            ],
+            "tricky": "y",
+            "set": "pattern"
+          },
+          {
+            "word": "myth",
+            "ipa": "/mɪθ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "An old story about gods or heroes that is not true.",
+              "example": "We read a Greek myth about a winged horse."
+            },
+            "chunks": [
+              "myth"
+            ],
+            "tricky": "y",
+            "set": "pattern"
+          },
+          {
+            "word": "young",
+            "ipa": "/jʌŋ/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not old; having lived for only a short time.",
+              "example": "A young lamb followed its mother across the field."
+            },
+            "chunks": [
+              "young"
+            ],
+            "tricky": "ou",
+            "set": "pattern"
+          },
+          {
+            "word": "touch",
+            "ipa": "/tʌtʃ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To put your hand on something.",
+              "example": "Please do not touch the hot oven."
+            },
+            "chunks": [
+              "touch"
+            ],
+            "tricky": "ou",
+            "set": "pattern"
+          },
+          {
+            "word": "double",
+            "ipa": "/ˈdʌbl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Twice as much or twice as many.",
+              "example": "I would like a double scoop of ice cream."
+            },
+            "chunks": [
+              "dou",
+              "ble"
+            ],
+            "tricky": "ou",
+            "set": "pattern"
+          },
+          {
+            "word": "cousin",
+            "ipa": "/ˈkʌzn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The child of your aunt or uncle.",
+              "example": "My cousin came to stay for the weekend."
+            },
+            "chunks": [
+              "cou",
+              "sin"
+            ],
+            "tricky": "ou",
+            "set": "pattern"
+          },
+          {
+            "word": "trouble",
+            "ipa": "/ˈtrʌbl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A difficulty or problem.",
+              "example": "We had trouble finding the way back to the car."
+            },
+            "chunks": [
+              "trou",
+              "ble"
+            ],
+            "tricky": "ou",
+            "set": "pattern"
+          },
+          {
+            "word": "country",
+            "ipa": "/ˈkʌntri/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A land with its own people and rules, like France.",
+              "example": "Which country would you most like to visit?"
+            },
+            "chunks": [
+              "coun",
+              "try"
+            ],
+            "tricky": "ou",
+            "set": "pattern"
+          },
+          {
+            "word": "mystery",
+            "ipa": "/ˈmɪstəri/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something strange that nobody can explain yet.",
+              "example": "The missing biscuits stayed a mystery all day."
+            },
+            "chunks": [
+              "mys",
+              "te",
+              "ry"
+            ],
+            "tricky": "y",
+            "set": "pattern"
+          },
+          {
+            "word": "pyramid",
+            "ipa": "/ˈpɪrəmɪd/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A shape with a flat base and sloping sides meeting at a point.",
+              "example": "Long ago, people built a huge pyramid from stone."
+            },
+            "chunks": [
+              "pyr",
+              "a",
+              "mid"
+            ],
+            "tricky": "y",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y4-n01",
+        "year": 4,
+        "title": "Chapter 11 — In-, im-, il- and ir-",
+        "focus": "in-, im-, il- and ir- meaning not",
+        "re": "^(in|im|il|ir)",
+        "description": "Our examples of words that start with in-, im-, il- or ir- to mean not, as in invisible.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "invisible",
+            "ipa": "/ɪnˈvɪzəbl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not able to be seen.",
+              "example": "The magician made the rabbit look invisible."
+            },
+            "chunks": [
+              "in",
+              "vis",
+              "i",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "impolite",
+            "ipa": "/ˌɪmpəˈlaɪt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not having good manners.",
+              "example": "It is impolite to talk with your mouth full."
+            },
+            "chunks": [
+              "im",
+              "po",
+              "lite"
+            ],
+            "tricky": "im",
+            "set": "pattern"
+          },
+          {
+            "word": "inactive",
+            "ipa": "/ɪnˈæktɪv/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not moving or doing anything much.",
+              "example": "The sleepy cat stayed inactive all afternoon."
+            },
+            "chunks": [
+              "in",
+              "ac",
+              "tive"
+            ],
+            "tricky": "in",
+            "set": "pattern"
+          },
+          {
+            "word": "impatient",
+            "ipa": "/ɪmˈpeɪʃnt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not happy to wait for something.",
+              "example": "Mia grew impatient waiting for the bus."
+            },
+            "chunks": [
+              "im",
+              "pa",
+              "tient"
+            ],
+            "tricky": "tie",
+            "set": "pattern"
+          },
+          {
+            "word": "illegal",
+            "ipa": "/ɪˈliːɡl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not allowed by the law.",
+              "example": "It is illegal to drive without a licence."
+            },
+            "chunks": [
+              "il",
+              "le",
+              "gal"
+            ],
+            "tricky": "ll",
+            "set": "pattern"
+          },
+          {
+            "word": "imperfect",
+            "ipa": "/ɪmˈpɜːfɪkt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not perfect; having a small fault.",
+              "example": "My drawing is imperfect, but I like it."
+            },
+            "chunks": [
+              "im",
+              "per",
+              "fect"
+            ],
+            "tricky": "im",
+            "set": "pattern"
+          },
+          {
+            "word": "impossible",
+            "ipa": "/ɪmˈpɒsəbl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not able to happen or be done.",
+              "example": "Flapping your arms to fly is impossible."
+            },
+            "chunks": [
+              "im",
+              "pos",
+              "si",
+              "ble"
+            ],
+            "tricky": "ss",
+            "set": "pattern"
+          },
+          {
+            "word": "irregular",
+            "ipa": "/ɪˈreɡjʊlə/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not following the usual pattern or shape.",
+              "example": "The stone had an irregular shape."
+            },
+            "chunks": [
+              "ir",
+              "reg",
+              "u",
+              "lar"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          },
+          {
+            "word": "illogical",
+            "ipa": "/ɪˈlɒdʒɪkl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not sensible; not following clear thinking.",
+              "example": "Wearing a coat in a heatwave is illogical."
+            },
+            "chunks": [
+              "il",
+              "log",
+              "i",
+              "cal"
+            ],
+            "tricky": "ll",
+            "set": "pattern"
+          },
+          {
+            "word": "irresponsible",
+            "ipa": "/ˌɪrɪˈspɒnsəbl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not careful or sensible about what you do.",
+              "example": "Leaving the gate open was irresponsible."
+            },
+            "chunks": [
+              "ir",
+              "re",
+              "spon",
+              "si",
+              "ble"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y4-n02",
+        "year": 4,
+        "title": "Chapter 12 — Words ending -sure and -ture",
+        "focus": "-sure and -ture endings",
+        "re": "(sure|ture)$",
+        "description": "Our examples of words ending in -sure or -ture, such as measure and picture.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "picture",
+            "ipa": "/ˈpɪktʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A drawing, painting or photograph.",
+              "example": "She hung the picture on the wall."
+            },
+            "chunks": [
+              "pic",
+              "ture"
+            ],
+            "tricky": "tu",
+            "set": "pattern"
+          },
+          {
+            "word": "nature",
+            "ipa": "/ˈneɪtʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Plants, animals and the world outside that people have not made.",
+              "example": "We walked through the woods to enjoy nature."
+            },
+            "chunks": [
+              "na",
+              "ture"
+            ],
+            "tricky": "tu",
+            "set": "pattern"
+          },
+          {
+            "word": "future",
+            "ipa": "/ˈfjuːtʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The time that is still to come.",
+              "example": "I want to be a vet in the future."
+            },
+            "chunks": [
+              "fu",
+              "ture"
+            ],
+            "tricky": "tu",
+            "set": "pattern"
+          },
+          {
+            "word": "measure",
+            "ipa": "/ˈmeʒə/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To find out how big, long or heavy something is.",
+              "example": "Please measure the table with a ruler."
+            },
+            "chunks": [
+              "mea",
+              "sure"
+            ],
+            "tricky": "su",
+            "set": "pattern"
+          },
+          {
+            "word": "treasure",
+            "ipa": "/ˈtreʒə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Gold, jewels or other valuable things.",
+              "example": "The pirates buried the treasure on the island."
+            },
+            "chunks": [
+              "trea",
+              "sure"
+            ],
+            "tricky": "su",
+            "set": "pattern"
+          },
+          {
+            "word": "pleasure",
+            "ipa": "/ˈpleʒə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A feeling of happiness and enjoyment.",
+              "example": "Reading gives me great pleasure."
+            },
+            "chunks": [
+              "plea",
+              "sure"
+            ],
+            "tricky": "su",
+            "set": "pattern"
+          },
+          {
+            "word": "creature",
+            "ipa": "/ˈkriːtʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Any living animal.",
+              "example": "A tiny creature crept under the leaf."
+            },
+            "chunks": [
+              "crea",
+              "ture"
+            ],
+            "tricky": "tu",
+            "set": "pattern"
+          },
+          {
+            "word": "mixture",
+            "ipa": "/ˈmɪkstʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Different things stirred or put together.",
+              "example": "Stir the mixture until it is smooth."
+            },
+            "chunks": [
+              "mix",
+              "ture"
+            ],
+            "tricky": "tu",
+            "set": "pattern"
+          },
+          {
+            "word": "adventure",
+            "ipa": "/ədˈventʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "An exciting journey or experience.",
+              "example": "Our camping trip was a big adventure."
+            },
+            "chunks": [
+              "ad",
+              "ven",
+              "ture"
+            ],
+            "tricky": "tu",
+            "set": "pattern"
+          },
+          {
+            "word": "furniture",
+            "ipa": "/ˈfɜːnɪtʃə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Things like chairs, tables and beds in a room.",
+              "example": "We bought new furniture for the lounge."
+            },
+            "chunks": [
+              "fur",
+              "ni",
+              "ture"
+            ],
+            "tricky": "tu",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y4-n03",
+        "year": 4,
+        "title": "Chapter 13 — The -sion sound",
+        "focus": "-sion sounding like zhun",
+        "re": "sion$",
+        "description": "Our examples of words ending in -sion that sound like zhun, such as television and decision.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "vision",
+            "ipa": "/ˈvɪʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The ability to see.",
+              "example": "The optician checked my vision."
+            },
+            "chunks": [
+              "vi",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "decision",
+            "ipa": "/dɪˈsɪʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A choice you make after thinking.",
+              "example": "We made a decision to go swimming."
+            },
+            "chunks": [
+              "de",
+              "ci",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "division",
+            "ipa": "/dɪˈvɪʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Sharing or splitting a number into equal groups.",
+              "example": "Division is the opposite of multiplication."
+            },
+            "chunks": [
+              "di",
+              "vi",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "television",
+            "ipa": "/ˈtelɪvɪʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A screen that shows programmes and films.",
+              "example": "We watched a funny film on television."
+            },
+            "chunks": [
+              "tel",
+              "e",
+              "vi",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "confusion",
+            "ipa": "/kənˈfjuːʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Not being sure what is happening or what to do.",
+              "example": "There was confusion when the lights went out."
+            },
+            "chunks": [
+              "con",
+              "fu",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "explosion",
+            "ipa": "/ɪkˈspləʊʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A sudden, loud burst, like a firework.",
+              "example": "We heard a loud explosion of fireworks."
+            },
+            "chunks": [
+              "ex",
+              "plo",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "conclusion",
+            "ipa": "/kənˈkluːʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The end of something, or what you decide after thinking.",
+              "example": "The story has a happy conclusion."
+            },
+            "chunks": [
+              "con",
+              "clu",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "collision",
+            "ipa": "/kəˈlɪʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "When two moving things crash into each other.",
+              "example": "The two bumper cars had a gentle collision."
+            },
+            "chunks": [
+              "col",
+              "li",
+              "sion"
+            ],
+            "tricky": "ll",
+            "set": "pattern"
+          },
+          {
+            "word": "supervision",
+            "ipa": "/ˌsuːpəˈvɪʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Watching over people to keep them safe.",
+              "example": "Children may only swim with adult supervision."
+            },
+            "chunks": [
+              "su",
+              "per",
+              "vi",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          },
+          {
+            "word": "revision",
+            "ipa": "/rɪˈvɪʒn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Looking over work again to learn it well.",
+              "example": "Revision helped me learn my spellings."
+            },
+            "chunks": [
+              "re",
+              "vi",
+              "sion"
+            ],
+            "tricky": "si",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y4-n04",
+        "year": 4,
+        "title": "Chapter 14 — The -ous ending",
+        "focus": "-ous endings",
+        "re": "ous$",
+        "description": "Our examples of describing words that end in -ous, such as nervous and dangerous.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "nervous",
+            "ipa": "/ˈnɜːvəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "A little worried or afraid about something.",
+              "example": "Sam felt nervous before the school play."
+            },
+            "chunks": [
+              "ner",
+              "vous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "serious",
+            "ipa": "/ˈsɪəriəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not joking; important and needing care.",
+              "example": "Dad had a serious look on his face."
+            },
+            "chunks": [
+              "se",
+              "ri",
+              "ous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "curious",
+            "ipa": "/ˈkjʊəriəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Keen to find out or learn about things.",
+              "example": "The curious puppy sniffed every corner."
+            },
+            "chunks": [
+              "cu",
+              "ri",
+              "ous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "jealous",
+            "ipa": "/ˈdʒeləs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Wanting something that someone else has.",
+              "example": "Ben felt jealous of his friend's new bike."
+            },
+            "chunks": [
+              "jeal",
+              "ous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "generous",
+            "ipa": "/ˈdʒenərəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Happy to give or share with others.",
+              "example": "My gran is generous with her biscuits."
+            },
+            "chunks": [
+              "gen",
+              "er",
+              "ous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "dangerous",
+            "ipa": "/ˈdeɪndʒərəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Likely to cause harm.",
+              "example": "The icy path was dangerous to walk on."
+            },
+            "chunks": [
+              "dan",
+              "ger",
+              "ous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "enormous",
+            "ipa": "/ɪˈnɔːməs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very, very big.",
+              "example": "An enormous whale swam past the boat."
+            },
+            "chunks": [
+              "e",
+              "nor",
+              "mous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "adventurous",
+            "ipa": "/ədˈventʃərəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Keen to try new and exciting things.",
+              "example": "My adventurous sister always climbs to the very top."
+            },
+            "chunks": [
+              "ad",
+              "ven",
+              "tur",
+              "ous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "mysterious",
+            "ipa": "/mɪˈstɪəriəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Strange and hard to explain.",
+              "example": "A mysterious box appeared on the doorstep."
+            },
+            "chunks": [
+              "mys",
+              "te",
+              "ri",
+              "ous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          },
+          {
+            "word": "ridiculous",
+            "ipa": "/rɪˈdɪkjʊləs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "So silly that it makes you laugh.",
+              "example": "He wore a ridiculous hat to the party."
+            },
+            "chunks": [
+              "ri",
+              "dic",
+              "u",
+              "lous"
+            ],
+            "tricky": "ous",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y4-n05",
+        "year": 4,
+        "title": "Chapter 15 — ch, gue, que and sc",
+        "focus": "ch for k and sh, gue, que and sc",
+        "re": "(ch|gue|que|sc)",
+        "description": "Our examples of spellings borrowed from other languages, such as chorus, tongue, unique and science.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "chemist",
+            "ipa": "/ˈkemɪst/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A shop or person that gives out medicines.",
+              "example": "Mum went to the chemist for some plasters."
+            },
+            "chunks": [
+              "chem",
+              "ist"
+            ],
+            "tricky": "ch",
+            "set": "pattern"
+          },
+          {
+            "word": "chorus",
+            "ipa": "/ˈkɔːrəs/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A group of people singing together.",
+              "example": "The chorus sang loudly at the concert."
+            },
+            "chunks": [
+              "cho",
+              "rus"
+            ],
+            "tricky": "ch",
+            "set": "pattern"
+          },
+          {
+            "word": "chef",
+            "ipa": "/ʃef/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A person who cooks food as a job.",
+              "example": "The chef baked a huge chocolate cake."
+            },
+            "chunks": [
+              "chef"
+            ],
+            "tricky": "ch",
+            "set": "pattern"
+          },
+          {
+            "word": "machine",
+            "ipa": "/məˈʃiːn/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Something with moving parts that does a job.",
+              "example": "The machine washed our muddy clothes."
+            },
+            "chunks": [
+              "ma",
+              "chine"
+            ],
+            "tricky": "ch",
+            "set": "pattern"
+          },
+          {
+            "word": "tongue",
+            "ipa": "/tʌŋ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part inside your mouth that helps you taste.",
+              "example": "The lolly turned my tongue bright blue."
+            },
+            "chunks": [
+              "tongue"
+            ],
+            "tricky": "gue",
+            "set": "pattern"
+          },
+          {
+            "word": "unique",
+            "ipa": "/juˈniːk/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "One of a kind; like no other.",
+              "example": "Every snowflake is unique."
+            },
+            "chunks": [
+              "u",
+              "nique"
+            ],
+            "tricky": "que",
+            "set": "pattern"
+          },
+          {
+            "word": "science",
+            "ipa": "/ˈsaɪəns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Learning about the world through looking and testing.",
+              "example": "In science we grew beans in pots."
+            },
+            "chunks": [
+              "sci",
+              "ence"
+            ],
+            "tricky": "sc",
+            "set": "pattern"
+          },
+          {
+            "word": "scissors",
+            "ipa": "/ˈsɪzəz/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A tool with two blades for cutting paper.",
+              "example": "Please pass me the scissors and glue."
+            },
+            "chunks": [
+              "scis",
+              "sors"
+            ],
+            "tricky": "sc",
+            "set": "pattern"
+          },
+          {
+            "word": "character",
+            "ipa": "/ˈkærəktə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A person or animal in a story.",
+              "example": "My favourite character in the book is a fox."
+            },
+            "chunks": [
+              "char",
+              "ac",
+              "ter"
+            ],
+            "tricky": "ch",
+            "set": "pattern"
+          },
+          {
+            "word": "technique",
+            "ipa": "/tekˈniːk/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A special way of doing something well.",
+              "example": "The teacher showed us a new painting technique."
+            },
+            "chunks": [
+              "tech",
+              "nique"
+            ],
+            "tricky": "ch",
+            "set": "pattern"
+          }
+        ]
       }
     ]
   },
@@ -3292,6 +8108,1668 @@
               "e",
               "table"
             ]
+          }
+        ]
+      },
+      {
+        "id": "y5-n01",
+        "year": 5,
+        "title": "Chapter 6 — Words ending -cious and -tious",
+        "focus": "-cious, -tious",
+        "re": "(cious|tious)$",
+        "description": "Words that end with a 'shus' sound spelt -cious or -tious; our examples show which fits.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "vicious",
+            "ipa": "/ˈvɪʃ.əs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very cruel and fierce, ready to hurt.",
+              "example": "In the story, a vicious troll guarded the bridge."
+            },
+            "chunks": [
+              "vi",
+              "cious"
+            ],
+            "tricky": "ci",
+            "set": "pattern"
+          },
+          {
+            "word": "precious",
+            "ipa": "/ˈpreʃ.əs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very valuable or loved, and not to be wasted.",
+              "example": "She kept the precious ring in a small box."
+            },
+            "chunks": [
+              "pre",
+              "cious"
+            ],
+            "tricky": "ci",
+            "set": "pattern"
+          },
+          {
+            "word": "gracious",
+            "ipa": "/ˈɡreɪ.ʃəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Kind, polite and generous in the way you treat people.",
+              "example": "The queen gave a gracious smile to the crowd."
+            },
+            "chunks": [
+              "gra",
+              "cious"
+            ],
+            "tricky": "ci",
+            "set": "pattern"
+          },
+          {
+            "word": "spacious",
+            "ipa": "/ˈspeɪ.ʃəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Having lots of room inside.",
+              "example": "We moved into a spacious flat with big windows."
+            },
+            "chunks": [
+              "spa",
+              "cious"
+            ],
+            "tricky": "ci",
+            "set": "pattern"
+          },
+          {
+            "word": "cautious",
+            "ipa": "/ˈkɔː.ʃəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Careful to avoid danger or problems.",
+              "example": "The cautious cat crept slowly across the wall."
+            },
+            "chunks": [
+              "cau",
+              "tious"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "delicious",
+            "ipa": "/dɪˈlɪʃəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Tasting or smelling very good.",
+              "example": "The soup smelled delicious."
+            },
+            "chunks": [
+              "de",
+              "li",
+              "cious"
+            ],
+            "tricky": "ci",
+            "set": "pattern"
+          },
+          {
+            "word": "ambitious",
+            "ipa": "/æmˈbɪʃ.əs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Wanting very much to do well and achieve something.",
+              "example": "The ambitious girl hopes to win the race."
+            },
+            "chunks": [
+              "am",
+              "bi",
+              "tious"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "nutritious",
+            "ipa": "/njuːˈtrɪʃ.əs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Full of the goodness that helps you grow and stay healthy.",
+              "example": "Beans and carrots make a nutritious dinner."
+            },
+            "chunks": [
+              "nu",
+              "tri",
+              "tious"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          },
+          {
+            "word": "suspicious",
+            "ipa": "/səˈspɪʃ.əs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Feeling that something is not quite right.",
+              "example": "The dog gave the new cat a suspicious sniff."
+            },
+            "chunks": [
+              "sus",
+              "pi",
+              "cious"
+            ],
+            "tricky": "ci",
+            "set": "pattern"
+          },
+          {
+            "word": "infectious",
+            "ipa": "/ɪnˈfek.ʃəs/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Able to spread easily from one person to another.",
+              "example": "Her laugh was so infectious that we all joined in."
+            },
+            "chunks": [
+              "in",
+              "fec",
+              "tious"
+            ],
+            "tricky": "ti",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y5-n02",
+        "year": 5,
+        "title": "Chapter 7 — Words ending -cial and -tial",
+        "focus": "-cial, -tial",
+        "re": "(cial|tial)$",
+        "description": "Words that end with a 'shul' sound spelt -cial or -tial; our examples show which fits.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "social",
+            "ipa": "/ˈsəʊ.ʃəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Connected with meeting and spending time with other people.",
+              "example": "The club holds a social evening every Friday."
+            },
+            "chunks": [
+              "so",
+              "cial"
+            ],
+            "tricky": "cia",
+            "set": "pattern"
+          },
+          {
+            "word": "commercial",
+            "ipa": "/kəˈmɜː.ʃəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "To do with buying, selling and business.",
+              "example": "A commercial bakery makes bread for many shops."
+            },
+            "chunks": [
+              "com",
+              "mer",
+              "cial"
+            ],
+            "tricky": "cia",
+            "set": "pattern"
+          },
+          {
+            "word": "facial",
+            "ipa": "/ˈfeɪ.ʃəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "To do with the face.",
+              "example": "His facial expression showed he was surprised."
+            },
+            "chunks": [
+              "fa",
+              "cial"
+            ],
+            "tricky": "cia",
+            "set": "pattern"
+          },
+          {
+            "word": "crucial",
+            "ipa": "/ˈkruː.ʃəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Extremely important, so that everything depends on it.",
+              "example": "Practice is crucial if you want to play well."
+            },
+            "chunks": [
+              "cru",
+              "cial"
+            ],
+            "tricky": "cia",
+            "set": "pattern"
+          },
+          {
+            "word": "official",
+            "ipa": "/əˈfɪʃ.əl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Approved by someone in charge.",
+              "example": "The official start time is nine in the morning."
+            },
+            "chunks": [
+              "of",
+              "fi",
+              "cial"
+            ],
+            "tricky": "cia",
+            "set": "pattern"
+          },
+          {
+            "word": "initial",
+            "ipa": "/ɪˈnɪʃ.əl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Happening first, at the very beginning.",
+              "example": "Our initial plan was to walk to the park."
+            },
+            "chunks": [
+              "i",
+              "ni",
+              "tial"
+            ],
+            "tricky": "tia",
+            "set": "pattern"
+          },
+          {
+            "word": "partial",
+            "ipa": "/ˈpɑː.ʃəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Not complete; only a part of the whole.",
+              "example": "We only had a partial view of the stage."
+            },
+            "chunks": [
+              "par",
+              "tial"
+            ],
+            "tricky": "tia",
+            "set": "pattern"
+          },
+          {
+            "word": "essential",
+            "ipa": "/ɪˈsen.ʃəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Absolutely needed; you cannot do without it.",
+              "example": "Water is essential for all living things."
+            },
+            "chunks": [
+              "es",
+              "sen",
+              "tial"
+            ],
+            "tricky": "tia",
+            "set": "pattern"
+          },
+          {
+            "word": "potential",
+            "ipa": "/pəˈten.ʃəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "What someone or something could become with time.",
+              "example": "The young player has great potential."
+            },
+            "chunks": [
+              "po",
+              "ten",
+              "tial"
+            ],
+            "tricky": "tia",
+            "set": "pattern"
+          },
+          {
+            "word": "artificial",
+            "ipa": "/ˌɑː.tɪˈfɪʃ.əl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Made by people, not found in nature.",
+              "example": "The shop sold artificial flowers that never die."
+            },
+            "chunks": [
+              "ar",
+              "ti",
+              "fi",
+              "cial"
+            ],
+            "tricky": "cia",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y5-n03",
+        "year": 5,
+        "title": "Chapter 8 — Words ending -ant, -ance and -ancy",
+        "focus": "-ant, -ance, -ancy",
+        "re": "(ant|ance|ancy)$",
+        "description": "Words ending in -ant, -ance or -ancy, where the vowel sound is hard to hear; our examples show the rule.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "distant",
+            "ipa": "/ˈdɪs.tənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Far away in space or time.",
+              "example": "We could see distant hills through the mist."
+            },
+            "chunks": [
+              "dis",
+              "tant"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "instant",
+            "ipa": "/ˈɪn.stənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Happening straight away, with no waiting.",
+              "example": "The magic trick was an instant success."
+            },
+            "chunks": [
+              "in",
+              "stant"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "pleasant",
+            "ipa": "/ˈplez.ənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Nice, enjoyable and friendly.",
+              "example": "We spent a pleasant afternoon by the river."
+            },
+            "chunks": [
+              "pleas",
+              "ant"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "elegant",
+            "ipa": "/ˈel.ɪ.ɡənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Graceful and stylish in the way it looks.",
+              "example": "The swan looked elegant as it glided past."
+            },
+            "chunks": [
+              "el",
+              "e",
+              "gant"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "brilliant",
+            "ipa": "/ˈbrɪl.jənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very clever, or extremely bright and shining.",
+              "example": "The brilliant sunshine lit up the whole beach."
+            },
+            "chunks": [
+              "bril",
+              "liant"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "distance",
+            "ipa": "/ˈdɪs.təns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The amount of space between two places.",
+              "example": "The distance from here to school is a mile."
+            },
+            "chunks": [
+              "dis",
+              "tance"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "balance",
+            "ipa": "/ˈbæl.əns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Staying steady without falling over.",
+              "example": "She kept her balance on the narrow wall."
+            },
+            "chunks": [
+              "bal",
+              "ance"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "importance",
+            "ipa": "/ɪmˈpɔː.təns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How much something matters.",
+              "example": "The teacher explained the importance of good manners."
+            },
+            "chunks": [
+              "im",
+              "por",
+              "tance"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "attendance",
+            "ipa": "/əˈten.dəns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How often someone is present, for example at school.",
+              "example": "Our class had the best attendance this term."
+            },
+            "chunks": [
+              "at",
+              "ten",
+              "dance"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          },
+          {
+            "word": "vacancy",
+            "ipa": "/ˈveɪ.kən.si/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A job or room that is free and not yet taken.",
+              "example": "The hotel had a vacancy for one night."
+            },
+            "chunks": [
+              "va",
+              "can",
+              "cy"
+            ],
+            "tricky": "an",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y5-n04",
+        "year": 5,
+        "title": "Chapter 9 — Words ending -able and -ably",
+        "focus": "-able, -ably",
+        "re": "(able|ably)$",
+        "description": "Words ending in -able or -ably, which are often added to a whole word; our examples show the rule.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "valuable",
+            "ipa": "/ˈvæl.ju.əb.əl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Worth a lot of money or very useful.",
+              "example": "The museum keeps a valuable painting in a glass case."
+            },
+            "chunks": [
+              "val",
+              "u",
+              "a",
+              "ble"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "adorable",
+            "ipa": "/əˈdɔː.rə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "So sweet and lovely that everyone wants to cuddle it.",
+              "example": "The adorable puppy wagged its tail."
+            },
+            "chunks": [
+              "a",
+              "dor",
+              "a",
+              "ble"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "remarkably",
+            "ipa": "/rɪˈmɑː.kə.bli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a way that is surprising and worth noticing.",
+              "example": "The tiny boat was remarkably fast."
+            },
+            "chunks": [
+              "re",
+              "mark",
+              "a",
+              "bly"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "enjoyable",
+            "ipa": "/ɪnˈdʒɔɪ.ə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Giving you pleasure and fun.",
+              "example": "We had an enjoyable day at the seaside."
+            },
+            "chunks": [
+              "en",
+              "joy",
+              "a",
+              "ble"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "reasonable",
+            "ipa": "/ˈriː.zən.ə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Fair and sensible.",
+              "example": "It is reasonable to ask for a turn."
+            },
+            "chunks": [
+              "rea",
+              "son",
+              "a",
+              "ble"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "noticeable",
+            "ipa": "/ˈnəʊ.tɪ.sə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Easy to see or spot.",
+              "example": "There was a noticeable crack in the old cup."
+            },
+            "chunks": [
+              "no",
+              "tice",
+              "a",
+              "ble"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "comfortable",
+            "ipa": "/ˈkʌm.fə.tə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Soft and relaxing, so that you feel at ease.",
+              "example": "The sofa was big and comfortable."
+            },
+            "chunks": [
+              "com",
+              "fort",
+              "a",
+              "ble"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "fashionable",
+            "ipa": "/ˈfæʃ.ən.ə.bəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Popular and in style at the moment.",
+              "example": "She wore a fashionable hat to the party."
+            },
+            "chunks": [
+              "fash",
+              "ion",
+              "a",
+              "ble"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "comfortably",
+            "ipa": "/ˈkʌm.fə.tə.bli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a relaxed way, feeling at ease.",
+              "example": "The cat slept comfortably on the warm rug."
+            },
+            "chunks": [
+              "com",
+              "fort",
+              "a",
+              "bly"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          },
+          {
+            "word": "reasonably",
+            "ipa": "/ˈriː.zən.ə.bli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "In a fair and sensible way.",
+              "example": "The new bike was reasonably cheap."
+            },
+            "chunks": [
+              "rea",
+              "son",
+              "a",
+              "bly"
+            ],
+            "tricky": "ab",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y5-n05",
+        "year": 5,
+        "title": "Chapter 10 — Adding endings to words ending -fer",
+        "focus": "-fer words with -ed, -ing, -ence",
+        "re": "(refer|prefer|transfer)",
+        "description": "Words built on refer, prefer and transfer: whether the r doubles depends on where the stress falls; our examples show this.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "referee",
+            "ipa": "/ˌref.əˈriː/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The person who makes sure players keep to the rules.",
+              "example": "The referee blew the whistle at half time."
+            },
+            "chunks": [
+              "ref",
+              "er",
+              "ee"
+            ],
+            "tricky": "ee",
+            "set": "pattern"
+          },
+          {
+            "word": "prefer",
+            "ipa": "/prɪˈfɜː/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To like one thing better than another.",
+              "example": "I prefer toast to cereal."
+            },
+            "chunks": [
+              "pre",
+              "fer"
+            ],
+            "tricky": "r",
+            "set": "pattern"
+          },
+          {
+            "word": "reference",
+            "ipa": "/ˈref.ər.əns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A mention of something, or a note of where to look.",
+              "example": "The teacher made a reference to our trip."
+            },
+            "chunks": [
+              "ref",
+              "er",
+              "ence"
+            ],
+            "tricky": "r",
+            "set": "pattern"
+          },
+          {
+            "word": "preference",
+            "ipa": "/ˈpref.ər.əns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Liking one thing better than another.",
+              "example": "Her preference is for blue rather than green."
+            },
+            "chunks": [
+              "pref",
+              "er",
+              "ence"
+            ],
+            "tricky": "r",
+            "set": "pattern"
+          },
+          {
+            "word": "referred",
+            "ipa": "/rɪˈfɜːd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Mentioned something or pointed someone to it.",
+              "example": "He referred to his notes during the talk."
+            },
+            "chunks": [
+              "re",
+              "ferred"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          },
+          {
+            "word": "referring",
+            "ipa": "/rɪˈfɜː.rɪŋ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Mentioning something or pointing someone to it.",
+              "example": "She is referring to the last chapter."
+            },
+            "chunks": [
+              "re",
+              "fer",
+              "ring"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          },
+          {
+            "word": "preferred",
+            "ipa": "/prɪˈfɜːd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Liked one thing better than another.",
+              "example": "We preferred the red kite to the green one."
+            },
+            "chunks": [
+              "pre",
+              "ferred"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          },
+          {
+            "word": "preferring",
+            "ipa": "/prɪˈfɜː.rɪŋ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Liking one thing better than another.",
+              "example": "Preferring the quiet seat, he sat by the window."
+            },
+            "chunks": [
+              "pre",
+              "fer",
+              "ring"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          },
+          {
+            "word": "transferred",
+            "ipa": "/trænsˈfɜːd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Moved from one place or person to another.",
+              "example": "The photos were transferred onto the new computer."
+            },
+            "chunks": [
+              "trans",
+              "ferred"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          },
+          {
+            "word": "transferring",
+            "ipa": "/trænsˈfɜː.rɪŋ/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Moving something from one place or person to another.",
+              "example": "Dad is transferring the water into a jug."
+            },
+            "chunks": [
+              "trans",
+              "fer",
+              "ring"
+            ],
+            "tricky": "rr",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y6-n01",
+        "year": 6,
+        "title": "Chapter 11 — ei after c",
+        "focus": "ei after c (receive, ceiling…)",
+        "re": "(cei)",
+        "description": "Our examples of the rule 'i before e, except after c': here the letters are always c, e, i.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "received",
+            "ipa": "/rɪˈsiːvd/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Got or was given something.",
+              "example": "We received a postcard from our cousins."
+            },
+            "chunks": [
+              "re",
+              "ceived"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "receive",
+            "ipa": "/rɪˈsiːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To get or be given something.",
+              "example": "I hope to receive a letter from my cousin."
+            },
+            "chunks": [
+              "re",
+              "ceive"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "receipt",
+            "ipa": "/rɪˈsiːt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A piece of paper showing that you have paid for something.",
+              "example": "Keep the receipt in case the toy breaks."
+            },
+            "chunks": [
+              "re",
+              "ceipt"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "receiver",
+            "ipa": "/rɪˈsiːvə/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The part of a telephone that you hold to your ear.",
+              "example": "She lifted the receiver and said hello."
+            },
+            "chunks": [
+              "re",
+              "ceiv",
+              "er"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "deceive",
+            "ipa": "/dɪˈsiːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To make someone believe something that is not true.",
+              "example": "The fox tried to deceive the little hen."
+            },
+            "chunks": [
+              "de",
+              "ceive"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "deceit",
+            "ipa": "/dɪˈsiːt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Behaviour that tricks people by telling lies.",
+              "example": "The story was about a cruel trick and deceit."
+            },
+            "chunks": [
+              "de",
+              "ceit"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "conceited",
+            "ipa": "/kənˈsiːtɪd/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Too proud of yourself and your own cleverness.",
+              "example": "He was so conceited that he never listened to others."
+            },
+            "chunks": [
+              "con",
+              "ceit",
+              "ed"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "deceitful",
+            "ipa": "/dɪˈsiːtfʊl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Telling lies or tricking people.",
+              "example": "The deceitful pirate hid the map in his coat."
+            },
+            "chunks": [
+              "de",
+              "ceit",
+              "ful"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "perceive",
+            "ipa": "/pəˈsiːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To notice or understand something.",
+              "example": "I could perceive a faint light in the distance."
+            },
+            "chunks": [
+              "per",
+              "ceive"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          },
+          {
+            "word": "conceive",
+            "ipa": "/kənˈsiːv/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To form an idea or plan in your mind.",
+              "example": "Can you conceive of a world without colour?"
+            },
+            "chunks": [
+              "con",
+              "ceive"
+            ],
+            "tricky": "cei",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y6-n02",
+        "year": 6,
+        "title": "Chapter 12 — ough words",
+        "focus": "ough words (though, cough, rough, bought…)",
+        "re": "ough",
+        "description": "Our examples of words with the tricky letters ough, which can sound many different ways.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "doughnut",
+            "ipa": "/ˈdəʊnʌt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A small round cake, fried and often covered in sugar.",
+              "example": "I had a jam doughnut after swimming."
+            },
+            "chunks": [
+              "dough",
+              "nut"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "cough",
+            "ipa": "/kɒf/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To push air out of your throat with a sudden noise.",
+              "example": "Please cover your mouth when you cough."
+            },
+            "chunks": [
+              "cough"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "tough",
+            "ipa": "/tʌf/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Strong and hard to break or cut.",
+              "example": "The steak was too tough to chew."
+            },
+            "chunks": [
+              "tough"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "roughly",
+            "ipa": "/ˈrʌfli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "About; not exactly.",
+              "example": "There are roughly thirty children in my class."
+            },
+            "chunks": [
+              "rough",
+              "ly"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "bought",
+            "ipa": "/bɔːt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Paid money to get something.",
+              "example": "Mum bought a new bike for my sister."
+            },
+            "chunks": [
+              "bought"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "thoughtful",
+            "ipa": "/ˈθɔːtfʊl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Kind, and thinking about what other people need.",
+              "example": "It was thoughtful of you to bring me a drink."
+            },
+            "chunks": [
+              "thought",
+              "ful"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "brought",
+            "ipa": "/brɔːt/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "Carried or took something with you to a place.",
+              "example": "She brought her kite to the park."
+            },
+            "chunks": [
+              "brought"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "plough",
+            "ipa": "/plaʊ/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A farm tool pulled across a field to turn over the soil.",
+              "example": "The farmer pulled the plough across the field."
+            },
+            "chunks": [
+              "plough"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "drought",
+            "ipa": "/draʊt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A long time with no rain.",
+              "example": "The farmers worried during the long summer drought."
+            },
+            "chunks": [
+              "drought"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          },
+          {
+            "word": "throughout",
+            "ipa": "/θruːˈaʊt/",
+            "meaning": {
+              "partOfSpeech": "preposition",
+              "definition": "From the beginning to the end of.",
+              "example": "It rained throughout the whole night."
+            },
+            "chunks": [
+              "through",
+              "out"
+            ],
+            "tricky": "gh",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y6-n03",
+        "year": 6,
+        "title": "Chapter 13 — Silent letters",
+        "focus": "silent letters (doubt, knowledge, autumn, column, castle)",
+        "re": "(^kn|^wr|stle$|sten$|^gh|^hon|bt|mn$)",
+        "description": "Our examples of words with a letter you write but do not say, like the b in doubt.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "knee",
+            "ipa": "/niː/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The joint in the middle of your leg.",
+              "example": "I grazed my knee when I fell off my bike."
+            },
+            "chunks": [
+              "knee"
+            ],
+            "tricky": "kn",
+            "set": "pattern"
+          },
+          {
+            "word": "castle",
+            "ipa": "/ˈkɑːsəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A large strong building with thick walls, built long ago.",
+              "example": "The king lived in a castle on the hill."
+            },
+            "chunks": [
+              "cas",
+              "tle"
+            ],
+            "tricky": "t",
+            "set": "pattern"
+          },
+          {
+            "word": "listen",
+            "ipa": "/ˈlɪsən/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To pay attention to a sound.",
+              "example": "Please listen carefully to the instructions."
+            },
+            "chunks": [
+              "lis",
+              "ten"
+            ],
+            "tricky": "t",
+            "set": "pattern"
+          },
+          {
+            "word": "ghost",
+            "ipa": "/ɡəʊst/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The spirit of a person in stories, said to haunt places.",
+              "example": "We made a friendly ghost costume for the party."
+            },
+            "chunks": [
+              "ghost"
+            ],
+            "tricky": "h",
+            "set": "pattern"
+          },
+          {
+            "word": "whistle",
+            "ipa": "/ˈwɪsəl/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A small tube that makes a loud high sound when you blow it.",
+              "example": "The referee blew her whistle to start the game."
+            },
+            "chunks": [
+              "whis",
+              "tle"
+            ],
+            "tricky": "t",
+            "set": "pattern"
+          },
+          {
+            "word": "honest",
+            "ipa": "/ˈɒnɪst/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Always telling the truth.",
+              "example": "An honest person gives back money they find."
+            },
+            "chunks": [
+              "hon",
+              "est"
+            ],
+            "tricky": "h",
+            "set": "pattern"
+          },
+          {
+            "word": "doubt",
+            "ipa": "/daʊt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A feeling of not being sure about something.",
+              "example": "I have no doubt that you will win."
+            },
+            "chunks": [
+              "doubt"
+            ],
+            "tricky": "b",
+            "set": "pattern"
+          },
+          {
+            "word": "autumn",
+            "ipa": "/ˈɔːtəm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The season between summer and winter.",
+              "example": "Leaves turn gold and brown in autumn."
+            },
+            "chunks": [
+              "au",
+              "tumn"
+            ],
+            "tricky": "n",
+            "set": "pattern"
+          },
+          {
+            "word": "column",
+            "ipa": "/ˈkɒləm/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A tall pillar, or a vertical line of print or numbers.",
+              "example": "The old temple had a tall stone column."
+            },
+            "chunks": [
+              "col",
+              "umn"
+            ],
+            "tricky": "n",
+            "set": "pattern"
+          },
+          {
+            "word": "wrestle",
+            "ipa": "/ˈresəl/",
+            "meaning": {
+              "partOfSpeech": "verb",
+              "definition": "To fight by holding and trying to throw your opponent down.",
+              "example": "The two brothers like to wrestle on the soft rug."
+            },
+            "chunks": [
+              "wres",
+              "tle"
+            ],
+            "tricky": "w",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y6-n04",
+        "year": 6,
+        "title": "Chapter 14 — Endings ent, ence, ency",
+        "focus": "-ent, -ence, -ency endings",
+        "re": "(ent|ence|ency)$",
+        "description": "Our examples of words ending in -ent, -ence or -ency, which can sound alike at the end.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "talent",
+            "ipa": "/ˈtælənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A natural skill at doing something well.",
+              "example": "She has a talent for playing the violin."
+            },
+            "chunks": [
+              "tal",
+              "ent"
+            ],
+            "tricky": "ent",
+            "set": "pattern"
+          },
+          {
+            "word": "silent",
+            "ipa": "/ˈsaɪlənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Making no sound at all.",
+              "example": "The library was silent except for turning pages."
+            },
+            "chunks": [
+              "si",
+              "lent"
+            ],
+            "tricky": "ent",
+            "set": "pattern"
+          },
+          {
+            "word": "parent",
+            "ipa": "/ˈpeərənt/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A mother or father.",
+              "example": "Each parent got a letter about the school trip."
+            },
+            "chunks": [
+              "par",
+              "ent"
+            ],
+            "tricky": "ent",
+            "set": "pattern"
+          },
+          {
+            "word": "urgent",
+            "ipa": "/ˈɜːdʒənt/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Needing to be dealt with straight away.",
+              "example": "The doctor got an urgent message."
+            },
+            "chunks": [
+              "ur",
+              "gent"
+            ],
+            "tricky": "ent",
+            "set": "pattern"
+          },
+          {
+            "word": "silence",
+            "ipa": "/ˈsaɪləns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A time when there is no noise.",
+              "example": "A hush of silence fell over the hall."
+            },
+            "chunks": [
+              "si",
+              "lence"
+            ],
+            "tricky": "ce",
+            "set": "pattern"
+          },
+          {
+            "word": "absence",
+            "ipa": "/ˈæbsəns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "A time when someone is not there.",
+              "example": "Her absence from class was noticed by everyone."
+            },
+            "chunks": [
+              "ab",
+              "sence"
+            ],
+            "tricky": "ce",
+            "set": "pattern"
+          },
+          {
+            "word": "difference",
+            "ipa": "/ˈdɪfrəns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The way in which things are not the same.",
+              "example": "Can you spot the difference between the two pictures?"
+            },
+            "chunks": [
+              "dif",
+              "fer",
+              "ence"
+            ],
+            "tricky": "ce",
+            "set": "pattern"
+          },
+          {
+            "word": "evidence",
+            "ipa": "/ˈevɪdəns/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "Facts or signs that help show what is true.",
+              "example": "The muddy footprints were evidence of a visitor."
+            },
+            "chunks": [
+              "ev",
+              "i",
+              "dence"
+            ],
+            "tricky": "ce",
+            "set": "pattern"
+          },
+          {
+            "word": "urgency",
+            "ipa": "/ˈɜːdʒənsi/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "The need to act very quickly.",
+              "example": "There was a sense of urgency in her voice."
+            },
+            "chunks": [
+              "ur",
+              "gen",
+              "cy"
+            ],
+            "tricky": "cy",
+            "set": "pattern"
+          },
+          {
+            "word": "frequency",
+            "ipa": "/ˈfriːkwənsi/",
+            "meaning": {
+              "partOfSpeech": "noun",
+              "definition": "How often something happens.",
+              "example": "The frequency of our swimming lessons is once a week."
+            },
+            "chunks": [
+              "fre",
+              "quen",
+              "cy"
+            ],
+            "tricky": "cy",
+            "set": "pattern"
+          }
+        ]
+      },
+      {
+        "id": "y6-n05",
+        "year": 6,
+        "title": "Chapter 15 — Endings ible, ibly",
+        "focus": "-ible and -ibly endings",
+        "re": "(ible|ibly)$",
+        "description": "Our examples of words ending in -ible or -ibly, where the ending is often mixed up with -able.",
+        "signedOff": true,
+        "words": [
+          {
+            "word": "edible",
+            "ipa": "/ˈedəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Safe to eat.",
+              "example": "The flowers on the cake are edible, so you can eat them."
+            },
+            "chunks": [
+              "ed",
+              "i",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "terrible",
+            "ipa": "/ˈterəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very bad or unpleasant.",
+              "example": "The soup tasted terrible after it burnt."
+            },
+            "chunks": [
+              "ter",
+              "ri",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "visible",
+            "ipa": "/ˈvɪzəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Able to be seen.",
+              "example": "The moon was clearly visible in the night sky."
+            },
+            "chunks": [
+              "vis",
+              "i",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "sensible",
+            "ipa": "/ˈsensəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Showing good sense and sound judgement.",
+              "example": "It is sensible to wear a coat in the rain."
+            },
+            "chunks": [
+              "sen",
+              "si",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "possibly",
+            "ipa": "/ˈpɒsəbli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Perhaps; it may be so.",
+              "example": "We could possibly go to the beach tomorrow."
+            },
+            "chunks": [
+              "pos",
+              "si",
+              "bly"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "terribly",
+            "ipa": "/ˈterəbli/",
+            "meaning": {
+              "partOfSpeech": "adverb",
+              "definition": "Very badly, or to a very great degree.",
+              "example": "I am terribly sorry that I forgot your book."
+            },
+            "chunks": [
+              "ter",
+              "ri",
+              "bly"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "horrible",
+            "ipa": "/ˈhɒrəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Very unpleasant and making you feel upset.",
+              "example": "There was a horrible smell in the kitchen."
+            },
+            "chunks": [
+              "hor",
+              "ri",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "flexible",
+            "ipa": "/ˈfleksəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Able to bend easily without breaking.",
+              "example": "The gymnast was very flexible and bent backwards."
+            },
+            "chunks": [
+              "flex",
+              "i",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "incredible",
+            "ipa": "/ɪnˈkredəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Amazing and very hard to believe.",
+              "example": "The magician performed an incredible trick."
+            },
+            "chunks": [
+              "in",
+              "cred",
+              "i",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
+          },
+          {
+            "word": "responsible",
+            "ipa": "/rɪˈspɒnsəbəl/",
+            "meaning": {
+              "partOfSpeech": "adjective",
+              "definition": "Trusted to do the right thing and look after things.",
+              "example": "Ana is responsible for feeding the class fish."
+            },
+            "chunks": [
+              "re",
+              "spon",
+              "si",
+              "ble"
+            ],
+            "tricky": "ib",
+            "set": "pattern"
           }
         ]
       }

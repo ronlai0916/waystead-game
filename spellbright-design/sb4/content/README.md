@@ -16,7 +16,7 @@ Check with `node tools/build-chapters.mjs`; sheets for Ron with `--review`; buil
 
 - Ids: `y1-ch01`..`y2-ch10`; new chapters `y3-n01`..`y3-n05` (and y4, y5, y6). `a` batches hold chapters 1-5, `b` 6-10.
 - Words per chapter: Year 1 8-10, everything else 10.
-- `set`: `cew` (statutory, from `../appendix1-y1y2.json`, Years 1-2 only) or `pattern` (ours; must match the chapter's `re`, case-insensitive).
+- `set`: `cew` (common exception words from the national curriculum, from `../appendix1-y1y2.json`, Years 1-2 only; the DfE prints them as non-statutory examples, so the app never calls them statutory) or `pattern` (ours; must match the chapter's `re`, case-insensitive).
 - `noMatch` is optional; `tricky` is optional (1-3 letters in the word); leave `image` out (Ron's later run), except a word already in `curriculum.json`, which copies that entry exactly.
 - A word stored with a capital: `I`, `Mr`, `Mrs`, the seven days, `Christmas` only. `a` and `I` have one chunk and no `tricky`.
 - Definition at most 14 words, example at most 12 and containing the word exactly once. No apostrophe, hyphen or space in a word. No homophones among pattern words.

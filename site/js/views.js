@@ -17,7 +17,7 @@ import { runCheck } from './assess-views.js';
 import { childYear, isKnownChild } from './who.js';
 import * as Ch from './chapters-doc.js';
 import { safeDecode } from './chapters-doc.js';
-import { entryFor } from './word-info.js';
+import { entryFor, shown } from './word-info.js';
 
 const MAX_PICK = 30;
 
@@ -49,7 +49,8 @@ export function chapterFrom(params) {
 }
 /** One word of an own chapter, or null when the chapter has no such word. */
 const ownEntry = (ch, word) => ch.words.find((e) => e.word.toLowerCase() === word.toLowerCase()) || null;
-function wordEntries(ch) { return ch.own ? ch.words : ch.words.map((w) => D.entry(w.word)); } // an own chapter's words are entries already
+const rawEntries = (ch) => (ch.own ? ch.words : ch.words.map((w) => D.entry(w.word))); // an own chapter's words are entries already; the test and Pick words use these (the sentence is only heard there)
+function wordEntries(ch) { return rawEntries(ch).map(shown); } // what a child reads: no example that holds a word whose test is due
 /** The small heading over a chapter page: "Chapter 3 · Study", or "From your grown-up · Study" for an own chapter. */
 const eyebrowOf = (ch, what) => (ch.own ? 'From your grown-up' : 'Chapter ' + D.chapterTitle(ch).n) + ' · ' + what;
 
@@ -91,7 +92,7 @@ export function study(main, params) {
 /* --------------------------------------------------------- Spell it out --- */
 export function spell(main, params) {
   const from = chapterFrom(params);
-  const w = from && from.ch.own ? ownEntry(from.ch, decodeURIComponent(params.word)) : D.entry(decodeURIComponent(params.word));
+  const w = shown(from && from.ch.own ? ownEntry(from.ch, safeDecode(params.word)) : D.entry(safeDecode(params.word)));
   if (!w || !from) return notFound(main);
   main.innerHTML = '<section class="wrap page"><div class="card spell">'
     + picture(w)
@@ -122,7 +123,7 @@ export function quick(main, params) {
   if (!from || !isUnlocked(from.ch)) return notFound(main);
   const { ch, base } = from;
   const t = D.chapterTitle(ch);
-  const single = word ? (ch.own ? ownEntry(ch, decodeURIComponent(word)) : D.entry(decodeURIComponent(word))) : null;
+  const single = word ? (ch.own ? ownEntry(ch, safeDecode(word)) : D.entry(safeDecode(word))) : null;
   if (word && !single) return notFound(main);
   const back = single ? [] : backAgainFor(ch.words.map((x) => x.word));
   const words = (single ? [single] : shuffle([...wordEntries(ch), ...back])).filter((e) => playable(e, 'flower')); // SB4-WP4: "a" and "I" are not played on a flower
@@ -183,7 +184,7 @@ export function test(main, params) {
   const nextYear = nextCh || ch.own ? '' : live[live.indexOf(ch.yearId) + 1] || ''; // the last chapter of a year leads on to the next year
   // SB4-WP5: the shared runner. Feedback comes at the end; the pass rule, what is stored and the end buttons stay.
   return runCheck(main, {
-    kind: 'test', scope: {}, showMeaning: true, words: shuffle(wordEntries(ch)), pf, lv, year, backHref: base, title: ch.own ? ch.title : D.years()[ch.yearId].label + ' · Chapter ' + t.n,
+    kind: 'test', scope: {}, showMeaning: true, words: shuffle(rawEntries(ch)), pf, lv, year, backHref: base, title: ch.own ? ch.title : D.years()[ch.yearId].label + ' · Chapter ' + t.n,
     save: (a) => { if (a.ok) S.noteCorrect(a.w); else if (D.entry(a.w)) S.noteMissed(a.w, ch.id); }, // SB4-WP7: only a curriculum word is a tricky word
     done: (r) => {
       const passed = A.passes(pf, r.right, r.of);
@@ -217,7 +218,7 @@ export function custom(main) {
 
   function source() {
     if (tab === 'tricky') return tricky.map((w) => D.entry(w));
-    if (tab === 'chapter') return withoutHidden(wordEntries(D.chapterById(chapterId)), hidden);
+    if (tab === 'chapter') return withoutHidden(rawEntries(D.chapterById(chapterId)), hidden);
     return all.filter((w) => w.word.toLowerCase().includes(filter.toLowerCase()));
   }
 

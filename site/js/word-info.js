@@ -2,6 +2,10 @@
 // all. A typed word has only its letters here; meaningsFor() fills in what
 // Wordbright's meanings know (fetched only when such a word is studied).
 import * as D from './data.js';
+import * as S from './store.js';
+import * as W from './words-doc.js';
+import { hiddenWords } from './study-doc.js';
+import { guardEntry } from './test-guard.js';
 
 const NONE = { partOfSpeech: 'word', definition: '', example: '' };
 const looked = new Map(); // word -> meaning
@@ -10,6 +14,14 @@ export const findEntry = (w) => D.entry(w) || D.allWords().find((e) => e.word.to
 /** Always an entry the pages can draw. */
 export function entryFor(word) {
   return findEntry(word) || { word, ipa: '', chunks: [word], meaning: looked.get(word) || NONE };
+}
+/**
+ * The entry for the screen (SB4-E/F): while a group's test is due, an example sentence that holds one of its words is left out.
+ * For what a child reads (study cards, sentence cards, the example list), never for what is only heard in a test.
+ */
+export function shown(w) {
+  if (!w || !S.currentPlayer()) return w;
+  return guardEntry(w, hiddenWords(S.readWords(), W.localDay(Date.now())));
 }
 export const hasMeaning = (word) => !!entryFor(word).meaning.definition;
 

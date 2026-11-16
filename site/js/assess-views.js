@@ -19,6 +19,7 @@ import { childYear } from './who.js';
 import { notFound, isUnlocked } from './front-views.js';
 import { chapterFrom } from './views.js';
 import { SPELL_INSTRUCTION } from './child-doc.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const PEEK_MS = 3000;
 const today = () => W.localDay(Date.now());
@@ -421,7 +422,7 @@ export function chapterQuiz(main, params) {
 
 /** words/g/:gid/quiz */
 export function groupQuiz(main, { gid }) {
-  const id = decodeURIComponent(gid);
+  const id = safeDecode(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
   if (!g) { location.replace('#/'); return undefined; }
@@ -451,7 +452,7 @@ const readDraft = (eid, list, re) => {
 const writeDraft = (v) => { try { if (v) sessionStorage.setItem(DRAFT, JSON.stringify(v)); else sessionStorage.removeItem(DRAFT); } catch (e) { /* ignore */ } };
 
 export function examPage(main, { eid }) {
-  const id = decodeURIComponent(eid);
+  const id = safeDecode(eid);
   const exam = Su.liveExams(S.readSetup()).find((e) => e.id === id);
   if (!exam) return notFound(main);
   const year = childYear();

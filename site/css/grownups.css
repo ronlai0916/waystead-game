@@ -302,8 +302,10 @@
 .gu .gu-own { display: grid; gap: 20px; align-items: start; }
 @media (min-width: 820px) { .gu .gu-own { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); } }
 .gu .gu-ownlist { display: grid; gap: 14px; margin-top: 14px; }
-.gu .gu-ownlink { margin: 8px 0 0; }
+.gu .gu-ownlink { margin: 4px 0 0; } /* SB4-WP13: 44 px targets need less air between them */
 .gu .gu-ownlink a { display: inline-flex; align-items: center; min-height: 44px; }
+.gu .gu-stories p { margin: 0; } /* SB4-WP13: the three quiet links on the home are one height */
+.gu .gu-stories a { display: inline-flex; align-items: center; min-height: 44px; }
 .gu .gu-ownwords { list-style: none; margin: 0; padding: 0; display: grid; }
 .gu .gu-ownword { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; min-height: 56px; padding: 6px 4px; border-top: 1px solid var(--line); }
 .gu .gu-ownword__w { font-family: var(--f-ipa); font-size: 20px; font-weight: 600; min-width: 5.5em; overflow-wrap: anywhere; }
@@ -379,6 +381,11 @@
 .gu .s-pick input { width: 28px; height: 28px; flex: none; accent-color: var(--sb); margin: 0; }
 .gu .s-pick--plain { cursor: default; }
 .gu .s-pick input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+/* SB4-WP13: an unticked box has a 3:1 edge in all three styles (the native box cannot be coloured). Radios stay native. */
+.gu-check input[type="checkbox"], .gu .s-pick input[type="checkbox"], .gu .gu-check input[type="checkbox"] { -webkit-appearance: none; appearance: none; position: relative; display: inline-grid; place-content: center; margin: 0; border: 2px solid var(--field-edge, var(--sb)); border-radius: 6px; background: var(--surface); cursor: pointer; }
+.gu-check input[type="checkbox"]:checked, .gu .s-pick input[type="checkbox"]:checked { background: var(--sb); border-color: var(--sb); }
+.gu-check input[type="checkbox"]:checked::after, .gu .s-pick input[type="checkbox"]:checked::after { content: ""; position: absolute; left: 50%; top: 45%; width: 28%; height: 52%; border: solid var(--surface); border-width: 0 3px 3px 0; transform: translate(-50%, -50%) rotate(45deg); }
+.gu-check input[type="checkbox"]:disabled, .gu .s-pick input[type="checkbox"]:disabled { opacity: 0.6; cursor: default; }
 .gu .s-word { font-family: var(--f-ipa); font-size: 1.25rem; font-weight: 600; overflow-wrap: anywhere; line-height: 1.25; }
 .gu .s-st { grid-column: 1; grid-row: 2; padding: 0 4px 8px 44px; color: var(--muted); font-size: 1rem; line-height: 1.3; }
 .gu .s-pick--plain + .s-st { padding-left: 4px; }

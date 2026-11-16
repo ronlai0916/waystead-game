@@ -20,6 +20,7 @@ export default function (H) {
   const panel = () => ev('document.querySelector("[data-yearpanel]").dataset.yearpanel');
 
   scene('SB4-WP1 a child in Year 4 sees Year 4, Year 5 and Other years', async () => {
+    H.serve('data/curriculum.json', H.legacyCurriculum); // the list before Years 1 and 2 and the new chapters
     await H.childWith(progDoc(), '#/chapters'); // the smoke's child is in Year 4
     await width(390);
     await until('document.querySelector("[data-yearpanel]")', 'More practice');
@@ -52,6 +53,7 @@ export default function (H) {
   });
 
   scene('SB4-WP1 an adult sees four years, six with Years 1 and 2, with no sideways scroll', async () => {
+    H.serve('data/curriculum.json', H.legacyCurriculum);
     await H.adultWith(progDoc(), '#/chapters');
     await width(390);
     ok((await years()).length === 4 && (await years()).join() === 'Year 3,Year 4,Year 5,Year 6', 'four buttons: ' + await years());
@@ -66,7 +68,7 @@ export default function (H) {
     await click('.yearswitch__b[data-year=y2]');
     ok(await panel() === 'y2', 'Year 2');
     ok(/Not included yet: words with an apostrophe\./.test(await text('[data-yearpanel]')), 'a grown-up sees the apostrophe note under Year 2');
-    ok(/Year 2 common exception words \(statutory\)/.test(await text('[data-yearpanel]')), 'and where the words come from');
+    ok(/Year 2 common exception words \(from the national curriculum\)/.test(await text('[data-yearpanel]')), 'and where the words come from');
     await click('.yearswitch__b[data-year=y3]');
     ok(!/apostrophe/.test(await text('[data-yearpanel]')), 'not under Year 3');
     await width(1280, 800);
@@ -75,6 +77,7 @@ export default function (H) {
   });
 
   scene('SB4-WP1 the old addresses, saved progress, the gate and the source lines', async () => {
+    H.serve('data/curriculum.json', H.legacyCurriculum); // the list before Years 1 and 2 and the new chapters
     await H.childWith(progDoc({}, [passedCh(old(6), 1), passedCh(old(7), 2)]), '#/y34/ch07');
     await until('location.hash === "#/y4/ch02"', 'y34/ch07 lands on Year 4 Chapter 2');
     await until('document.querySelector("[data-chapterpage]")', 'the chapter page');
@@ -133,7 +136,7 @@ export default function (H) {
     await until('document.querySelector("[data-chapterpage]")', 'Year 1 Chapter 1');
     ok(await has('.chapterpage.front--y12') && await px('.stepcard p') === 22, 'the chapter page reads at 22 px');
     const lines = await ev('[...document.querySelectorAll("[data-source]")].map((e) => e.textContent)');
-    ok(lines.length === 2 && /^Year 1 common exception words \(statutory\)$/.test(lines[0]) && /^Pattern words: our examples for the Year 1 rule 'ff, ll, ss, zz, ck'$/.test(lines[1]), 'both lines on a chapter with both kinds: ' + lines);
+    ok(lines.length === 2 && /^Year 1 common exception words \(from the national curriculum\)$/.test(lines[0]) && /^Pattern words: our examples for the Year 1 rule 'ff, ll, ss, zz, ck'$/.test(lines[1]), 'both lines on a chapter with both kinds: ' + lines);
     for (const y of ['y1', 'y2', 'y3', 'y4', 'y5', 'y6']) {
       await go('#/' + y + '/ch01');
       await until('document.querySelector("[data-chapterpage]") || document.querySelector("[data-chapter-locked]")', y + ' chapter 1');
@@ -186,6 +189,7 @@ export default function (H) {
     }
   }
   scene('SB4-WP1 the last test of a year leads on: Start Year 4, or back to More practice after Year 6', async () => {
+    H.serve('data/curriculum.json', H.legacyCurriculum); // the list before Years 1 and 2 and the new chapters
     await H.childWith(progDoc({}, [1, 2, 3, 4].map((n) => passedCh(old(n), n))), '#/y3/ch05/test');
     await passTest();
     await until('document.querySelector("[data-next-year]")', 'a way on after Year 3');

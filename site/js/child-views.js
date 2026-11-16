@@ -15,6 +15,7 @@ import { announce } from './daystyle.js';
 import { getWeek, setWeek } from './week-choice.js';
 import { esc, ICON } from './ui.js';
 import { childYear } from './who.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -112,7 +113,7 @@ export function childHome(main) {
 /* ------------------------------------------------------------------ path --- */
 export function pathPage(main, { gid }) {
   const d = S.readWords();
-  const g = W.groupById(d, decodeURIComponent(gid));
+  const g = W.groupById(d, safeDecode(gid));
   if (!g) { location.replace('#/'); return undefined; }
   const day = today();
   const st = St.studyState(d, g, day);

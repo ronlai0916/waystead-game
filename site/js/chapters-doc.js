@@ -9,6 +9,7 @@ export const YEAR_INFO = Object.fromEntries(YEARS.map((id, i) => [id, { n: i + 1
 /** The blocks of the word list, in the order words are loaded: the first entry for a word wins. */
 export const LOAD_ORDER = ['year_3_4', 'year_5_6', 'year_1', 'year_2'];
 
+export const PATTERN_PLUS = 'Plus our pattern words for each spelling rule.';
 export const APOSTROPHE_NOTE = 'Not included yet: words with an apostrophe.';
 
 const two = (n) => String(n).padStart(2, '0');
@@ -98,7 +99,7 @@ export const chapterName = (ch) => String(ch.title || '').replace(/^Chapter\s+\d
 
 /** Where a chapter's statutory words come from, said for a grown-up to read; '' when there is nothing to say. */
 export function sourceLine(yearN, set) {
-  if (set === 'cew') return yearN === 1 || yearN === 2 ? 'Year ' + yearN + ' common exception words (statutory)' : '';
+  if (set === 'cew') return yearN === 1 || yearN === 2 ? 'Year ' + yearN + ' common exception words (from the national curriculum)' : '';
   if (set && set !== 'statutory') return '';
   if (yearN === 3 || yearN === 4) return 'From the Years 3 and 4 statutory word list (we split it into two years)';
   if (yearN === 5 || yearN === 6) return 'From the Years 5 and 6 statutory word list (we split it into two years)';

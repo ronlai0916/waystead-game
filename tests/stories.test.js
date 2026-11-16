@@ -13,7 +13,8 @@ import * as St from '../site/js/study-doc.js';
 const file = (p) => fileURLToPath(new URL('../' + p, import.meta.url));
 const data = JSON.parse(readFileSync(file('site/data/stories.json'), 'utf8'));
 const cur = JSON.parse(readFileSync(file('site/data/curriculum.json'), 'utf8'));
-const chapters = ['year_3_4', 'year_5_6'].flatMap((k) => cur[k].chapters);
+const chapters = ['year_3_4', 'year_5_6'].flatMap((k) => cur[k].chapters).filter((c) => /^y(34|56)-ch\d\d$/.test(c.id)); // the 20 chapters that have a story
+const newChapters = ['year_1', 'year_2', 'year_3_4', 'year_5_6'].flatMap((k) => cur[k].chapters).filter((c) => !chapters.includes(c));
 const chapter = (id) => chapters.find((c) => c.id === id);
 
 test('one story for each of the 20 chapters', () => {
@@ -64,6 +65,13 @@ test('only reviewed: true will do', () => {
 });
 test('a group not from a chapter never gets a story', () => {
   assert.equal(T.storyFor([shown], g(['tractor']), chs), null);
+});
+test('a chapter of the SB4-E/F release has no story: the group gets none and nothing breaks (SB4)', () => {
+  assert.ok(newChapters.length === 40);
+  for (const c of newChapters) {
+    assert.equal(T.storyFor(data.stories, g(c.words.map((w) => w.word)), newChapters), null, c.id);
+    assert.ok(!data.stories.some((s) => s.chapter === c.id), c.id);
+  }
 });
 test('all 20 stories are approved (Ron, 4 Nov), and each chapter\'s group finds its own', () => {
   assert.equal(data.stories.filter((s) => s.reviewed).length, 20);

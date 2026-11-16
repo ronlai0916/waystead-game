@@ -33,6 +33,7 @@
   --surface: #FFFFFF;
   --surface-2: #FFF0C9;
   --line: #EEDFB4;
+  --field-edge: #8A7A4F; /* SB4-WP13: a control boundary, 3:1 on the page, the card and the pale surface */
   --text: #1B1A20;
   --muted: #5C5444;
   --accent: var(--leaf);

@@ -16,6 +16,7 @@ import { playerName, recheckWho } from './who.js';
 import { newId } from './store.js';
 import { esc, ICON } from './ui.js';
 import { accountOrigin } from './account/config.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const today = () => W.localDay(Date.now());
 let api = null;
@@ -147,7 +148,7 @@ const badge = (year) => !year ? '' : '<span class="gu-badge">' + I.star + esc(As
 
 export function spellingPage(main, { cid }) {
   if (!adultOnly(main) || noApi()) return undefined;
-  const id = decodeURIComponent(cid);
+  const id = safeDecode(cid);
   let stopped = false;
   let c = null;
   let warn = '';
@@ -366,7 +367,7 @@ export function mountReport(host, ctx) {
 /* ------------------------------------------------------------- set an exam --- */
 export function examForm(main, { cid }) {
   if (!adultOnly(main) || noApi()) return undefined;
-  const id = decodeURIComponent(cid);
+  const id = safeDecode(cid);
   const eid = newId(); // one id for this form, so a try again never makes a second exam
   let stopped = false;
   let c = null;
@@ -465,8 +466,8 @@ export function examForm(main, { cid }) {
 /* ------------------------------------------------------------- the report --- */
 export function examReport(main, { cid, eid }) {
   if (!adultOnly(main) || noApi()) return undefined;
-  const id = decodeURIComponent(cid);
-  const xid = decodeURIComponent(eid);
+  const id = safeDecode(cid);
+  const xid = safeDecode(eid);
   let stopped = false;
   let c = null;
   let warn = '';

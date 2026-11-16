@@ -87,7 +87,9 @@ const TEXT = [
 // --petal-edge colours the lives dots.
 const UI = [['--sb', '--surface-2'], ['--stone-edge', '--surface'], ['--sb', '--accent-soft'], ['--stone-edge', '--stone-wait-bg'], ['--stone-edge', '--panel'], ['--stone-edge', '--surface'], ['--sb', '--panel'], ['--focus', '--bg'], ['--accent', '--surface'], ['--sb', '--surface'], ['--sb', '--bg'], ['--petal-edge', '--bg'], ['--ring-still', '--surface'],
   // SB4, the tile screens: the tile's edge on the tray and on the page, the gap's edge on its fill and on the surface, the glow on the tray
-  ['--tile-edge', '--tray-bg'], ['--tile-edge', '--bg'], ['--gap-edge', '--gap-bg'], ['--gap-edge', '--surface'], ['--glow', '--tray-bg']];
+  ['--tile-edge', '--tray-bg'], ['--tile-edge', '--bg'], ['--gap-edge', '--gap-bg'], ['--gap-edge', '--surface'], ['--glow', '--tray-bg'],
+  // SB4-WP13: a text field's edge and an unticked box's edge, on the page, the card and the pale surface (a control boundary, WCAG 1.4.11)
+  ['--field-edge', '--bg'], ['--field-edge', '--surface'], ['--field-edge', '--surface-2']];
 // The "Best 7/11" pill: dark amber by day, Amber at night.
 const WARM = { garden: ['--amber-700', '--warm-soft'], paint: ['--amber-700', '--warm-soft'], night: ['--amber', '--warm-soft'] };
 

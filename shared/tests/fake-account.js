@@ -51,6 +51,7 @@ export function fakeAccount() {
     }
     if (u.pathname === '/api/scan/consent' && method === 'POST') {
       const b = init.body ? JSON.parse(init.body) : {};
+      if (b.version !== sc.version) return json(400, { error: 'consent-version' });
       sc.consent = { at: new Date().toISOString(), version: b.version };
       return json(200, { consent: sc.consent });
     }

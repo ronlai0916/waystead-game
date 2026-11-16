@@ -9,6 +9,7 @@ import * as St from './study-doc.js';
 import * as Su from './setup-doc.js';
 import * as P from './progress-doc.js';
 import * as A from './assess-doc.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 export const CHILD_TIME = 'About 15 minutes';
 export const SAVED_LINE = 'Your place is saved.';
@@ -134,7 +135,7 @@ export function jobTitle(path, d, day) {
   if (m[3]) return (St.STEP_TEXT[m[3]] || { title: '' }).title;
   if (m[2] === 'test') return St.STEP_TEXT.test.title;
   if (m[2].startsWith('game/')) return 'Games';
-  const g = W.groupById(d, decodeURIComponent(m[1]));
+  const g = W.groupById(d, safeDecode(m[1]));
   const job = g ? W.jobFor(d, g, day) : '';
   return job === 'fixups' || job === 'fixed-today' ? St.STEP_TEXT.mend.title : St.STEP_TEXT.practice.title;
 }

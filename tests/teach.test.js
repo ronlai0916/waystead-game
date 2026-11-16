@@ -269,7 +269,7 @@ test('both routes are adult-only, in the router with a parent, and the new files
 });
 test('the Menu row, the quiet link, See results and the About sentence', () => {
   const row = A.MENU_ROWS.find((r) => r.title === 'For teachers');
-  assert.deepEqual(row, { id: 'kids', title: 'For teachers', sub: 'One list for up to 5 children', href: '#/grownups/teach' });
+  assert.deepEqual(row, { id: 'teach', title: 'For teachers', sub: 'One list for up to 5 children', href: '#/grownups/teach' });
   assert.equal(A.MENU_ROWS.length, 8);
   assert.equal(A.MENU_ROWS.findIndex((r) => r.title === 'For teachers'), A.MENU_ROWS.findIndex((r) => r.title === 'Your own chapters') + 1);
   const gv = read('site/js/grownups-views.js');

@@ -1,0 +1,851 @@
+{
+ "status": "signed off by Ron",
+ "year": 4,
+ "batch": "y4-new",
+ "chapters": [
+  {
+   "id": "y4-n01",
+   "year": 4,
+   "title": "Chapter 11 — In-, im-, il- and ir-",
+   "focus": "in-, im-, il- and ir- meaning not",
+   "re": "^(in|im|il|ir)",
+   "description": "Our examples of words that start with in-, im-, il- or ir- to mean not, as in invisible.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "invisible",
+     "ipa": "/ɪnˈvɪzəbl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not able to be seen.",
+      "example": "The magician made the rabbit look invisible."
+     },
+     "chunks": [
+      "in",
+      "vis",
+      "i",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "impolite",
+     "ipa": "/ˌɪmpəˈlaɪt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not having good manners.",
+      "example": "It is impolite to talk with your mouth full."
+     },
+     "chunks": [
+      "im",
+      "po",
+      "lite"
+     ],
+     "tricky": "im",
+     "set": "pattern"
+    },
+    {
+     "word": "inactive",
+     "ipa": "/ɪnˈæktɪv/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not moving or doing anything much.",
+      "example": "The sleepy cat stayed inactive all afternoon."
+     },
+     "chunks": [
+      "in",
+      "ac",
+      "tive"
+     ],
+     "tricky": "in",
+     "set": "pattern"
+    },
+    {
+     "word": "impatient",
+     "ipa": "/ɪmˈpeɪʃnt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not happy to wait for something.",
+      "example": "Mia grew impatient waiting for the bus."
+     },
+     "chunks": [
+      "im",
+      "pa",
+      "tient"
+     ],
+     "tricky": "tie",
+     "set": "pattern"
+    },
+    {
+     "word": "illegal",
+     "ipa": "/ɪˈliːɡl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not allowed by the law.",
+      "example": "It is illegal to drive without a licence."
+     },
+     "chunks": [
+      "il",
+      "le",
+      "gal"
+     ],
+     "tricky": "ll",
+     "set": "pattern"
+    },
+    {
+     "word": "imperfect",
+     "ipa": "/ɪmˈpɜːfɪkt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not perfect; having a small fault.",
+      "example": "My drawing is imperfect, but I like it."
+     },
+     "chunks": [
+      "im",
+      "per",
+      "fect"
+     ],
+     "tricky": "im",
+     "set": "pattern"
+    },
+    {
+     "word": "impossible",
+     "ipa": "/ɪmˈpɒsəbl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not able to happen or be done.",
+      "example": "Flapping your arms to fly is impossible."
+     },
+     "chunks": [
+      "im",
+      "pos",
+      "si",
+      "ble"
+     ],
+     "tricky": "ss",
+     "set": "pattern"
+    },
+    {
+     "word": "irregular",
+     "ipa": "/ɪˈreɡjʊlə/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not following the usual pattern or shape.",
+      "example": "The stone had an irregular shape."
+     },
+     "chunks": [
+      "ir",
+      "reg",
+      "u",
+      "lar"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    },
+    {
+     "word": "illogical",
+     "ipa": "/ɪˈlɒdʒɪkl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not sensible; not following clear thinking.",
+      "example": "Wearing a coat in a heatwave is illogical."
+     },
+     "chunks": [
+      "il",
+      "log",
+      "i",
+      "cal"
+     ],
+     "tricky": "ll",
+     "set": "pattern"
+    },
+    {
+     "word": "irresponsible",
+     "ipa": "/ˌɪrɪˈspɒnsəbl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not careful or sensible about what you do.",
+      "example": "Leaving the gate open was irresponsible."
+     },
+     "chunks": [
+      "ir",
+      "re",
+      "spon",
+      "si",
+      "ble"
+     ],
+     "tricky": "rr",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y4-n02",
+   "year": 4,
+   "title": "Chapter 12 — Words ending -sure and -ture",
+   "focus": "-sure and -ture endings",
+   "re": "(sure|ture)$",
+   "description": "Our examples of words ending in -sure or -ture, such as measure and picture.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "picture",
+     "ipa": "/ˈpɪktʃə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A drawing, painting or photograph.",
+      "example": "She hung the picture on the wall."
+     },
+     "chunks": [
+      "pic",
+      "ture"
+     ],
+     "tricky": "tu",
+     "set": "pattern"
+    },
+    {
+     "word": "nature",
+     "ipa": "/ˈneɪtʃə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Plants, animals and the world outside that people have not made.",
+      "example": "We walked through the woods to enjoy nature."
+     },
+     "chunks": [
+      "na",
+      "ture"
+     ],
+     "tricky": "tu",
+     "set": "pattern"
+    },
+    {
+     "word": "future",
+     "ipa": "/ˈfjuːtʃə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The time that is still to come.",
+      "example": "I want to be a vet in the future."
+     },
+     "chunks": [
+      "fu",
+      "ture"
+     ],
+     "tricky": "tu",
+     "set": "pattern"
+    },
+    {
+     "word": "measure",
+     "ipa": "/ˈmeʒə/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To find out how big, long or heavy something is.",
+      "example": "Please measure the table with a ruler."
+     },
+     "chunks": [
+      "mea",
+      "sure"
+     ],
+     "tricky": "su",
+     "set": "pattern"
+    },
+    {
+     "word": "treasure",
+     "ipa": "/ˈtreʒə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Gold, jewels or other valuable things.",
+      "example": "The pirates buried the treasure on the island."
+     },
+     "chunks": [
+      "trea",
+      "sure"
+     ],
+     "tricky": "su",
+     "set": "pattern"
+    },
+    {
+     "word": "pleasure",
+     "ipa": "/ˈpleʒə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A feeling of happiness and enjoyment.",
+      "example": "Reading gives me great pleasure."
+     },
+     "chunks": [
+      "plea",
+      "sure"
+     ],
+     "tricky": "su",
+     "set": "pattern"
+    },
+    {
+     "word": "creature",
+     "ipa": "/ˈkriːtʃə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Any living animal.",
+      "example": "A tiny creature crept under the leaf."
+     },
+     "chunks": [
+      "crea",
+      "ture"
+     ],
+     "tricky": "tu",
+     "set": "pattern"
+    },
+    {
+     "word": "mixture",
+     "ipa": "/ˈmɪkstʃə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Different things stirred or put together.",
+      "example": "Stir the mixture until it is smooth."
+     },
+     "chunks": [
+      "mix",
+      "ture"
+     ],
+     "tricky": "tu",
+     "set": "pattern"
+    },
+    {
+     "word": "adventure",
+     "ipa": "/ədˈventʃə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "An exciting journey or experience.",
+      "example": "Our camping trip was a big adventure."
+     },
+     "chunks": [
+      "ad",
+      "ven",
+      "ture"
+     ],
+     "tricky": "tu",
+     "set": "pattern"
+    },
+    {
+     "word": "furniture",
+     "ipa": "/ˈfɜːnɪtʃə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Things like chairs, tables and beds in a room.",
+      "example": "We bought new furniture for the lounge."
+     },
+     "chunks": [
+      "fur",
+      "ni",
+      "ture"
+     ],
+     "tricky": "tu",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y4-n03",
+   "year": 4,
+   "title": "Chapter 13 — The -sion sound",
+   "focus": "-sion sounding like zhun",
+   "re": "sion$",
+   "description": "Our examples of words ending in -sion that sound like zhun, such as television and decision.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "vision",
+     "ipa": "/ˈvɪʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The ability to see.",
+      "example": "The optician checked my vision."
+     },
+     "chunks": [
+      "vi",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "decision",
+     "ipa": "/dɪˈsɪʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A choice you make after thinking.",
+      "example": "We made a decision to go swimming."
+     },
+     "chunks": [
+      "de",
+      "ci",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "division",
+     "ipa": "/dɪˈvɪʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Sharing or splitting a number into equal groups.",
+      "example": "Division is the opposite of multiplication."
+     },
+     "chunks": [
+      "di",
+      "vi",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "television",
+     "ipa": "/ˈtelɪvɪʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A screen that shows programmes and films.",
+      "example": "We watched a funny film on television."
+     },
+     "chunks": [
+      "tel",
+      "e",
+      "vi",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "confusion",
+     "ipa": "/kənˈfjuːʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Not being sure what is happening or what to do.",
+      "example": "There was confusion when the lights went out."
+     },
+     "chunks": [
+      "con",
+      "fu",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "explosion",
+     "ipa": "/ɪkˈspləʊʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A sudden, loud burst, like a firework.",
+      "example": "We heard a loud explosion of fireworks."
+     },
+     "chunks": [
+      "ex",
+      "plo",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "conclusion",
+     "ipa": "/kənˈkluːʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The end of something, or what you decide after thinking.",
+      "example": "The story has a happy conclusion."
+     },
+     "chunks": [
+      "con",
+      "clu",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "collision",
+     "ipa": "/kəˈlɪʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "When two moving things crash into each other.",
+      "example": "The two bumper cars had a gentle collision."
+     },
+     "chunks": [
+      "col",
+      "li",
+      "sion"
+     ],
+     "tricky": "ll",
+     "set": "pattern"
+    },
+    {
+     "word": "supervision",
+     "ipa": "/ˌsuːpəˈvɪʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Watching over people to keep them safe.",
+      "example": "Children may only swim with adult supervision."
+     },
+     "chunks": [
+      "su",
+      "per",
+      "vi",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    },
+    {
+     "word": "revision",
+     "ipa": "/rɪˈvɪʒn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Looking over work again to learn it well.",
+      "example": "Revision helped me learn my spellings."
+     },
+     "chunks": [
+      "re",
+      "vi",
+      "sion"
+     ],
+     "tricky": "si",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y4-n04",
+   "year": 4,
+   "title": "Chapter 14 — The -ous ending",
+   "focus": "-ous endings",
+   "re": "ous$",
+   "description": "Our examples of describing words that end in -ous, such as nervous and dangerous.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "nervous",
+     "ipa": "/ˈnɜːvəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "A little worried or afraid about something.",
+      "example": "Sam felt nervous before the school play."
+     },
+     "chunks": [
+      "ner",
+      "vous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "serious",
+     "ipa": "/ˈsɪəriəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Not joking; important and needing care.",
+      "example": "Dad had a serious look on his face."
+     },
+     "chunks": [
+      "se",
+      "ri",
+      "ous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "curious",
+     "ipa": "/ˈkjʊəriəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Keen to find out or learn about things.",
+      "example": "The curious puppy sniffed every corner."
+     },
+     "chunks": [
+      "cu",
+      "ri",
+      "ous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "jealous",
+     "ipa": "/ˈdʒeləs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Wanting something that someone else has.",
+      "example": "Ben felt jealous of his friend's new bike."
+     },
+     "chunks": [
+      "jeal",
+      "ous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "generous",
+     "ipa": "/ˈdʒenərəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Happy to give or share with others.",
+      "example": "My gran is generous with her biscuits."
+     },
+     "chunks": [
+      "gen",
+      "er",
+      "ous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "dangerous",
+     "ipa": "/ˈdeɪndʒərəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Likely to cause harm.",
+      "example": "The icy path was dangerous to walk on."
+     },
+     "chunks": [
+      "dan",
+      "ger",
+      "ous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "enormous",
+     "ipa": "/ɪˈnɔːməs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very, very big.",
+      "example": "An enormous whale swam past the boat."
+     },
+     "chunks": [
+      "e",
+      "nor",
+      "mous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "adventurous",
+     "ipa": "/ədˈventʃərəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Keen to try new and exciting things.",
+      "example": "My adventurous sister always climbs to the very top."
+     },
+     "chunks": [
+      "ad",
+      "ven",
+      "tur",
+      "ous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "mysterious",
+     "ipa": "/mɪˈstɪəriəs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Strange and hard to explain.",
+      "example": "A mysterious box appeared on the doorstep."
+     },
+     "chunks": [
+      "mys",
+      "te",
+      "ri",
+      "ous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    },
+    {
+     "word": "ridiculous",
+     "ipa": "/rɪˈdɪkjʊləs/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "So silly that it makes you laugh.",
+      "example": "He wore a ridiculous hat to the party."
+     },
+     "chunks": [
+      "ri",
+      "dic",
+      "u",
+      "lous"
+     ],
+     "tricky": "ous",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y4-n05",
+   "year": 4,
+   "title": "Chapter 15 — ch, gue, que and sc",
+   "focus": "ch for k and sh, gue, que and sc",
+   "re": "(ch|gue|que|sc)",
+   "description": "Our examples of spellings borrowed from other languages, such as chorus, tongue, unique and science.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "chemist",
+     "ipa": "/ˈkemɪst/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A shop or person that gives out medicines.",
+      "example": "Mum went to the chemist for some plasters."
+     },
+     "chunks": [
+      "chem",
+      "ist"
+     ],
+     "tricky": "ch",
+     "set": "pattern"
+    },
+    {
+     "word": "chorus",
+     "ipa": "/ˈkɔːrəs/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A group of people singing together.",
+      "example": "The chorus sang loudly at the concert."
+     },
+     "chunks": [
+      "cho",
+      "rus"
+     ],
+     "tricky": "ch",
+     "set": "pattern"
+    },
+    {
+     "word": "chef",
+     "ipa": "/ʃef/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A person who cooks food as a job.",
+      "example": "The chef baked a huge chocolate cake."
+     },
+     "chunks": [
+      "chef"
+     ],
+     "tricky": "ch",
+     "set": "pattern"
+    },
+    {
+     "word": "machine",
+     "ipa": "/məˈʃiːn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Something with moving parts that does a job.",
+      "example": "The machine washed our muddy clothes."
+     },
+     "chunks": [
+      "ma",
+      "chine"
+     ],
+     "tricky": "ch",
+     "set": "pattern"
+    },
+    {
+     "word": "tongue",
+     "ipa": "/tʌŋ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The part inside your mouth that helps you taste.",
+      "example": "The lolly turned my tongue bright blue."
+     },
+     "chunks": [
+      "tongue"
+     ],
+     "tricky": "gue",
+     "set": "pattern"
+    },
+    {
+     "word": "unique",
+     "ipa": "/juˈniːk/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "One of a kind; like no other.",
+      "example": "Every snowflake is unique."
+     },
+     "chunks": [
+      "u",
+      "nique"
+     ],
+     "tricky": "que",
+     "set": "pattern"
+    },
+    {
+     "word": "science",
+     "ipa": "/ˈsaɪəns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Learning about the world through looking and testing.",
+      "example": "In science we grew beans in pots."
+     },
+     "chunks": [
+      "sci",
+      "ence"
+     ],
+     "tricky": "sc",
+     "set": "pattern"
+    },
+    {
+     "word": "scissors",
+     "ipa": "/ˈsɪzəz/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A tool with two blades for cutting paper.",
+      "example": "Please pass me the scissors and glue."
+     },
+     "chunks": [
+      "scis",
+      "sors"
+     ],
+     "tricky": "sc",
+     "set": "pattern"
+    },
+    {
+     "word": "character",
+     "ipa": "/ˈkærəktə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A person or animal in a story.",
+      "example": "My favourite character in the book is a fox."
+     },
+     "chunks": [
+      "char",
+      "ac",
+      "ter"
+     ],
+     "tricky": "ch",
+     "set": "pattern"
+    },
+    {
+     "word": "technique",
+     "ipa": "/tekˈniːk/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A special way of doing something well.",
+      "example": "The teacher showed us a new painting technique."
+     },
+     "chunks": [
+      "tech",
+      "nique"
+     ],
+     "tricky": "ch",
+     "set": "pattern"
+    }
+   ]
+  }
+ ]
+}

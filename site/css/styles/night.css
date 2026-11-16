@@ -41,6 +41,7 @@
   --surface: #1B1E52;
   --surface-2: #262A66;
   --line: #353A7A;
+  --field-edge: #8A8FD6; /* SB4-WP13 */
   --text: #F3F1FF;
   --muted: #BAB9E2;
   --accent: var(--gold);

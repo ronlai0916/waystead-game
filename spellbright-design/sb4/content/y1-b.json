@@ -1,0 +1,736 @@
+{
+ "status": "signed off by Ron",
+ "year": 1,
+ "batch": "y1-b",
+ "chapters": [
+  {
+   "id": "y1-ch06",
+   "year": 1,
+   "title": "Chapter 6 — Adding ing, ed, er",
+   "focus": "adding ing, ed, er (no change to the root)",
+   "re": "(ing|ed|er)$",
+   "description": "Children add ing, ed and er to a root word without changing the root, plus three Year 1 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "said",
+     "ipa": "/sed/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Spoke words out loud.",
+      "example": "She said hello to her teacher."
+     },
+     "chunks": [
+      "said"
+     ],
+     "tricky": "ai",
+     "set": "cew"
+    },
+    {
+     "word": "says",
+     "ipa": "/sez/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Speaks words out loud right now.",
+      "example": "My dad says it is time for tea."
+     },
+     "chunks": [
+      "says"
+     ],
+     "tricky": "ay",
+     "set": "cew"
+    },
+    {
+     "word": "ask",
+     "ipa": "/ɑːsk/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To put a question to someone.",
+      "example": "I will ask Mum for a drink."
+     },
+     "chunks": [
+      "ask"
+     ],
+     "tricky": "a",
+     "set": "cew"
+    },
+    {
+     "word": "jumping",
+     "ipa": "/ˈdʒʌmpɪŋ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Pushing yourself up off the ground into the air.",
+      "example": "The frog is jumping into the pond."
+     },
+     "chunks": [
+      "jump",
+      "ing"
+     ],
+     "set": "pattern"
+    },
+    {
+     "word": "helped",
+     "ipa": "/helpt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Did something nice to make a job easier.",
+      "example": "Tom helped me carry the bag."
+     },
+     "chunks": [
+      "help",
+      "ed"
+     ],
+     "tricky": "ed",
+     "set": "pattern"
+    },
+    {
+     "word": "walking",
+     "ipa": "/ˈwɔːkɪŋ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Moving along on your feet.",
+      "example": "We are walking to the park."
+     },
+     "chunks": [
+      "walk",
+      "ing"
+     ],
+     "tricky": "al",
+     "set": "pattern"
+    },
+    {
+     "word": "painter",
+     "ipa": "/ˈpeɪntə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Someone who paints pictures or walls.",
+      "example": "The painter made the door bright red."
+     },
+     "chunks": [
+      "paint",
+      "er"
+     ],
+     "tricky": "ai",
+     "set": "pattern"
+    },
+    {
+     "word": "kicked",
+     "ipa": "/kɪkt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Hit something with your foot.",
+      "example": "She kicked the ball over the wall."
+     },
+     "chunks": [
+      "kick",
+      "ed"
+     ],
+     "tricky": "ed",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y1-ch07",
+   "year": 1,
+   "title": "Chapter 7 — ai, oi, ay, oy",
+   "focus": "ai/oi and ay/oy",
+   "re": "(ai|oi|ay|oy)",
+   "description": "Children spell the sounds ai, oi, ay and oy, plus five Year 1 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "no",
+     "ipa": "/nəʊ/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "The opposite of yes.",
+      "example": "No, I do not want any more peas."
+     },
+     "chunks": [
+      "no"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "go",
+     "ipa": "/ɡəʊ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To move from one place to another.",
+      "example": "We can go to the shops."
+     },
+     "chunks": [
+      "go"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "so",
+     "ipa": "/səʊ/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "Very much, or for that reason.",
+      "example": "The cake smells so good."
+     },
+     "chunks": [
+      "so"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "by",
+     "ipa": "/baɪ/",
+     "meaning": {
+      "partOfSpeech": "preposition",
+      "definition": "Next to something, or done by someone.",
+      "example": "The cat sat by the fire."
+     },
+     "chunks": [
+      "by"
+     ],
+     "tricky": "y",
+     "set": "cew"
+    },
+    {
+     "word": "my",
+     "ipa": "/maɪ/",
+     "meaning": {
+      "partOfSpeech": "determiner",
+      "definition": "Belonging to me.",
+      "example": "This is my red coat."
+     },
+     "chunks": [
+      "my"
+     ],
+     "tricky": "y",
+     "set": "cew"
+    },
+    {
+     "word": "train",
+     "ipa": "/treɪn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A long vehicle that runs on rails.",
+      "example": "The train stopped at the station."
+     },
+     "chunks": [
+      "tr",
+      "ain"
+     ],
+     "tricky": "ai",
+     "set": "pattern"
+    },
+    {
+     "word": "soil",
+     "ipa": "/sɔɪl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The earth that plants grow in.",
+      "example": "Seeds grow well in warm soil."
+     },
+     "chunks": [
+      "s",
+      "oil"
+     ],
+     "tricky": "oi",
+     "set": "pattern"
+    },
+    {
+     "word": "play",
+     "ipa": "/pleɪ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To have fun with toys or games.",
+      "example": "We play ball after school."
+     },
+     "chunks": [
+      "pl",
+      "ay"
+     ],
+     "tricky": "ay",
+     "set": "pattern"
+    },
+    {
+     "word": "boy",
+     "ipa": "/bɔɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A male child.",
+      "example": "The boy rode his bike to the park."
+     },
+     "chunks": [
+      "b",
+      "oy"
+     ],
+     "tricky": "oy",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y1-ch08",
+   "year": 1,
+   "title": "Chapter 8 — Long vowel sounds",
+   "focus": "a-e, i-e, o-e, u-e; ee and ea",
+   "re": "(a.e|i.e|o.e|u.e|ee|ea)",
+   "description": "Children spell long vowel sounds with a-e, i-e, o-e, u-e, ee and ea, plus five Year 1 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "here",
+     "ipa": "/hɪə/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In this place.",
+      "example": "Come and sit here next to me."
+     },
+     "chunks": [
+      "here"
+     ],
+     "tricky": "ere",
+     "set": "cew"
+    },
+    {
+     "word": "there",
+     "ipa": "/ðeə/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In that place, not here.",
+      "example": "Put your shoes over there by the door."
+     },
+     "chunks": [
+      "there"
+     ],
+     "tricky": "ere",
+     "set": "cew"
+    },
+    {
+     "word": "where",
+     "ipa": "/weə/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "In what place.",
+      "example": "Where did you put my hat?"
+     },
+     "chunks": [
+      "where"
+     ],
+     "tricky": "wh",
+     "set": "cew"
+    },
+    {
+     "word": "house",
+     "ipa": "/haʊs/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A building where people live.",
+      "example": "Our house has a blue door."
+     },
+     "chunks": [
+      "house"
+     ],
+     "tricky": "ou",
+     "set": "cew"
+    },
+    {
+     "word": "our",
+     "ipa": "/ˈaʊə/",
+     "meaning": {
+      "partOfSpeech": "determiner",
+      "definition": "Belonging to us.",
+      "example": "We water our plants every day."
+     },
+     "chunks": [
+      "our"
+     ],
+     "tricky": "ou",
+     "set": "cew"
+    },
+    {
+     "word": "cake",
+     "ipa": "/keɪk/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A sweet food baked in an oven.",
+      "example": "We ate a big cake at the party."
+     },
+     "chunks": [
+      "c",
+      "ake"
+     ],
+     "tricky": "ake",
+     "set": "pattern"
+    },
+    {
+     "word": "kite",
+     "ipa": "/kaɪt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A toy that flies on a long string.",
+      "example": "The kite flew high in the wind."
+     },
+     "chunks": [
+      "k",
+      "ite"
+     ],
+     "tricky": "ite",
+     "set": "pattern"
+    },
+    {
+     "word": "home",
+     "ipa": "/həʊm/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The place where you live.",
+      "example": "I go home after school."
+     },
+     "chunks": [
+      "h",
+      "ome"
+     ],
+     "tricky": "ome",
+     "set": "pattern"
+    },
+    {
+     "word": "tube",
+     "ipa": "/tjuːb/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A long hollow pipe or container.",
+      "example": "Squeeze the tube to get some paste."
+     },
+     "chunks": [
+      "t",
+      "ube"
+     ],
+     "tricky": "ube",
+     "set": "pattern"
+    },
+    {
+     "word": "leaf",
+     "ipa": "/liːf/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A flat green part of a plant.",
+      "example": "A leaf fell from the tree."
+     },
+     "chunks": [
+      "l",
+      "ea",
+      "f"
+     ],
+     "tricky": "ea",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y1-ch09",
+   "year": 1,
+   "title": "Chapter 9 — wh, ph and k",
+   "focus": "wh, ph; k before e, i, y",
+   "re": "(wh|ph|ke|ki|ky)",
+   "description": "Children spell wh and ph, and the letter k before e, i or y, plus four Year 1 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "friend",
+     "ipa": "/frend/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Someone you like and who likes you.",
+      "example": "My friend came to play today."
+     },
+     "chunks": [
+      "fri",
+      "end"
+     ],
+     "tricky": "ie",
+     "set": "cew"
+    },
+    {
+     "word": "school",
+     "ipa": "/skuːl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A place where children go to learn.",
+      "example": "We read books at school."
+     },
+     "chunks": [
+      "sch",
+      "ool"
+     ],
+     "tricky": "ch",
+     "set": "cew"
+    },
+    {
+     "word": "put",
+     "ipa": "/pʊt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To place something somewhere.",
+      "example": "Put your coat on the hook."
+     },
+     "chunks": [
+      "put"
+     ],
+     "tricky": "u",
+     "set": "cew"
+    },
+    {
+     "word": "push",
+     "ipa": "/pʊʃ/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To press something away from you.",
+      "example": "Push the door to open it."
+     },
+     "chunks": [
+      "push"
+     ],
+     "tricky": "u",
+     "set": "cew"
+    },
+    {
+     "word": "wheel",
+     "ipa": "/wiːl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A round thing that turns, like on a bike.",
+      "example": "The bike has a flat wheel."
+     },
+     "chunks": [
+      "wh",
+      "eel"
+     ],
+     "tricky": "wh",
+     "set": "pattern"
+    },
+    {
+     "word": "phone",
+     "ipa": "/fəʊn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A thing you use to talk to people far away.",
+      "example": "Mum called Gran on the phone."
+     },
+     "chunks": [
+      "ph",
+      "one"
+     ],
+     "tricky": "ph",
+     "set": "pattern"
+    },
+    {
+     "word": "dolphin",
+     "ipa": "/ˈdɒlfɪn/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A clever grey animal that swims in the sea.",
+      "example": "The dolphin jumped out of the water."
+     },
+     "chunks": [
+      "dol",
+      "ph",
+      "in"
+     ],
+     "tricky": "ph",
+     "set": "pattern"
+    },
+    {
+     "word": "kitten",
+     "ipa": "/ˈkɪtən/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A baby cat.",
+      "example": "The kitten drank some milk."
+     },
+     "chunks": [
+      "kit",
+      "ten"
+     ],
+     "tricky": "ki",
+     "set": "pattern"
+    },
+    {
+     "word": "king",
+     "ipa": "/kɪŋ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A man who rules a country.",
+      "example": "The king wore a gold crown."
+     },
+     "chunks": [
+      "k",
+      "ing"
+     ],
+     "tricky": "ki",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y1-ch10",
+   "year": 1,
+   "title": "Chapter 10 — Days of the week",
+   "focus": "days of the week (Monday to Sunday)",
+   "re": "day$",
+   "description": "Children spell the seven days of the week with their capital letters, plus three Year 1 common exception words.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "Monday",
+     "ipa": "/ˈmʌndeɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The first day of the school week.",
+      "example": "We have music on Monday."
+     },
+     "chunks": [
+      "Mon",
+      "day"
+     ],
+     "tricky": "o",
+     "set": "pattern"
+    },
+    {
+     "word": "Tuesday",
+     "ipa": "/ˈtjuːzdeɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The day after Monday.",
+      "example": "I swim every Tuesday."
+     },
+     "chunks": [
+      "Tues",
+      "day"
+     ],
+     "tricky": "ue",
+     "set": "pattern"
+    },
+    {
+     "word": "Wednesday",
+     "ipa": "/ˈwenzdeɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The day after Tuesday.",
+      "example": "We go to the library on Wednesday."
+     },
+     "chunks": [
+      "Wednes",
+      "day"
+     ],
+     "tricky": "dn",
+     "set": "pattern"
+    },
+    {
+     "word": "Thursday",
+     "ipa": "/ˈθɜːzdeɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The day after Wednesday.",
+      "example": "Gran comes to tea on Thursday."
+     },
+     "chunks": [
+      "Thurs",
+      "day"
+     ],
+     "tricky": "ur",
+     "set": "pattern"
+    },
+    {
+     "word": "Friday",
+     "ipa": "/ˈfraɪdeɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The day after Thursday.",
+      "example": "We have fish and chips on Friday."
+     },
+     "chunks": [
+      "Fri",
+      "day"
+     ],
+     "tricky": "i",
+     "set": "pattern"
+    },
+    {
+     "word": "Saturday",
+     "ipa": "/ˈsætədeɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The first day of the weekend.",
+      "example": "On Saturday we play in the park."
+     },
+     "chunks": [
+      "Satur",
+      "day"
+     ],
+     "tricky": "ur",
+     "set": "pattern"
+    },
+    {
+     "word": "Sunday",
+     "ipa": "/ˈsʌndeɪ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The last day of the week.",
+      "example": "We visit Grandad on Sunday."
+     },
+     "chunks": [
+      "Sun",
+      "day"
+     ],
+     "tricky": "u",
+     "set": "pattern"
+    },
+    {
+     "word": "today",
+     "ipa": "/təˈdeɪ/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "This very day.",
+      "example": "I am six years old today."
+     },
+     "chunks": [
+      "to",
+      "day"
+     ],
+     "tricky": "o",
+     "set": "cew"
+    },
+    {
+     "word": "pull",
+     "ipa": "/pʊl/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To bring something towards you.",
+      "example": "Pull the rope as hard as you can."
+     },
+     "chunks": [
+      "pull"
+     ],
+     "tricky": "u",
+     "set": "cew"
+    },
+    {
+     "word": "full",
+     "ipa": "/fʊl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Holding as much as it can.",
+      "example": "The jug is full of milk."
+     },
+     "chunks": [
+      "full"
+     ],
+     "tricky": "u",
+     "set": "cew"
+    }
+   ]
+  }
+ ]
+}

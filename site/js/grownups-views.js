@@ -17,6 +17,7 @@ import { loadStories } from './stories.js';
 import { isAdult, kind, playingAsChild, playerName, recheckWho } from './who.js';
 import { esc, ICON, toast, dotsHtml } from './ui.js';
 import { accountOrigin } from './account/config.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const today = () => W.localDay(Date.now());
 const childHref = (id) => '#/grownups/child/' + encodeURIComponent(id);
@@ -257,8 +258,8 @@ function wordRow(w, g, childName, typedInfo) {
 
 export function childDashboard(main, { cid, gid }) {
   if (!adultOnly(main) || needsApi()) return undefined;
-  const id = decodeURIComponent(cid);
-  const wanted = gid ? decodeURIComponent(gid) : '';
+  const id = safeDecode(cid);
+  const wanted = gid ? safeDecode(gid) : '';
   let stopped = false;
   let c = null;
   let line = takeFlash();
@@ -399,8 +400,8 @@ const AVATAR = (n) => '<span class="gu-avatar" aria-hidden="true">' + esc(n.slic
 
 function planForm(main, cid, gid) {
   const day = today();
-  const fixedId = cid ? decodeURIComponent(cid) : '';
-  const editing = gid ? decodeURIComponent(gid) : null;
+  const fixedId = cid ? safeDecode(cid) : '';
+  const editing = gid ? safeDecode(gid) : null;
   let kids = []; // [{ child, words, progress, version }]
   let patterns = [];
   let credit = '';

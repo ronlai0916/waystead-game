@@ -6,7 +6,7 @@ import * as S from './store.js';
 import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import * as R from './spell-run.js';
-import { entryFor, meaningsFor } from './word-info.js';
+import { entryFor, meaningsFor, shown } from './word-info.js';
 import { speak, spellOut, sayLine, stop } from './speech.js';
 import { loadStories, storyFor } from './stories.js';
 import { storyPage } from './story-views.js';
@@ -20,6 +20,7 @@ import * as A from './assess-doc.js';
 import * as Tr from './tray.js';
 import { hearInSentence, canSentence } from './sentence.js';
 import { childYear } from './who.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -113,7 +114,7 @@ function hello(main, g) {
   let stopped = false;
   let endGame = null;
   function card() {
-    const w = entryFor(list[i]);
+    const w = shown(entryFor(list[i]));
     main.innerHTML = '<section class="wrap page hellopage"><div class="pagehead"><span class="eyebrow">Word ' + (i + 1) + ' of ' + list.length + '</span>' + segsHtml(i, list.length)
       + '<div class="instruct"><h1>' + C.HELLO_INSTRUCTION + '</h1>' + roundHear('data-instruct', 'Read it to me') + '</div></div>'
       + wordCard(w, W.clueFor(S.readWords(), w.word))
@@ -367,7 +368,7 @@ export function sentences(main, g, onDone) {
 }
 
 function examples(main, g, go) {
-  const list = W.rows(g).map(entryFor).filter((w) => w.meaning.example);
+  const list = W.rows(g).map((x) => shown(entryFor(x))).filter((w) => w.meaning.example);
   main.innerHTML = '<section class="wrap page">' + head('story', '<h1>Your words at work</h1><p class="muted">Read each sentence and listen for your word.</p>')
     + '<div class="list">' + list.map((w, i) => '<div class="card listrow"><p class="example">' + boldWord(w.meaning.example, w.word) + '</p><button type="button" class="btn btn--quiet btn--small" data-say="' + i + '" aria-label="Hear this sentence">' + ICON.play + '</button></div>').join('') + '</div>'
     + '<div class="btnrow"><button type="button" class="btn btn--primary" data-go>Write my sentences' + ICON.arrow + '</button></div></section>';
@@ -391,7 +392,7 @@ function storyDay(main, g) {
 const PAGES = { hello, fix, games: gameDay, story: storyDay, mend };
 
 export function studyStep(main, { gid, step, n }) {
-  const id = decodeURIComponent(gid);
+  const id = safeDecode(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
   if (!g) { location.replace('#/'); return undefined; }

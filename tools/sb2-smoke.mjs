@@ -36,6 +36,13 @@ mkdirSync(OUT, { recursive: true });
 const csp = /add_header Content-Security-Policy "([^"]+)"/.exec(readFileSync(ROOT + 'nginx/default.conf', 'utf8'))[1].replaceAll('https://account.waystead.co.uk', ACCOUNT);
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.dawg': 'application/octet-stream' };
 
+// The word list as it was before SB4-E/F (Years 3 to 6, the 20 old chapters only): scenes written for four years of five chapters serve it.
+const LEGACY_CURRICULUM = (() => {
+  const c = JSON.parse(readFileSync(ROOT + 'site/data/curriculum.json', 'utf8'));
+  delete c.year_1; delete c.year_2;
+  for (const k of ['year_3_4', 'year_5_6']) c[k].chapters = c[k].chapters.filter((x) => /^y(34|56)-ch\d\d$/.test(x.id));
+  return JSON.stringify(c);
+})();
 let flagOn = true;
 let netDown = false;
 let blocked = ''; // a file name the site answers 404 to, for a scene about a failed load
@@ -2785,6 +2792,7 @@ scene('SB3-F signed out: one button, the seven jobs, no word, no game', async ()
 function document_text(t) { return (t.toLowerCase().match(/[a-z]+/g) || []); }
 
 scene('SB3-F More practice as a child: chrome, one button, year switch, stones', async () => {
+  overrides.set('data/curriculum.json', LEGACY_CURRICULUM); // written for Years 3 to 6 with five chapters each
   await childWith(PROG_3, '#/chapters');
   await showYear('y3');
   await until('document.querySelector("[data-chapters]")', 'More practice');
@@ -3078,7 +3086,7 @@ const H = {
   allowLog: (re) => { allowedLog = re; },
   emulate: (features) => send('Emulation.setEmulatedMedia', { media: '', features }), // e.g. [{ name: 'prefers-reduced-motion', value: 'reduce' }]; cleared before every scene
   serve: (path, body) => { if (body === null) overrides.delete(path); else overrides.set(path, body); }, // a site file served from a string for this scene; null clears it
-  seedChild, signedOutBlank, childWith, adultWith, readDoc, readLocal, visible, rect,
+  legacyCurriculum: LEGACY_CURRICULUM, seedChild, signedOutBlank, childWith, adultWith, readDoc, readLocal, visible, rect,
   KB_VIEWS, KB_PORTRAIT, CHILD, CHILD2, ADULT, MON, plus, W, kbFit,
 };
 H.send = send; // SB4-WP11: the teacher page's print scenes switch on print media

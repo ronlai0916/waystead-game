@@ -15,6 +15,7 @@
 // A route not listed is blocked, so a new page is safe until someone looks at it.
 import * as W from './words-doc.js';
 import { dueGroups, hiddenWords, showsHidden } from './study-doc.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 export const RULES = {
   '': 'safe', about: 'safe', progress: 'safe', ':yearId': 'safe',
@@ -43,6 +44,40 @@ export const RULES = {
   'grownups/teach': 'adult', 'grownups/teach/:oid': 'adult',
 };
 
+// SB4-E/F: an example sentence on a study page must not show a word whose group's test is due.
+// A word of one or two letters takes no ending (as boldWord in ui.js). Endings: s es ed d ing (boldWord's) and er est ly ness ful y;
+// the stem may have lost an e (make, making), doubled its last consonant (hop, hopped) or turned y into i (baby, babies, happiness).
+const ENDINGS = ['s', 'es', 'ed', 'd', 'ing', 'er', 'est', 'ly', 'ness', 'ful', 'y'];
+const E_DROP = new Set(['ing', 'ed', 'er', 'est', 'y']);
+const MIN = 3; // the shortest base that takes an ending
+function bases(t) {
+  const out = [];
+  for (const e of ENDINGS) {
+    if (!t.endsWith(e)) continue;
+    const stem = t.slice(0, -e.length);
+    if (stem.length >= MIN) out.push(stem);
+    if (E_DROP.has(e) && stem.length >= MIN) out.push(stem + 'e');
+    if (stem.length > MIN && stem[stem.length - 1] === stem[stem.length - 2] && e !== 's' && e !== 'es' && e !== 'd' && e !== 'ly' && e !== 'ness' && e !== 'ful') out.push(stem.slice(0, -1));
+    if (stem.length > MIN - 1 && stem.endsWith('i') && e !== 'ing') out.push(stem.slice(0, -1) + 'y');
+  }
+  return out;
+}
+/** True when the sentence holds a hidden word: whole word, any case, with an ending (hidden is W.hiddenWords: lower case). */
+export function mentionsHidden(sentence, hidden) {
+  if (!sentence || !hidden || !hidden.size) return false;
+  for (const m of String(sentence).matchAll(/\w+/g)) {
+    const t = m[0].toLowerCase();
+    if (hidden.has(t)) return true;
+    for (const b of bases(t)) if (b.length >= MIN && hidden.has(b)) return true;
+  }
+  return false;
+}
+/** The entry a child may see: the same, or with its example taken out when that sentence holds a hidden word (the page then shows no example line, or the lettered tile). */
+export function guardEntry(w, hidden) {
+  if (!w || !w.meaning || !w.meaning.example || !mentionsHidden(w.meaning.example, hidden)) return w;
+  return { ...w, meaning: { ...w.meaning, example: '' } };
+}
+
 /** The group to show instead of this page, or null. chapterWords(yearId, slug, params) -> its words (an own chapter's when params.oid is set). */
 export function testGuard(pattern, params, d, today, chapterWords) {
   const due = dueGroups(d, today);
@@ -55,7 +90,7 @@ export function testGuard(pattern, params, d, today, chapterWords) {
     return w ? due.find((g) => g.words.some((x) => x.toLowerCase() === w.toLowerCase())) : null;
   }
   if (rule === 'group' || rule === 'first') {
-    const g = W.groupById(d, decodeURIComponent(params.gid));
+    const g = W.groupById(d, safeDecode(params.gid));
     if (!g) return null; // the page sends them on
     if (due.some((x) => x.id === g.id)) return rule === 'first' ? null : g;
     return showsHidden(g, hidden) ? due[0] : null;

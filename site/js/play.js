@@ -13,6 +13,7 @@ import * as T from './tiles-doc.js';
 import * as W from './words-doc.js';
 import { childYear } from './who.js';
 import { padHtml, LINES } from './tray.js';
+import { shown } from './word-info.js';
 import { playable } from './games-doc.js';
 
 const MAX_BLUR = 20;
@@ -73,7 +74,7 @@ export function runSession(main, opts) {
       + (w.meaning.definition // SB4-WP7: an own word with no meaning has no meaning box
         ? '<details class="hint"><summary>Show the meaning</summary><div class="hint__body">'
           + '<p><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span> ' + esc(w.meaning.definition) + '</p>'
-          + (w.meaning.example ? '<p class="example">' + redact(w.meaning.example, w.word) + '</p>' : '')
+          + (shown(w).meaning.example ? '<p class="example">' + redact(w.meaning.example, w.word) + '</p>' : '')
           + '</div></details>' : '')
       + '<div data-slot>' + (tiled ? padHtml(letters, revealed) : keyboard()) + '</div>'
       + '<p class="muted small" data-wrongtext></p>'

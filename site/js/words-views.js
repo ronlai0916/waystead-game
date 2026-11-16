@@ -19,6 +19,7 @@ import * as Tr from './tray.js';
 import { hearInSentence, canSentence } from './sentence.js';
 import * as A from './assess-doc.js';
 import * as AV from './assess-views.js';
+import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const PEEK_MS = 2000;
 const AGAIN_MS = 1600; // how long a finished word stays before it comes back
@@ -232,7 +233,7 @@ export function myWords(main) {
 
 export function group(main, { gid }) {
   const d0 = S.readWords();
-  const g = W.groupById(d0, decodeURIComponent(gid));
+  const g = W.groupById(d0, safeDecode(gid));
   if (!g) { location.replace('#/'); return; }
   // (app.js's router has already sent a child to the pick when the week switch is off: C.weekGuard.)
   drawGroup(main, g, document.body.classList.contains('is-child') ? W.liveGroups(d0).filter((o) => o.id !== g.id) : []);
@@ -344,7 +345,7 @@ function groupForm(main, existing) {
 
 export function newGroup(main) { groupForm(main, null); }
 export function editGroupPage(main, { gid }) {
-  const g = W.groupById(S.readWords(), decodeURIComponent(gid));
+  const g = W.groupById(S.readWords(), safeDecode(gid));
   if (!g) { location.replace('#/'); return; }
   // A child may open the form only where their own rules let them change something; never to delete (SB3-G).
   if (roleNow() !== 'adult' && !W.canEditAsChild(S.readWords(), g, today())) { location.replace(groupHref(g.id)); return; }
@@ -360,7 +361,7 @@ function boxesHtml(w) {
 }
 
 export function spellWord(main, { gid, n }) {
-  const id = decodeURIComponent(gid);
+  const id = safeDecode(gid);
   const d0 = S.readWords();
   const g = W.groupById(d0, id);
   const day = today();
@@ -563,7 +564,7 @@ export function spellWord(main, { gid, n }) {
 
 // ---- the test --------------------------------------------------------------------
 export function testDay(main, { gid }) {
-  const id = decodeURIComponent(gid);
+  const id = safeDecode(gid);
   const d0 = S.readWords();
   const g = W.groupById(d0, id);
   if (!g) { location.replace('#/'); return; }

@@ -44,6 +44,19 @@ body.is-adult .brand__tag {
   body.is-adult .brand__tag { display: none; }
   body.is-adult .topbar__inner { gap: 8px; }
 }
+/* SB4-WP13: the mark and 'Waystead' were cut off by Menu on a narrow phone (the bar needs the back arrow, the mark, the name, Menu and the face).
+   Under 400 px the bar closes up a little (the small 'Spellbright' line goes); under 375 px, with the back arrow showing, the mark stands alone (its link still says Spellbright home). */
+@media (max-width: 399.98px) {
+  body.is-adult .topbar__inner { gap: 6px; }
+  body.is-adult .brand { gap: 6px; }
+  body.is-adult .brand__mark { width: 30px; height: 30px; }
+  body.is-adult .brand__name { font-size: 1rem; }
+  body.is-adult .brand__product { display: none; }
+  body.is-adult .adultbtn--menu { padding: 0 12px; }
+}
+@media (max-width: 374.98px) {
+  body.is-adult .topbar__back:not([hidden]) ~ .brand .brand__words { display: none; }
+}
 
 /* ---- The panels: below the bar on a wide screen, a bottom sheet under 600 px ---- */
 .adultlayer { position: fixed; inset: 0; z-index: 19; }

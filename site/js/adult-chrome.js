@@ -9,6 +9,7 @@
 import { esc } from './ui.js';
 import * as A from './grownups-data.js';
 import * as D from './adult-doc.js';
+import { liveYears } from './data.js';
 import { CHOICES, currentChoice, choose } from './thememenu.js';
 import { announce } from './daystyle.js';
 import { voiceCardHtml, roving, childTools } from './child-views.js';
@@ -25,6 +26,8 @@ const I = {
   person: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>'),
   chapters: svg('<circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h6a3 3 0 0 1 0 6H10a3 3 0 0 0 0 6h6"/>'),
   words: svg('<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>'),
+  own: svg('<path d="M6 3.5h8l4 4V20.5H6z"/><path d="M14 3.5v4h4M12 11v6M9 14h6"/>'),
+  teach: svg('<rect x="3.5" y="4" width="17" height="11" rx="1.5"/><path d="M8 8.5h8M8 11.5h5M12 15v2.5M8 20.5l4-3 4 3"/>'),
   custom: svg('<path d="M4 20l1-4L16 5l3 3L8 19z"/>'),
   tricky: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5M12 16h.01"/>'),
   progress: svg('<path d="M6 20V10M12 20V4M18 20v-7"/>'),
@@ -53,7 +56,7 @@ const head = (id, title) => '<div class="adultpanel__head"><h2 id="' + id + '">'
 
 function menuHtml() {
   return head('adult-menu-title', 'Menu') + '<nav aria-label="Menu"><ul class="adultlist">'
-    + D.MENU_ROWS.map((r) => '<li>' + row(r.href, I[r.id], r.title, r.sub, ' data-adultrow="' + r.id + '"') + '</li>').join('') + '</ul></nav>';
+    + D.menuRows(liveYears()).map((r) => '<li>' + row(r.href, I[r.id], r.title, r.sub, ' data-adultrow="' + r.id + '"') + '</li>').join('') + '</ul></nav>';
 }
 
 function accountHtml() {

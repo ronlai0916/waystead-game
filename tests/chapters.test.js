@@ -14,17 +14,45 @@ for (let i = 1; i <= 10; i++) OLD.push('y56-ch' + String(i).padStart(2, '0'));
 const built = Ch.buildYears(clone(real));
 
 test('every one of the 20 old ids keeps its id and has a home', () => {
-  assert.deepEqual(built.live, ['y3', 'y4', 'y5', 'y6']);
+  assert.deepEqual(built.live, ['y1', 'y2', 'y3', 'y4', 'y5', 'y6']);
   for (const id of OLD) assert.ok(built.byId.get(id), id);
   const ch = built.byId.get('y34-ch07');
   assert.deepEqual([ch.yearId, ch.slug, ch.n, ch.index], ['y4', 'ch02', 2, 1]);
   assert.equal(built.byId.get('y34-ch05').yearId, 'y3');
   assert.equal(built.byId.get('y56-ch06').yearId, 'y6');
   for (const y of built.live) {
-    assert.equal(built.byYear[y].length, 5);
-    built.byYear[y].forEach((c, i) => assert.deepEqual([c.n, c.slug], [i + 1, 'ch0' + (i + 1)]));
+    assert.equal(built.byYear[y].length, 10, y);
+    built.byYear[y].forEach((c, i) => assert.deepEqual([c.n, c.slug], [i + 1, 'ch' + String(i + 1).padStart(2, '0')]));
   }
-  assert.equal(built.byYear.y1, undefined);
+  // the old chapters stay first in their year, so a link to y34-ch07 still opens Year 4, Chapter 2
+  assert.deepEqual(built.byYear.y3.slice(0, 5).map((c) => c.id), OLD.slice(0, 5));
+  assert.deepEqual(built.byYear.y6.slice(0, 5).map((c) => c.id), OLD.slice(15, 20));
+});
+
+test('the real list: Years 1 to 6 hold 10 chapters each, the old blocks keep their keys, and a word may be in two chapters', () => {
+  assert.deepEqual(Object.keys(real), ['_meta', 'year_1', 'year_2', 'year_3_4', 'year_5_6']);
+  assert.equal(real.year_1.chapters.length, 10);
+  assert.equal(real.year_2.chapters.length, 10);
+  assert.equal(real.year_3_4.chapters.length, 20);
+  assert.equal(real.year_5_6.chapters.length, 20);
+  const ids = Object.keys(real).filter((k) => k !== '_meta').flatMap((k) => real[k].chapters.map((c) => c.id));
+  assert.equal(new Set(ids).size, ids.length, 'no chapter id twice');
+  assert.deepEqual(real.year_1.chapters.map((c) => c.id), Array.from({ length: 10 }, (_, i) => 'y1-ch' + String(i + 1).padStart(2, '0')));
+  assert.deepEqual(real.year_2.chapters.map((c) => c.id), Array.from({ length: 10 }, (_, i) => 'y2-ch' + String(i + 1).padStart(2, '0')));
+  assert.deepEqual(real.year_3_4.chapters.slice(0, 10).map((c) => c.id), OLD.slice(0, 10));
+  assert.deepEqual(real.year_5_6.chapters.slice(0, 10).map((c) => c.id), OLD.slice(10));
+  const where = new Map();
+  for (const k of ['year_1', 'year_2', 'year_3_4', 'year_5_6']) {
+    for (const c of real[k].chapters) {
+      assert.ok(c.year >= 1 && c.year <= 6, c.id);
+      for (const w of c.words) {
+        assert.equal(w.chunks.join(''), w.word, c.id + '/' + w.word + ': chunks join to the word');
+        (where.get(w.word.toLowerCase()) || where.set(w.word.toLowerCase(), []).get(w.word.toLowerCase())).push(c.id);
+      }
+    }
+  }
+  const twice = [...where].filter(([, v]) => v.length > 1);
+  assert.deepEqual(twice.map(([w, v]) => [w, v]), [['busy', ['y2-ch09', 'y34-ch02']]], 'busy is the one word in two chapters');
 });
 
 test('a chapter with no year takes it from its block', () => {
@@ -102,8 +130,8 @@ test('sourceLine and patternLabel say exactly this', () => {
   assert.equal(Ch.sourceLine(4, 'statutory'), 'From the Years 3 and 4 statutory word list (we split it into two years)');
   assert.equal(Ch.sourceLine(5), 'From the Years 5 and 6 statutory word list (we split it into two years)');
   assert.equal(Ch.sourceLine(6, 'statutory'), 'From the Years 5 and 6 statutory word list (we split it into two years)');
-  assert.equal(Ch.sourceLine(1, 'cew'), 'Year 1 common exception words (statutory)');
-  assert.equal(Ch.sourceLine(2, 'cew'), 'Year 2 common exception words (statutory)');
+  assert.equal(Ch.sourceLine(1, 'cew'), 'Year 1 common exception words (from the national curriculum)');
+  assert.equal(Ch.sourceLine(2, 'cew'), 'Year 2 common exception words (from the national curriculum)');
   assert.equal(Ch.patternLabel(1, 'ff, ll'), "Pattern words: our examples for the Year 1 rule 'ff, ll'");
   assert.equal(Ch.patternLabel(2, 'ti says sh'), "Pattern words: our examples for the Year 2 rule 'ti says sh'");
   assert.equal(Ch.patternLabel(4, 'silent b'), "Pattern words: our examples for the Years 3 and 4 rule 'silent b'");
@@ -132,6 +160,19 @@ test('with the Year 1 and 2 blocks: six years are live, and busy keeps its old e
   assert.equal(D.chapters('y4')[0].id, 'y34-ch06');
   assert.equal(D.chapterBySlug('y6', 'ch05').id, 'y56-ch10');
   assert.equal(D.defaultYear(), 'y3');
+});
+
+test('the real list through data.js: six live years, busy in two chapters, the first (old) entry wins', async () => {
+  const text = JSON.stringify(real);
+  globalThis.fetch = async () => ({ ok: true, json: async () => JSON.parse(text), status: 200 });
+  const D = await import('../site/js/data.js');
+  await D.loadData();
+  assert.deepEqual(D.liveYears(), ['y1', 'y2', 'y3', 'y4', 'y5', 'y6']);
+  for (const y of D.liveYears()) assert.equal(D.chapters(y).length, 10, y);
+  assert.deepEqual(D.chaptersOf('busy').sort(), ['y2-ch09', 'y34-ch02']);
+  assert.equal(D.entry('busy').chapterId, 'y34-ch02');
+  assert.equal(D.entry('a').chunks.join(''), 'a');
+  assert.equal(D.entry('Mrs').word, 'Mrs');
 });
 
 test('copy: nothing in the site says "Year N list" (the lists cover two years)', () => {

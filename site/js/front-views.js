@@ -104,6 +104,7 @@ function yearPanel(id) {
   const v = viewOf(id);
   const sum = F.summaryLine(F.yearSummary(chs, progressOf));
   const lines = sourceLines(id, chs.filter((c) => c.words.some((w) => !w.set || w.set === 'statutory' || w.set === 'cew')), '');
+  if (chs.some((c) => c.words.some((w) => w.set === 'pattern'))) lines.push(Ch.PATTERN_PLUS); // SB4-E/F: the year also holds our pattern words
   const note = id === 'y2' && kind() === 'adult' ? '<p class="yearsource" data-apostrophe>' + esc(Ch.APOSTROPHE_NOTE) + '</p>' : '';
   const stones = v.stones.map((s) => {
     const label = F.STONE_LABEL[s.state];

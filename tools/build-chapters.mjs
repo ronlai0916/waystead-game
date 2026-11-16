@@ -53,6 +53,7 @@ const HOMOPHONES = new Set(('their there theyre hear here to too two for four fo
   'heard herd hoarse horse idle idol isle aisle lessen lesson mussel muscle naval navel packed pact ' +
   'passed past patience patients populace populous prey pray rapt wrapped rough ruff shore sure sore ' +
   'storey story straight strait team teem throne thrown thyme time tire tyre veracity voracity ' +
+  'ceiling sealing dough doe fought fort ' +
   'wail whale wales whales ware warn worn whine wine yore your youre').split(/\s+/));
 // a word may be a homophone only by a very loose reading; these are listed as pairs above, so a false
 // positive is possible: the writer can tell the director and the entry can be removed here.
@@ -318,7 +319,7 @@ export function reviewSheet(year, batches, ctx) {
   const mp3 = new Set((ctx.assets.audioWords || []).map((s) => s.toLowerCase()));
   const pics = new Set(ctx.assets.images || []);
   const lines = [];
-  lines.push(`# Year ${year}: DRAFT — Ron to sign off`, '');
+  lines.push(`# Year ${year}: review sheet (signed off)`, '');
   lines.push(`Source of the rules: ${CREDIT} The pattern words are ours.`, '');
   const names = Object.keys(BATCHES).filter((b) => BATCHES[b].year === year && batches[b]?.data);
   if (!names.length) lines.push('No batch file for this year yet.');
@@ -329,15 +330,19 @@ export function reviewSheet(year, batches, ctx) {
       lines.push('| Word | List | Chunks | Tricky | Meaning | Example | MP3 | Voice list | Picture |', '|---|---|---|---|---|---|---|---|---|');
       for (const w of ch.words || []) {
         const low = String(w.word).toLowerCase();
-        const list = w.set === 'cew' ? `Year ${year} common exception words (statutory)` : `Pattern words: our examples for the ${year <= 2 ? `Year ${year}` : year <= 4 ? 'Years 3 and 4' : 'Years 5 and 6'} rule '${ch.focus}'`;
+        const list = w.set === 'cew' ? `Year ${year} common exception words (from the national curriculum)` : `Pattern words: our examples for the ${year <= 2 ? `Year ${year}` : year <= 4 ? 'Years 3 and 4' : 'Years 5 and 6'} rule '${ch.focus}'`;
         const m = w.meaning || {};
         const pic = w.image ? (pics.has(w.image) ? 'yes' : 'named, file missing') : pics.has(low + '.jpg') ? 'yes' : 'no';
-        lines.push(`| ${cell(w.word)} | ${list === '' ? '' : w.set === 'cew' ? 'statutory' : 'pattern'} | ${cell((w.chunks || []).join(' · '))} | ${cell(w.tricky)} | ${cell(m.partOfSpeech)}: ${cell(m.definition)} | ${cell(m.example)} | ${mp3.has(low) ? 'yes' : 'no'} | ${ctx.allow.has(low) ? 'yes' : 'no'} | ${pic} |`);
+        lines.push(`| ${cell(w.word)} | ${list === '' ? '' : w.set === 'cew' ? 'cew' : 'pattern'} | ${cell((w.chunks || []).join(' · '))} | ${cell(w.tricky)} | ${cell(m.partOfSpeech)}: ${cell(m.definition)} | ${cell(m.example)} | ${mp3.has(low) ? 'yes' : 'no'} | ${ctx.allow.has(low) ? 'yes' : 'no'} | ${pic} |`);
       }
       lines.push('');
     }
   }
-  lines.push('Labels the app shows: statutory words, "Year ' + year + ' common exception words (statutory)"; pattern words, "Pattern words: our examples for the ' + (year <= 2 ? 'Year ' + year : year <= 4 ? 'Years 3 and 4' : 'Years 5 and 6') + " rule '…'\".", '');
+  const span = year <= 2 ? 'Year ' + year : year <= 4 ? 'Years 3 and 4' : 'Years 5 and 6';
+  const pat = `pattern words, "Pattern words: our examples for the ${span} rule '…'"`;
+  lines.push(year <= 2
+    ? `Labels the app shows: common exception words, "Year ${year} common exception words (from the national curriculum)"; ${pat}. The year panel adds "Plus our pattern words for each spelling rule."`
+    : `Labels the app shows: the first ten chapters (old), "From the ${span} statutory word list…"; chapters 6 to 10 (new, all pattern words), ${pat}. The year panel adds "Plus our pattern words for each spelling rule."`, '');
   return lines.join('\n');
 }
 

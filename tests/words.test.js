@@ -553,9 +553,11 @@ test('the 5 re-split words go by syllable, with no tricky field', () => {
 });
 
 test('every word\'s chunks join to it, and only those 29 have tricky letters', () => {
-  assert.equal(allEntries.length, 213);
+  const old = ['year_3_4', 'year_5_6'].flatMap((y) => curriculum[y].chapters.filter((c) => /^y(34|56)-ch\d\d$/.test(c.id)).flatMap((c) => c.words));
+  assert.equal(old.length, 213);
   for (const e of allEntries) assert.equal(e.chunks.join(''), e.word);
-  assert.equal(allEntries.filter((e) => e.tricky).length, 29);
+  assert.equal(old.filter((e) => e.tricky).length, 29);
+  for (const e of allEntries.filter((e) => e.tricky)) assert.ok(e.word.toLowerCase().includes(e.tricky.toLowerCase()), e.word + ': tricky letters are in the word');
 });
 
 // ---- G4b: whole words ---------------------------------------------------------------

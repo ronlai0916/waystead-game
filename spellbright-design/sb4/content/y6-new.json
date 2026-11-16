@@ -1,0 +1,822 @@
+{
+ "status": "signed off by Ron",
+ "year": 6,
+ "batch": "y6-new",
+ "chapters": [
+  {
+   "id": "y6-n01",
+   "year": 6,
+   "title": "Chapter 11 — ei after c",
+   "focus": "ei after c (receive, ceiling…)",
+   "re": "(cei)",
+   "description": "Our examples of the rule 'i before e, except after c': here the letters are always c, e, i.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "received",
+     "ipa": "/rɪˈsiːvd/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Got or was given something.",
+      "example": "We received a postcard from our cousins."
+     },
+     "chunks": [
+      "re",
+      "ceived"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "receive",
+     "ipa": "/rɪˈsiːv/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To get or be given something.",
+      "example": "I hope to receive a letter from my cousin."
+     },
+     "chunks": [
+      "re",
+      "ceive"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "receipt",
+     "ipa": "/rɪˈsiːt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A piece of paper showing that you have paid for something.",
+      "example": "Keep the receipt in case the toy breaks."
+     },
+     "chunks": [
+      "re",
+      "ceipt"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "receiver",
+     "ipa": "/rɪˈsiːvə/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The part of a telephone that you hold to your ear.",
+      "example": "She lifted the receiver and said hello."
+     },
+     "chunks": [
+      "re",
+      "ceiv",
+      "er"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "deceive",
+     "ipa": "/dɪˈsiːv/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To make someone believe something that is not true.",
+      "example": "The fox tried to deceive the little hen."
+     },
+     "chunks": [
+      "de",
+      "ceive"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "deceit",
+     "ipa": "/dɪˈsiːt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Behaviour that tricks people by telling lies.",
+      "example": "The story was about a cruel trick and deceit."
+     },
+     "chunks": [
+      "de",
+      "ceit"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "conceited",
+     "ipa": "/kənˈsiːtɪd/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Too proud of yourself and your own cleverness.",
+      "example": "He was so conceited that he never listened to others."
+     },
+     "chunks": [
+      "con",
+      "ceit",
+      "ed"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "deceitful",
+     "ipa": "/dɪˈsiːtfʊl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Telling lies or tricking people.",
+      "example": "The deceitful pirate hid the map in his coat."
+     },
+     "chunks": [
+      "de",
+      "ceit",
+      "ful"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "perceive",
+     "ipa": "/pəˈsiːv/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To notice or understand something.",
+      "example": "I could perceive a faint light in the distance."
+     },
+     "chunks": [
+      "per",
+      "ceive"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    },
+    {
+     "word": "conceive",
+     "ipa": "/kənˈsiːv/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To form an idea or plan in your mind.",
+      "example": "Can you conceive of a world without colour?"
+     },
+     "chunks": [
+      "con",
+      "ceive"
+     ],
+     "tricky": "cei",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y6-n02",
+   "year": 6,
+   "title": "Chapter 12 — ough words",
+   "focus": "ough words (though, cough, rough, bought…)",
+   "re": "ough",
+   "description": "Our examples of words with the tricky letters ough, which can sound many different ways.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "doughnut",
+     "ipa": "/ˈdəʊnʌt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A small round cake, fried and often covered in sugar.",
+      "example": "I had a jam doughnut after swimming."
+     },
+     "chunks": [
+      "dough",
+      "nut"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "cough",
+     "ipa": "/kɒf/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To push air out of your throat with a sudden noise.",
+      "example": "Please cover your mouth when you cough."
+     },
+     "chunks": [
+      "cough"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "tough",
+     "ipa": "/tʌf/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Strong and hard to break or cut.",
+      "example": "The steak was too tough to chew."
+     },
+     "chunks": [
+      "tough"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "roughly",
+     "ipa": "/ˈrʌfli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "About; not exactly.",
+      "example": "There are roughly thirty children in my class."
+     },
+     "chunks": [
+      "rough",
+      "ly"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "bought",
+     "ipa": "/bɔːt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Paid money to get something.",
+      "example": "Mum bought a new bike for my sister."
+     },
+     "chunks": [
+      "bought"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "thoughtful",
+     "ipa": "/ˈθɔːtfʊl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Kind, and thinking about what other people need.",
+      "example": "It was thoughtful of you to bring me a drink."
+     },
+     "chunks": [
+      "thought",
+      "ful"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "brought",
+     "ipa": "/brɔːt/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "Carried or took something with you to a place.",
+      "example": "She brought her kite to the park."
+     },
+     "chunks": [
+      "brought"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "plough",
+     "ipa": "/plaʊ/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A farm tool pulled across a field to turn over the soil.",
+      "example": "The farmer pulled the plough across the field."
+     },
+     "chunks": [
+      "plough"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "drought",
+     "ipa": "/draʊt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A long time with no rain.",
+      "example": "The farmers worried during the long summer drought."
+     },
+     "chunks": [
+      "drought"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    },
+    {
+     "word": "throughout",
+     "ipa": "/θruːˈaʊt/",
+     "meaning": {
+      "partOfSpeech": "preposition",
+      "definition": "From the beginning to the end of.",
+      "example": "It rained throughout the whole night."
+     },
+     "chunks": [
+      "through",
+      "out"
+     ],
+     "tricky": "gh",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y6-n03",
+   "year": 6,
+   "title": "Chapter 13 — Silent letters",
+   "focus": "silent letters (doubt, knowledge, autumn, column, castle)",
+   "re": "(^kn|^wr|stle$|sten$|^gh|^hon|bt|mn$)",
+   "description": "Our examples of words with a letter you write but do not say, like the b in doubt.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "knee",
+     "ipa": "/niː/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The joint in the middle of your leg.",
+      "example": "I grazed my knee when I fell off my bike."
+     },
+     "chunks": [
+      "knee"
+     ],
+     "tricky": "kn",
+     "set": "pattern"
+    },
+    {
+     "word": "castle",
+     "ipa": "/ˈkɑːsəl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A large strong building with thick walls, built long ago.",
+      "example": "The king lived in a castle on the hill."
+     },
+     "chunks": [
+      "cas",
+      "tle"
+     ],
+     "tricky": "t",
+     "set": "pattern"
+    },
+    {
+     "word": "listen",
+     "ipa": "/ˈlɪsən/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To pay attention to a sound.",
+      "example": "Please listen carefully to the instructions."
+     },
+     "chunks": [
+      "lis",
+      "ten"
+     ],
+     "tricky": "t",
+     "set": "pattern"
+    },
+    {
+     "word": "ghost",
+     "ipa": "/ɡəʊst/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The spirit of a person in stories, said to haunt places.",
+      "example": "We made a friendly ghost costume for the party."
+     },
+     "chunks": [
+      "ghost"
+     ],
+     "tricky": "h",
+     "set": "pattern"
+    },
+    {
+     "word": "whistle",
+     "ipa": "/ˈwɪsəl/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A small tube that makes a loud high sound when you blow it.",
+      "example": "The referee blew her whistle to start the game."
+     },
+     "chunks": [
+      "whis",
+      "tle"
+     ],
+     "tricky": "t",
+     "set": "pattern"
+    },
+    {
+     "word": "honest",
+     "ipa": "/ˈɒnɪst/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Always telling the truth.",
+      "example": "An honest person gives back money they find."
+     },
+     "chunks": [
+      "hon",
+      "est"
+     ],
+     "tricky": "h",
+     "set": "pattern"
+    },
+    {
+     "word": "doubt",
+     "ipa": "/daʊt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A feeling of not being sure about something.",
+      "example": "I have no doubt that you will win."
+     },
+     "chunks": [
+      "doubt"
+     ],
+     "tricky": "b",
+     "set": "pattern"
+    },
+    {
+     "word": "autumn",
+     "ipa": "/ˈɔːtəm/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The season between summer and winter.",
+      "example": "Leaves turn gold and brown in autumn."
+     },
+     "chunks": [
+      "au",
+      "tumn"
+     ],
+     "tricky": "n",
+     "set": "pattern"
+    },
+    {
+     "word": "column",
+     "ipa": "/ˈkɒləm/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A tall pillar, or a vertical line of print or numbers.",
+      "example": "The old temple had a tall stone column."
+     },
+     "chunks": [
+      "col",
+      "umn"
+     ],
+     "tricky": "n",
+     "set": "pattern"
+    },
+    {
+     "word": "wrestle",
+     "ipa": "/ˈresəl/",
+     "meaning": {
+      "partOfSpeech": "verb",
+      "definition": "To fight by holding and trying to throw your opponent down.",
+      "example": "The two brothers like to wrestle on the soft rug."
+     },
+     "chunks": [
+      "wres",
+      "tle"
+     ],
+     "tricky": "w",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y6-n04",
+   "year": 6,
+   "title": "Chapter 14 — Endings ent, ence, ency",
+   "focus": "-ent, -ence, -ency endings",
+   "re": "(ent|ence|ency)$",
+   "description": "Our examples of words ending in -ent, -ence or -ency, which can sound alike at the end.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "talent",
+     "ipa": "/ˈtælənt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A natural skill at doing something well.",
+      "example": "She has a talent for playing the violin."
+     },
+     "chunks": [
+      "tal",
+      "ent"
+     ],
+     "tricky": "ent",
+     "set": "pattern"
+    },
+    {
+     "word": "silent",
+     "ipa": "/ˈsaɪlənt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Making no sound at all.",
+      "example": "The library was silent except for turning pages."
+     },
+     "chunks": [
+      "si",
+      "lent"
+     ],
+     "tricky": "ent",
+     "set": "pattern"
+    },
+    {
+     "word": "parent",
+     "ipa": "/ˈpeərənt/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A mother or father.",
+      "example": "Each parent got a letter about the school trip."
+     },
+     "chunks": [
+      "par",
+      "ent"
+     ],
+     "tricky": "ent",
+     "set": "pattern"
+    },
+    {
+     "word": "urgent",
+     "ipa": "/ˈɜːdʒənt/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Needing to be dealt with straight away.",
+      "example": "The doctor got an urgent message."
+     },
+     "chunks": [
+      "ur",
+      "gent"
+     ],
+     "tricky": "ent",
+     "set": "pattern"
+    },
+    {
+     "word": "silence",
+     "ipa": "/ˈsaɪləns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A time when there is no noise.",
+      "example": "A hush of silence fell over the hall."
+     },
+     "chunks": [
+      "si",
+      "lence"
+     ],
+     "tricky": "ce",
+     "set": "pattern"
+    },
+    {
+     "word": "absence",
+     "ipa": "/ˈæbsəns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "A time when someone is not there.",
+      "example": "Her absence from class was noticed by everyone."
+     },
+     "chunks": [
+      "ab",
+      "sence"
+     ],
+     "tricky": "ce",
+     "set": "pattern"
+    },
+    {
+     "word": "difference",
+     "ipa": "/ˈdɪfrəns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The way in which things are not the same.",
+      "example": "Can you spot the difference between the two pictures?"
+     },
+     "chunks": [
+      "dif",
+      "fer",
+      "ence"
+     ],
+     "tricky": "ce",
+     "set": "pattern"
+    },
+    {
+     "word": "evidence",
+     "ipa": "/ˈevɪdəns/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "Facts or signs that help show what is true.",
+      "example": "The muddy footprints were evidence of a visitor."
+     },
+     "chunks": [
+      "ev",
+      "i",
+      "dence"
+     ],
+     "tricky": "ce",
+     "set": "pattern"
+    },
+    {
+     "word": "urgency",
+     "ipa": "/ˈɜːdʒənsi/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "The need to act very quickly.",
+      "example": "There was a sense of urgency in her voice."
+     },
+     "chunks": [
+      "ur",
+      "gen",
+      "cy"
+     ],
+     "tricky": "cy",
+     "set": "pattern"
+    },
+    {
+     "word": "frequency",
+     "ipa": "/ˈfriːkwənsi/",
+     "meaning": {
+      "partOfSpeech": "noun",
+      "definition": "How often something happens.",
+      "example": "The frequency of our swimming lessons is once a week."
+     },
+     "chunks": [
+      "fre",
+      "quen",
+      "cy"
+     ],
+     "tricky": "cy",
+     "set": "pattern"
+    }
+   ]
+  },
+  {
+   "id": "y6-n05",
+   "year": 6,
+   "title": "Chapter 15 — Endings ible, ibly",
+   "focus": "-ible and -ibly endings",
+   "re": "(ible|ibly)$",
+   "description": "Our examples of words ending in -ible or -ibly, where the ending is often mixed up with -able.",
+   "signedOff": true,
+   "words": [
+    {
+     "word": "edible",
+     "ipa": "/ˈedəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Safe to eat.",
+      "example": "The flowers on the cake are edible, so you can eat them."
+     },
+     "chunks": [
+      "ed",
+      "i",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "terrible",
+     "ipa": "/ˈterəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very bad or unpleasant.",
+      "example": "The soup tasted terrible after it burnt."
+     },
+     "chunks": [
+      "ter",
+      "ri",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "visible",
+     "ipa": "/ˈvɪzəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Able to be seen.",
+      "example": "The moon was clearly visible in the night sky."
+     },
+     "chunks": [
+      "vis",
+      "i",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "sensible",
+     "ipa": "/ˈsensəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Showing good sense and sound judgement.",
+      "example": "It is sensible to wear a coat in the rain."
+     },
+     "chunks": [
+      "sen",
+      "si",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "possibly",
+     "ipa": "/ˈpɒsəbli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "Perhaps; it may be so.",
+      "example": "We could possibly go to the beach tomorrow."
+     },
+     "chunks": [
+      "pos",
+      "si",
+      "bly"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "terribly",
+     "ipa": "/ˈterəbli/",
+     "meaning": {
+      "partOfSpeech": "adverb",
+      "definition": "Very badly, or to a very great degree.",
+      "example": "I am terribly sorry that I forgot your book."
+     },
+     "chunks": [
+      "ter",
+      "ri",
+      "bly"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "horrible",
+     "ipa": "/ˈhɒrəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Very unpleasant and making you feel upset.",
+      "example": "There was a horrible smell in the kitchen."
+     },
+     "chunks": [
+      "hor",
+      "ri",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "flexible",
+     "ipa": "/ˈfleksəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Able to bend easily without breaking.",
+      "example": "The gymnast was very flexible and bent backwards."
+     },
+     "chunks": [
+      "flex",
+      "i",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "incredible",
+     "ipa": "/ɪnˈkredəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Amazing and very hard to believe.",
+      "example": "The magician performed an incredible trick."
+     },
+     "chunks": [
+      "in",
+      "cred",
+      "i",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    },
+    {
+     "word": "responsible",
+     "ipa": "/rɪˈspɒnsəbəl/",
+     "meaning": {
+      "partOfSpeech": "adjective",
+      "definition": "Trusted to do the right thing and look after things.",
+      "example": "Ana is responsible for feeding the class fish."
+     },
+     "chunks": [
+      "re",
+      "spon",
+      "si",
+      "ble"
+     ],
+     "tricky": "ib",
+     "set": "pattern"
+    }
+   ]
+  }
+ ]
+}

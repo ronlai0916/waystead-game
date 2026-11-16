@@ -25,11 +25,11 @@ export function morePracticeSub(years) {
 
 /** The Menu's rows, in order. `id` picks the icon. */
 export const MENU_ROWS = [
-  { id: 'chapters', title: 'More practice', sub: morePracticeSub([3, 4, 5, 6]), href: '#/chapters' },
+  { id: 'chapters', title: 'More practice', sub: morePracticeSub([1, 2, 3, 4, 5, 6]), href: '#/chapters' },
   { id: 'words', title: 'My words', sub: 'Practise words yourself', href: '#/words' },
   { id: 'custom', title: 'Pick words', sub: 'Choose your own words', href: '#/custom' },
-  { id: 'kids', title: 'Your own chapters', sub: 'Make a list from school spellings', href: '#/grownups/own' }, // SB4-WP7 (kids: an icon adult-chrome.js already has)
-  { id: 'kids', title: 'For teachers', sub: 'One list for up to 5 children', href: '#/grownups/teach' }, // SB4-WP11
+  { id: 'own', title: 'Your own chapters', sub: 'Make a list from school spellings', href: '#/grownups/own' }, // SB4-WP7
+  { id: 'teach', title: 'For teachers', sub: 'One list for up to 5 children', href: '#/grownups/teach' }, // SB4-WP11
   { id: 'tricky', title: 'Tricky words', sub: 'Words that need another go', href: '#/tricky' },
   { id: 'progress', title: 'Progress', sub: 'Chapters you have passed', href: '#/progress' },
   { id: 'games', title: 'All games', sub: 'Waystead’s other games', href: '../' },
