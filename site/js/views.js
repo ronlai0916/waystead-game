@@ -14,7 +14,7 @@ import { playable } from './games-doc.js';
 import { withoutHidden, DAILY_TIME, DAILY_TIME_CAP, ROW_LINE } from './study-doc.js';
 import * as A from './assess-doc.js';
 import { runCheck } from './assess-views.js';
-import { childYear } from './who.js';
+import { childYear, isKnownChild } from './who.js';
 import * as Ch from './chapters-doc.js';
 import { safeDecode } from './chapters-doc.js';
 import { entryFor } from './word-info.js';
@@ -396,6 +396,8 @@ export function about(main) {
     + '<p>Each word group comes with a guided week, one job each day, ' + DAILY_TIME + ': meet the words, fix them in with look, say, cover, write and check, play four games, see the words at work and write sentences, a round of the practice grid, the test, then mend anything that slipped. A missed day simply waits, and a short week fits the jobs into the days there are. In Fix it in, the practice grid and Mend and keep, a word comes straight back after a mistake or a peek, and is done once it has been spelled 3 times in a row. A word can be skipped for now, but the day\'s job stays open until it\'s done. ' + ROW_LINE + ' The three dots show those three spellings. The games don\'t earn dots; a wrong answer there simply comes back until it\'s right. Game mode has the same four games with the same words at any time, except while a test is due: until it\'s done, its words are kept off every page.</p>'
     + '<h2>Grown-ups</h2>'
     + '<p>Signed in as yourself, you\'ll find Grown-ups on the first page. There you can plan a week for your child and see how it\'s going, word by word. What a child writes (sentences and memory clues) can be seen only by that child and their own parent. The spelling patterns follow English Appendix 1, under the Open Government Licence v3.0.</p>'
+    + (isKnownChild() ? '' : '<p>Scanning a school paper is for grown-ups only. When it is switched on, the photo goes to an AI service to read the words. Waystead does not keep the photo, and we save only the words you tick. Cover any names first.</p>') // SB4-WP8
+    + '<p>Teachers and tutors: a grown-up\'s account can hold up to 5 children. Make one list, share it with them, and see each child\'s results on one page.</p>' // SB4-WP11
     + '<h2>Little and often</h2>'
     + '<p>' + DAILY_TIME_CAP + ' works better than one long session. Start each session with a few tricky words before moving on.</p>'
     + '<h2>How it looks</h2>'

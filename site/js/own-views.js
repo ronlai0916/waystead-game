@@ -17,12 +17,17 @@ import { findEntry, meaningsFor } from './word-info.js';
 import { recheckWho } from './who.js';
 import { esc } from './ui.js';
 import { accountOrigin } from './account/config.js';
+import * as Sc from './scan-doc.js'; // SB4-WP8
+import * as SD from './scan-data.js'; // SB4-WP8
 
 const today = () => W.localDay(Date.now());
 let api = null;
 const childApi = () => { if (!api) api = A.createChildApi({ origin: accountOrigin(location) }); return api; };
 const redraw = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
 const LIST = '#/grownups/own';
+const CAM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+/** SB4-WP8: scanning is offered only when the account says so (exactly on: true). Any other answer, a 404 or a network error is off. */
+const scanIsOn = async () => Sc.isOn(await SD.allowance(accountOrigin(location)));
 let undo = null; // { oid, name, until }: the chapter just deleted, for 10 seconds on the list page
 
 const wrap = (title, line, body, attr = '') => '<section class="wrap page grownups gu"' + attr + '><div class="pagehead"><span class="eyebrow">Grown-ups</span><h1>' + esc(title) + '</h1>'
@@ -105,7 +110,7 @@ export async function useForWeek({ words, kids }) {
       actions: [{ id: 'go', label: 'Next', cls: 'btn--primary' }, { id: 'no', label: 'Cancel' }],
       read: (root) => root.querySelector('input[name="own-kid"]:checked').value,
     });
-    if (!r || r.id !== 'go') return;
+    if (!r || r.id !== 'go') return false;
     cid = r.value;
   } else if (kids.length === 1) cid = kids[0].id;
   let chosen = words;
@@ -127,11 +132,12 @@ export async function useForWeek({ words, kids }) {
       },
       read: (root) => [...root.querySelectorAll('[data-pick]:checked')].map((b) => b.value),
     });
-    if (!r || r.id !== 'go') return;
+    if (!r || r.id !== 'go') return false;
     chosen = r.value;
   }
   D.givePlanWords(null, chosen);
   location.hash = cid ? '#/grownups/child/' + encodeURIComponent(cid) + '/plan' : '#/grownups/plan';
+  return true; // true: it went on to the plan page; false: the grown-up cancelled
 }
 
 /* ------------------------------------------------------------------ the list --- */
@@ -142,7 +148,7 @@ export function list(main) {
   let timer = null;
   main.innerHTML = wrap('Your own chapters', '', '<p class="muted">Finding your chapters…</p>');
   (async () => {
-    const lc = await A.listChildren(childApi());
+    const [lc, scanOn] = await Promise.all([A.listChildren(childApi()), scanIsOn()]); // SB4-WP8: the allowance is asked once for the page
     if (stopped) return;
     if (lc.problem) { problemPage(main, lc.problem); return; }
     const sync = await D.syncOwn(childApi(), lc.children);
@@ -163,13 +169,17 @@ export function list(main) {
         return '<article class="card gu-panel gu-ownchap" data-own="' + esc(e.id) + '"><div class="gu-panel__head"><h2>' + esc(e.name) + '</h2><span class="gu-count">' + e.words.length + (e.words.length === 1 ? ' word' : ' words') + '</span></div>'
           + '<p class="muted" data-shared>' + (to.length ? 'Shared with ' + esc(D.joinNames(to)) : 'Not shared yet') + '</p>'
           + late.map((x) => '<p class="gu-line gu-line--warn" data-notsent>' + esc(D.notSentLine((kidOf[x.childId] || {}).nickname || 'your child')) + '<button type="button" class="btn btn--ghost" data-retry>Try again</button></p>').join('')
-          + '<div class="gu-actions"><a class="btn btn--ghost" href="' + LIST + '/' + encodeURIComponent(e.id) + '" data-edit aria-label="' + esc("Edit '" + e.name + "'") + '">Edit</a><button type="button" class="btn btn--ghost" data-use="' + esc(e.id) + '" aria-label="' + esc("Use '" + e.name + "' for this week") + '">Use for this week</button></div></article>';
+          + '<div class="gu-actions"><a class="btn btn--ghost" href="' + LIST + '/' + encodeURIComponent(e.id) + '" data-edit aria-label="' + esc("Edit '" + e.name + "'") + '">Edit</a><button type="button" class="btn btn--ghost" data-use="' + esc(e.id) + '" aria-label="' + esc("Use '" + e.name + "' for this week") + '">Use for this week</button>'
+          + (to.length ? '<a class="btn btn--plain" href="#/grownups/teach/' + encodeURIComponent(e.id) + '" data-teach-link aria-label="' + esc("See results for '" + e.name + "'") + '">See results</a>' : '') /* SB4-WP11 */
+          + '</div></article>';
       }).join('');
       const deleted = gone.length
         ? '<section class="card gu-deleted" data-deleted><h2>Deleted chapters</h2><p class="muted">You can bring one back for 30 days.</p><ul>' + gone.map((e) => '<li><span>' + esc(e.name) + '</span><button type="button" class="btn btn--ghost" data-restore="' + esc(e.id) + '">Restore</button></li>').join('') + '</ul></section>' : '';
       main.innerHTML = wrap('Your own chapters', 'Type this week\'s school spellings once. Your children find them under "From your grown-up".',
         (showUndo ? '<p class="gu-line" role="status" data-undo>Deleted \'' + esc(undo.name) + '\'. <button type="button" class="btn btn--ghost" data-undo-go>Undo</button></p>' : '')
-        + (full ? '<p class="gu-line gu-line--warn" role="status" data-thirty>' + esc(D.OWN_30) + '</p>' : '<p><a class="btn btn--primary" href="' + LIST + '/new" data-own-new>Make a chapter</a></p>')
+        + (full ? '<p class="gu-line gu-line--warn" role="status" data-thirty>' + esc(D.OWN_30) + '</p>'
+          : scanOn ? '<div class="s-btns" data-scan-links><a class="btn btn--primary" href="' + LIST + '/new" data-own-new>Make a chapter</a><a class="btn btn--ghost" href="#/grownups/scan" data-scan-link>' + CAM + 'Scan a paper</a></div>'
+            : '<p><a class="btn btn--primary" href="' + LIST + '/new" data-own-new>Make a chapter</a></p>')
         + (live.length ? '<div class="gu-ownlist">' + cards + '</div>' : '<p class="muted" data-none>No chapters yet.</p>') + deleted, ' data-own-list');
       main.querySelectorAll('[data-retry]').forEach((b) => b.addEventListener('click', redraw));
       main.querySelectorAll('[data-use]').forEach((b) => b.addEventListener('click', () => {
@@ -208,13 +218,15 @@ export function list(main) {
 
 /* ------------------------------------------------------------------ the editor --- */
 export function editor(main, { oid: given }) {
-  if (!adultOnly(main)) return undefined;
   const editing = given ? D.safeDecode(given) : '';
+  // SB4-WP8: words carried from a scan screen are read once, here, so they never outlive this page whatever happens next.
+  const hand = editing ? null : SD.takeScanWords(window.sessionStorage, 'editor');
+  if (!adultOnly(main)) return undefined;
   if (navigator.onLine === false) { problemPage(main, 'network'); return undefined; }
   let stopped = false;
   main.innerHTML = wrap(editing ? 'Change your chapter' : 'Make your own chapter', '', '<p class="muted">Loading…</p>');
   (async () => {
-    const lc = await A.listChildren(childApi());
+    const [lc, scanOn] = await Promise.all([A.listChildren(childApi()), editing ? false : scanIsOn()]); // SB4-WP8: the link is for a new chapter only
     if (stopped) return;
     if (lc.problem) { problemPage(main, lc.problem); return; }
     const kids = lc.children.slice(0, Ow.MAX_TO);
@@ -231,12 +243,12 @@ export function editor(main, { oid: given }) {
       if (bad) { problemPage(main, bad.problem); return; }
       started = kids.filter((k, i) => D.hasStarted(reads[i].progress, editing)).map((k) => k.nickname);
     }
-    run(main, { kids, master, editing, started, isStopped: () => stopped });
+    run(main, { kids, master, editing, started, scanOn, hand, isStopped: () => stopped });
   })();
   return () => { stopped = true; };
 }
 
-function run(main, { kids, master, editing, started, isStopped }) {
+function run(main, { kids, master, editing, started, scanOn = false, hand = null, isStopped }) {
   let oid = editing;
   let name = master ? master.name : D.defaultName(today());
   let words = master ? [...master.words] : [];
@@ -273,12 +285,14 @@ function run(main, { kids, master, editing, started, isStopped }) {
     const startedHtml = started.length ? '<p class="gu-line" data-started>' + esc(D.startedLine(started)) + '</p>' : '';
     const late = saved ? saved.notSent.filter((id) => nameOf(id)) : []; // a child no longer on the account is not "not sent"
     const savedHtml = saved
-      ? '<div class="gu-line" role="status" tabindex="-1" data-saved>' + esc(D.savedLine(saved.names)) + '</div>'
+      ? '<div class="gu-line" role="status" tabindex="-1" data-saved>' + esc(Sc.savedLineFor(saved.shared, saved.names, D.savedLine)) + '</div>'
+        + (saved.offline ? '<p class="gu-line gu-line--warn" data-saved-offline>' + esc(D.OWN_SAVED_OFFLINE) + '</p>' : '')
         + late.map((id) => '<p class="gu-line gu-line--warn" data-notsent>' + esc(D.notSentLine(nameOf(id))) + '<button type="button" class="btn btn--ghost" data-resend>Try again</button></p>').join('')
         + '<div class="btnrow"><button type="button" class="btn btn--ghost" data-use>Use for this week</button><a class="btn btn--ghost" href="' + LIST + '" data-back-list>Back to your chapters</a></div>' : '';
     body.innerHTML = '<div class="gu-own" data-own-editor><section class="card gu-panel"><div class="gu-field"><label for="own-name">Name of the chapter</label><input id="own-name" class="field" maxlength="' + Ow.MAX_NAME + '" value="' + esc(name) + '" data-name></div>'
       + '<form class="gu-field" data-typeform><label for="own-add">Add words</label><div class="gu-typeform"><input id="own-add" class="field" autocomplete="off" autocapitalize="off" spellcheck="false" value="' + esc(typed) + '"' + (full() ? ' disabled' : '') + ' data-typed>'
       + '<button type="submit" class="btn btn--primary" data-add' + (full() ? ' disabled' : '') + '>Add</button></div><span class="small muted">Press Enter to add. Paste a list, then press Add to add them all.</span></form>'
+      + (scanOn ? '<p class="gu-ownlink" data-scan-link><a href="#/grownups/scan" class="s-link">Scan a paper instead</a></p>' : '')
       + '<div class="gu-panel__head"><p data-count tabindex="-1">' + esc(D.countLine(words.length)) + '</p></div>'
       + (full() ? '<p class="gu-line gu-line--warn" data-full>' + esc(D.OWN_FULL + (dropped.length ? ' Not added, no room: ' + dropped.join(', ') + '.' : '')) + '</p>' : '')
       + (note ? '<p class="gu-line gu-line--warn" data-note>' + esc(note) + '</p>' : '')
@@ -374,7 +388,8 @@ function run(main, { kids, master, editing, started, isStopped }) {
     repeats = [];
     dropped = [];
     note = '';
-    saved = { names: kidsFor().map((k) => k.nickname), notSent: r.notSent };
+    const late = r.notSent.filter(nameOf); // SB4-WP8: the saved line names only the children it reached
+    saved = { names: kidsFor().filter((k) => !r.notSent.includes(k.id)).map((k) => k.nickname), notSent: r.notSent, shared: kidsFor().length, late: late.length, offline: navigator.onLine === false };
     draw();
     focus(q('[data-saved]'));
   }
@@ -394,6 +409,21 @@ function run(main, { kids, master, editing, started, isStopped }) {
   }
   draw();
   settle(main);
+  // SB4-WP8: words carried from "Type the words instead" on a scan screen, read once, a new chapter only, added as if pasted.
+  if (hand) {
+    busy = true;
+    D.addTyped(hand.join(', '), words, (raw) => checkTyped(raw, findEntry)).then((r) => {
+      busy = false;
+      if (isStopped()) return;
+      words = r.list;
+      refused = r.refused;
+      repeats = r.repeats;
+      dropped = r.dropped;
+      note = r.offline ? D.OWN_OFFLINE : '';
+      draw();
+      say(r.offline ? D.OWN_OFFLINE : D.addedLine(r, 0));
+    });
+  }
 }
 
 /* ------------------------------------------------------------------ the child's routes --- */

@@ -7,6 +7,9 @@ export const REFUSED = 'That word isn\'t on our lists. Check the spelling, or tr
 export const NEEDS_LIST = 'We can\'t check that word just now. You can still pick words from the other tabs.';
 
 const shape = (s) => /^[a-z]{2,20}$/.test(s);
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+/** The days of the week are always usable and always saved with their capital ('wednesday' and 'WEDNESDAY' give 'Wednesday'). Months are not: April, May, June and August are given names. */
+export const weekdayForm = (raw) => WEEKDAYS.find((d) => d.toLowerCase() === String(raw || '').trim().toLowerCase()) || null;
 export const cleanWord = (raw) => String(raw || '').trim().toLowerCase();
 
 /**
@@ -16,6 +19,7 @@ export const cleanWord = (raw) => String(raw || '').trim().toLowerCase();
 export function usableWord(raw, { findEntry, inList }) {
   const s = cleanWord(raw);
   if (!shape(s)) return null;
+  if (weekdayForm(s)) return weekdayForm(s);
   const e = findEntry(s);
   if (e) return e.word;
   return inList(s) ? s : null;
@@ -38,6 +42,7 @@ async function wordList() {
 /** { word } or { error }. A curriculum word needs nothing fetched. */
 export async function checkTyped(raw, findEntry) {
   const s = cleanWord(raw);
+  if (shape(s) && weekdayForm(s)) return { word: weekdayForm(s) }; // no word list needed
   if (shape(s) && findEntry(s)) return { word: findEntry(s).word };
   if (!shape(s)) return { error: REFUSED };
   try {

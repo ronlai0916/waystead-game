@@ -40,6 +40,7 @@ let flagOn = true;
 let netDown = false;
 let blocked = ''; // a file name the site answers 404 to, for a scene about a failed load
 const overrides = new Map(); // H.serve(path, body): a file of the site served from a string for the scene (cleared before every scene)
+let allowedLog = null; // H.allowLog(/regexp/): console lines a scene expects (the scan scenes make the account answer 401, 412, 413, 429, 502, 503 on purpose); cleared before every scene
 let storiesHidden = false; // the stories are approved in the repo: some scenes need them waiting
 const site = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, SITE).pathname);
@@ -129,8 +130,8 @@ function listen() {
     if (m.method === 'Log.entryAdded' && ['error', 'warning'].includes(m.params.entry.level)) {
       const t = m.params.entry.text + ' ' + (m.params.entry.url || '');
       // Expected: a 404 from the voice (the device speaks instead), a 409 from a save (merged and sent again),
-      // the 403 and 404 the Grown-ups scenes ask for, and failed calls while the network is meant to be down.
-      if (!/\/api\/voice\//.test(t) && !/wordbright\/js\/account\/api\.js/.test(t) /* Wordbright's own CSP does not list the test account on :3000 */ && !/status of 40[349]/.test(t) && !(/net::ERR/.test(t) && netDown)) problems.push('log: ' + t);
+      // the 403 and 404 the Grown-ups scenes ask for (a 401 only where a scene says so with H.allowLog), and failed calls while the network is meant to be down.
+      if (!/\/api\/voice\//.test(t) && !/wordbright\/js\/account\/api\.js/.test(t) /* Wordbright's own CSP does not list the test account on :3000 */ && !/status of 40[349]/.test(t) && !(/net::ERR/.test(t) && netDown) && !(allowedLog && allowedLog.test(t))) problems.push('log: ' + t);
     }
   });
 }
@@ -2558,7 +2559,7 @@ scene('adult Menu: below the bar on a wide screen, a bottom sheet on a phone; fo
   await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
   ok(await ev('document.querySelector("#adult-menu-btn").getAttribute("aria-expanded")') === 'true', 'aria-expanded');
   const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => ({ t: a.querySelector("b").textContent, h: a.getAttribute("href"), tall: a.getBoundingClientRect().height, sub: a.querySelector("span.adultrow__text > span").textContent }))');
-  ok(rows.map((r) => r.t).join() === 'More practice,My words,Pick words,Your own chapters,Tricky words,Progress,All games' && rows.map((r) => r.h).join() === '#/chapters,#/words,#/custom,#/grownups/own,#/tricky,#/progress,../', 'the seven rows: ' + JSON.stringify(rows));
+  ok(rows.map((r) => r.t).join() === 'More practice,My words,Pick words,Your own chapters,For teachers,Tricky words,Progress,All games' && rows.map((r) => r.h).join() === '#/chapters,#/words,#/custom,#/grownups/own,#/grownups/teach,#/tricky,#/progress,../', 'the eight rows: ' + JSON.stringify(rows));
   ok(rows.every((r) => r.tall >= 48 && r.sub.length > 0), 'each row 48 px or more with a helper');
   ok(await ev('document.querySelector("#adult-menu-panel nav") !== null && !document.querySelector("#adult-menu-panel [role=menu]")'), 'a nav with a list, no role=menu');
   const bar = await rect('.topbar');
@@ -2985,7 +2986,7 @@ scene('SB3-F adult Menu: My words is the second row and opens My words; the Lear
   await click('#adult-menu-btn');
   await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
   const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => [a.querySelector("b").textContent, a.querySelector("span.adultrow__text > span").textContent])');
-  ok(rows.length === 7 && rows[1][0] === 'My words' && rows[1][1] === 'Practise words yourself', 'My words, Practise words yourself, after More practice: ' + JSON.stringify(rows));
+  ok(rows.length === 8 && rows[1][0] === 'My words' && rows[1][1] === 'Practise words yourself', 'My words, Practise words yourself, after More practice: ' + JSON.stringify(rows));
   await click('#adult-menu-panel a[href="#/words"]');
   await until('location.hash === "#/words" && document.querySelector("main h1")', 'My words');
   await childWith(PROG_3, '#/chapters');
@@ -3074,10 +3075,13 @@ scene('SB3-G: the parent switches the week choice off, the child has no switcher
 // A later work package adds its scenes in its own file there, so none edits this one.
 const H = {
   scene, go, click, ev, ok, has, text, until, key, keys, sleep, shot, width, style, open, acct,
+  allowLog: (re) => { allowedLog = re; },
+  emulate: (features) => send('Emulation.setEmulatedMedia', { media: '', features }), // e.g. [{ name: 'prefers-reduced-motion', value: 'reduce' }]; cleared before every scene
   serve: (path, body) => { if (body === null) overrides.delete(path); else overrides.set(path, body); }, // a site file served from a string for this scene; null clears it
   seedChild, signedOutBlank, childWith, adultWith, readDoc, readLocal, visible, rect,
   KB_VIEWS, KB_PORTRAIT, CHILD, CHILD2, ADULT, MON, plus, W, kbFit,
 };
+H.send = send; // SB4-WP11: the teacher page's print scenes switch on print media
 for (const f of readdirSync(join(ROOT, 'tools/smoke-sb4')).filter((n) => n.endsWith('.mjs')).sort()) (await import(pathToFileURL(join(ROOT, 'tools/smoke-sb4', f)))).default(H);
 
 // ---- run ------------------------------------------------------------------------------------
@@ -3096,6 +3100,8 @@ async function main() {
     if (ONLY && s.name !== ONLY) continue;
     console.log(s.name);
     overrides.clear(); // H.serve is for one scene
+    allowedLog = null;
+    await send('Emulation.setEmulatedMedia', { media: '', features: [] }); // H.emulate is for one scene
     try { await s.fn(); console.log('  ok'); } catch (e) {
       failed += 1;
       console.log('  FAILED: ' + e.message);

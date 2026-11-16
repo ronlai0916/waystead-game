@@ -16,6 +16,8 @@ export const OWN_REFUSED = "We can't use this word yet"; // one line for a block
 export const OWN_REPEAT = 'Already in the list';
 export const OWN_FULL = "That's 15 words, the most a chapter can hold.";
 export const OWN_30 = 'You have 30 chapters. Delete one to make another.';
+/** Saved while the device had no connection: the chapter is on this device and the account's queue sends it later. */
+export const OWN_SAVED_OFFLINE = "Saved on this device. It will be sent when you're back online.";
 export const OWN_OFFLINE = "You're offline. You can make chapters when you're back online.";
 export const OWN_ERRORS = {
   'no-name': 'Give the chapter a name.',

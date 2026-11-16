@@ -16,6 +16,7 @@ export function fakeAccount() {
     meStatus: 0, // e.g. 503 (the service down) or 401: what /api/me answers instead
     children: () => [], // adult id -> [{ id, nickname, year, avatar }]
     // SB4 /api/scan/*: `missing` (the default) = the real endpoint does not exist yet, so every route is a 404.
+    // Optional (SB4-WP8-2): `hourResetsAt` (an ISO time) in the allowance; `retryAfter` (seconds) on the hourly 429; `hold` (a promise) delays the words answer.
     // `reply(bytes, type)` may answer { status, body } in place of the usual words (a string body is sent as text).
     scan: { missing: true, on: false, limit: 20, left: 20, hourLeft: 5, paused: false, consent: null, version: 'v1', vendor: 'Test vendor', reply: null },
   };
@@ -38,14 +39,15 @@ export function fakeAccount() {
   };
   const bytes = (v) => new TextEncoder().encode(JSON.stringify(v)).length;
 
-  const scanRoute = (u, method, init, rawBytes, rawType) => {
+  const scanRoute = async (u, method, init, rawBytes, rawType) => {
     const sc = acct.scan;
     if (sc.missing) return json(404, { error: 'not-found' });
     const me = acct.who;
     if (!me || !me.signedIn) return json(401, { signedIn: false });
     const isChild = me.kind === 'child' || !!me.playingAs;
+    if (isChild && u.pathname !== '/api/scan/words') return json(403, { error: 'adult-session-required' }); // all three routes are adult-session only (README Scan)
     if (u.pathname === '/api/scan/allowance' && method === 'GET') {
-      return json(200, { on: sc.on, left: sc.left, limit: sc.limit, hourLeft: sc.hourLeft, resetsOn: firstOfNextMonth(), paused: sc.paused, consent: sc.consent, consentVersion: sc.version, vendor: sc.vendor });
+      return json(200, { on: sc.on, left: sc.left, limit: sc.limit, hourLeft: sc.hourLeft, resetsOn: firstOfNextMonth(), paused: sc.paused, ...(sc.hourResetsAt ? { hourResetsAt: sc.hourResetsAt } : {}), consent: sc.consent, consentVersion: sc.version, vendor: sc.vendor });
     }
     if (u.pathname === '/api/scan/consent' && method === 'POST') {
       const b = init.body ? JSON.parse(init.body) : {};
@@ -59,10 +61,11 @@ export function fakeAccount() {
       if (!sc.consent || sc.consent.version !== sc.version) return json(412, { error: 'consent-required', version: sc.version });
       if (rawType !== 'image/jpeg') return json(415, { error: 'bad-image' });
       if (rawBytes.length > 2097152) return json(413, { error: 'image-too-large' });
-      if (sc.hourLeft === 0) return json(429, { error: 'hourly-limit' }, { 'Retry-After': '3600' });
+      if (sc.hourLeft === 0) return json(429, { error: 'hourly-limit' }, { 'Retry-After': String(sc.retryAfter || 3600) });
       if (sc.left === 0) return json(429, { error: 'monthly-limit', resetsOn: firstOfNextMonth() });
       sc.left -= 1;
       sc.hourLeft -= 1;
+      if (sc.hold) await sc.hold; // a promise the test settles: the vendor is slow (Cancel, the 15 second line, a timeout)
       if (sc.reply) { const r = sc.reply(rawBytes, rawType); return json(r.status, r.body); }
       return json(200, { words: ['friend', 'because', 'island'], left: sc.left, resetsOn: firstOfNextMonth() });
     }

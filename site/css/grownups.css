@@ -337,3 +337,190 @@
   .gu-pick { max-height: 26vh; }
   .gu-pick .gu-check { min-height: 44px; }
 }
+
+/* SB4-WP8 scan */
+.gu .s-step { display: grid; gap: 16px; max-width: 720px; }
+.gu .s-lede { margin: 0; color: var(--muted); }
+.gu .s-text { margin: 0; font-size: 1.05rem; line-height: 1.5; max-width: 62ch; }
+.gu .s-btns { display: grid; gap: 12px; align-items: center; }
+.gu .s-btns .btn { width: 100%; min-height: 52px; justify-content: center; text-align: center; }
+.gu .s-btns .btn--plain { min-height: 48px; }
+@media (min-width: 480px) {
+  .gu .s-btns { display: flex; flex-wrap: wrap; }
+  .gu .s-btns .btn { width: auto; min-width: 200px; }
+  .gu .s-btns .btn--plain { min-width: 0; }
+}
+.gu .s-note { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r); background: var(--help-bg); color: var(--help-fg); border: 2px solid var(--help-fg); }
+.gu .s-note svg { width: 26px; height: 26px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
+.gu .s-note p { margin: 0; font-size: 1.05rem; line-height: 1.45; }
+.gu .s-note b { font-weight: 700; }
+.gu .s-note--quiet { background: var(--surface-2); color: var(--text); border-color: var(--line); }
+.gu .s-note--quiet svg { color: var(--sb); }
+.gu .s-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; color: var(--link); }
+.gu .s-fine { margin: 0; color: var(--muted); font-size: 1rem; }
+
+/* ---------- reading: a calm bar, plus words, never a bar alone ---------- */
+.gu .s-wait { display: grid; gap: 14px; }
+.gu .s-wait__line { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.25rem; line-height: 1.3; }
+.gu .s-bar { position: relative; height: 14px; border-radius: 999px; background: var(--surface-2); border: 2px solid var(--line); overflow: hidden; }
+.gu .s-bar::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 35%; border-radius: 999px; background: var(--sb); animation: s-slide 1.6s ease-in-out infinite alternate; }
+@keyframes s-slide { from { transform: translateX(0); } to { transform: translateX(185%); } }
+.gu .s-dot { display: none; width: 18px; height: 18px; border-radius: 50%; background: var(--sb); box-shadow: 0 0 0 5px var(--sb-soft); margin: 4px 5px; }
+@media (prefers-reduced-motion: reduce) {
+  .gu .s-bar { display: none; }
+  .gu .s-dot { display: block; }
+}
+
+/* ---------- the words: one column, the paper's order ---------- */
+.gu .s-words { list-style: none; margin: 0; padding: 0; display: grid; }
+.gu .s-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; align-items: center; border-top: 1px solid var(--line); min-height: 72px; padding: 2px 0; }
+.gu .s-row:first-child { border-top: 0; }
+.gu .s-pick { grid-column: 1; grid-row: 1; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 4px; cursor: pointer; }
+.gu .s-pick input { width: 28px; height: 28px; flex: none; accent-color: var(--sb); margin: 0; }
+.gu .s-pick--plain { cursor: default; }
+.gu .s-pick input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.gu .s-word { font-family: var(--f-ipa); font-size: 1.25rem; font-weight: 600; overflow-wrap: anywhere; line-height: 1.25; }
+.gu .s-st { grid-column: 1; grid-row: 2; padding: 0 4px 8px 44px; color: var(--muted); font-size: 1rem; line-height: 1.3; }
+.gu .s-pick--plain + .s-st { padding-left: 4px; }
+.gu .s-edit { grid-column: 2; grid-row: 1 / span 2; min-width: 64px; min-height: 48px; }
+/* HF check (16 Nov): on narrow phones the word gets the whole first line and Edit sits beside the status,
+   so a spelling word never breaks mid-word ("Wednesda/y" at 320). break-word only splits a word wider than the row. */
+.gu .s-word { overflow-wrap: break-word; hyphens: none; }
+@media (max-width: 379px) {
+  .gu .s-pick { grid-column: 1 / -1; }
+  .gu .s-edit { grid-row: 2; align-self: start; }
+}
+.gu .s-row.is-over { background: color-mix(in srgb, var(--surface-2) 70%, var(--surface)); }
+.gu .s-row.is-off { background: var(--surface-2); border-top-style: dashed; }
+.gu .s-row.is-off .s-word { color: var(--muted); }
+.gu .s-row.is-note .s-st { color: var(--help-fg); font-weight: 700; }
+.gu .s-row.is-edit { display: block; padding: 10px 4px 12px; background: var(--sb-soft); border-radius: var(--r); border-top-color: transparent; }
+.gu .s-input { width: 100%; min-height: 52px; font-family: var(--f-ipa); font-size: 1.25rem; font-weight: 600; padding: 8px 14px; border-radius: var(--r); border: 3px solid var(--sb); background: var(--surface); color: var(--text); box-sizing: border-box; }
+.gu .s-editbtns { display: flex; gap: 10px; margin-top: 10px; }
+.gu .s-editbtns .btn { flex: 1; min-width: 44px; justify-content: center; }
+.gu .s-lohead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.gu .s-addrow { display: flex; gap: 10px; }
+.gu .s-addrow .s-input { flex: 1; min-width: 0; }
+.gu .s-addrow .btn { flex: none; min-width: 80px; min-height: 52px; justify-content: center; }
+.gu [data-count].s-count { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; }
+
+/* the count and the main button stay on screen on a phone */
+.gu .s-sticky { position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 16px 12px; margin: 16px -16px 0; background: var(--surface); border-top: 2px solid var(--line); box-shadow: 0 -8px 18px -12px rgba(0, 0, 0, 0.35); }
+.gu .s-sticky [data-count] { flex: 1 1 auto; }
+.gu .s-sticky .btn { flex: 1 1 220px; min-height: 52px; justify-content: center; }
+.gu .s-sticky .btn[disabled] { opacity: 0.55; box-shadow: none; cursor: not-allowed; }
+.gu .s-sticky__why { flex: 1 1 100%; margin: 0; color: var(--text); font-size: 1rem; line-height: 1.35; }
+@media (min-width: 700px) {
+  .gu .s-sticky { position: static; margin: 20px 0 0; padding: 0; border: 0; box-shadow: none; background: none; }
+  .gu .s-sticky .btn { flex: 0 0 auto; min-width: 240px; }
+}
+
+/* ---------- an answer to a problem ---------- */
+.gu .s-state { display: grid; gap: 14px; }
+.gu .s-msg { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r); background: var(--help-bg); color: var(--help-fg); font-weight: 700; font-size: 1.05rem; line-height: 1.4; }
+.gu .s-msg svg { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; }
+.gu .s-msg p { margin: 0; }
+.gu .s-msg:focus { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+/* the parts the product needs beyond the pictures */
+.gu .s-h2 { font-size: 1.6rem; margin: 0; }
+.gu .s-block { margin-top: 16px; }
+.gu .s-typeline { margin: 16px 0 0; }
+.gu .s-addnote { padding: 6px 0 0; }
+.gu .s-addnote:empty { display: none; }
+.gu .s-row--line { grid-template-columns: minmax(0, 1fr); }
+.gu .s-row--line .s-st { grid-row: 1; padding: 12px 4px; }
+.gu .s-words[hidden], .gu .s-sticky__why[hidden], .gu .s-fine[hidden] { display: none; }
+.gu .gu-line svg { width: 22px; height: 22px; }
+@media (max-width: 699px) {
+  .gu .is-typing .s-sticky { display: none; }
+}
+@media (max-width: 379px) {
+  .gu .s-pick--plain { grid-column: 1 / -1; }
+}
+@media print { .gu .s-sticky { display: none; } }
+
+/* the in-page Back is a button here (the other grown-up pages use a link): the same look, no browser button face */
+.gu button.gu-back { background: none; border: 0; padding: 0 4px; font: inherit; font-weight: 700; color: var(--link); cursor: pointer; }
+/* SB4-WP11 teach: the teacher page (#/grownups/teach and teach/:oid). Tokens only; every selector under .gu. */
+.gu .t-limits { display: grid; gap: 4px; padding: 12px 16px; border-radius: var(--r); background: var(--help-bg); color: var(--help-fg); font-size: 1rem; line-height: 1.4; margin-bottom: 20px; }
+.gu .t-limits p { margin: 0; }
+.gu .t-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.gu .t-steps li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 2px 12px; align-items: start; }
+.gu .t-num { width: 44px; height: 44px; border-radius: 50%; background: var(--sb-soft); color: var(--sb); border: 2px solid var(--sb); display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; grid-row: 1 / span 2; }
+.gu .t-steps b { font-family: var(--f-display); font-size: 1.15rem; align-self: center; min-height: 44px; display: flex; align-items: center; }
+.gu .t-steps p { margin: 0; color: var(--muted); grid-column: 2; }
+.gu .t-steps .gu-actions { grid-column: 2; }
+.gu .t-sec { margin: 28px 0 10px; font-size: 1.35rem; }
+.gu .t-summary { margin: 0; font-weight: 700; }
+.gu .t-key { margin: 12px 0 0; color: var(--muted); font-size: 1rem; max-width: 70ch; }
+.gu .t-cap { margin: 0 0 8px; color: var(--muted); }
+.gu .t-fine { margin: 0; color: var(--muted); font-size: 1rem; }
+.gu .t-link-row { margin: 0; }
+.gu .t-table { margin-top: 4px; }
+.gu .t-line { display: block; }
+.gu .t-sub { display: block; color: var(--muted); font-size: 0.95rem; }
+.gu .t-who { display: grid; gap: 2px; }
+.gu .t-who b { font-family: var(--f-display); font-size: 1.15rem; }
+.gu .t-table td .gu-hw { margin: 2px 6px 2px 0; }
+.gu .t-table td a, .gu .t-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--link); font-weight: 700; }
+.gu .t-table tbody th a { min-width: 44px; }
+.gu .t-table .btn { min-height: 44px; padding: 4px 14px; white-space: nowrap; }
+.gu .t-table th, .gu .t-table td { overflow-wrap: break-word; hyphens: none; } /* a word never splits unless it is wider than its column */
+.gu .t-table caption:not(.sr) { text-align: left; }
+@media (min-width: 900px) {
+  .gu .t-table { font-size: 0.97rem; }
+  .gu .t-table th, .gu .t-table td { padding: 12px 10px; }
+  .gu .t-table .gu-hw { font-size: 0.95rem; min-height: 30px; }
+}
+/* Stacked rows, one card for each child: on phones and tablets, and always on paper (no seven narrow columns on A4). */
+@media (max-width: 899px), print {
+  .gu .t-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .gu .t-table, .gu .t-table tbody, .gu .t-table tr, .gu .t-table th, .gu .t-table td { display: block; }
+  .gu .t-table caption:not(.sr) { display: block; width: auto; }
+  .gu .t-table tbody tr { border: 2px solid var(--line); border-radius: var(--r); padding: 10px 14px 12px; margin-top: 14px; background: var(--surface); }
+  .gu .t-table td[data-label]::before { content: attr(data-label); display: block; color: var(--muted); font-size: 0.9rem; margin-bottom: 1px; }
+  .gu .t-table th, .gu .t-table td { border-top: 0; padding: 6px 0; }
+  .gu .t-table tbody th { padding: 0; }
+}
+/* The caption of a table that has become blocks (phones) shrinks to one word per line; make it a block. Also the overview's. */
+@media (max-width: 700px) { .gu .gu-table caption:not(.sr) { display: block; width: auto; } }
+.gu .t-wordlist { list-style: none; margin: 0; padding: 0; }
+.gu .t-wordrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 14px; min-height: 52px; padding: 6px 0; border-top: 1px solid var(--line); }
+.gu .t-wordrow:first-child { border-top: 0; }
+.gu .t-word { font-family: var(--f-ipa); font-size: 20px; font-weight: 600; overflow-wrap: break-word; hyphens: none; line-height: 1.25; }
+.gu .t-word--small { font-size: 18px; }
+.gu .t-wordrow span:last-child { color: var(--muted); font-size: 1rem; }
+.gu .t-wordrow.is-flag span:last-child { color: var(--text); font-weight: 700; }
+.gu .t-pickgrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0 12px; }
+.gu .t-pickgrid .gu-check { min-height: 48px; }
+.gu .t-warn { margin: -4px 0 4px 38px; color: var(--help-fg); font-size: 0.97rem; }
+.gu .t-set .gu-check { padding-left: 4px; }
+.gu .t-set [hidden] { display: none; }
+.gu .t-setbtn { width: 100%; min-height: 52px; justify-content: center; }
+.gu .t-setbtn[disabled] { opacity: 0.55; cursor: not-allowed; }
+.gu .t-actions { display: flex; flex-wrap: wrap; gap: 10px 12px; margin-top: 4px; }
+.gu .t-actions .btn { min-height: 48px; }
+.gu .t-printkeep { display: none; margin: 16px 0 0; }
+.gu .t-printdate, .gu .t-printone { display: none; margin: 0 0 8px; font-weight: 700; }
+.gu .t-results { display: grid; gap: 6px; }
+.gu .t-results:focus { outline: 3px solid var(--focus); outline-offset: 3px; }
+.gu .t-result { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-weight: 700; }
+.gu .t-result .btn { min-height: 44px; }
+.gu .t-empty { display: grid; gap: 10px; justify-items: start; padding: 22px; }
+.gu .t-empty p { margin: 0; }
+@media (min-width: 900px) { .gu .t-two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; } .gu .t-two .t-set { position: sticky; top: 76px; } }
+@media print {
+  .gu .t-printdate { display: block; }
+  .gu .t-set, .gu .t-actions, .gu .t-noprint, .gu .gu-back, .gu .t-link, .gu .t-link-row, .gu .gu-overview-link { display: none !important; }
+  .gu [data-print-skip] { display: none !important; }
+  .gu[data-print-only] .t-printone { display: block; }
+  .gu .t-printkeep { display: block; }
+  .gu .t-two { display: block; }
+  .gu .t-table th, .gu .t-table td { overflow-wrap: normal; }
+  .gu .t-table tbody tr { break-inside: avoid; border: 1px solid #000; }
+  .gu .t-wordrow { break-inside: avoid; }
+}
+
+/* SB4-WP11 fix round: the child's link stays on one line */
+@media (min-width: 900px) { .gu .t-table .t-link { white-space: nowrap; } }

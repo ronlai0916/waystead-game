@@ -71,8 +71,8 @@ const KNOWN = {
 };
 const known = (f, s) => (KNOWN[f] || []).some((k) => s.includes(k));
 
-const ALL = ['assess-doc.js', 'assess-views.js', 'tray.js', 'tiles-doc.js', 'child-doc.js', 'play.js', 'views.js', 'study-views.js', 'games-views.js', 'words-views.js'];
-const STRICT = ['assess-views.js', 'tray.js', 'assess-doc.js'];
+const ALL = ['assess-doc.js', 'assess-views.js', 'tray.js', 'tiles-doc.js', 'child-doc.js', 'play.js', 'views.js', 'study-views.js', 'games-views.js', 'words-views.js', 'scan-doc.js', 'scan-views.js', 'teach-doc.js', 'teach-views.js']; // scan-*: SB4-WP8, teach-*: SB4-WP11
+const STRICT = ['assess-views.js', 'tray.js', 'assess-doc.js', 'scan-doc.js', 'scan-views.js'];
 
 test('the literal scanner reads quotes, templates and skips comments and regular expressions', () => {
   assert.deepEqual(literalsOf("const a = 'one'; // 'no'\nconst b = \"two\"; /* 'no' */ const c = `x${'in'}y`; const r = /['\"]/g;"), ['one', 'two', 'x', 'in', 'y']);

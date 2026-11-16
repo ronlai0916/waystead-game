@@ -18,6 +18,8 @@ import * as GU from './grownups-views.js';
 import * as SU from './setup-views.js'; // SB4-WP6
 import * as AV from './assess-views.js'; // SB4-WP5
 import * as OV from './own-views.js'; // SB4-WP7
+import * as SC from './scan-views.js'; // SB4-WP8
+import * as TV from './teach-views.js'; // SB4-WP11
 import { safeDecode } from './chapters-doc.js';
 import { storyReview } from './story-views.js';
 import * as W from './words-doc.js';
@@ -39,7 +41,7 @@ let voiceMenu = null; // the look menu's Voice part (G8c: redrawn when the playe
 let drawn = false; // the word list is in and the first view is drawn
 let updates = null; // one-load updates (update/update.js)
 
-const currentPath = () => decodeURI(location.hash.replace(/^#\/?/, '')).split('?')[0];
+const currentPath = () => { const h = location.hash.replace(/^#\/?/, ''); let p = h; try { p = decodeURI(h); } catch (e) { /* a malformed address: match it as typed */ } return p.split('?')[0]; }; // SB4-WP11
 
 // Hash routes. :params are captured by name.
 const ROUTES = [
@@ -95,6 +97,11 @@ const ROUTES = [
   ['words/own/:oid/quiz', OV.quiz],
 
   // SB4-WP8 routes
+  ['grownups/scan', SC.scan],
+
+  // SB4-WP11 routes
+  ['grownups/teach', TV.home],
+  ['grownups/teach/:oid', TV.chapter],
 
   [':yearId', FV.year],
   [':yearId/:slug', FV.chapter],
@@ -137,6 +144,10 @@ function match(path) {
 function parentOf(path) {
   const parts = path.split('/').filter(Boolean);
   // SB4-WP7 parentOf
+  // SB4-WP8 parentOf
+  if (parts[0] === 'grownups' && parts[1] === 'scan') return '#/grownups/own';
+  // SB4-WP11 parentOf
+  if (parts[0] === 'grownups' && parts[1] === 'teach') return parts.length > 2 ? '#/grownups/teach' : '#/grownups';
   if (parts[0] === 'words' && parts[1] === 'own' && parts.length > 3) return '#/words/own/' + parts[2];
   if (parts[0] === 'words' && parts[1] === 'own' && parts.length > 2) return '#/chapters';
   if (parts[0] === 'grownups' && parts[1] === 'own' && parts.length > 2) return '#/grownups/own';
@@ -212,7 +223,7 @@ function render() {
   if (!found) { unknownPage(path); return; }
   // SB3-G: a grown-up's week switch is off: a child's (or unknown player's) pages for another week go to the app's pick.
   if (found.pattern.startsWith('words/g/:gid')) {
-    const to = weekGuard(S.readWords(), W.localDay(Date.now()), decodeURIComponent(found.params.gid), isAdult() ? 'adult' : 'child');
+    const to = weekGuard(S.readWords(), W.localDay(Date.now()), safeDecode(found.params.gid), isAdult() ? 'adult' : 'child');
     if (to) { location.replace('#/words/g/' + encodeURIComponent(to)); return; }
   }
   // A test is due: no page shows its words, so the page goes to the test instead.

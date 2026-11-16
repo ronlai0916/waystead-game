@@ -37,6 +37,10 @@ export const RULES = {
   'words/own/:oid/practice': 'own', 'words/own/:oid/test': 'own', 'words/own/:oid/quiz': 'own',
 
   // SB4-WP8 rules
+  'grownups/scan': 'adult',
+
+  // SB4-WP11 rules
+  'grownups/teach': 'adult', 'grownups/teach/:oid': 'adult',
 };
 
 /** The group to show instead of this page, or null. chapterWords(yearId, slug, params) -> its words (an own chapter's when params.oid is set). */

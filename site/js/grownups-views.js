@@ -144,7 +144,8 @@ function homeCard(c, d, day, key, compact) {
 export function grownups(main) {
   if (!adultOnly(main)) return undefined;
   const storiesLink = '<p class="small"><a href="#/grownups/stories">Review the stories</a></p>';
-  const ownLink = '<p class="gu-ownlink small"><a href="#/grownups/own" data-ownlink>Your own chapters</a></p>'; // SB4-WP7
+  const ownLink = '<p class="gu-ownlink small"><a href="#/grownups/own" data-ownlink>Your own chapters</a></p>' // SB4-WP7
+    + '<p class="gu-ownlink small"><a href="#/grownups/teach" data-teachlink>For teachers and tutors</a></p>'; // SB4-WP11
   if (!A.CHILD_DATA_API) {
     main.innerHTML = wrap('Grown-ups', 'Grown-ups', '', '<div class="card setting gu-empty" data-noapi><h2>Plan a week and the dashboard</h2><p class="muted">These open with the next Waystead account update.</p></div>'
       + '<a class="card gu-notice" href="#/grownups/stories"><span class="gu-notice__text"><b>Review the stories</b><span>Read each one before children can see it</span></span></a>');

@@ -142,7 +142,7 @@ export default function (H) {
     }
     step('keyboard level: Monday typed in lower case');
     await H.seedChild(practiceDoc(['Monday']), plus(4));
-    acct.who = me(1);
+    acct.who = me(3);
     await open(plus(4), '#/');
     await go('#/words/g/g1/spell/0');
     await until('document.querySelector(".spellbox") && !document.querySelector(".keyboard--tray")', 'the plain keyboard');
