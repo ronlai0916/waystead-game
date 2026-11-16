@@ -7,7 +7,7 @@
 // Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-15a';
+const VERSION = 'spellbright-2026-11-16a';
 
 const SHELL = [
   './',
@@ -106,6 +106,10 @@ const SHELL = [
 
   // SB4-WP6 files
   'js/setup-views.js',
+
+  // SB4-WP7 files
+  'js/own-views.js',
+  'js/own-data.js',
 
   // SB4-WP8 files
   'js/scan-doc.js',

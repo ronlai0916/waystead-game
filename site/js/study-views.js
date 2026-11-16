@@ -63,8 +63,18 @@ const roundHear = (attr, label) => '<button type="button" class="hearround" ' + 
 
 // The picture, by state (ui.js pictureState): a picture; "Picture on its way" (a later
 // slice: nothing returns 'pending' yet); or none at all, a calm layout with no empty box.
+// SB4-WP9: a word with no picture but an example shows the sentence as a card, with Hear; with no example, today's lettered tile.
+export const hasSentenceCard = (w) => pictureState(w) === 'none' && !!(w.meaning && w.meaning.example);
+export function sentenceCard(w) {
+  return '<div class="pic pic--sentence"><p class="example">' + boldWord(w.meaning.example, w.word) + '</p>' + roundHear('data-sentence', 'Hear the sentence') + '</div>';
+}
+export function wireSentence(root, w) {
+  const b = root.querySelector('[data-sentence]');
+  if (b) b.addEventListener('click', () => sayLine(w.meaning.example));
+}
 function helloPicture(w) {
   const st = pictureState(w);
+  if (hasSentenceCard(w)) return sentenceCard(w);
   if (st === 'ready') return picture(w);
   if (st === 'pending') return '<div class="nopic nopic--wait"><img class="nopic__pip" src="assets/characters/pip-thinking-256.webp" width="64" height="64" alt=""><p><b>Picture on its way</b><br><span class="muted">Pip is drawing it.</span></p></div>';
   return '';
@@ -78,7 +88,7 @@ function wordCard(w, clue) {
     + '<div class="stackbtns"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear it</button>'
     + '<button type="button" class="btn btn--ghost btn--wide" data-spell>' + ICON.spell + 'Say the letters</button></div>'
     + (m.definition ? '<div class="means"><h2 class="means__head">What it means</h2><div class="means__row"><p>' + esc(m.definition) + '</p>' + roundHear('data-mean', 'Hear the meaning') + '</div>'
-      + (m.example ? '<div class="means__row"><p class="example">' + boldWord(m.example, w.word) + '</p>' + roundHear('data-example', 'Hear the example') + '</div>' : '') + '</div>' : '')
+      + (m.example && !hasSentenceCard(w) ? '<div class="means__row"><p class="example">' + boldWord(m.example, w.word) + '</p>' + roundHear('data-example', 'Hear the example') + '</div>' : '') + '</div>' : '')
     + '</div>';
 }
 function wireWordCard(main, w) {
@@ -86,6 +96,7 @@ function wireWordCard(main, w) {
   main.querySelector('[data-spell]').addEventListener('click', () => spellOut(w.word, (i) => {
     main.querySelectorAll('.chunked__letter').forEach((el) => el.classList.toggle('is-on', Number(el.dataset.i) === i));
   }));
+  wireSentence(main, w);
   const ex = main.querySelector('[data-example]');
   if (ex) ex.addEventListener('click', () => sayLine(w.meaning.example));
   const mean = main.querySelector('[data-mean]');

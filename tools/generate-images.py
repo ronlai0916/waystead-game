@@ -105,7 +105,7 @@ def main():
 
     prompts = json.loads(PROMPTS.read_text())
     curriculum = json.loads((SITE / "data" / "curriculum.json").read_text())
-    entries = [w for b in ("year_3_4", "year_5_6") for ch in curriculum[b]["chapters"] for w in ch["words"]]
+    entries = [w for b in ("year_1", "year_2", "year_3_4", "year_5_6") for ch in curriculum.get(b, {}).get("chapters", []) for w in ch["words"] if w.get("image")]  # a new word has no image until Ron's later run
     only = {w.strip() for w in args.only.split(",") if w.strip()}
     if only:
         unknown = only - {e["word"] for e in entries}

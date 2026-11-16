@@ -2558,7 +2558,7 @@ scene('adult Menu: below the bar on a wide screen, a bottom sheet on a phone; fo
   await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
   ok(await ev('document.querySelector("#adult-menu-btn").getAttribute("aria-expanded")') === 'true', 'aria-expanded');
   const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => ({ t: a.querySelector("b").textContent, h: a.getAttribute("href"), tall: a.getBoundingClientRect().height, sub: a.querySelector("span.adultrow__text > span").textContent }))');
-  ok(rows.map((r) => r.t).join() === 'More practice,My words,Pick words,Tricky words,Progress,All games' && rows.map((r) => r.h).join() === '#/chapters,#/words,#/custom,#/tricky,#/progress,../', 'the six rows: ' + JSON.stringify(rows));
+  ok(rows.map((r) => r.t).join() === 'More practice,My words,Pick words,Your own chapters,Tricky words,Progress,All games' && rows.map((r) => r.h).join() === '#/chapters,#/words,#/custom,#/grownups/own,#/tricky,#/progress,../', 'the seven rows: ' + JSON.stringify(rows));
   ok(rows.every((r) => r.tall >= 48 && r.sub.length > 0), 'each row 48 px or more with a helper');
   ok(await ev('document.querySelector("#adult-menu-panel nav") !== null && !document.querySelector("#adult-menu-panel [role=menu]")'), 'a nav with a list, no role=menu');
   const bar = await rect('.topbar');
@@ -2985,7 +2985,7 @@ scene('SB3-F adult Menu: My words is the second row and opens My words; the Lear
   await click('#adult-menu-btn');
   await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
   const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => [a.querySelector("b").textContent, a.querySelector("span.adultrow__text > span").textContent])');
-  ok(rows.length === 6 && rows[1][0] === 'My words' && rows[1][1] === 'Practise words yourself', 'My words, Practise words yourself, after More practice: ' + JSON.stringify(rows));
+  ok(rows.length === 7 && rows[1][0] === 'My words' && rows[1][1] === 'Practise words yourself', 'My words, Practise words yourself, after More practice: ' + JSON.stringify(rows));
   await click('#adult-menu-panel a[href="#/words"]');
   await until('location.hash === "#/words" && document.querySelector("main h1")', 'My words');
   await childWith(PROG_3, '#/chapters');

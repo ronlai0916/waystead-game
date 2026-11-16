@@ -16,15 +16,26 @@ export function chipView(player) {
   return { named: !!n, label: n || ACCOUNT_LABEL, initial: n ? n.slice(0, 1).toUpperCase() : '', aria: (n || ACCOUNT_LABEL) + '. Account menu' };
 }
 
+/** More practice's helper line, from the years that are live (SB4-WP9): "Year 3 to Year 6 chapters", or "Year 1 to Year 6 chapters" once Year 1 is live. */
+export function morePracticeSub(years) {
+  const ys = (years || []).map((y) => (typeof y === 'string' ? Number(y.replace(/^y/, '')) : y)).filter((y) => y >= 1 && y <= 6); // numbers or ids ('y3')
+  const lo = ys.length ? Math.min(...ys) : 3;
+  return lo === 6 ? 'Year 6 chapters' : 'Year ' + lo + ' to Year 6 chapters';
+}
+
 /** The Menu's rows, in order. `id` picks the icon. */
 export const MENU_ROWS = [
-  { id: 'chapters', title: 'More practice', sub: 'Year 3 to Year 6 chapters', href: '#/chapters' },
+  { id: 'chapters', title: 'More practice', sub: morePracticeSub([3, 4, 5, 6]), href: '#/chapters' },
   { id: 'words', title: 'My words', sub: 'Practise words yourself', href: '#/words' },
   { id: 'custom', title: 'Pick words', sub: 'Choose your own words', href: '#/custom' },
+  { id: 'kids', title: 'Your own chapters', sub: 'Make a list from school spellings', href: '#/grownups/own' }, // SB4-WP7 (kids: an icon adult-chrome.js already has)
   { id: 'tricky', title: 'Tricky words', sub: 'Words that need another go', href: '#/tricky' },
   { id: 'progress', title: 'Progress', sub: 'Chapters you have passed', href: '#/progress' },
   { id: 'games', title: 'All games', sub: 'Waystead’s other games', href: '../' },
 ];
+
+/** The Menu's rows for the live years (`D.liveYears()` ids or numbers). */
+export const menuRows = (years) => MENU_ROWS.map((r) => (r.id === 'chapters' ? { ...r, sub: morePracticeSub(years) } : r));
 
 /** The ONE "Play as a child" row's helper: "Play as Robin", "Robin or Wren", "Robin, Wren or Ada", "Robin, Wren, Ada and 2 more". */
 export function playAsLine(children) {

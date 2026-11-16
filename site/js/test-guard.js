@@ -5,6 +5,7 @@
 //   safe     never shows a word from a group's list, or it's the test itself
 //   lists    a page that lists words: it leaves the hidden ones out (withoutHidden)
 //   chapter  blocked when the chapter holds a hidden word
+//   own      a grown-up's own chapter (SB4-WP7): the same, its words come from the child's copy
 //   any      blocked while any test is due: these pages list a group's words, or
 //            a picker with every chapter in it
 //   group    the group's own pages: blocked when it's due, or shares a hidden word
@@ -31,19 +32,22 @@ export const RULES = {
   'grownups/overview': 'adult', 'grownups/child/:cid/spelling': 'adult', 'grownups/child/:cid/exam': 'adult', 'grownups/child/:cid/exam/:eid': 'adult',
 
   // SB4-WP7 rules
+  'grownups/own': 'adult', 'grownups/own/new': 'adult', 'grownups/own/:oid': 'adult',
+  'words/own/:oid': 'own', 'words/own/:oid/study': 'own', 'words/own/:oid/study/:word': 'own', 'words/own/:oid/quick': 'own', 'words/own/:oid/quick/:word': 'own',
+  'words/own/:oid/practice': 'own', 'words/own/:oid/test': 'own', 'words/own/:oid/quiz': 'own',
 
   // SB4-WP8 rules
 };
 
-/** The group to show instead of this page, or null. chapterWords(yearId, slug) -> its words. */
+/** The group to show instead of this page, or null. chapterWords(yearId, slug, params) -> its words (an own chapter's when params.oid is set). */
 export function testGuard(pattern, params, d, today, chapterWords) {
   const due = dueGroups(d, today);
   if (!due.length) return null;
   const rule = RULES[pattern];
   if (rule === 'safe' || rule === 'lists' || rule === 'adult') return null;
   const hidden = hiddenWords(d, today);
-  if (rule === 'chapter') {
-    const w = chapterWords(params.yearId, params.slug).find((x) => hidden.has(x.toLowerCase()));
+  if (rule === 'chapter' || rule === 'own') {
+    const w = chapterWords(params.yearId, params.slug, params).find((x) => hidden.has(x.toLowerCase()));
     return w ? due.find((g) => g.words.some((x) => x.toLowerCase() === w.toLowerCase())) : null;
   }
   if (rule === 'group' || rule === 'first') {

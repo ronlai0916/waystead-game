@@ -165,4 +165,4 @@ A word-tile board game, to be served at /wordbright/. Design files and decisions
 - Kinds and help are data in `assess-doc.js`; the runner for quiz, test and exam is `assess-views.js`. Quiz and exam records are progress `results[]` entries with `c: 'q:<src>' | 'e:<eid>'`: never tries, never a new key. An exam is a report only (no remembered evidence).
 - Banned words and the copy test (`tests/copy-sb4.test.js`) apply to every new string, child and grown-up.
 - Scan stage 1 (WP8) is in the code and dark: no screens, and nothing is shown unless `/api/scan/allowance` answers `on: true` (see README "Scan").
-- Own chapters (C), scan screens (D) and new Year 1/2/3-6 content (E/F) are not in this release.
+- Own chapters (C, live): `own-doc.js` rules, `own-data.js` (the one save path: master in the grown-up's words value, a copy in each child's `setup.own`, progress under `own-<oid>`), `own-views.js`. An oid is `/^[A-Za-z0-9_-]{1,40}$/`; decode with `safeDecode`. Words with no picture show a sentence card (`hasSentenceCard`, WP9). Scan screens (D) and new Year 1/2/3-6 content (E/F) are not in this release.

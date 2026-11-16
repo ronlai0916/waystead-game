@@ -9,6 +9,11 @@ import { kind, isChild, childYear } from './who.js';
 import { sayLine, stop } from './speech.js';
 import { esc, ICON } from './ui.js';
 import * as C from './child-doc.js';
+import * as Su from './setup-doc.js';
+import * as St from './study-doc.js';
+import * as W from './words-doc.js';
+import { entryFor } from './word-info.js';
+import { safeDecode } from './chapters-doc.js';
 
 const href = (...parts) => '#/' + parts.join('/');
 const yearName = (id) => D.years()[id].label; // "Year 3"
@@ -20,6 +25,7 @@ export function notFound(main) {
 }
 /** A chapter is open when the one before it is passed (or "open every chapter" is on). */
 export function isUnlocked(ch) {
+  if (ch.own) return true; // SB4-WP7: a grown-up's own chapter gates nothing
   if (S.unlockAll() || ch.index === 0) return true;
   const prev = D.chapters(ch.yearId)[ch.index - 1];
   return S.chapterProgress(prev.id).passed;
@@ -118,6 +124,22 @@ function yearPanel(id) {
     + '<ol class="stones" aria-label="Chapters">' + stones + '</ol>' + go + '</section>';
 }
 
+/** SB4-WP7: "From your grown-up": one card for each own chapter. While a test is due, a chapter holding a hidden word shows its name only. */
+function ownSection() {
+  const mine = Su.liveOwn(S.readSetup());
+  if (!mine.length) return '';
+  const hidden = S.currentPlayer() ? St.hiddenWords(S.readWords(), W.localDay(Date.now())) : new Set();
+  const cards = mine.map((e, i) => {
+    if (e.words.some((w) => hidden.has(w.toLowerCase()))) return '<li><span class="morerow" data-own-chapter="' + esc(e.id) + '" data-hidden><span class="morerow__text"><b>' + esc(e.name) + '</b></span></span></li>';
+    const state = F.stoneState(S.chapterProgress('own-' + e.id));
+    const label = F.STONE_LABEL[state];
+    return '<li><a class="morerow" href="' + href('words', 'own', encodeURIComponent(e.id)) + '" aria-label="' + esc(e.name + ', ' + label.toLowerCase()) + '" data-own-chapter="' + esc(e.id) + '" data-state="' + state + '">'
+      + '<span class="stone stone--' + { passed: 'done', studying: 'today', todo: 'later' }[state] + ' stone--' + (i % 4) + '" aria-hidden="true">' + (state === 'passed' ? SVG.star : '') + '</span>'
+      + '<span class="morerow__text"><b>' + esc(e.name) + '</b><span>Made by your grown-up</span></span><span class="stonelink__label">' + label + '</span></a></li>';
+  }).join('');
+  return '<h2 class="morehead" data-own-head>From your grown-up</h2><ul class="morerows" data-own-list>' + cards + '</ul>';
+}
+
 /** #/chapters: "More practice". One school year at a time, its stones, ONE primary button, then three quiet rows. */
 export function chapters(main) {
   const child = isChild();
@@ -140,6 +162,7 @@ export function chapters(main) {
     + '<div class="front__sentence"><p class="front__lede">' + esc(sentence) + '</p>' + (child ? hearBtn : '') + '</div></div>'
     + '<div class="yearswitch" role="group" aria-label="Year group" data-yearswitch></div>'
     + '<div data-yearslot></div>'
+    + ownSection()
     + '<h2 class="morehead">More to do</h2>'
     + '<ul class="morerows">' + rows.map(([to, icon, name, sub]) => '<li><a class="morerow" href="' + to + '"><span class="morerow__ico" aria-hidden="true">' + icon + '</span>'
       + '<span class="morerow__text"><b>' + name + '</b><span>' + esc(sub) + '</span></span><span class="morerow__go" aria-hidden="true">' + SVG.chevron + '</span></a></li>').join('') + '</ul>'
@@ -191,11 +214,13 @@ const ROW = {
 const PILL = { done: 'Done', next: 'Next', later: 'To do' };
 
 /** One chapter: three steps in order, one primary action for the next one. The words can be opened from step 1. */
-export function chapter(main, { yearId, slug }) {
-  const ch = D.chapterBySlug(yearId, slug);
+export function chapter(main, { yearId, slug, oid }) {
+  const own = oid ? Ch.ownChapter(S.readSetup(), safeDecode(oid), entryFor) : null; // SB4-WP7
+  if (oid && !own) return notFound(main);
+  const ch = own || D.chapterBySlug(yearId, slug);
   if (!ch) return notFound(main);
-  const t = D.chapterTitle(ch);
-  const label = yearName(yearId);
+  const t = own ? { n: null, name: own.title } : D.chapterTitle(ch);
+  const label = own ? 'From your grown-up' : yearName(yearId);
   if (!isUnlocked(ch)) {
     const prev = D.chapters(yearId)[ch.index - 1];
     main.innerHTML = '<section class="wrap page front chapterpage' + y12() + '" data-chapter-locked><div class="pagehead"><p class="eyebrow">' + esc(label) + '</p><h1>Chapter ' + t.n + '</h1>'
@@ -207,7 +232,7 @@ export function chapter(main, { yearId, slug }) {
   const child = isChild();
   const p = S.chapterProgress(ch.id);
   const st = F.chapterSteps(p, adult);
-  const base = href(yearId, slug);
+  const base = own ? own.base : href(yearId, slug);
   const sentence = ch.words.length + ' words. Learn, practise, then test.';
   const num = (id, state) => '<span class="stone stone--' + (state === 'done' ? 'done' : state === 'next' ? 'today' : 'later') + ' stone--' + (['learn', 'practise', 'test'].indexOf(id) + 2) % 4 + '" aria-hidden="true">'
     + (state === 'done' ? SVG.star + (['learn', 'practise', 'test'].indexOf(id) + 1) : id === 'test' && state === 'later' ? SVG.flag : String(['learn', 'practise', 'test'].indexOf(id) + 1)) + '</span>';
@@ -223,13 +248,13 @@ export function chapter(main, { yearId, slug }) {
     }
     return '<a class="btn btn--quiet" href="' + base + '/' + r.to + '" data-step-link="' + id + '">' + (state === 'done' ? r.again : r.go) + '</a>';
   };
-  const next = !st.next && yearId && D.chapters(yearId)[ch.index + 1];
+  const next = !own && !st.next && yearId && D.chapters(yearId)[ch.index + 1];
   // SB4-WP5: a quiet row once step 2 (Practise) is done, if the grown-up allows quizzes. A child only; never a word on it.
   const quizRow = child && st.practise === 'done' && S.helpNow(childYear()).offer.quiz
     ? '<p class="quizrow"><a class="linkbtn" href="' + base + '/quiz" data-quizrow>' + C.QUIZ_ROW + '</a></p>' : '';
   main.innerHTML = '<section class="wrap page front chapterpage' + y12() + '" data-chapterpage data-for="' + (child ? 'child' : 'adult') + '">'
-    + '<div class="pagehead"><p class="eyebrow">' + esc(label) + ' · ' + esc(t.name) + '</p>'
-    + sourceLines(yearId, [ch], ch.focus).map((l) => '<p class="eyebrow eyebrow--source" data-source>' + esc(l) + '</p>').join('') + '<h1>Chapter ' + t.n + '</h1>'
+    + '<div class="pagehead"><p class="eyebrow">' + (own ? 'From your grown-up' : esc(label) + ' · ' + esc(t.name)) + '</p>'
+    + (own ? '' : sourceLines(yearId, [ch], ch.focus).map((l) => '<p class="eyebrow eyebrow--source" data-source>' + esc(l) + '</p>').join('')) + '<h1>' + (own ? esc(own.title) : 'Chapter ' + t.n) + '</h1>'
     + '<div class="front__sentence"><p class="front__lede">' + esc(sentence) + '</p>' + (child ? hearBtn : '') + '</div></div>'
     + '<ol class="stepcards">' + ['learn', 'practise', 'test'].map((id) => {
       const state = st[id];

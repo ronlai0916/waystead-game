@@ -17,6 +17,8 @@ import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools, closeMe
 import * as GU from './grownups-views.js';
 import * as SU from './setup-views.js'; // SB4-WP6
 import * as AV from './assess-views.js'; // SB4-WP5
+import * as OV from './own-views.js'; // SB4-WP7
+import { safeDecode } from './chapters-doc.js';
 import { storyReview } from './story-views.js';
 import * as W from './words-doc.js';
 import { weekGuard } from './child-doc.js';
@@ -80,6 +82,17 @@ const ROUTES = [
   ['grownups/child/:cid/exam/:eid', SU.examReport],
 
   // SB4-WP7 routes
+  ['grownups/own', OV.list],
+  ['grownups/own/new', OV.editor],
+  ['grownups/own/:oid', OV.editor],
+  ['words/own/:oid', OV.chapter],
+  ['words/own/:oid/study', OV.study],
+  ['words/own/:oid/study/:word', OV.spell],
+  ['words/own/:oid/quick', OV.quick],
+  ['words/own/:oid/quick/:word', OV.quick],
+  ['words/own/:oid/practice', OV.practice],
+  ['words/own/:oid/test', OV.test],
+  ['words/own/:oid/quiz', OV.quiz],
 
   // SB4-WP8 routes
 
@@ -96,7 +109,11 @@ const ROUTES = [
 // A visitor with no session sees the signed-out front page (SB3-F); everyone else gets room.js's home.
 function front(m, p) { return kind() === 'none' ? FV.signedOut(m, { signInHref: account ? account.signInHref() : '' }) : home(m, p); }
 
-const chapterWords = (yearId, slug) => (D.chapterBySlug(yearId, slug) || { words: [] }).words.map((w) => w.word);
+// A year's chapter by id and slug, or (SB4-WP7) a grown-up's own chapter by params.oid, from the copy in this player's setup.
+const chapterWords = (yearId, slug, params) => {
+  if (params && params.oid) { const e = (S.readSetup().own || {})[safeDecode(params.oid)]; return e && !e.gone ? e.words : []; }
+  return (D.chapterBySlug(yearId, slug) || { words: [] }).words.map((w) => w.word);
+};
 
 function match(path) {
   const parts = path.split('/').filter(Boolean);
@@ -120,6 +137,9 @@ function match(path) {
 function parentOf(path) {
   const parts = path.split('/').filter(Boolean);
   // SB4-WP7 parentOf
+  if (parts[0] === 'words' && parts[1] === 'own' && parts.length > 3) return '#/words/own/' + parts[2];
+  if (parts[0] === 'words' && parts[1] === 'own' && parts.length > 2) return '#/chapters';
+  if (parts[0] === 'grownups' && parts[1] === 'own' && parts.length > 2) return '#/grownups/own';
   if (parts[0] === 'custom' && parts[1] === 'play') return '#/custom';
   if (parts[0] === 'grownups') return parts.length > 3 ? '#/grownups/child/' + parts[2] : parts.length > 1 ? '#/grownups' : '#/';
   if (parts[0] === 'words' && parts.length > 3) return '#/words/g/' + parts[2];

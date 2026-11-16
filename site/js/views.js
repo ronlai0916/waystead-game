@@ -4,6 +4,7 @@ import * as D from './data.js';
 import * as S from './store.js';
 import * as W from './words-doc.js';
 import { speak, spellOut, stop } from './speech.js';
+import { hasSentenceCard, sentenceCard, wireSentence } from './study-views.js'; // SB4-WP9
 import { runSession, summaryHtml } from './play.js';
 import { esc, ICON, picture, chunked, chunkText, boldWord, shuffle, toast, meter, applyMeters } from './ui.js';
 import { dayStyleHtml, wireDayStyle } from './daystyle.js';
@@ -14,6 +15,9 @@ import { withoutHidden, DAILY_TIME, DAILY_TIME_CAP, ROW_LINE } from './study-doc
 import * as A from './assess-doc.js';
 import { runCheck } from './assess-views.js';
 import { childYear } from './who.js';
+import * as Ch from './chapters-doc.js';
+import { safeDecode } from './chapters-doc.js';
+import { entryFor } from './word-info.js';
 
 const MAX_PICK = 30;
 
@@ -32,31 +36,40 @@ function cambridgeLink(w, cls) {
     + '" target="_blank" rel="noopener noreferrer">' + ICON.external + 'Cambridge Dictionary<span class="sr"> (opens in a new tab)</span></a>';
 }
 /**
- * The chapter a page is for, and the link to it: { ch, base } for a year's chapter ({ yearId, slug }), else null.
- * (A later package adds a second branch here for a grown-up's own chapter.)
+ * The chapter a page is for, and the link to it: { ch, base } for a year's chapter ({ yearId, slug }) or a grown-up's own
+ * chapter ({ oid }, SB4-WP7), else null.
  */
 export function chapterFrom(params) {
+  if (params.oid) { // SB4-WP7: a grown-up's own chapter, from the copy in this child's setup
+    const ch = Ch.ownChapter(S.readSetup(), safeDecode(params.oid), entryFor);
+    return ch ? { ch, base: ch.base } : null;
+  }
   const ch = D.chapterBySlug(params.yearId, params.slug);
   return ch ? { ch, base: href(params.yearId, params.slug) } : null;
 }
-function wordEntries(ch) { return ch.words.map((w) => D.entry(w.word)); }
+/** One word of an own chapter, or null when the chapter has no such word. */
+const ownEntry = (ch, word) => ch.words.find((e) => e.word.toLowerCase() === word.toLowerCase()) || null;
+function wordEntries(ch) { return ch.own ? ch.words : ch.words.map((w) => D.entry(w.word)); } // an own chapter's words are entries already
+/** The small heading over a chapter page: "Chapter 3 · Study", or "From your grown-up · Study" for an own chapter. */
+const eyebrowOf = (ch, what) => (ch.own ? 'From your grown-up' : 'Chapter ' + D.chapterTitle(ch).n) + ' · ' + what;
 
 /* --------------------------------------------------------------- Study --- */
-export function study(main, { yearId, slug }) {
-  const from = chapterFrom({ yearId, slug });
+export function study(main, params) {
+  const from = chapterFrom(params);
   if (!from || !isUnlocked(from.ch)) return notFound(main);
   const { ch, base } = from;
   const t = D.chapterTitle(ch);
   main.innerHTML = '<section class="wrap page">'
-    + '<div class="pagehead"><span class="eyebrow">Chapter ' + t.n + ' · Study</span><h1>' + esc(t.name) + '</h1>'
+    + '<div class="pagehead"><span class="eyebrow">' + esc(eyebrowOf(ch, 'Study')) + '</span><h1>' + esc(t.name) + '</h1>'
     + '<p class="muted">Take your time with each word. Tap “Spell it out” to hear it letter by letter.</p></div>'
     + '<div class="studylist">' + wordEntries(ch).map((w) =>
-      '<article class="card wordcard" id="w-' + esc(w.word) + '">' + picture(w)
+      '<article class="card wordcard' + (hasSentenceCard(w) ? ' wordcard--nopic' : '') + '" id="w-' + esc(w.word) + '">' + (hasSentenceCard(w) ? sentenceCard(w) : picture(w))
       + '<div class="wordcard__body">'
       + '<h2 class="wordcard__word">' + chunked(w, '', { tricky: true }) + '</h2>'
-      + '<div class="wordcard__line"><span class="ipa">' + esc(w.ipa) + '</span><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span><span class="chunktext">' + esc(chunkText(w)) + '</span></div>'
-      + '<p>' + esc(w.meaning.definition) + '</p>'
-      + '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>'
+      + (w.meaning.definition // an own word with no meaning has no meaning card
+        ? '<div class="wordcard__line"><span class="ipa">' + esc(w.ipa) + '</span><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span><span class="chunktext">' + esc(chunkText(w)) + '</span></div>'
+          + '<p>' + esc(w.meaning.definition) + '</p>' : '')
+      + (!hasSentenceCard(w) && w.meaning.definition && w.meaning.example ? '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>' : '')
       + '<div class="btnrow">'
       + '<button type="button" class="btn btn--quiet btn--small" data-hear="' + esc(w.word) + '">' + ICON.play + 'Hear it</button>'
       + '<a class="btn btn--quiet btn--small" href="' + base + '/study/' + encodeURIComponent(w.word) + '">' + ICON.spell + 'Spell it out</a>'
@@ -67,6 +80,7 @@ export function study(main, { yearId, slug }) {
     + '<button type="button" class="btn btn--primary" data-done>I\'ve studied these' + ICON.arrow + '</button></div>'
     + '</section>';
   main.querySelectorAll('[data-hear]').forEach((b) => b.addEventListener('click', () => speak(b.dataset.hear)));
+  wordEntries(ch).forEach((w) => { const art = main.querySelector('#w-' + CSS.escape(w.word)); if (art) wireSentence(art, w); }); // SB4-WP9
   main.querySelector('[data-done]').addEventListener('click', () => {
     S.markStudied(ch.id);
     location.hash = base + '/quick';
@@ -75,19 +89,18 @@ export function study(main, { yearId, slug }) {
 }
 
 /* --------------------------------------------------------- Spell it out --- */
-export function spell(main, { yearId, slug, word }) {
-  const w = D.entry(decodeURIComponent(word));
-  const from = chapterFrom({ yearId, slug });
+export function spell(main, params) {
+  const from = chapterFrom(params);
+  const w = from && from.ch.own ? ownEntry(from.ch, decodeURIComponent(params.word)) : D.entry(decodeURIComponent(params.word));
   if (!w || !from) return notFound(main);
   main.innerHTML = '<section class="wrap page"><div class="card spell">'
     + picture(w)
     + '<div class="spell__word">' + chunked(w, '', { tricky: true }) + '</div>'
-    + '<p class="ipa">' + esc(w.ipa) + ' · <span class="chunktext">' + esc(chunkText(w)) + '</span></p>'
+    + (w.meaning.definition ? '<p class="ipa">' + esc(w.ipa) + ' · <span class="chunktext">' + esc(chunkText(w)) + '</span></p>' : '')
     + '<div class="btnrow">'
     + '<button type="button" class="btn btn--primary" data-hear>' + ICON.play + 'Hear the word</button>'
     + '<button type="button" class="btn btn--ghost" data-spell>' + ICON.spell + 'Spell it letter by letter</button></div>'
-    + '<p>' + esc(w.meaning.definition) + '</p>'
-    + '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>'
+    + (w.meaning.definition ? '<p>' + esc(w.meaning.definition) + '</p>' + (w.meaning.example ? '<p class="example">' + boldWord(w.meaning.example, w.word) + '</p>' : '') : '')
     + '<div class="btnrow btnrow--center"><a class="btn btn--quiet btn--small" href="' + from.base + '/quick/' + encodeURIComponent(w.word) + '">' + ICON.game + 'Quick game with this word</a>'
     + cambridgeLink(w, 'btn--quiet btn--small') + '</div>'
     + '</div></section>';
@@ -103,19 +116,20 @@ export function spell(main, { yearId, slug, word }) {
 }
 
 /* ---------------------------------------------- Quick game (chapter/one) --- */
-export function quick(main, { yearId, slug, word }) {
-  const from = chapterFrom({ yearId, slug });
+export function quick(main, params) {
+  const { word } = params;
+  const from = chapterFrom(params);
   if (!from || !isUnlocked(from.ch)) return notFound(main);
   const { ch, base } = from;
   const t = D.chapterTitle(ch);
-  const single = word ? D.entry(decodeURIComponent(word)) : null;
+  const single = word ? (ch.own ? ownEntry(ch, decodeURIComponent(word)) : D.entry(decodeURIComponent(word))) : null;
   if (word && !single) return notFound(main);
   const back = single ? [] : backAgainFor(ch.words.map((x) => x.word));
   const words = (single ? [single] : shuffle([...wordEntries(ch), ...back])).filter((e) => playable(e, 'flower')); // SB4-WP4: "a" and "I" are not played on a flower
   if (!words.length) return notFound(main);
   return runSession(main, {
     backAgain: back,
-    eyebrow: 'Chapter ' + t.n + ' · Quick game',
+    eyebrow: eyebrowOf(ch, 'Quick game'),
     title: single ? 'One word' : t.name,
     words,
     mode: 'mini',
@@ -133,15 +147,15 @@ export function quick(main, { yearId, slug, word }) {
 }
 
 /* ------------------------------------------------------------ Practice --- */
-export function practice(main, { yearId, slug }) {
-  const from = chapterFrom({ yearId, slug });
+export function practice(main, params) {
+  const from = chapterFrom(params);
   if (!from || !isUnlocked(from.ch)) return notFound(main);
   const { ch, base } = from;
   const t = D.chapterTitle(ch);
   const back = backAgainFor(ch.words.map((x) => x.word));
   return runSession(main, {
     backAgain: back,
-    eyebrow: 'Chapter ' + t.n + ' · Practice',
+    eyebrow: eyebrowOf(ch, 'Practice'),
     title: t.name,
     words: shuffle([...wordEntries(ch), ...back]).filter((e) => playable(e, 'flower')), // SB4-WP4
     mode: 'full',
@@ -163,14 +177,14 @@ export function test(main, params) {
   const t = D.chapterTitle(ch);
   const year = childYear();
   const { lv, pf } = S.helpNow(year);
-  const chs = D.chapters(ch.yearId);
+  const chs = ch.own ? [] : D.chapters(ch.yearId); // an own chapter gates nothing: no next chapter, no next year
   const nextCh = chs[ch.index + 1];
   const live = D.liveYears();
-  const nextYear = nextCh ? '' : live[live.indexOf(ch.yearId) + 1] || ''; // the last chapter of a year leads on to the next year
+  const nextYear = nextCh || ch.own ? '' : live[live.indexOf(ch.yearId) + 1] || ''; // the last chapter of a year leads on to the next year
   // SB4-WP5: the shared runner. Feedback comes at the end; the pass rule, what is stored and the end buttons stay.
   return runCheck(main, {
-    kind: 'test', scope: {}, showMeaning: true, words: shuffle(wordEntries(ch)), pf, lv, year, backHref: base, title: D.years()[ch.yearId].label + ' · Chapter ' + t.n,
-    save: (a) => { if (a.ok) S.noteCorrect(a.w); else S.noteMissed(a.w, ch.id); },
+    kind: 'test', scope: {}, showMeaning: true, words: shuffle(wordEntries(ch)), pf, lv, year, backHref: base, title: ch.own ? ch.title : D.years()[ch.yearId].label + ' · Chapter ' + t.n,
+    save: (a) => { if (a.ok) S.noteCorrect(a.w); else if (D.entry(a.w)) S.noteMissed(a.w, ch.id); }, // SB4-WP7: only a curriculum word is a tricky word
     done: (r) => {
       const passed = A.passes(pf, r.right, r.of);
       S.recordTest(ch.id, r.right, r.of, {

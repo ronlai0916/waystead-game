@@ -70,10 +70,11 @@ export function runSession(main, opts) {
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary" data-hearmain>' + ICON.play + 'Hear the word</button></div>'
       + '<div class="blanks" aria-live="polite"></div>'
       + (tiled ? '<p class="spellline" data-line role="status" aria-live="polite"></p>' : '')
-      + '<details class="hint"><summary>Show the meaning</summary><div class="hint__body">'
-      + '<p><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span> ' + esc(w.meaning.definition) + '</p>'
-      + '<p class="example">' + redact(w.meaning.example, w.word) + '</p>'
-      + '</div></details>'
+      + (w.meaning.definition // SB4-WP7: an own word with no meaning has no meaning box
+        ? '<details class="hint"><summary>Show the meaning</summary><div class="hint__body">'
+          + '<p><span class="pill">' + esc(w.meaning.partOfSpeech) + '</span> ' + esc(w.meaning.definition) + '</p>'
+          + (w.meaning.example ? '<p class="example">' + redact(w.meaning.example, w.word) + '</p>' : '')
+          + '</div></details>' : '')
       + '<div data-slot>' + (tiled ? padHtml(letters, revealed) : keyboard()) + '</div>'
       + '<p class="muted small" data-wrongtext></p>'
       + '</section>';
@@ -129,8 +130,8 @@ export function runSession(main, opts) {
       + '<div class="result__head">' + (won ? '<span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(12, 1.3) + '</span>' : '<span class="result__badge">•</span>')
       + '<h2>' + (won ? 'You got it' : 'The word was') + '</h2></div>'
       + '<div class="stack"><div class="result__word">' + chunked(w) + '</div>'
-      + '<p class="ipa">' + esc(w.ipa) + '</p>'
-      + '<p>' + esc(w.meaning.definition) + '</p></div>'
+      + (w.ipa ? '<p class="ipa">' + esc(w.ipa) + '</p>' : '')
+      + (w.meaning.definition ? '<p>' + esc(w.meaning.definition) + '</p>' : '') + '</div>'
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-next>' + (last ? lastLabel : 'Next word') + ICON.arrow + '</button>'
       + '<button type="button" class="btn btn--ghost" data-hear2>' + ICON.play + 'Hear it</button></div></div>';
     placeBursts(main);

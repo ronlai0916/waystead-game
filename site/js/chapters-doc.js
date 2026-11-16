@@ -110,3 +110,16 @@ export function patternLabel(yearN, focus) {
   const rule = yearN === 1 || yearN === 2 ? 'Year ' + yearN : yearN === 3 || yearN === 4 ? 'Years 3 and 4' : 'Years 5 and 6';
   return "Pattern words: our examples for the " + rule + " rule '" + focus + "'";
 }
+
+/**
+ * A grown-up's own chapter (SB4-WP7), from the copy in a child's setup. entryFor(word) gives each word's entry
+ * (word-info.js). null when the copy is missing or gone. Its progress is kept under the id 'own-<oid>'.
+ */
+export function ownChapter(setup, oid, entryFor) {
+  if (!/^[A-Za-z0-9_-]{1,40}$/.test(String(oid))) return null;
+  const e = setup && typeof setup === 'object' && setup.own && setup.own[oid];
+  if (!e || e.gone || !Array.isArray(e.words) || !e.words.length) return null;
+  return { id: 'own-' + oid, own: true, n: null, title: e.name, yearId: null, index: 0, words: e.words.map((w) => entryFor(w)), base: '#/words/own/' + oid };
+}
+/** decodeURIComponent that never throws: a bad address is '' (no chapter has that id). */
+export function safeDecode(x) { try { return decodeURIComponent(x); } catch (e) { return ''; } }

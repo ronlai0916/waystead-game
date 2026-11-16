@@ -685,3 +685,9 @@ ul.report__list.card { padding-left: 34px; }
 @media (min-width: 820px) and (max-height: 520px) {
   main > .page.play .keyboard, main > .page.spellpage .keyboard { position: sticky; top: 76px; align-self: start; }
 }
+
+/* ---- SB4-WP9: a word with no picture shows its sentence as a card ---- */
+.pic.pic--sentence { aspect-ratio: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--sb-soft); }
+.pic--sentence .example { margin: 0; font-size: 1.15rem; line-height: 1.35; }
+.wordcard > .pic--sentence { grid-column: 1 / -1; }
+.wordcard--hello .pic.pic--sentence { max-width: none; margin: 0; }

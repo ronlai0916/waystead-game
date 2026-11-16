@@ -26,10 +26,11 @@ def main():
     curriculum = json.loads((SITE / "data" / "curriculum.json").read_text())
     wanted_images = set()
     wanted_words = set()
-    for block in ("year_3_4", "year_5_6"):
-        for ch in curriculum[block]["chapters"]:
+    for block in ("year_1", "year_2", "year_3_4", "year_5_6"):
+        for ch in curriculum.get(block, {}).get("chapters", []):
             for w in ch["words"]:
-                wanted_images.add(w["image"])
+                if w.get("image"):
+                    wanted_images.add(w["image"])
                 wanted_words.add(w["word"].lower())
 
     images = [f for f in names("assets/images", ".jpg") if f in wanted_images]

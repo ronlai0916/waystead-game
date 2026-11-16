@@ -102,8 +102,8 @@ def main():
     if not project:
         sys.exit("Set GCP_PROJECT to your Google Cloud project ID first.")
     curriculum = json.loads((SITE / "data" / "curriculum.json").read_text())
-    ipa = {w["word"]: w["ipa"] for b in ("year_3_4", "year_5_6")
-           for ch in curriculum[b]["chapters"] for w in ch["words"]}
+    ipa = {w["word"]: w["ipa"] for b in ("year_1", "year_2", "year_3_4", "year_5_6")
+           for ch in curriculum.get(b, {}).get("chapters", []) for w in ch["words"]}
     words = sorted(ipa)
     only = [w.strip() for w in args.only.split(",") if w.strip()]
     if only:

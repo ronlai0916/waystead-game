@@ -66,8 +66,8 @@ test('the adult chip never shows "Grown-up" as a name', () => {
   assert.match(read('shared/account/player.js'), new RegExp("cleanName\\(me\\.displayName, '" + A.SHARED_FALLBACK + "'\\)"));
 });
 test('the Menu rows and the switch rows', () => {
-  assert.deepEqual(A.MENU_ROWS.map((r) => r.title), ['More practice', 'My words', 'Pick words', 'Tricky words', 'Progress', 'All games']);
-  assert.deepEqual(A.MENU_ROWS.map((r) => r.href), ['#/chapters', '#/words', '#/custom', '#/tricky', '#/progress', '../']);
+  assert.deepEqual(A.MENU_ROWS.map((r) => r.title), ['More practice', 'My words', 'Pick words', 'Your own chapters', 'Tricky words', 'Progress', 'All games']);
+  assert.deepEqual(A.MENU_ROWS.map((r) => r.href), ['#/chapters', '#/words', '#/custom', '#/grownups/own', '#/tricky', '#/progress', '../']);
   assert.equal(A.MENU_ROWS.find((r) => r.id === 'progress').sub, 'Chapters you have passed');
   const kid = (n) => ({ id: n, nickname: n, year: 4 });
   assert.equal(A.playAsLine([kid('Robin')]), 'Play as Robin');
@@ -86,5 +86,5 @@ test('the files: no inline style, the bar is a Spellbright-only mode, the shared
   assert.equal(read('shared/topbar/nav.js'), read('site/js/nav/nav.js'));
   const sw = read('site/sw.js');
   for (const f of ['css/adult.css', 'js/adult-doc.js', 'js/adult-chrome.js']) assert.ok(sw.includes("'" + f + "'"), f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-15a'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-16a'/);
 });

@@ -314,6 +314,16 @@ goes through its own `fetch`). The endpoint lives in the account repo; this is i
 
 ## Release notes
 
+### SB4-C (spellbright-2026-11-16a): grown-ups' own chapters and cards for words without a picture
+
+- A grown-up can make their own chapters (Menu, "Your own chapters"): up to 30 chapters of up to 15 words each, typed or pasted from a school list (one word per line, comma, semicolon or tab; list numbers are dropped). Words we can't use yet are shown and left out.
+- Each chapter is shared with chosen children. They find it under "From your grown-up" on More practice and learn, practise, test and quiz it like a year chapter; their stars stay with the chapter if it is edited.
+- Delete has a 10-second Undo and a 30-day "Deleted chapters" list with Restore.
+- "Use for this week" turns a chapter into a week: pick 10, choose the child, then Plan a week opens with the words filled in.
+- A word with no picture now shows its example sentence on a card with a Hear button instead of an empty box.
+- Older copies of the app on a device ignore the new `own` field until they update. A chapter shared with nobody, or deleted, cannot be rebuilt from a child's copy.
+- Known: the test guard checks a chapter's own words, not the words inside its example sentences.
+
 ### SB4-B (spellbright-2026-11-15a): letter tiles and grown-up set-up
 
 - Letter tiles: a child can be set to "Some letters" for a word. The tiles sit in a tray beside the keyboard; Back and tapping a box undo; a third miss fills the letter in.

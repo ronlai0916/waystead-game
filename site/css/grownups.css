@@ -297,3 +297,43 @@
   .gu-word, .gu-table tr, .gu-lines li, .gu-year { break-inside: avoid; }
   .gu-table th, .gu-table td { border-top: 1px solid #000; }
 }
+
+/* SB4-WP7 own chapters */
+.gu .gu-own { display: grid; gap: 20px; align-items: start; }
+@media (min-width: 820px) { .gu .gu-own { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); } }
+.gu .gu-ownlist { display: grid; gap: 14px; margin-top: 14px; }
+.gu .gu-ownlink { margin: 8px 0 0; }
+.gu .gu-ownlink a { display: inline-flex; align-items: center; min-height: 44px; }
+.gu .gu-ownwords { list-style: none; margin: 0; padding: 0; display: grid; }
+.gu .gu-ownword { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; min-height: 56px; padding: 6px 4px; border-top: 1px solid var(--line); }
+.gu .gu-ownword__w { font-family: var(--f-ipa); font-size: 20px; font-weight: 600; min-width: 5.5em; overflow-wrap: anywhere; }
+.gu .gu-ownword__s { flex: 1 1 10rem; color: var(--muted); font-size: 0.95rem; }
+.gu .gu-ownword__x { min-width: 44px; min-height: 44px; margin-left: auto; }
+.gu .gu-ownword.is-refused { background: var(--surface-2); border-top-style: dashed; }
+.gu .gu-ownword.is-refused .gu-ownword__w { color: var(--muted); }
+.gu .gu-ownword.is-note .gu-ownword__s { color: var(--sb); font-weight: 700; }
+.gu .gu-share { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+.gu .gu-share legend { font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; padding: 0; }
+.gu-check { display: flex; align-items: center; gap: 12px; min-height: 48px; cursor: pointer; }
+.gu-check input { width: 24px; height: 24px; flex: none; accent-color: var(--sb); }
+.gu-pick { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow-y: auto; }
+.gu .linkbtn { min-height: 44px; }
+.gu .gu-panel .btn, .gu .gu-panel .btnrow { justify-self: start; }
+.gu .gu-ownlist + .gu-deleted, .gu .gu-ownlist ~ .gu-deleted, .gu .gu-ownchap + .gu-deleted { margin-top: 20px; }
+.gu .gu-ownlist ~ .gu-deleted { margin-top: 20px; }
+.gu .gu-deleted ul + .gu-error { margin: 8px 0 0; }
+.gu .gu-line[data-saved]:focus, .gu [data-count]:focus { outline: 3px solid var(--focus); outline-offset: 3px; }
+.gu [data-count] { margin: 0; font-family: var(--f-display); font-weight: 600; }
+@media (max-width: 480px) {
+  .gu .gu-ownword { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 10px; min-height: 56px; }
+  .gu .gu-ownword__w { grid-column: 1; grid-row: 1; min-width: 0; }
+  .gu .gu-ownword__s { grid-column: 1; grid-row: 2; flex: none; font-size: 0.9rem; }
+  .gu .gu-ownword__x { grid-column: 2; grid-row: 1 / span 2; }
+  .gu .gu-ownword.is-note { min-height: 44px; }
+}
+.gu-dialog { max-height: calc(100dvh - 24px); overflow-y: auto; }
+@media (max-height: 520px) {
+  .gu-dialog { padding: 14px 18px; gap: 8px; }
+  .gu-pick { max-height: 26vh; }
+  .gu-pick .gu-check { min-height: 44px; }
+}

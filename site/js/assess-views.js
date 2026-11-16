@@ -408,10 +408,10 @@ export function chapterQuiz(main, params) {
   const { lv, pf, offer } = S.helpNow(year);
   if (!offer.quiz) { location.replace(base); return undefined; }
   const t = D.chapterTitle(ch);
-  const entries = ch.words.map((w) => D.entry(w.word)).filter(Boolean);
+  const entries = ch.own ? ch.words : ch.words.map((w) => D.entry(w.word)).filter(Boolean); // SB4-WP7: an own chapter's words are entries already
   if (!entries.length) return notFound(main);
   return runCheck(main, {
-    kind: 'quiz', scope: {}, words: quizWords(ch.id, entries, pf, year), pf, lv, year, backHref: base, title: 'Chapter ' + t.n + ' · ' + t.name,
+    kind: 'quiz', scope: {}, words: quizWords(ch.id, entries, pf, year), pf, lv, year, backHref: base, title: ch.own ? ch.title : 'Chapter ' + t.n + ' · ' + t.name,
     done: (r) => {
       quizRecord(ch.id, r, today());
       return { buttons: [{ label: 'Practise them', href: base + '/practice', primary: true }, { label: 'Quiz again', href: base + '/quiz', again: true }] };

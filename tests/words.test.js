@@ -10,7 +10,7 @@ import * as W from '../site/js/words-doc.js';
 import * as R from '../site/js/spell-run.js';
 import { usableWord, cleanWord } from '../site/js/wordcheck.js';
 import { isPlayPath } from '../site/js/gate.js';
-import { chunked, chunkText } from '../site/js/ui.js';
+import { chunked, chunkText, boldWord } from '../site/js/ui.js';
 import { createSync } from '../shared/account/sync.js';
 import { forgetPlayer } from '../shared/account/forget.js';
 import { loadWordGraph, isWord } from '../wordbright/site/js/engine/words.js';
@@ -151,7 +151,7 @@ test('the starter group: one id, made once, and anything real from another devic
 // ---- typed words ---------------------------------------------------------------------
 const graph = loadWordGraph(readFileSync(file('wordbright/site/data/words_all.dawg')));
 const curriculum = JSON.parse(readFileSync(file('site/data/curriculum.json'), 'utf8'));
-const allEntries = ['year_3_4', 'year_5_6'].flatMap((y) => curriculum[y].chapters.flatMap((c) => c.words));
+const allEntries = ['year_1', 'year_2', 'year_3_4', 'year_5_6'].filter((y) => curriculum[y]).flatMap((y) => curriculum[y].chapters.flatMap((c) => c.words));
 const findEntry = (w) => allEntries.find((e) => e.word.toLowerCase() === w) || null;
 const check = (raw) => usableWord(raw, { findEntry, inList: (w) => isWord(w, graph) });
 
@@ -582,4 +582,10 @@ test('G4b: tricky letters show only when asked for; the syllable line stays as i
 test('G4b: the grid boxes keep a small group spacing, as the word is hidden there', () => {
   const css = readFileSync(fileURLToPath(new URL('../site/css/app.css', import.meta.url)), 'utf8');
   assert.match(css, /\.spellboxes \{[^}]*gap: 6px 8px/);
+});
+
+test('boldWord: a one- or two-letter word takes no ending (SB4-WP9)', () => {
+  assert.equal(boldWord('I think it is hot.', 'I'), '<b>I</b> think it is hot.');
+  assert.equal(boldWord('It was as bad as that, and a dad.', 'a'), 'It was as bad as that, and <b>a</b> dad.');
+  assert.equal(boldWord('She walks and walked.', 'walk'), 'She <b>walks</b> and <b>walked</b>.');
 });

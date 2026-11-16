@@ -69,7 +69,8 @@ export function redact(sentence, word) {
   return esc(sentence).replace(re, '<b>_____</b>');
 }
 export function boldWord(sentence, word) {
-  const re = new RegExp('\\b(' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:s|es|ed|d|ing)?)\\b', 'gi');
+  const ends = word.length <= 2 ? '' : '(?:s|es|ed|d|ing)?'; // "I" and "a" take no ending: not "as", "ad"
+  const re = new RegExp('\\b(' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ends + ')\\b', 'gi');
   return esc(sentence).replace(re, '<b>$1</b>');
 }
 

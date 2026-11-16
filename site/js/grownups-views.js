@@ -11,6 +11,7 @@ const { possessive } = P;
 import * as A from './grownups-data.js';
 import { mountSetupCard, mountReport, overviewLink } from './setup-views.js'; // SB4-WP6
 import { checkTyped } from './wordcheck.js';
+import { takePlanWords } from './own-data.js'; // SB4-WP7
 import { findEntry, hasMeaning, meaningsFor } from './word-info.js';
 import { loadStories } from './stories.js';
 import { isAdult, kind, playingAsChild, playerName, recheckWho } from './who.js';
@@ -143,6 +144,7 @@ function homeCard(c, d, day, key, compact) {
 export function grownups(main) {
   if (!adultOnly(main)) return undefined;
   const storiesLink = '<p class="small"><a href="#/grownups/stories">Review the stories</a></p>';
+  const ownLink = '<p class="gu-ownlink small"><a href="#/grownups/own" data-ownlink>Your own chapters</a></p>'; // SB4-WP7
   if (!A.CHILD_DATA_API) {
     main.innerHTML = wrap('Grown-ups', 'Grown-ups', '', '<div class="card setting gu-empty" data-noapi><h2>Plan a week and the dashboard</h2><p class="muted">These open with the next Waystead account update.</p></div>'
       + '<a class="card gu-notice" href="#/grownups/stories"><span class="gu-notice__text"><b>Review the stories</b><span>Read each one before children can see it</span></span></a>');
@@ -163,7 +165,7 @@ export function grownups(main) {
       const href = P.accountHomeHref(accountOrigin(location));
       main.innerHTML = '<section class="wrap page grownups gu"><div class="card gu-first" data-first><span class="pipring"><span class="pipring__disc"><img class="room__pip" src="assets/characters/pip-portrait-256.webp" width="148" height="148" alt=""></span></span>'
         + '<div class="gu-first__text"><span class="eyebrow">Welcome</span><h1>Add your first child</h1><p class="muted">Spellbright plans a spelling week for each child. Start by adding a child to your Waystead account.</p>'
-        + '<div><a class="btn btn--primary" href="' + esc(href) + '" data-addchild>Add a child' + I.plus + '</a></div></div></div>' + notice + '<div class="gu-stories">' + storiesLink + '</div></section>';
+        + '<div><a class="btn btn--primary" href="' + esc(href) + '" data-addchild>Add a child' + I.plus + '</a></div></div></div>' + notice + '<div class="gu-stories">' + storiesLink + '</div>' + ownLink + '</section>';
       return;
     }
     const items = list.map((c, i) => ({ name: c.nickname, ...P.glanceKey(data[i].problem ? null : P.childOverview(data[i].words, day, Date.now()), data[i].problem || '') }));
@@ -181,7 +183,7 @@ export function grownups(main) {
       + '<div class="gu-cards' + (compact ? ' gu-cards--rows' : list.length === 1 ? ' gu-cards--one' : '') + '">' + cards.join('') + '</div>'
       + (!compact && data.some((x) => !x.problem && P.childOverview(x.words, day, Date.now()).current) ? '<p class="gu-key" data-stonekey>' + esc(P.STONE_KEY_NEXT) + '</p>' : '')
       + overviewLink(list.length)
-      + (unread ? '' : '<div class="gu-stories">' + storiesLink + '</div>') + '</section>';
+      + (unread ? '' : '<div class="gu-stories">' + storiesLink + '</div>') + ownLink + '</section>';
     main.querySelectorAll('[data-retry]').forEach((b) => b.addEventListener('click', redraw));
   });
   return () => { stopped = true; };
@@ -419,6 +421,7 @@ function planForm(main, cid, gid) {
   let message = '';
   let saving = false;
   let existing = null; // the week being changed
+  const handed = editing ? null : takePlanWords(); // SB4-WP7: words from "Use for this week", read once
   // One id for this plan, however many times it's sent: if a save arrives but
   // its answer is lost, trying again changes that group, and never makes a second.
   const planId = 'p' + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -670,6 +673,7 @@ function planForm(main, cid, gid) {
       listName = '';
     }
     if (kid()) yearId = P.yearListFor(kid().child.year, D.liveYears());
+    if (handed) words = [...handed]; // SB4-WP7: opens on the words step with the chapter's words filled in
     step = P.firstStep({ children: kids.length, chosen: chosenId && fixedId ? chosenId : '', editing: !!editing });
     draw();
   });

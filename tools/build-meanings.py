@@ -1100,8 +1100,8 @@ def main():
 
     # Spellbright's IPA for its own words (the game prefers it for Star words anyway).
     cur = json.load(open(CURRICULUM, encoding="utf-8"))
-    for key in ("year_3_4", "year_5_6"):
-        for ch in cur[key]["chapters"]:
+    for key in ("year_1", "year_2", "year_3_4", "year_5_6"):
+        for ch in cur.get(key, {}).get("chapters", []):
             for e in ch["words"]:
                 if e["word"] in out or e["word"] in british:
                     out.setdefault(e["word"], {})["i"] = e["ipa"]
