@@ -1,0 +1,119 @@
+{
+ "chapter": "y56-ch07",
+ "year": 6,
+ "words": {
+  "amateur": [
+   "She paints at weekends for fun, so she is still an amateur.",
+   "Is a person who bakes cakes just for fun an amateur?",
+   "The amateur singer practised in the kitchen after school, never for pay."
+  ],
+  "vehicle": [
+   "The van is a useful vehicle for carrying boxes to the new house.",
+   "A tractor is a slow vehicle that drives across the farm field.",
+   "Which vehicle has two wheels, pedals and a little bell?"
+  ],
+  "language": [
+   "My gran speaks a second language, so she chats to friends in it.",
+   "Using kind language at school makes everyone feel happy.",
+   "Learning a new language is fun when you sing songs and play games!"
+  ],
+  "restaurant": [
+   "The waiter at the restaurant gave us a menu and a jug of water.",
+   "The restaurant was full, so we waited outside for a free table.",
+   "Which restaurant shall we pick for tea after the football match?"
+  ],
+  "category": [
+   "Which category does a tomato belong to, fruit or vegetable?",
+   "Cats, dogs and rabbits all go in the pet category.",
+   "Sort the toys into groups and write the category on each box."
+  ],
+  "cemetery": [
+   "The cemetery was quiet, with tall trees and neat paths between the stones.",
+   "We walked slowly through the cemetery and read the names on the old stones.",
+   "What a peaceful cemetery, with soft grass and tall old trees!"
+  ],
+  "dictionary": [
+   "I looked in the dictionary to check how to spell necessary.",
+   "If you don't know what a word means, grab a dictionary!",
+   "My teacher gave us a dictionary and asked us to find the longest word."
+  ],
+  "controversy": [
+   "The village argued about the plan, and the controversy lasted weeks.",
+   "Was there a controversy when the park changed its opening times?",
+   "What a controversy there was over the school lunch menu!"
+  ],
+  "secretary": [
+   "The school secretary answered the phone and wrote down a message.",
+   "The secretary wrote the date of each appointment in a big diary.",
+   "Please ask the secretary to type the letter and post it."
+  ],
+  "physical": [
+   "Running, jumping and swimming are all physical activities.",
+   "Is dancing hard physical work, or just fun?",
+   "What a physical day, with a long walk and a bike ride!"
+  ]
+ },
+ "rounds": {
+  "amateur": 0,
+  "vehicle": 0,
+  "language": 0,
+  "restaurant": 0,
+  "category": 0,
+  "cemetery": 0,
+  "dictionary": 0,
+  "controversy": 0,
+  "secretary": 0,
+  "physical": 0
+ },
+ "rejected": [
+  {
+   "word": "amateur",
+   "round": 0,
+   "s": "My uncle plays football only for fun, so he is an amateur.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "amateur",
+   "round": 0,
+   "s": "What a good job for an amateur who has only just started!",
+   "reason": "checker: \"a secretary who has only just started\" makes equal sense, and there is no clue about fun or pay. (also fits: secretary)"
+  },
+  {
+   "word": "language",
+   "round": 0,
+   "s": "In French class we learn a new language, with different words for things.",
+   "reason": "machine rule 4: capital word not allowed: French; not on the word lists: French"
+  },
+  {
+   "word": "language",
+   "round": 0,
+   "s": "Which language do people speak in Wales as well as English?",
+   "reason": "machine rule 4: capital word not allowed: English; not on the word lists: English"
+  },
+  {
+   "word": "cemetery",
+   "round": 0,
+   "s": "Is the cemetery near the park or near the old school?",
+   "reason": "checker: \"Is the restaurant near the park\" makes equal sense, and there is no clue. (also fits: restaurant)"
+  },
+  {
+   "word": "dictionary",
+   "round": 0,
+   "s": "The words in a dictionary are put in alphabet order.",
+   "reason": "checker: \"alphabet order\" is not natural; the usual phrase is \"alphabetical order\"."
+  },
+  {
+   "word": "secretary",
+   "round": 0,
+   "s": "Who is the secretary that sorts the letters in the office?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "physical",
+   "round": 0,
+   "s": "We had a physical games lesson in the hall on wet days.",
+   "reason": "checker: \"physical games lesson\" and the tense with \"on wet days\" are not natural."
+  }
+ ],
+ "sitOut": []
+}

@@ -33,7 +33,7 @@ export default function (H) {
     await open(DAY, hash);
   }
   const typeIn = async (v) => {
-    await ev('(()=>{const n=document.querySelector("[data-typed]");n.value=' + q(v) + ';n.dispatchEvent(new Event("input"));document.querySelector("[data-typeform]").requestSubmit()})()');
+    await ev('(()=>{const n=document.querySelector("[data-typed]");n.value=' + q(v) + ';n.dispatchEvent(new Event("input",{bubbles:true}));document.querySelector("[data-typeform]").requestSubmit()})()');
     await sleep(500);
   };
   /** The child, with the grown-up's chapter on their device. */
@@ -73,6 +73,8 @@ export default function (H) {
     }
   }
 
+  // SB5 (TR-45): the list editor. Word by word (find box, Add word) or "Type or paste all" (one textarea, one word a line); "Give for practice"
+  // ticks the children; Save list opens a saved page with "Set a week with this list". Chapters are now lists.
   scene('SB4-WP7 a grown-up makes a six-word chapter from one pasted list and shares it with two children', async () => {
     await width(1280, 900);
     await asAdult({ made: false, hash: '#/grownups/own/new' });
@@ -80,33 +82,29 @@ export default function (H) {
     ok(/^School words, \d{1,2} [A-Z][a-z]{2}$/.test(await ev('document.querySelector("[data-name]").value')), 'the default name: ' + await ev('document.querySelector("[data-name]").value'));
     ok(await ev('document.querySelectorAll("[data-share]").length') === 2 && !await ev('document.querySelector("[data-share]").checked'), 'two children, none ticked yet');
     await ev('(()=>{const n=document.querySelector("[data-name]");n.value="Spring spellings";n.dispatchEvent(new Event("input"))})()');
-    step('a real paste of a list with line breaks, a tab and list numbers');
-    await ev('window.__live = document.querySelector("[data-live]")');
-    const cancelled = await ev(`(() => { const n = document.querySelector("[data-typed]"); const dt = new DataTransfer(); dt.setData("text/plain", "1. build\\r\\n2. earth\\nfruit\\theart\\r\\nisland\\r\\n3) because\\r\\n"); const e = new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true }); n.dispatchEvent(e); return e.defaultPrevented; })()`);
-    ok(cancelled, 'the paste was taken over');
-    const boxed = await ev('document.querySelector("[data-typed]").value');
-    ok(!/[\r\n\t]/.test(boxed) && boxed.split(',').length === 6, 'one comma list in the box: ' + boxed);
-    await ev('document.querySelector("[data-typeform]").requestSubmit()');
+    step('Type or paste all: a list with list numbers, a tab and line breaks');
+    await click('[data-act=tab][data-tab=paste]');
+    await until('document.querySelector("[data-paste]")', 'the paste box');
+    await ev('(()=>{const n=document.querySelector("[data-paste]");n.value="1. build\\r\\n2. earth\\nfruit\\theart\\r\\nisland\\r\\n3) because\\r\\n";n.dispatchEvent(new Event("input",{bubbles:true}))})()');
+    await click('[data-act=tab][data-tab=word]');
     await until('document.querySelectorAll("[data-ownwords] [data-word]").length === 6', 'six rows from the paste');
-    ok(await ev('window.__live === document.querySelector("[data-live]") && document.body.contains(window.__live)'), 'the live region stays in place through a redraw');
-    await until('/6 added\\./.test(document.querySelector("[data-live]").textContent)', 'the add is announced');
-    ok(await ev('document.activeElement === document.querySelector("[data-typed]")'), 'focus back in the word box');
-    ok(/^6 of 15 words$/.test(await text('[data-count]')), 'the count: ' + await text('[data-count]'));
-    ok(await ev('document.querySelectorAll("[data-ownwords] [data-word]").length') === 6 && /Has a meaning and picture/.test(await text('[data-word="build"]')), 'six rows with a status');
-    ok(await ev('document.querySelector("[data-remove=\\"island\\"]").getAttribute("aria-label")') === "Remove 'island'", 'the Remove label');
-    const r = await ev('(() => { const b = document.querySelector("[data-remove=\\"island\\"]").getBoundingClientRect(); return [b.width, b.height]; })()');
+    ok(/^6 words · a week takes 10$/.test(await text('[data-count]')), 'the count: ' + await text('[data-count]'));
+    ok(/Ready-made/.test(await text('[data-word="build"]')), 'a ready-made word says so: ' + await text('[data-word="build"]'));
+    ok(await ev('document.querySelector("[data-word=\\"island\\"] [data-act=remove]").getAttribute("aria-label")') === "Remove 'island'", 'the Remove label');
+    const r = await ev('(() => { const b = document.querySelector("[data-word=\\"island\\"] [data-act=remove]").getBoundingClientRect(); return [b.width, b.height]; })()');
     ok(r[0] >= 44 && r[1] >= 44, 'Remove is at least 44 x 44: ' + r);
-    await click('[data-remove="because"]');
-    ok(await ev('document.activeElement && document.activeElement.hasAttribute("data-remove")'), 'after Remove, focus is on the next Remove');
+    await click('[data-word="because"] [data-act=remove]');
+    ok(await ev('document.activeElement && document.activeElement.dataset.act === "remove"'), 'after Remove, focus is on the next Remove');
     await typeIn('because');
-    await click('[data-share]:not(:checked)');
+    await until('document.querySelectorAll("[data-ownwords] [data-word]").length === 6', 'six rows again');
     await ev('document.querySelectorAll("[data-share]").forEach((b) => { if (!b.checked) b.click(); })');
     await shot('wp7-editor-1280');
-    await click('[data-save]');
+    await click('[data-act=save]');
     await until('document.querySelector("[data-saved]")', 'the saved line');
-    ok(await ev('document.activeElement === document.querySelector("[data-saved]")') && !await has('[data-use-top]'), 'focus on the saved line; the top Use for this week is gone');
-    ok(/^Saved\. Robin and Wren can find it under 'From your grown-up'\.$/.test(await text('[data-saved]')), 'the saved line: ' + await text('[data-saved]'));
-    ok(await has('[data-use]') && await has('[data-back-list]'), 'Use for this week and Back to your chapters');
+    ok(await ev('document.activeElement === document.querySelector("[data-saved]")'), 'focus on the saved line');
+    const line = await text('[data-saved]');
+    ok(/^Saved\. Robin and Wren can find it under 'From your grown-up'\.$/.test(line), 'the saved line: ' + line);
+    ok(await has('[data-set]') && /Set a week with this list/.test(await text('[data-set]')) && await has('[data-back-list]'), 'Set a week with this list, and Back to Word lists');
     await sleep(300);
     const own = (await adultLocal()).own;
     const [oid, m] = Object.entries(own)[0];
@@ -117,16 +115,16 @@ export default function (H) {
     await shot('wp7-editor-390');
     step('the list page');
     await go('#/grownups/own');
-    await until('document.querySelector("[data-own-list] [data-own]")', 'the list');
-    ok(/Shared with Robin and Wren/.test(await text('[data-shared]')), 'shared with');
+    await until('document.querySelector("[data-own-list] [data-own], [data-own]")', 'the list');
+    ok(/Given for practice to Robin and Wren/.test(await text('[data-shared]')), 'shared with: ' + await text('[data-shared]'));
   });
 
   scene('SB4-WP7 the child finds it, learns, practises, tests and quizzes; progress is kept under own-<oid>', async () => {
     await width(390, 844);
     await asChild();
     await until('document.querySelector("[data-own-head]")', 'the section');
-    ok(/From your grown-up/.test(await text('[data-own-head]')) && /Made by your grown-up/.test(await text('[data-own-chapter]')), 'section and label');
-    ok(await ev('document.querySelector("[data-own-chapter]").getAttribute("aria-label")') === 'Spring spellings, to do', 'the stone label');
+    ok(/From your grown-up/.test(await text('[data-own-head]')) && /Spring spellings\s*6 words · /.test(await text('[data-own-chapter]')), 'SB5 Practice: the section and a tile with name and word count: ' + await text('[data-own-head]') + ' / ' + await text('[data-own-chapter]'));
+    ok(/to do/i.test(await text('[data-own-chapter]')) && await ev('document.querySelector("[data-own-chapter]").dataset.state') === 'todo', 'the tile says to do');
     await shot('wp7-more-practice-390');
     await click('[data-own-chapter]');
     await until('document.querySelector("[data-chapterpage]")', 'the chapter page');
@@ -165,15 +163,16 @@ export default function (H) {
   scene('SB4-WP7 edit: remove one word, add one; same oid; the child keeps passed and studied', async () => {
     await width(1280, 900);
     const prog = { v: 1, resetAt: 0, chapters: { ['own-' + OID]: { studiedAt: NOW, practisedAt: NOW } }, results: [{ id: 'r1', c: 'own-' + OID, s: 6, t: 6, at: NOW, passed: true }], folded: {}, tricky: {} };
-    await asAdult({ hash: '#/grownups/own/' + OID });
+    await asAdult({ hash: '#/grownups/own/' + OID + '/edit' });
     acct.put(CHILD, 'spellbright', 'progress', prog);
-    await open(DAY, '#/grownups/own/' + OID);
+    await open(DAY, '#/grownups/own/' + OID + '/edit');
     await until('document.querySelector("[data-started]")', 'the started line');
-    ok(/^Robin has started this chapter\. Changes show next time Robin plays\.$/.test(await text('[data-started]')), await text('[data-started]'));
-    await click('[data-remove="island"]');
+    ok(/^Robin has started this list\. Changes show next time Robin plays\.$/.test(await text('[data-started]')), await text('[data-started]'));
+    await click('[data-word="island"] [data-act=remove]');
     await typeIn('quay');
-    ok(/^6 of 15 words$/.test(await text('[data-count]')), 'six again');
-    await click('[data-save]');
+    await until('document.querySelectorAll("[data-ownwords] [data-word]").length === 6', 'six rows again');
+    ok(/^6 words/.test(await text('[data-count]')), 'six again: ' + await text('[data-count]'));
+    await click('[data-act=save]');
     await until('document.querySelector("[data-saved]")', 'saved');
     await sleep(300);
     const own = (await adultLocal()).own;
@@ -184,16 +183,16 @@ export default function (H) {
     ok(await ev('document.querySelector("[data-own-chapter]").dataset.state') === 'passed', 'still passed');
   });
 
-  scene('SB4-WP7 delete and Undo; delete and restore from Deleted chapters; the copies follow each time', async () => {
+  scene('SB4-WP7 delete and Undo; delete and restore from Deleted lists; the copies follow each time', async () => {
     await width(1280, 900);
-    await asAdult({ hash: '#/grownups/own/' + OID });
-    await until('document.querySelector("[data-delete]")', 'Delete chapter');
-    await click('[data-delete]');
+    await asAdult({ hash: '#/grownups/own/' + OID + '/edit' });
+    await until('document.querySelector("[data-act=delete]")', 'Delete list');
+    await click('[data-act=delete]');
     await until('document.querySelector("[data-dialog]")', 'the sheet');
-    ok(/^Delete 'Spring spellings'\?[\s\S]*Robin's and Wren's stars stay\./.test(await text('[data-dialog]')), await text('[data-dialog]'));
+    ok(/^Delete this list\?[\s\S]*Weeks and results already set stay as they are\./.test(await text('[data-dialog]')), 'SB5 sheet: ' + await text('[data-dialog]'));
     await click('[data-act="no"]');
     ok(!await has('[data-dialog]'), 'Keep it closes it');
-    await click('[data-delete]');
+    await click('[data-act=delete]');
     await click('[data-act="yes"]');
     await until('document.querySelector("[data-undo-go]")', 'Undo');
     ok(kidsWords(CHILD).setup.own[OID].gone > 0, 'the child\'s copy is gone');
@@ -201,11 +200,12 @@ export default function (H) {
     await until('document.querySelector("[data-own=\\"' + OID + '\\"]")', 'back on the list');
     await sleep(300);
     ok(!kidsWords(CHILD).setup.own[OID].gone && !kidsWords(CHILD2).setup.own[OID].gone, 'copies are back');
-    step('delete, then restore from Deleted chapters');
-    await click('[data-edit]');
-    await click('[data-delete]');
+    step('delete, then restore from Deleted lists');
+    await go('#/grownups/own/' + OID + '/edit');
+    await until('document.querySelector("[data-act=delete]")', 'the editor again');
+    await click('[data-act=delete]');
     await click('[data-act="yes"]');
-    await until('document.querySelector("[data-deleted] [data-restore]")', 'Deleted chapters');
+    await until('document.querySelector("[data-deleted] [data-restore]")', 'Deleted lists');
     ok(!await has('[data-own="' + OID + '"]'), 'gone from the list');
     await click('[data-restore]');
     await until('document.querySelector("[data-own=\\"' + OID + '\\"]")', 'restored');
@@ -220,27 +220,37 @@ export default function (H) {
     await typeIn('grlpx');
     await typeIn('arse');
     await typeIn("it's");
-    const lines = await ev('[...document.querySelectorAll("[data-refused] .gu-ownword__s")].map((e) => e.textContent)');
-    ok(lines.length === 3 && lines.every((l) => l === "We can't use this word yet"), 'one line for all: ' + lines);
-    ok(await ev('document.querySelector("[data-refused]").classList.contains("is-refused")') && /^0 of 15 words$/.test(await text('[data-count]')), 'greyed, not counted');
+    const lines = await ev('[...document.querySelectorAll("[data-refused] .gu-ownword__s")].map((e) => e.firstChild.textContent)');
+    ok(lines.length === 3 && lines.every((l) => l === "We can't use this word yet" || /^“[^”]+” doesn’t look right\.$/.test(l)), 'one kind line for all (S6: a near match reads "doesn\'t look right", any other the plain refusal): ' + lines);
+    ok(/Names of people, places and months are not spelling words here/.test(await text('[data-refused] [data-why]')), 'S6: the reason, with what to do: ' + await text('[data-refused] [data-why]'));
+    ok(await ev('document.querySelector("[data-refused]").classList.contains("is-refused")') && /^0 words/.test(await text('[data-count]')), 'greyed, not counted: ' + await text('[data-count]'));
     await typeIn('island');
     await typeIn('island');
-    ok(/Already in the list/.test(await text('[data-repeat="island"]')) && /^1 of 15 words$/.test(await text('[data-count]')), 'a repeat');
+    ok(/Already in the list/.test(await text('[data-repeat="island"]')) && /^1 word/.test(await text('[data-count]')), 'a repeat: ' + await text('[data-count]'));
     await typeIn('build, earth, fruit, heart, because, quay, lantern, friend, thought, tractor, busy, early, group, heard');
-    ok(/^15 of 15 words$/.test(await text('[data-count]')) && /^That's 15 words, the most a chapter can hold\.$/.test(await text('[data-full]')), 'the 15th: ' + await text('[data-count]'));
+    ok(/^15 words/.test(await text('[data-count]')) && /^That's 15 words, the most a list can hold\./.test(await text('[data-full]')), 'the 15th: ' + await text('[data-count]') + ' / ' + await text('[data-full]'));
     ok(await ev('document.querySelector("[data-add]").disabled'), 'Add is disabled at 15');
     await shot('wp7-editor-full-390');
   });
 
-  scene('SB4-WP7 offline: the editor says so; the child can still play a chapter already on the device', async () => {
+  scene('S6 two words typed back to back are both taken (a tap during checking is queued, not dropped)', async () => {
+    await width(390, 844);
+    await asAdult({ made: false, hash: '#/grownups/own/new' });
+    await until('document.querySelector("[data-own-editor]")', 'the editor');
+    await ev('(()=>{const n=document.querySelector("[data-typed]");const f=document.querySelector("[data-typeform]");for (const v of ["garden","quiet"]) { n.value=v; n.dispatchEvent(new Event("input",{bubbles:true})); f.requestSubmit(); }})()');
+    await until('/^2 words/.test(document.querySelector("[data-count]").textContent)', 'both words added');
+    ok(await has('[data-word="garden"]') && await has('[data-word="quiet"]'), 'both words are in the list: ' + await text('[data-count]'));
+  });
+
+  scene('SB4-WP7 offline: the editor keeps the list on the phone; the child can still play a chapter already on the device', async () => {
     await asAdult({ made: false, hash: '#/grownups' });
-    await until('document.querySelector("[data-ownlink]")', 'the quiet link on the grown-ups home');
+    await until('document.querySelector("main h1")', 'the grown-ups home');
     acct.offline = true;
     await ev('Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false })');
     try {
       await go('#/grownups/own/new');
-      await until('document.querySelector("[data-own-offline]")', 'the offline card');
-      ok(/You're offline\. You can make chapters when you're back online\./.test(await text()), 'the line');
+      await until('document.querySelector("[data-own-editor]")', 'the editor opens offline (SB5: a list can be made offline and is kept on the phone)');
+      ok(/Save list keeps it on this phone/.test(await text('[data-bar]')), 'the line by Save list: ' + await text('[data-bar]'));
     } finally { acct.offline = false; await ev('delete navigator.onLine'); }
     await asChild({ hash: '#/words/own/' + OID });
     await until('document.querySelector("[data-chapterpage]")', 'the chapter');
@@ -266,19 +276,18 @@ export default function (H) {
     ok(!acct.calls.some((c) => c.path.startsWith('/api/children')), 'no PUT and no child data asked for (nothing under /api/children)');
   });
 
-  scene('SB4-WP7 Use for this week with 12 words: Pick 10, then Plan a week has 10 filled in', async () => {
+  // SB5: "Use for this week" is now "Set a week" on the list card; a list over ten words opens the trim page (a week holds 10).
+  scene('SB4-WP7 Set a week with a 12-word list: a week holds 10, so the trim page comes first', async () => {
     await width(1280, 900);
     const twelve = ['build', 'earth', 'fruit', 'heart', 'island', 'because', 'quay', 'lantern', 'friend', 'thought', 'busy', 'early'];
     await asAdult({ words: twelve, to: [CHILD], hash: '#/grownups/own' });
-    await until('document.querySelector("[data-use]")', 'Use for this week');
-    await click('[data-use]');
-    await until('document.querySelector("[data-dialog]")', 'the sheet');
-    ok(/Pick 10 for this week/.test(await text('[data-dialog] h2')) && await ev('document.querySelectorAll("[data-pick]:checked").length') === 10, 'ten ticked');
-    await click('[data-act="go"]');
-    await until('/\\/plan$/.test(location.hash)', 'Plan a week');
-    await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'the words step');
-    ok(await ev('document.querySelectorAll("[data-mywords] .gu-mywords li").length') > 0 && /^10 of 10$/.test(await text('[data-count]')), 'ten words filled in: ' + await text('[data-count]'));
-    ok(await ev('sessionStorage.getItem("sb.planWords")') === null, 'the hand-off was read once');
+    await until('document.querySelector("[data-set]")', 'Set a week');
+    await click('[data-set]');
+    await until('/#\\/grownups\\/set\\/list\\//.test(location.hash) && document.querySelector(".st-page")', 'the Set a week page');
+    await sleep(300);
+    const t = await text('main');
+    ok(/12 words\. A week takes 10: you choose which 10/.test(t) && await has('[data-primary]') || /Choose which 10 words/.test(t), 'the page says 12 words, a week takes 10, choose which 10: ' + t.slice(0, 300));
+    ok(await ev('sessionStorage.getItem("sb.planWords")') === null, 'no old hand-off left in the session');
   });
 
   scene('SB4-WP7 a week whose test is due and shares a word with the chapter shows the test card', async () => {
@@ -298,7 +307,7 @@ export default function (H) {
 
   scene('SB4-WP7 an older app dropped the grown-up\'s field: the list page brings the chapters back', async () => {
     await asAdult({ keepMaster: false, hash: '#/grownups' });
-    await until('document.querySelector("[data-ownlink]")', 'the home');
+    await until('document.querySelector("main h1")', 'the home');
     ok(Object.keys((await adultLocal()).own || {}).length === 0, 'no master');
     await go('#/grownups/own');
     await until('document.querySelector("[data-own=\\"' + OID + '\\"]")', 'the chapter is back');

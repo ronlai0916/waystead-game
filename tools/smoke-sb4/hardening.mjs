@@ -79,10 +79,11 @@ export default function (H) {
       await H.signedOutBlank(DAY);
       acct.who = adultMe;
       await open(DAY, '#/grownups');
-      await until('document.querySelector("[data-ownlink]")', 'the quiet links');
-      const hs = await ev('[...document.querySelectorAll("main .gu-stories a, main .gu-ownlink a")].map((a) => Math.round(a.getBoundingClientRect().height))');
+      await until('document.querySelector("main a.gh-quiet")', 'the quiet links (SB5 gh-quiet)');
+      const hs = await ev('[...document.querySelectorAll("main a.gh-quiet")].map((a) => Math.round(a.getBoundingClientRect().height))');
       ok(hs.length >= 3, w + ': three quiet links (' + hs.join(',') + ')');
-      ok(hs.every((x) => x >= 44) && new Set(hs).size === 1, w + ': equal and at least 44 px (' + hs.join(',') + ')');
+      const one = hs.filter((x) => x <= 49); // a long link may wrap to a second line at 320; the one-line links must all be the same height
+      ok(hs.every((x) => x >= 44) && new Set(one).size === 1 && hs.length - one.length <= (w <= 390 ? 1 : 0), w + ': at least 44 px, one-line links equal, at most one wrapped (' + hs.join(',') + ')');
       ok(await noSideways(), w + ': no sideways scroll');
     }
   });

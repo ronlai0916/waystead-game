@@ -1,0 +1,257 @@
+{
+ "chapter": "y34-ch02",
+ "year": 3,
+ "words": {
+  "strength": [
+   "Mum needs a lot of strength to push the stuck door open.",
+   "Do you have the strength to carry this big bag?",
+   "The rope held firm because of its great strength."
+  ],
+  "early": [
+   "I got up early, so I was first at school.",
+   "The bus came early, so we missed it!",
+   "Is it too early to open our birthday cards?"
+  ],
+  "guide": [
+   "Will you be my guide round the school fair?",
+   "This little book is a guide to garden birds.",
+   "Use the dotted line as a guide when you cut."
+  ],
+  "often": [
+   "My cat often sleeps on the warm windowsill.",
+   "It often rains in autumn, so I take my umbrella.",
+   "Do you often read books at the library?"
+  ],
+  "woman": [
+   "A girl grows into a woman, and a boy into a man.",
+   "Is a girl who has grown up called a woman?",
+   "She was a baby, then a girl, and now a woman."
+  ],
+  "women": [
+   "Two women were chatting on the bench at the park.",
+   "Both women waved from the boat at the seaside.",
+   "Lots of women and men came to the school fair."
+  ],
+  "actual": [
+   "On the postcard it looks tiny, but the actual castle is huge.",
+   "Is this the actual shell you found at the seaside?",
+   "The map is small, but the actual hill is huge!"
+  ],
+  "answer": [
+   "What is the answer to two plus two?",
+   "Nobody could give the teacher an answer to the riddle.",
+   "I knocked on the door, but there was no answer."
+  ],
+  "centre": [
+   "The park has a big pond in the centre.",
+   "Can you fold the paper to find its centre?",
+   "The hole in a doughnut is at its centre."
+  ],
+  "circle": [
+   "Use a plate to trace a circle on the paper.",
+   "The moon looked like a bright white circle in the sky.",
+   "A wheel is a circle, so it rolls easily."
+  ]
+ },
+ "rounds": {
+  "strength": 0,
+  "early": 0,
+  "guide": 0,
+  "often": 1,
+  "woman": 2,
+  "women": 0,
+  "actual": 0,
+  "answer": 0,
+  "centre": 1,
+  "circle": 0
+ },
+ "rejected": [
+  {
+   "word": "strength",
+   "round": 0,
+   "s": "We tested the strength of the bridge made from lolly sticks.",
+   "reason": "checker: 'Tested the centre of the bridge' also makes sense, so the gap has two answers. (also fits: centre)"
+  },
+  {
+   "word": "early",
+   "round": 0,
+   "s": "The birds sing very early on summer mornings.",
+   "reason": "checker: 'The birds sing very often' also makes sense. (also fits: often)"
+  },
+  {
+   "word": "early",
+   "round": 0,
+   "s": "The early train left before the sun came up.",
+   "reason": "checker: 'The busy train' also makes sense in the gap. (also fits: busy, actual)"
+  },
+  {
+   "word": "guide",
+   "round": 0,
+   "s": "The guide held up a flag so we could follow her.",
+   "reason": "checker: 'The woman held up a flag' also makes sense. (also fits: woman)"
+  },
+  {
+   "word": "often",
+   "round": 0,
+   "s": "I visit Gran often, almost every Sunday!",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "often",
+   "round": 0,
+   "s": "We often have pancakes for tea on Tuesday.",
+   "reason": "checker: 'Often' with 'on Tuesday' (one day, not every Tuesday) reads oddly."
+  },
+  {
+   "word": "often",
+   "round": 0,
+   "s": "How often do you water the plants in the garden?",
+   "reason": "checker: 'How early do you water the plants' also makes sense. (also fits: early)"
+  },
+  {
+   "word": "woman",
+   "round": 0,
+   "s": "The woman at the bakery sold us warm bread.",
+   "reason": "checker: 'The women at the bakery sold us' also works, so the child cannot tell which. (also fits: women)"
+  },
+  {
+   "word": "woman",
+   "round": 0,
+   "s": "A kind woman held the door open for me.",
+   "reason": "checker: 'A kind guide held the door open' also makes sense. (also fits: guide)"
+  },
+  {
+   "word": "woman",
+   "round": 0,
+   "s": "One woman was walking her dog in the park.",
+   "reason": "checker: 'One guide was walking her dog' is still correct English, so it is doubtful and dropped. (also fits: guide)"
+  },
+  {
+   "word": "woman",
+   "round": 0,
+   "s": "Who is the woman with the red umbrella?",
+   "reason": "checker: 'Who is the guide with the red umbrella?' makes good sense too. (also fits: guide)"
+  },
+  {
+   "word": "women",
+   "round": 0,
+   "s": "The women at the bus stop shared one big umbrella.",
+   "reason": "checker: 'The woman at the bus stop' also fits, since nothing marks the gap as plural. (also fits: woman)"
+  },
+  {
+   "word": "women",
+   "round": 0,
+   "s": "Those women are baking cakes for the school sale!",
+   "reason": "checker: Women baking cakes plays into the stereotype of who cooks."
+  },
+  {
+   "word": "actual",
+   "round": 0,
+   "s": "We saw a toy train, then the actual train at the station.",
+   "reason": "checker: 'Then the early train' and 'the busy train' also make sense. (also fits: early, busy)"
+  },
+  {
+   "word": "actual",
+   "round": 0,
+   "s": "The film was fun, but I liked the actual book more.",
+   "reason": "checker: 'The actual book' is an odd way to say 'the book' and may confuse a child."
+  },
+  {
+   "word": "answer",
+   "round": 0,
+   "s": "Please write your answer in the box under the question.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "centre",
+   "round": 0,
+   "s": "The jam is in the centre of the doughnut.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "centre",
+   "round": 0,
+   "s": "Put the vase in the centre of the table.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "centre",
+   "round": 0,
+   "s": "Which sweet is in the centre of the box?",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "often",
+   "round": 1,
+   "s": "My cat often sleeps on the sofa in the afternoon.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "often",
+   "round": 1,
+   "s": "We go to the library often, nearly every week.",
+   "reason": "checker: 'We go to the library early, nearly every week' also makes sense, so 'early' fits the gap. (also fits: early)"
+  },
+  {
+   "word": "often",
+   "round": 1,
+   "s": "Mum often bakes biscuits on rainy days.",
+   "reason": "checker: Marked strictly, it leans on the stereotype of mum as the one who cooks."
+  },
+  {
+   "word": "woman",
+   "round": 1,
+   "s": "The woman next door waters her garden every evening.",
+   "reason": "checker: 'The guide next door waters her garden' also makes sense. (also fits: guide)"
+  },
+  {
+   "word": "woman",
+   "round": 1,
+   "s": "Is that woman in the garden your gran or your aunt?",
+   "reason": "checker: 'Is that guide in the garden your gran' is odd but makes sense, so a strict marker drops it. (also fits: guide)"
+  },
+  {
+   "word": "woman",
+   "round": 1,
+   "s": "The baby smiled up at the woman who is her mum.",
+   "reason": "checker: 'guide' also fits, and 'the woman who is her mum' sounds a little stiff. (also fits: guide)"
+  },
+  {
+   "word": "woman",
+   "round": 1,
+   "s": "The sign on the door shows a woman, not a man.",
+   "reason": "checker: 'The sign shows a circle, not a man' also makes sense. (also fits: circle)"
+  },
+  {
+   "word": "woman",
+   "round": 1,
+   "s": "My aunt is a woman, like my mum and my gran.",
+   "reason": "checker: 'My aunt is a guide, like my mum and my gran' also makes sense. (also fits: guide)"
+  },
+  {
+   "word": "centre",
+   "round": 1,
+   "s": "The best seat is not at the edge but in the centre.",
+   "reason": "checker: In British theatres 'the circle' is a seating area, so 'in the circle' also fits. (also fits: circle)"
+  },
+  {
+   "word": "woman",
+   "round": 2,
+   "s": "Dad is a man, and Mum is a woman.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "woman",
+   "round": 2,
+   "s": "A little girl grows up to be a woman.",
+   "reason": "checker: 'Grows up to be a guide' also makes sense, so a child could not be sure which word belongs. (also fits: guide)"
+  },
+  {
+   "word": "woman",
+   "round": 2,
+   "s": "Hooray, my big sister is eighteen and is now a woman!",
+   "reason": "checker: 'Is eighteen and is now a guide' also makes sense, and the wording feels a little awkward. (also fits: guide)"
+  }
+ ],
+ "sitOut": []
+}

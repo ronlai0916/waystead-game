@@ -15,36 +15,29 @@ export default function (H) {
   const step = (n) => console.log('  · ' + n);
   const heights = (sel) => ev('[...document.querySelectorAll(' + JSON.stringify(sel) + ')].map((e) => Math.round(e.getBoundingClientRect().height))');
   const noSideways = () => ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth');
-  const years = () => ev('[...document.querySelectorAll(".yearswitch__b")].map((b) => b.textContent.trim() + (b.getAttribute("aria-label") ? "|" + b.getAttribute("aria-label") : ""))');
-  const pressed = () => ev('(document.querySelector(".yearswitch__b[aria-pressed=true]") || {}).dataset ? document.querySelector(".yearswitch__b[aria-pressed=true]").dataset.year : ""');
+  const years = () => ev('[...document.querySelectorAll("[data-yearswitch] [data-year]")].map((b) => b.textContent.trim() + (b.getAttribute("aria-label") ? "|" + b.getAttribute("aria-label") : ""))');
+  const pressed = () => ev('(document.querySelector("[data-yearswitch] [data-year][aria-pressed=true]") || {}).dataset ? document.querySelector("[data-yearswitch] [data-year][aria-pressed=true]").dataset.year : ""');
   const panel = () => ev('document.querySelector("[data-yearpanel]").dataset.yearpanel');
 
-  scene('SB4-WP1 a child in Year 4 sees Year 4, Year 5 and Other years', async () => {
+  // SB5 (TR-47): a child's Practice page has one button for every year (no Other years row); the grown-up's More practice page is unchanged.
+  scene('SB4-WP1 a child in Year 4 sees a button for each year on Practice, Year 4 chosen', async () => {
     H.serve('data/curriculum.json', H.legacyCurriculum); // the list before Years 1 and 2 and the new chapters
     await H.childWith(progDoc(), '#/chapters'); // the smoke's child is in Year 4
     await width(390);
-    await until('document.querySelector("[data-yearpanel]")', 'More practice');
-    ok(JSON.stringify(await years()) === JSON.stringify(['Year 4', 'Year 5', 'Other years']), 'three buttons: ' + await years());
-    ok((await heights('.yearswitch__b')).every((h) => h >= 48), 'each button is at least 48 px: ' + await heights('.yearswitch__b'));
+    await until('document.querySelector("[data-yearpanel]")', 'Practice');
+    ok(JSON.stringify(await years()) === JSON.stringify(['Year 3', 'Year 4', 'Year 5', 'Year 6']), 'four buttons, in year order: ' + await years());
+    ok((await heights('[data-yearswitch] [data-year]')).every((h) => h >= 48), 'each button is at least 48 px: ' + await heights('[data-yearswitch] [data-year]'));
     ok(await pressed() === 'y4' && await panel() === 'y4', 'opens on Year 4');
-    ok(await ev('document.querySelector("[data-moreyears]").getAttribute("aria-expanded")') === 'false', 'Other years is closed');
+    ok(!await has('[data-moreyears]') && !await has('#yearmore'), 'no Other years row on the child\'s Practice page');
     ok(await noSideways(), 'no sideways scroll at 390');
-    await click('[data-moreyears]');
-    ok(await ev('document.querySelector("[data-moreyears]").getAttribute("aria-expanded")') === 'true', 'Other years is open');
-    const t = await years();
-    ok(t.includes('Year 3') && t.includes('Year 6') && t.length === 5, 'Year 3 and Year 6 appear in place: ' + t);
-    ok(await ev('document.activeElement && document.activeElement.hasAttribute("data-moreyears")'), 'focus stays on Other years');
-    ok(await ev('document.querySelector("[data-moreyears]").getAttribute("aria-controls")') === 'yearmore' && await has('#yearmore'), 'Other years controls its row');
-    const wide = () => ev('[...document.querySelectorAll(".yearswitch__b")].map(b=>b.getBoundingClientRect().width)');
-    ok((await wide()).every((w) => w >= 48), 'every year button at least 48 wide when Other years is open: ' + await wide());
-    ok(await ev('(() => { const r = document.querySelector("#yearmore").getBoundingClientRect(), m = document.querySelector("[data-moreyears]").getBoundingClientRect(); return r.top >= m.bottom - 1; })()'), 'the opened years are on their own row, below');
-    ok(await ev('[...document.querySelectorAll("#yearmore .yearswitch__b")].map((b) => b.dataset.year).join()') === 'y3,y6', 'in year order');
+    const wide = () => ev('[...document.querySelectorAll("[data-yearswitch] [data-year]")].map(b=>b.getBoundingClientRect().width)');
+    ok((await wide()).every((w) => w >= 48), 'every year button at least 48 wide: ' + await wide());
     await width(320);
     ok((await wide()).every((w) => w >= 48) && await noSideways(), 'and at 320 wide, no sideways scroll');
     await width(390);
-    await click('.yearswitch__b[data-year=y6]');
+    await click('[data-yearswitch] [data-year=y6]');
     ok(await panel() === 'y6' && await pressed() === 'y6', 'Year 6 chosen');
-    ok(await ev('document.activeElement && document.activeElement.tagName === "H1"'), 'focus goes to the page heading');
+    ok(await ev('document.activeElement && document.activeElement.dataset.year === "y6"'), 'focus stays on the year button that was pressed');
     ok(await ev('localStorage.getItem("sb.chaptersYear")') === 'y6', 'the choice is remembered');
     await open(H.plus(2), '#/chapters');
     await until('document.querySelector("[data-yearpanel=y6]")', 'the remembered year');
@@ -63,13 +56,13 @@ export default function (H) {
     await H.adultWith(progDoc(), '#/chapters');
     await width(390);
     ok((await years()).join() === 'Y1|Year 1,Y2|Year 2,Y3|Year 3,Y4|Year 4,Y5|Year 5,Y6|Year 6', 'six short buttons with long names: ' + await years());
-    ok((await heights('.yearswitch__b')).every((h) => h >= 48), 'each at least 48 px');
+    ok((await heights('[data-yearswitch] [data-year]')).every((h) => h >= 48), 'each at least 48 px');
     ok(await noSideways(), 'no sideways scroll at 390 with six');
-    await click('.yearswitch__b[data-year=y2]');
+    await click('[data-yearswitch] [data-year=y2]');
     ok(await panel() === 'y2', 'Year 2');
     ok(/Not included yet: words with an apostrophe\./.test(await text('[data-yearpanel]')), 'a grown-up sees the apostrophe note under Year 2');
     ok(/Year 2 common exception words \(from the national curriculum\)/.test(await text('[data-yearpanel]')), 'and where the words come from');
-    await click('.yearswitch__b[data-year=y3]');
+    await click('[data-yearswitch] [data-year=y3]');
     ok(!/apostrophe/.test(await text('[data-yearpanel]')), 'not under Year 3');
     await width(1280, 800);
     ok(await noSideways(), 'no sideways scroll at 1280');
@@ -93,8 +86,7 @@ export default function (H) {
     await until('document.querySelector("[data-yearpanel=y3]")', 'an old remembered year becomes Year 3');
     step('progress under the old id shows on the new page');
     await go('#/chapters');
-    await click('[data-moreyears]');
-    await click('.yearswitch__b[data-year=y4]');
+    await click('[data-yearswitch] [data-year=y4]');
     const states = await ev('[...document.querySelectorAll(".stonelink")].map((a) => a.dataset.state)');
     ok(states[0] === 'passed' && states[1] === 'passed', 'Year 4 Chapters 1 and 2 passed: ' + states);
     step('Chapter 1 of Year 4 is open without passing Year 3; Chapter 2 says Pass Chapter 1 first');
@@ -108,8 +100,7 @@ export default function (H) {
     await until('document.querySelector("[data-chapterpage]")', 'Year 3 Chapter 1');
     ok(await text('[data-source]') === SRC34, 'Year 3 chapter eyebrow: ' + await text('[data-source]'));
     await go('#/chapters');
-    await click('[data-moreyears]');
-    await click('.yearswitch__b[data-year=y5]');
+    await click('[data-yearswitch] [data-year=y5]');
     ok(await text('[data-yearpanel] [data-source]') === SRC56, 'Year 5 line: ' + await text('[data-yearpanel] [data-source]'));
     await go('#/y9');
     await until('/isn.t here/.test(document.querySelector("main").innerText)', 'a year that does not exist is not a page');
@@ -126,9 +117,9 @@ export default function (H) {
     await open(H.plus(2), '#/chapters');
     await until('document.querySelector("[data-yearpanel]")', 'More practice');
     ok(await panel() === 'y1' && await pressed() === 'y1', 'a Year 1 child opens on Year 1');
-    ok((await years()).join() === 'Year 1,Year 2,Other years', 'Year 1, Year 2, Other years: ' + await years());
+    ok((await years()).join() === 'Year 1,Year 2,Year 3,Year 4,Year 5,Year 6', 'a button for every year (no Other years): ' + await years());
     const px = (sel) => ev('parseFloat(getComputedStyle(document.querySelector(' + JSON.stringify(sel) + ')).fontSize)');
-    ok(await has('.chapterspage.front--y12') && await px('.front__lede') === 22, 'the chapters page reads at 22 px');
+    ok(await has('.practice.front--y12') && await px('.yearcard__sum') === 22, 'the Practice page reads at 22 px (SB5: the year line replaces the spoken sentence)');
     await width(390);
     ok(await ev('[...document.querySelectorAll(".stonelink")].every(a=>a.querySelector(".stonelink__label").scrollWidth<=a.clientWidth)'), 'stone labels fit');
     ok(!/Pass|Start game/.test(await text('[data-yearpanel] .yearsource')), 'a source line');

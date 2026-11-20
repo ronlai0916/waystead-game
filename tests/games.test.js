@@ -253,12 +253,12 @@ test('all of that survives folding', () => {
   assert.equal(W.overall(small).practised, 1);
 });
 test('the help text says where dots come from', () => {
-  const about = readFileSync(fileURLToPath(new URL('../site/js/views.js', import.meta.url)), 'utf8');
-  assert.match(about, /3 times in a row/);
-  assert.match(about, /The games don\\'t earn dots/);
+  // SB5 (06d): the About page is "How Spellbright works" for grown-ups; the three-in-a-row rule lives in the study text and the job pages
+  const doc = readFileSync(fileURLToPath(new URL('../site/js/study-doc.js', import.meta.url)), 'utf8');
+  assert.match(doc, /3 times in a row/);
 });
 
 test('every game is registered for Game day, in order', () => {
-  assert.deepEqual(G.GAME_IDS, ['missing', 'unjumble', 'match', 'quick']);
+  assert.deepEqual(G.GAME_IDS, ['missing', 'unjumble', 'match', 'fill', 'mix', 'quick'], 'SB5: Fill in the blanks and Mix and match join, Meaning match stays');
   for (const id of G.GAME_IDS) assert.ok(G.GAMES[id].title && G.GAMES[id].line, id);
 });

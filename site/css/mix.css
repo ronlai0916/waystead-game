@@ -1,0 +1,101 @@
+/* SB5 (WP-F1): Fill in the blanks and Mix and match (TR-95, TR-97). Tokens only (garden, paint and night each define them); no parent selectors; nothing here
+   needs an inline style attribute (a card follows the finger by a transform set from script). Link this file after tray.css.
+   Fold (phone): the cards, Skip and Check sit in .mixbar, which stays at least --clear (110 px, the Safari bar) above the foot of the screen.
+   Sizes: a card is at least 64 wide and 52 tall with 10 px gaps; a sentence slot is at least 56 tall and the full width. */
+
+.mixpage { --clear: 110px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; max-width: 560px; margin-inline: auto; padding-bottom: var(--clear); min-height: calc(100vh - 76px); min-height: calc(100svh - 76px); }
+.mixpage > .pagehead { margin-bottom: 0; }
+.mixpage > [data-slot] { display: contents; }
+.mixpage .spellline { margin: 0; text-align: center; min-height: 1.4em; }
+.mixpage .btnrow { margin: 0; }
+.mixpage .answerline { margin: 0 auto; text-align: center; min-height: 1.6em; }
+.mixpage .keyboard { margin-inline: auto; }
+
+/* The sentence with its gap (Fill in the blanks) */
+.fillcard { background: var(--surface); border: var(--card-border); border-radius: var(--r-lg); padding: 18px 16px; }
+.fillgap { margin: 0; font-size: 1.35rem; line-height: 1.7; text-align: center; overflow-wrap: anywhere; color: var(--text); }
+.fillcard.is-over { border-color: var(--accent); }
+.blank { display: inline-block; vertical-align: baseline; min-width: 4.2em; min-height: 1.3em; margin-inline: 2px; padding: 0 8px; box-sizing: border-box; text-align: center; font-family: var(--f-display); font-weight: 600; color: var(--text); background: var(--accent-soft); border-bottom: 4px solid var(--accent); border-radius: 8px 8px 0 0; }
+.blank.is-filled { background: var(--accent-soft); border-bottom-color: var(--accent-strong); }
+
+/* The word cards */
+.mixbar { position: sticky; bottom: var(--clear); z-index: 5; margin-top: auto; display: grid; gap: 10px; padding: 12px 6px 10px; box-sizing: border-box; background: var(--bg); border-top: 2px solid var(--line); border-radius: var(--r) var(--r) 0 0; }
+.mixtray { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.mixcard {
+  min-width: 64px; min-height: 52px; padding: 8px 16px; box-sizing: border-box; display: inline-grid; place-items: center; cursor: grab;
+  font-family: var(--f-display); font-weight: 600; font-size: 1.2rem; line-height: 1.1; color: var(--text); background: var(--surface);
+  border: 2px solid var(--tile-edge); border-radius: 14px; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.mixcard:active:not(:disabled) { filter: brightness(0.94); }
+.mixcard.is-chosen { background: var(--accent-soft); border-color: var(--accent-strong); outline: 3px solid var(--accent-strong); outline-offset: 2px; }
+.mixcard.is-used, .mixcard.is-used:disabled { background: transparent; border-style: dashed; box-shadow: none; color: var(--muted); cursor: default; }
+.mixcard.is-lifted { position: relative; z-index: 40; pointer-events: none; cursor: grabbing; box-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.45); }
+.mixcard.is-glow { box-shadow: 0 0 0 4px var(--tray-bg), 0 0 0 7px var(--glow); }
+.mixcard.is-back:disabled { opacity: 0.55; border-style: dashed; cursor: default; }
+.mixact { display: flex; gap: 10px; align-items: stretch; }
+.mixact .btn { min-height: 56px; min-width: 64px; }
+.mixact .btn--primary { flex: 1; width: auto; max-width: none; }
+.mixact .btn--primary svg { width: 22px; height: 22px; margin-right: 6px; }
+.mixact .btn:disabled { opacity: 0.6; }
+
+/* The board: one sentence to each slot, full width, so a long sentence wraps and the slot grows */
+.mixboard { display: grid; gap: 10px; }
+.mixslot {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; width: 100%; min-height: 56px; padding: 10px 14px; box-sizing: border-box; text-align: left;
+  font-family: var(--f-body); font-size: 1.1rem; line-height: 1.6; color: var(--text); background: var(--surface); border: 2px dashed var(--field-edge); border-radius: var(--r); cursor: pointer;
+}
+.mixslot__t { flex: 1 1 12em; min-width: 0; overflow-wrap: anywhere; }
+.mixslot__w { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-family: var(--f-display); font-weight: 600; color: var(--text); background: var(--accent-soft); }
+.mixslot__w svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.mixslot__w--held { background: var(--tile-bg); color: var(--tile-fg); }
+.mixslot.is-target { border-color: var(--accent-strong); }
+.mixslot.is-over { border-style: solid; border-color: var(--accent-strong); background: var(--accent-soft); outline: 3px solid var(--accent-strong); outline-offset: 1px; }
+.mixslot.is-held { border-style: solid; border-color: var(--tile-edge); }
+.mixslot.is-ok { border-style: solid; border-color: var(--accent-strong); cursor: default; }
+.mixslot.is-try { border-color: var(--glow); }
+
+/* The end-of-game card */
+.mixscore { text-align: center; }
+.mixscore .result__head { justify-content: center; }
+.mixscore__n { margin: 8px 0 0; font-family: var(--f-display); font-weight: 600; font-size: 2.6rem; line-height: 1.1; }
+.mixscore .btnrow { justify-content: center; }
+
+/* Phone, 360 wide, text at 130%: sentences wrap, the page never scrolls sideways */
+@media (max-width: 420px) {
+  .fillgap { font-size: 1.2rem; }
+  .mixslot { font-size: 1rem; padding: 10px 12px; }
+  .mixslot__t { flex-basis: 100%; }
+  .mixcard { padding: 8px 12px; font-size: 1.1rem; }
+}
+@media (max-width: 359.98px) {
+  .mixcard { min-width: 64px; padding-inline: 10px; }
+}
+
+/* SB5 S1 (round 4): a short phone (up to 700 px high, portrait). The page is one screen: the header shrinks, the cards and buttons sit in a bar that ends --clear above the foot of the screen,
+   and the board of sentences is the part that scrolls, between the header and that bar. So the bar never covers a sentence, whatever the text size, and Check never needs a scroll. */
+@media (max-width: 600px) and (max-height: 700px) {
+  .mixpage { height: calc(100vh - 60px); height: calc(100svh - 60px); min-height: 0; gap: 6px; padding-top: 2px; }
+  .mixpage > .pagehead .eyebrow, .mixpage > .pagehead .muted { display: none; }
+  .mixpage > .pagehead h1 { font-size: 1.15rem; line-height: 1.2; }
+  .mixpage .spellline { min-height: 0; }
+  .mixpage .spellline:empty { display: none; }
+  .mixpage > .btnrow .btn { min-height: 48px; height: 48px; padding-block: 0; }
+  .mixpage > .mixboard { flex: 1 1 0; min-height: 96px; overflow-y: auto; overscroll-behavior: contain; align-content: start; }
+  .mixpage > .fillcard { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+  .mixbar { position: static; flex: none; margin-top: 0; padding: 8px 6px 6px; gap: 6px; }
+  .mixtray { gap: 6px; }
+  .mixcard { min-height: 48px; padding: 6px 12px; }
+  .mixact .btn { min-height: 48px; }
+}
+
+/* A phone on its side, or a wide short screen: the sentences on the left, the cards and buttons on the right, in view together */
+@media (orientation: landscape) and (max-height: 520px) {
+  .mixpage { --clear: 12px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-content: start; column-gap: 16px; max-width: none; min-height: 0; }
+  .mixpage > .pagehead { grid-column: 1 / -1; }
+  .mixpage > .spellline, .mixpage > .btnrow, .mixpage > .fillcard, .mixpage > .mixboard, .mixpage > .answerline { grid-column: 1; }
+  .mixpage > .mixbar { grid-column: 2; grid-row: 2 / span 5; position: sticky; top: 76px; bottom: auto; align-self: start; margin-top: 0; border-top: 0; border-radius: var(--r); }
+  .mixpage > .keyboard, .mixpage > .traycol, .mixpage > .tileword, .mixpage > .tileline { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) { .mixcard, .mixslot { transition: none; } }

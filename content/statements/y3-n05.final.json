@@ -1,0 +1,174 @@
+{
+ "chapter": "y3-n05",
+ "year": 3,
+ "words": {
+  "gym": [
+   "The ropes and mats are kept in the gym.",
+   "Mum rides a bike machine at the gym every Monday.",
+   "Climb the wall bars in the gym!"
+  ],
+  "myth": [
+   "Long ago, people made up a myth to explain why thunder rolls.",
+   "Can you act out the myth where a giant builds the hills?",
+   "The story that the moon is made of cheese is a myth."
+  ],
+  "young": [
+   "A baby bird is very young and cannot fly yet.",
+   "My brother is too young to ride the big bike.",
+   "Puppies are young dogs that love to chew."
+  ],
+  "touch": [
+   "I like to touch the soft fur of my cat.",
+   "Can you reach up and touch the ceiling?",
+   "Wet paint is on the gate, so do not touch it."
+  ],
+  "double": [
+   "We need double the flour to bake twice as many cakes.",
+   "I wore a double layer of socks in the snow.",
+   "Wow, a double rainbow shone after the rain!"
+  ],
+  "cousin": [
+   "My aunt's daughter, my cousin, built a sandcastle with me.",
+   "Is your uncle's son your cousin?",
+   "Will your cousin come to your birthday party?"
+  ],
+  "trouble": [
+   "Mum had trouble opening the stuck jar lid.",
+   "It was no trouble at all to carry your bag.",
+   "The trouble with this puzzle is a missing piece!"
+  ],
+  "country": [
+   "Scotland is a country with lakes and mountains.",
+   "What colour is the flag of your country?",
+   "Wales is a country with green hills and sheep."
+  ],
+  "mystery": [
+   "Nobody knows who left the gate open, so it is a mystery.",
+   "Where my other sock went is still a mystery to me.",
+   "Can you solve the mystery of the locked box?"
+  ],
+  "pyramid": [
+   "We stacked the tins into a pyramid at the shop.",
+   "Can you build a tall pyramid from these blocks?",
+   "The pointed roof looks just like a pyramid."
+  ]
+ },
+ "rounds": {
+  "gym": 0,
+  "myth": 1,
+  "young": 0,
+  "touch": 0,
+  "double": 0,
+  "cousin": 0,
+  "trouble": 0,
+  "country": 0,
+  "mystery": 1,
+  "pyramid": 0
+ },
+ "rejected": [
+  {
+   "word": "gym",
+   "round": 0,
+   "s": "Do you wear trainers when you run round the gym?",
+   "reason": "checker: A child could also run round a pyramid, so the gap has two answers. (also fits: pyramid)"
+  },
+  {
+   "word": "myth",
+   "round": 0,
+   "s": "The old tale of the sun god is just a myth.",
+   "reason": "machine rule 4: banned topic word: god"
+  },
+  {
+   "word": "myth",
+   "round": 0,
+   "s": "Is it a true story or only a myth?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "myth",
+   "round": 0,
+   "s": "What a wonderful myth about gods and heroes!",
+   "reason": "machine rule 4,5: banned topic word: gods; word overlap with the meaning is 67%"
+  },
+  {
+   "word": "myth",
+   "round": 0,
+   "s": "We heard a myth about a hero who climbed to the sky.",
+   "reason": "checker: Mystery can also be a story you hear, so the gap is not clear enough. (also fits: mystery)"
+  },
+  {
+   "word": "young",
+   "round": 0,
+   "s": "Grandad says he felt young when he played football.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "double",
+   "round": 0,
+   "s": "Ten is double five, so I counted twice.",
+   "reason": "checker: 'So I counted twice' does not follow logically and may confuse a child."
+  },
+  {
+   "word": "cousin",
+   "round": 0,
+   "s": "My cousin is the child of my uncle and is coming to tea.",
+   "reason": "machine rule 3,5: 13 words (needs 5-12); word overlap with the meaning is 50%"
+  },
+  {
+   "word": "country",
+   "round": 0,
+   "s": "France is a country across the sea from England.",
+   "reason": "machine rule 4: not on the word lists: France"
+  },
+  {
+   "word": "mystery",
+   "round": 0,
+   "s": "Who left the muddy footprints? It is a mystery!",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: It"
+  },
+  {
+   "word": "mystery",
+   "round": 0,
+   "s": "Nobody can explain the mystery of the odd noise.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "mystery",
+   "round": 0,
+   "s": "I love reading a mystery book at bedtime.",
+   "reason": "checker: A myth book also makes sense, and this is the story-genre sense of mystery. (also fits: myth)"
+  },
+  {
+   "word": "pyramid",
+   "round": 0,
+   "s": "A pyramid has a square base and four sloping sides.",
+   "reason": "machine rule 5: word overlap with the meaning is 60%"
+  },
+  {
+   "word": "pyramid",
+   "round": 0,
+   "s": "The shape with a point on top is a pyramid.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "myth",
+   "round": 1,
+   "s": "The myth says the moon is a giant silver boat in the sky.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "myth",
+   "round": 1,
+   "s": "It is a myth that carrots help you see in the dark.",
+   "reason": "checker: 'It is a mystery that carrots help…' also reads naturally, so the gap is not unique. (also fits: mystery)"
+  },
+  {
+   "word": "myth",
+   "round": 1,
+   "s": "We wrote a myth about how the rainbow got its colours!",
+   "reason": "checker: 'We wrote a mystery about…' is also natural, so a child could not tell which word belongs. (also fits: mystery)"
+  }
+ ],
+ "sitOut": [],
+ "manualEdits": "19 Nov 2026: Opus spot-check fixes (OPUS-SPOTCHECK.md), machine-checked with statements-check rules"
+}

@@ -9,7 +9,8 @@
 import { esc } from './ui.js';
 import * as A from './grownups-data.js';
 import * as D from './adult-doc.js';
-import { liveYears } from './data.js';
+import * as RD from './role-doc.js'; // SB5 WP-C: the Menu rows and words per role
+import { createRoleStore } from './role-data.js';
 import { CHOICES, currentChoice, choose } from './thememenu.js';
 import { announce } from './daystyle.js';
 import { voiceCardHtml, roving, childTools } from './child-views.js';
@@ -36,10 +37,32 @@ const I = {
   out: svg('<path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M16 8l4 4-4 4M20 12H9"/>'),
   swap: svg('<path d="M7 4v14M3 14l4 4 4-4M17 20V6M13 10l4-4 4 4"/>'),
   kids: svg('<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.5a3 3 0 0 1 0 5.5M18 14.8c1.8.7 3 2.4 3 5.2"/>'),
+  children: svg('<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.5a3 3 0 0 1 0 5.5M18 14.8c1.8.7 3 2.4 3 5.2"/>'),
+  lists: svg('<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>'),
+  set: svg('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>'),
+  help: svg('<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>'),
+  yourself: svg('<circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/>'),
 };
 
-let tools = { origin: () => '', player: () => null };
+let tools = { origin: () => '', player: () => null, prefs: () => null };
+/** app.js gives the origin, the player and (SB5) the account's prefs sync, so the role is kept in the account (TR-80). Without prefs: this device only. */
 export const useAdultTools = (t) => { tools = { ...tools, ...t }; };
+
+/** The role store for the signed-in grown-up (account copy through the prefs sync, device copy as the first paint), or null with no player. */
+export function roleStore() {
+  const p = tools.player();
+  const id = p && p.id ? String(p.id) : '';
+  if (!id) return null;
+  try {
+    return createRoleStore({ storage: window.localStorage, playerId: id, prefs: tools.prefs ? tools.prefs() : null });
+  } catch (e) { return null; }
+}
+/** parent, tutor or teacher: the saved role, parent when nothing is chosen. */
+export const currentRole = () => { const s = roleStore(); return s ? s.role() : 'parent'; };
+/** The name children see ("Mum"), or ''. */
+export const currentName = () => { const s = roleStore(); return s ? s.name() : ''; };
+/** Draw the Menu and the Account sheet again (the role or the name has changed). */
+export function roleChanged() { if (panels.menu) panels.menu.innerHTML = menuHtml(); drawAccount(); }
 
 let layer = null;
 let panels = {};
@@ -54,9 +77,27 @@ const here = () => location.href;
 const row = (href, ico, title, sub, extra = '') => '<a class="adultrow" href="' + esc(href) + '"' + extra + '><span class="adultrow__ico">' + ico + '</span><span class="adultrow__text"><b>' + esc(title) + '</b>' + (sub ? '<span>' + esc(sub) + '</span>' : '') + '</span><span class="adultrow__go" aria-hidden="true">' + I.chev + '</span></a>';
 const head = (id, title) => '<div class="adultpanel__head"><h2 id="' + id + '">' + esc(title) + '</h2><button type="button" class="btn btn--ghost adultclose" data-adult-close>' + I.close + 'Close</button></div>';
 
+const ROLE_NAME = { parent: 'Parent', tutor: 'Tutor', teacher: 'Teacher' };
+const WHO = { parent: 'Children', tutor: 'Learners', teacher: 'The class' };
+// The Menu's helper lines (final design 06a, 06at, 06au): the rows themselves come from role-doc menuRows(role).
+const MENU_SUB = { lists: 'Yours, and Year 1 to 6', help: 'How each one spells', yourself: 'Your own spelling practice', games: 'More Waystead games' };
+const SET_SUB = { parent: 'Words, children and a test date', tutor: 'One learner at a time', teacher: 'One list, one date' };
+/** "Ada, Ben and Cy", "Ada, Ben, Cy and 2 more"; a teacher's class is a count: "5 children". '' until the account's list has come. */
+function kidsSub(role) {
+  if (!Array.isArray(children) || !children.length) return '';
+  if (role === 'teacher') return children.length + (children.length === 1 ? ' child' : ' children');
+  const n = children.map((c) => c.nickname).filter(Boolean);
+  return n.length <= 3 ? (n.length > 1 ? n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1] : n[0]) : n.slice(0, 3).join(', ') + ' and ' + (n.length - 3) + ' more';
+}
+const hereHash = () => { const h = String(location.hash || '').split('?')[0]; return h === '' || h === '#' || h === '#/' ? '#/grownups' : h; };
+
 function menuHtml() {
+  const role = currentRole();
   return head('adult-menu-title', 'Menu') + '<nav aria-label="Menu"><ul class="adultlist">'
-    + D.menuRows(liveYears()).map((r) => '<li>' + row(r.href, I[r.id], r.title, r.sub, ' data-adultrow="' + r.id + '"') + '</li>').join('') + '</ul></nav>';
+    + RD.menuRows(role).map((r) => {
+      const sub = r.id === 'children' ? (kidsSub(role) || r.sub) : r.id === 'set' ? SET_SUB[role] : (MENU_SUB[r.id] || r.sub);
+      return '<li>' + row(r.href, I[r.id], r.title, sub, ' data-adultrow="' + r.id + '"' + (hereHash() === r.href ? ' aria-current="page"' : '')) + '</li>';
+    }).join('') + '</ul></nav>';
 }
 
 function accountHtml() {
@@ -76,8 +117,18 @@ function accountHtml() {
     + '<ul class="adultlist adultlist--tight">' + (kids ? '<li>' + kids + '</li>' : '') + '<li>' + row(links.accountHref, I.kids, 'Your account', 'Children, password and sign-in', ' data-account') + '</li></ul>'
     + '<h3 class="adultpanel__h" id="adult-look-h">Look</h3><div class="choices adultlooks" role="radiogroup" aria-labelledby="adult-look-h" data-looks>' + looks + '</div>'
     + (voice ? '<div class="adultvoice" data-voicecard>' + voice + '</div>' : '<div class="adultvoice" data-voicecard hidden></div>')
-    + '<ul class="adultlist adultlist--rule"><li>' + row(links.parentsHref, I.parents, 'For parents', 'How Spellbright works', ' data-parents') + '</li>'
+    + roleRowsHtml()
+    + '<ul class="adultlist adultlist--rule"><li>' + row(links.parentsHref, I.parents, 'How Spellbright works', 'For parents, teachers and tutors', ' data-parents') + '</li>'
     + '<li>' + row(links.outHref, I.out, 'Sign out', '', ' data-signout') + '</li></ul>';
+}
+
+/** Your role: "I use Spellbright as: Parent" and "Children see: Set by Mum", both to #/grownups/role (the change page). */
+function roleRowsHtml() {
+  const role = currentRole();
+  const name = currentName();
+  return '<h3 class="adultpanel__h" id="adult-role-h">Your role</h3><ul class="adultlist adultlist--tight" aria-labelledby="adult-role-h">'
+    + '<li>' + row('#/grownups/role', I.person, 'I use Spellbright as: ' + ROLE_NAME[role], 'Change', ' data-role') + '</li>'
+    + '<li>' + row('#/grownups/role', I.person, WHO[role] + ' see: ' + (name ? 'Set by ' + name : RD.WORDS[role].seen), 'Change', ' data-rolename') + '</li></ul>';
 }
 
 function drawAccount() {
@@ -133,6 +184,7 @@ function openPanel(kind, btn) {
   openKind = kind;
   opener = btn;
   if (kind === 'account') { panels.account.innerHTML = accountHtml(); loadChildren(); }
+  if (kind === 'menu') { panels.menu.innerHTML = menuHtml(); if (children === null) loadChildren(); }
   setTop();
   layer.hidden = false;
   panels[kind].hidden = false;
@@ -152,6 +204,13 @@ async function loadChildren() {
   const r = await A.listChildren(childApi());
   children = r.children ? r.children : 'failed';
   drawAccount();
+  if (openKind === 'menu') {
+    const at = panels.menu.contains(document.activeElement) ? document.activeElement : null;
+    const key = at ? (at.getAttribute('data-adultrow') || (at.hasAttribute('data-adult-close') ? '+close' : '')) : '';
+    panels.menu.innerHTML = menuHtml();
+    const again = key === '+close' ? panels.menu.querySelector('[data-adult-close]') : key ? panels.menu.querySelector('[data-adultrow="' + key + '"]') : null;
+    if (again) again.focus();
+  }
 }
 
 function wirePanels() {
@@ -182,12 +241,46 @@ function wirePanels() {
     closePanel(false);
     if (!chose) return;
     chose = false; // a row was chosen: the new page's heading takes focus, as settleFocus does for the child
-    setTimeout(() => { const h = document.querySelector('main h1'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } }, 0);
+    keepHeadingFocus();
   });
   const sp = childTools().speaker();
   if (sp && sp.onVoices) sp.onVoices(drawAccount);
   $('adult-menu-btn').addEventListener('click', (e) => (openKind === 'menu' ? closePanel() : openPanel('menu', e.currentTarget)));
   $('adult-chip').addEventListener('click', (e) => (openKind === 'account' ? closePanel() : openPanel('account', e.currentTarget)));
+}
+
+/**
+ * S3-D6/D7: a page reached from a Menu row draws in steps (a loading card, then the answer), and each redraw can drop focus on <main>
+ * or <body>. For a moment after the choice, whenever focus is lost like that the page's h1 takes it; any key or tap by the person ends it.
+ */
+function keepHeadingFocus() {
+  const mainEl = document.querySelector('main');
+  if (!mainEl) return;
+  let done = false;
+  let obs = null;
+  const focusH1 = () => {
+    const h = mainEl.querySelector('h1');
+    if (!h) return;
+    const a = document.activeElement;
+    if (a === h || (a && a !== document.body && a !== mainEl && a.isConnected && mainEl.contains(a))) return;
+    h.setAttribute('tabindex', '-1');
+    h.focus({ preventScroll: true });
+  };
+  const stop = () => {
+    if (done) return;
+    done = true;
+    if (obs) obs.disconnect();
+    document.removeEventListener('keydown', stop, true);
+    document.removeEventListener('pointerdown', stop, true);
+  };
+  document.addEventListener('keydown', stop, true);
+  document.addEventListener('pointerdown', stop, true);
+  if (typeof MutationObserver === 'function') {
+    obs = new MutationObserver(() => { if (!done) focusH1(); });
+    obs.observe(mainEl, { childList: true, subtree: true });
+  }
+  setTimeout(focusH1, 0);
+  setTimeout(stop, 3000);
 }
 
 let wired = false;

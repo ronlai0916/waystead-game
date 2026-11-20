@@ -117,7 +117,7 @@ export default function (H) {
     ok(await ev('[...document.querySelectorAll("[data-src]")].filter((e) => e.classList.contains("is-off")).every((e) => /Test not done yet/.test(e.textContent))'), 'untested sources say Test not done yet');
     await ev('document.querySelector("[data-src=\\"y34-ch08\\"] input").disabled && true');
     await click('[data-setexam-go]');
-    ok(/Choose at least one chapter or week\./.test(await text('[data-error]')), 'no source chosen');
+    ok(/Choose at least one chapter, list or week\./.test(await text('[data-error]')), 'no source chosen');
     for (const id of ids) await click('[data-src="' + id + '"] input');
     ok(/^20 words from 2 chapters$/.test(await text('[data-examline]')), 'the live line: ' + await text('[data-examline]'));
     await ev('(() => { const e = document.querySelector("#gu-exdate"); e.value = "' + W.addDays(DAY, -1) + '"; e.dispatchEvent(new Event("input")); })()');
@@ -172,13 +172,15 @@ export default function (H) {
     for (let i = 0; i < 3; i += 1) t('earth', plus(1), { kind: 'p', source: 'x' });
     for (const w of WORDS) t(w, plus(2), { kind: 't', lv: 2 });
     void g;
-    await asAdult(d, null, '#/grownups/child/' + CHILD + '/week/g1');
+    // SB5: the week's line and the year counts are in the child page's results; the word chips are in the Words card of the child's page.
+    await asAdult(d, null, '#/grownups/child/' + CHILD);
     await until('document.querySelector("[data-weekline]")', 'the week line');
     ok(/Week one test · 4 of 4 · Standard · with letter tiles \(Some letters\)/.test(await text('[data-weekline]')), 'the week line: ' + await text('[data-weekline]'));
+    ok(await has('[data-years] [data-yearcounts]'), 'a line for each year');
+    await until('document.querySelector("[data-word=build] [data-wordchip]")', 'the word chips on the child\'s page');
     const chip = await text('[data-word="build"] [data-wordchip]');
     ok(/Getting there/.test(chip) && /3 in a row with letter tiles/.test(chip), 'build is Getting there: ' + chip);
     ok(/Got it/.test(await text('[data-word="earth"] [data-wordchip]')), 'a keyboard word is Got it');
-    ok(await has('[data-years] [data-yearcounts]'), 'a line for each year');
     await width(390, 844);
     ok(await noSideways(), 'no sideways scroll at 390');
     await shot('wp6-report-390');
@@ -203,8 +205,8 @@ export default function (H) {
 
   scene('SB4-WP6 the overview keeps the account order', async () => {
     await asAdult(week(), progDoc(['y34-ch06']), '#/grownups');
-    await until('document.querySelector("[data-overview-link]")', 'the link with two children');
-    await click('[data-overview-link]');
+    await until('document.querySelector("a.gh-quiet[href=\\"#/grownups/overview\\"]")', 'the quiet link with two children (SB5 gh-quiet)');
+    await click('a.gh-quiet[href="#/grownups/overview"]');
     await until('document.querySelector("[data-overview]")', 'the table');
     const names = await ev('[...document.querySelectorAll("[data-overview] tbody tr")].map((r) => r.querySelector("th").textContent.trim()).join()');
     ok(names === 'Robin,Wren', 'account order: ' + names);

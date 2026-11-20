@@ -1,0 +1,275 @@
+{
+ "chapter": "y1-ch08",
+ "year": 1,
+ "words": {
+  "here": [
+   "Can you come here and help me, please?",
+   "Come here quickly, a snail is on my shoe!",
+   "When the teacher says my name, I say here!"
+  ],
+  "there": [
+   "The shop is open, so we can go there.",
+   "The moon is far, so we cannot walk there.",
+   "Is there any milk left in the jug?"
+  ],
+  "where": [
+   "Where do the ducks sleep at night?",
+   "I wonder where my red sock went.",
+   "Tell me where the library is, please."
+  ],
+  "house": [
+   "I drew a house with four windows.",
+   "The brick house has a red roof.",
+   "Dad cleaned every window in the house."
+  ],
+  "our": [
+   "We love to play in our garden.",
+   "Our teacher reads us a story.",
+   "Look at our sandcastle by the sea!"
+  ],
+  "cake": [
+   "Can I have a slice of cake?",
+   "We mixed eggs and flour for the cake.",
+   "Mum put candles on the birthday cake."
+  ],
+  "kite": [
+   "The wind is strong, so let's fly a kite.",
+   "My kite has a long red tail.",
+   "The wind tugged the string of my kite!"
+  ],
+  "home": [
+   "I feel happy and cosy at home.",
+   "After the party, we went home to bed.",
+   "It is late, so let's walk home."
+  ],
+  "tube": [
+   "Roll the paper into a long tube.",
+   "The tube of glue is empty.",
+   "I made a telescope from a card tube."
+  ],
+  "leaf": [
+   "In autumn, each leaf turns orange.",
+   "A green leaf floated on the pond.",
+   "I pressed a leaf between two pages."
+  ]
+ },
+ "rounds": {
+  "here": 2,
+  "there": 2,
+  "where": 0,
+  "house": 0,
+  "our": 0,
+  "cake": 0,
+  "kite": 1,
+  "home": 0,
+  "tube": 0,
+  "leaf": 0
+ },
+ "rejected": [
+  {
+   "word": "here",
+   "round": 0,
+   "s": "Sorry I am late, but I am here now!",
+   "reason": "checker: \"I am home now\" also makes sense after being late. (also fits: home)"
+  },
+  {
+   "word": "here",
+   "round": 0,
+   "s": "Wait here while I get my coat.",
+   "reason": "checker: \"Wait there while I get my coat\" is just as natural. (also fits: there)"
+  },
+  {
+   "word": "here",
+   "round": 0,
+   "s": "Look, my pencil is right here on the desk.",
+   "reason": "checker: \"Right there on the desk\" fits equally well. (also fits: there)"
+  },
+  {
+   "word": "here",
+   "round": 0,
+   "s": "Is the bus stop here at the corner?",
+   "reason": "checker: \"Is the bus stop there at the corner?\" works too. (also fits: there)"
+  },
+  {
+   "word": "here",
+   "round": 0,
+   "s": "Stand here on the mat, please.",
+   "reason": "checker: \"Stand there on the mat\" is equally correct. (also fits: there)"
+  },
+  {
+   "word": "there",
+   "round": 0,
+   "s": "The park is far away, so we walk there.",
+   "reason": "checker: Walking because the park is far away does not make sense, so the clue is confusing."
+  },
+  {
+   "word": "there",
+   "round": 0,
+   "s": "Look at the bird over there!",
+   "reason": "checker: \"Over here\" fits just as well. (also fits: here)"
+  },
+  {
+   "word": "there",
+   "round": 0,
+   "s": "There are three ducks on the pond.",
+   "reason": "checker: This is the \"there are\" use, not the place sense, and \"Here are\" could also fit. (also fits: here)"
+  },
+  {
+   "word": "there",
+   "round": 0,
+   "s": "Do not stand over there in the rain.",
+   "reason": "checker: \"Over here in the rain\" fits equally well. (also fits: here)"
+  },
+  {
+   "word": "where",
+   "round": 0,
+   "s": "Where is the bus going, Dad?",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "cake",
+   "round": 0,
+   "s": "The cake smells sweet in the oven.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "kite",
+   "round": 0,
+   "s": "Hold the string tight so the kite flies.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "kite",
+   "round": 0,
+   "s": "Look, a kite is stuck in that tree!",
+   "reason": "checker: A leaf could also be stuck in a tree. (also fits: leaf)"
+  },
+  {
+   "word": "kite",
+   "round": 0,
+   "s": "We made a paper kite at school.",
+   "reason": "checker: A child could also make a paper tube or a paper house. (also fits: tube, house)"
+  },
+  {
+   "word": "home",
+   "round": 0,
+   "s": "The bus took us home from the seaside.",
+   "reason": "checker: \"Took us there\" or \"took us here\" also make sense. (also fits: there, here)"
+  },
+  {
+   "word": "home",
+   "round": 0,
+   "s": "Is it time to go home now?",
+   "reason": "checker: \"Is it time to go there now?\" also works. (also fits: there)"
+  },
+  {
+   "word": "tube",
+   "round": 0,
+   "s": "Look through the tube and tell me what you see.",
+   "reason": "machine rule 3: 10 words (needs 4-9)"
+  },
+  {
+   "word": "leaf",
+   "round": 0,
+   "s": "The caterpillar sat on a big leaf.",
+   "reason": "checker: A caterpillar sitting on a big cake also makes sense, especially to a child who knows the storybook. (also fits: cake)"
+  },
+  {
+   "word": "leaf",
+   "round": 0,
+   "s": "Can you find a leaf shaped like a heart?",
+   "reason": "checker: A kite or a cake could also be shaped like a heart. (also fits: kite, cake)"
+  },
+  {
+   "word": "here",
+   "round": 1,
+   "s": "Here is a present for you, happy birthday!",
+   "reason": "checker: 'There is a present for you' also works, so the gap is not clear. (also fits: there)"
+  },
+  {
+   "word": "here",
+   "round": 1,
+   "s": "Hooray, you came, I am glad you are here!",
+   "reason": "checker: 'I am glad you are home' also makes sense. (also fits: home)"
+  },
+  {
+   "word": "here",
+   "round": 1,
+   "s": "Is everyone here for the story today?",
+   "reason": "checker: 'Is everyone there' and 'Is everyone home' also fit. (also fits: there, home)"
+  },
+  {
+   "word": "there",
+   "round": 1,
+   "s": "The shop is far, so let us go there.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "there",
+   "round": 1,
+   "s": "Nan is in the garden, so find her there.",
+   "reason": "machine rule 4: not on the word lists: Nan"
+  },
+  {
+   "word": "there",
+   "round": 1,
+   "s": "My socks are in the drawer, so look there!",
+   "reason": "checker: 'So look here!' also works if the speaker is next to the drawer. (also fits: here)"
+  },
+  {
+   "word": "there",
+   "round": 1,
+   "s": "We went to the beach and played there.",
+   "reason": "reader flag two_fit (Both \"kite\" and \"there\" fit the gap: \"We went to the beach and played there.\"); re-judge: The flag's example is wrong, because 'played kite' is not natural English. But the gap still has more than one answer. 'We went to the beach and played house.' is a correct sentence that children know, since 'playing house' is a pretend game. 'Here' could also be argued to fit. Because a child could fairly choose more than one word from the bank, we drop this sentence."
+  },
+  {
+   "word": "kite",
+   "round": 1,
+   "s": "I let out the string and watched my kite rise.",
+   "reason": "machine rule 3: 10 words (needs 4-9)"
+  },
+  {
+   "word": "kite",
+   "round": 1,
+   "s": "What a lovely colourful kite, it has ribbons!",
+   "reason": "checker: A colourful cake can have ribbons too, so 'cake' also fits. (also fits: cake)"
+  },
+  {
+   "word": "here",
+   "round": 2,
+   "s": "Come here, puppy, and sit by my feet.",
+   "reason": "machine rule 5: word overlap with the example is 50%"
+  },
+  {
+   "word": "here",
+   "round": 2,
+   "s": "The red dot on the map says you are here.",
+   "reason": "machine rule 3: 10 words (needs 4-9)"
+  },
+  {
+   "word": "here",
+   "round": 2,
+   "s": "Here, hold my umbrella, it is raining!",
+   "reason": "checker: 'Here' is used as a handing-over word, not 'in this place', and the comma splice reads awkwardly."
+  },
+  {
+   "word": "here",
+   "round": 2,
+   "s": "Teacher calls my name and I say here.",
+   "reason": "checker: It is missing 'The' or 'My' before 'Teacher', and it repeats the register idea of sentence 1."
+  },
+  {
+   "word": "there",
+   "round": 2,
+   "s": "Grandad lives in Wales, and we visit him there.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "there",
+   "round": 2,
+   "s": "We took a train to London and stayed there.",
+   "reason": "checker: 'Stayed here' also works if the speaker is in London, so the answer is not clear. (also fits: here)"
+  }
+ ],
+ "sitOut": []
+}

@@ -6,12 +6,18 @@
 //     profile?: { p: 'sen'|'normal'|'top', at, by? },   how the tests are run
 //     offer?:   { quiz: boolean, exam: boolean, at },   which checks are offered
 //     exams?:   { [eid]: { name, words[1..20], from[], date: 'YYYY-MM-DD', at, gone?, reopen? } },
-//     own?:     { [oid]: { name, words[1..15], src: 'typed'|'scan', at, gone? } } }   copies of a grown-up's lists
+//     own?:     { [oid]: { name, words[1..15], src: 'typed'|'scan', at, gone?, info? } } }   copies of a grown-up's lists
+//     by?:      { n: 'Mum', at }    SB5 (D34): the name the grown-up chose, which the child sees as "Set by Mum"
+//
+// SB5 additions (WP-A2): own[oid].info (TR-93: the grown-up's sentences and meanings, cleaned by info-doc.js cleanInfo) and `by`
+// (TR-100: cleanName, setBy). 16c devices drop both on re-save; nothing else is lost.
 //
 // Every part is optional: absent means today's behaviour. MERGE: help, profile,
 // offer: the later `at` wins (a tie: the larger JSON; absent loses to present);
 // exams and own: per id, the later `at` wins. A reset time never clears any of it.
 // SIZE: trim drops own copies gone for over 30 days and exams gone for over 90.
+
+import { cleanInfo } from './info-doc.js';
 
 export const TILES_LIVE = true; // SB4-B: letter tiles are on
 export const MAX_EXAMS = 10;
@@ -52,8 +58,19 @@ function cleanOwn(e) {
     const name = name40(x.name);
     const words = wordsOf(x.words, MAX_OWN_WORDS);
     if (!name || !words.length || !['typed', 'scan'].includes(x.src)) return null;
-    return { name, words, src: x.src, at, ...(pos(x.gone) ? { gone: pos(x.gone) } : {}) };
+    const info = cleanInfo(x.info, words);
+    return { name, words, src: x.src, at, ...(info ? { info } : {}), ...(pos(x.gone) ? { gone: pos(x.gone) } : {}) };
   });
+}
+
+// ---- the grown-up's chosen name (TR-100) -------------------------------------------------------------
+export const NAME_LINE = 'Please use a name only, like Mum or Ms Patel.';
+/** The name a child may see: trimmed, spaces collapsed, 1 to 24 characters, 1 to 3 words, letters (any alphabet), spaces, ' . -, starting with a letter; no @, web address or digit. Else ''. */
+export function cleanName(s) {
+  const t = typeof s === 'string' ? s.replace(/\s+/g, ' ').trim() : '';
+  if (!/^\p{L}[\p{L} '’.\-]{0,23}$/u.test(t)) return '';
+  if (t.split(' ').length > 3 || /@|:\/\/|www\.|\d/i.test(t)) return '';
+  return t;
 }
 
 /** Whatever arrives: a clean setup value, or {}. Each bad part is dropped. */
@@ -69,6 +86,7 @@ export function normalise(x) {
   if (isObj(x.offer) && typeof x.offer.quiz === 'boolean' && typeof x.offer.exam === 'boolean' && pos(x.offer.at)) {
     out.offer = { quiz: x.offer.quiz, exam: x.offer.exam, at: x.offer.at };
   }
+  if (isObj(x.by) && cleanName(x.by.n) && pos(x.by.at)) out.by = { n: cleanName(x.by.n), at: x.by.at };
   for (const [field, clean] of [['exams', cleanExam], ['own', cleanOwn]]) {
     if (!isObj(x[field])) continue;
     const m = {};
@@ -121,7 +139,7 @@ export function merge(a, b) {
   const x = normalise(a);
   const y = normalise(b);
   const out = {};
-  for (const f of ['help', 'profile', 'offer']) {
+  for (const f of ['help', 'profile', 'offer', 'by']) {
     const v = later(x[f], y[f]);
     if (v) out[f] = v;
   }
@@ -178,10 +196,10 @@ export function reopenExam(x, eid, now) {
   return e ? { ...s, exams: { ...s.exams, [eid]: { ...e, at: next(e, now), reopen: now } } } : s;
 }
 /** A copy of a grown-up's list on this child. It keeps the master's `at`. Answers { setup } or { error }. */
-export function setOwnCopy(x, oid, { name, words, src }, at) {
+export function setOwnCopy(x, oid, { name, words, src, info }, at) {
   const s = base(x);
   if (liveOwn(s).filter((e) => e.id !== oid).length >= MAX_OWN) return { error: 'too-many' };
-  const e = cleanOwn({ name, words, src, at });
+  const e = cleanOwn({ name, words, src, info, at });
   if (!e) return { error: 'bad' };
   return { setup: { ...s, own: { ...(s.own || {}), [oid]: e } } };
 }
@@ -190,3 +208,16 @@ export function dropOwnCopy(x, oid, now) {
   const e = (s.own || {})[oid];
   return e ? { ...s, own: { ...s.own, [oid]: { ...e, at: next(e, now), gone: now } } } : s;
 }
+/** SB5: set (or, with n === '', remove) the name the child sees. Unchanged when the name is the same. Answers the new setup. */
+export function setBy(x, n, now) {
+  const s = base(x);
+  const name = cleanName(n);
+  if (!name) {
+    if (!s.by) return s;
+    const { by: gone, ...rest } = s;
+    return rest;
+  }
+  if (s.by && s.by.n === name) return s;
+  return { ...s, by: { n: name, at: next(s.by, now) } };
+}
+export const byOf = (x) => (isObj(x) && isObj(x.by) ? x.by : null);

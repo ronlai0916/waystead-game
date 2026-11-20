@@ -18,6 +18,10 @@ export function fakeAccount() {
     // SB4 /api/scan/*: `missing` (the default) = the real endpoint does not exist yet, so every route is a 404.
     // Optional (SB4-WP8-2): `hourResetsAt` (an ISO time) in the allowance; `retryAfter` (seconds) on the hourly 429; `hold` (a promise) delays the words answer.
     // `reply(bytes, type)` may answer { status, body } in place of the usual words (a string body is sent as text).
+    // SB5 /api/sentences/* (TRS-change-2 TR-105): `missing` (the default) = the routes do not exist yet (404). `mode`: 'fake' (3 good statements),
+    // 'fake-fail' (status failed), 'fake-slow' (status writing, nothing stored yet), 'fake-dirty' (statements that break the rules).
+    // `bank` = word -> { status, statements }; `events` = the words that counted (a new word counts once).
+    sentences: { missing: true, on: false, limit: 60, left: 60, hourLeft: 20, paused: false, mode: 'fake', bank: {}, events: [], retryAfter: 0 },
     scan: { missing: true, on: false, limit: 20, left: 20, hourLeft: 5, paused: false, consent: null, version: 'v1', vendor: 'Test vendor', reply: null },
   };
   const profile = () => {
@@ -73,6 +77,47 @@ export function fakeAccount() {
     return json(404, { error: 'not-found' });
   };
 
+    const makeStatements = (word, mode) => (mode === 'fake-dirty'
+    ? [{ id: word + ':1', s: 'It is nothing like it at all.' }, { id: word + ':2', s: 'Go to www.example.com and see the ' + word + '.' }, { id: word + ':3', s: 'The ' + word + ' and the ' + word + ' met.' }]
+    : [1, 2, 3].map((n) => ({ id: word + ':' + n, s: ['Mum said the ' + word + ' was lovely.', 'We looked at the ' + word + ' together.', 'I drew a picture of the ' + word + '.'][n - 1] })));
+  const sentencesRoute = (u, method, init) => {
+    const sc = acct.sentences;
+    if (sc.missing) return json(404, { error: 'not-found' });
+    const me = acct.who;
+    if (!me || !me.signedIn) return json(401, { signedIn: false });
+    const isChild = me.kind === 'child' || !!me.playingAs;
+    const read = u.pathname === '/api/sentences' && method === 'GET';
+    if (isChild && !read) return json(403, { error: 'adult-session-required' });
+    if (u.pathname === '/api/sentences/allowance' && method === 'GET') return json(200, { on: sc.on, left: sc.left, limit: sc.limit, hourLeft: sc.hourLeft, paused: sc.paused });
+    if (read) {
+      const words = (u.searchParams.get('words') || '').split(',').filter(Boolean);
+      if (words.length < 1 || words.length > 15) return json(413, { error: 'too-many-words' });
+      return json(200, { items: words.filter((w) => sc.bank[w] && ['ok', 'partial'].includes(sc.bank[w].status)).map((w) => ({ word: w, statements: sc.bank[w].statements })) });
+    }
+    if (u.pathname === '/api/sentences/report' && method === 'POST') return { ok: true, status: 204, headers: { get: () => null }, json: async () => null };
+    if (u.pathname === '/api/sentences' && method === 'POST') {
+      if (!sc.on) return json(404, { error: 'not-found' });
+      if (sc.paused) return json(503, { error: 'paused' });
+      const b = init.body ? JSON.parse(init.body) : {};
+      const words = Array.isArray(b.words) ? b.words : [];
+      if (words.length < 1 || words.length > 15) return json(413, { error: 'too-many-words' });
+      const items = [];
+      for (const w of words) {
+        if (typeof w !== 'string' || !/^[a-z]{2,20}$/.test(w)) { items.push({ word: String(w), status: 'refused' }); continue; }
+        if (sc.bank[w]) { items.push({ word: w, status: sc.bank[w].status, statements: sc.bank[w].statements }); continue; }
+        if (sc.hourLeft === 0) return json(429, { error: 'hourly-limit' }, { 'Retry-After': String(sc.retryAfter || 3600) });
+        if (sc.left === 0) return json(429, { error: 'monthly-limit' });
+        sc.left -= 1; sc.hourLeft -= 1; sc.events.push(w);
+        if (sc.mode === 'fake-fail') { sc.bank[w] = { status: 'failed', statements: [] }; items.push({ word: w, status: 'failed' }); continue; }
+        if (sc.mode === 'fake-slow') { items.push({ word: w, status: 'writing' }); continue; }
+        sc.bank[w] = { status: 'ok', statements: makeStatements(w, sc.mode) };
+        items.push({ word: w, status: 'ok', statements: sc.bank[w].statements });
+      }
+      return json(200, { items, left: sc.left });
+    }
+    return json(404, { error: 'not-found' });
+  };
+
   acct.fetch = async (url, init = {}) => {
     const u = new URL(url);
     const method = init.method || 'GET';
@@ -87,6 +132,7 @@ export function fakeAccount() {
     if (acct.offline) throw new TypeError('Failed to fetch');
     if (u.pathname === '/api/me') return acct.meStatus ? json(acct.meStatus, { error: 'forced' }) : json(200, acct.who || { signedIn: false });
     if (isScan) return scanRoute(u, method, init, rawBytes, rawType);
+    if (u.pathname.startsWith('/api/sentences')) return sentencesRoute(u, method, init);
     if (acct.failNext && acct.failNext.times > 0) {
       acct.failNext.times -= 1;
       return json(acct.failNext.status, { error: 'forced' });
@@ -190,7 +236,7 @@ export function manualTimers() {
   };
 }
 
-export const ADULT = { signedIn: true, kind: 'parent', id: '11111111-1111-4111-8111-111111111111', displayName: 'Alex Green', role: 'parent', playingAs: null };
+export const ADULT = { signedIn: true, kind: 'parent', id: '11111111-1111-4111-8111-111111111111', displayName: 'Alex Green', role: 'parent', childLimit: 5, plan: 'parent', playingAs: null };
 export const KID_A = { id: '22222222-2222-4222-8222-222222222222', nickname: 'Sam', year: 4, avatar: 'ottie' };
 export const KID_B = { id: '33333333-3333-4333-8333-333333333333', nickname: 'Robin', year: 6, avatar: 'fizz' };
 export const CHILD_A = { signedIn: true, kind: 'child', id: KID_A.id, nickname: KID_A.nickname, year: 4, avatar: 'ottie', parentId: ADULT.id };

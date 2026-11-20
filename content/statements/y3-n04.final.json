@@ -1,0 +1,185 @@
+{
+ "chapter": "y3-n04",
+ "year": 3,
+ "words": {
+  "nation": [
+   "Every nation has its own flag and its own song.",
+   "Wales is a small nation with green hills.",
+   "The people of one nation may speak a different language from ours."
+  ],
+  "donation": [
+   "Mum made a donation of old books to the charity shop.",
+   "Was your donation to the cat shelter a blanket or a toy?",
+   "What a kind donation of books for our school library!"
+  ],
+  "creation": [
+   "He was proud of his creation, a tall tower made of cardboard.",
+   "The baker's new creation was a cake shaped like a boat.",
+   "Is this robot your own creation?"
+  ],
+  "exploration": [
+   "Mum took the map and led our exploration along the beach.",
+   "What an exciting exploration, going up every hill to look around!",
+   "Astronauts go on a long exploration to learn about the moon."
+  ],
+  "invitation": [
+   "Mum helped me write an invitation for my party.",
+   "Thank you for the invitation to tea at your house!",
+   "Please reply to the invitation by next Friday."
+  ],
+  "decoration": [
+   "We hung a shiny decoration on the Christmas tree.",
+   "Which colour balloons make the best decoration for a party?",
+   "The cake had one tiny sugar decoration on top."
+  ],
+  "education": [
+   "Going to school is part of your education.",
+   "Teachers work hard to give every child a good education.",
+   "What a good education we get from our kind teachers!"
+  ],
+  "information": [
+   "Ask the helper at the desk for more information.",
+   "I looked in a book to find information about frogs.",
+   "Can you give me some information about the school trip?"
+  ],
+  "celebration": [
+   "Our street held a celebration with cake and games.",
+   "Diwali is a happy celebration with lights and sweets.",
+   "Is the birthday celebration at the park on Saturday?"
+  ],
+  "imagination": [
+   "Use your imagination to picture a castle in the clouds.",
+   "With a lot of imagination, a blanket can become a tent.",
+   "Does your imagination ever take you to the moon?"
+  ]
+ },
+ "rounds": {
+  "nation": 0,
+  "donation": 0,
+  "creation": 0,
+  "exploration": 2,
+  "invitation": 0,
+  "decoration": 0,
+  "education": 0,
+  "information": 0,
+  "celebration": 0,
+  "imagination": 0
+ },
+ "rejected": [
+  {
+   "word": "nation",
+   "round": 0,
+   "s": "We learned that a nation is bigger than a town.",
+   "reason": "machine rule 4: not on the word lists: learned"
+  },
+  {
+   "word": "nation",
+   "round": 0,
+   "s": "Which nation do you come from, England or Wales?",
+   "reason": "checker: It assumes every child comes from England or Wales, which could leave some children out."
+  },
+  {
+   "word": "donation",
+   "round": 0,
+   "s": "Please leave your donation in the jar by the door.",
+   "reason": "checker: A child could put a reply invitation in a jar, so the clue is not strong enough. (also fits: invitation)"
+  },
+  {
+   "word": "creation",
+   "round": 0,
+   "s": "What a funny creation you made from old socks!",
+   "reason": "checker: A funny decoration made from old socks also makes sense. (also fits: decoration)"
+  },
+  {
+   "word": "exploration",
+   "round": 0,
+   "s": "On our exploration of the garden, we found six snails.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "exploration",
+   "round": 0,
+   "s": "We packed a map and snacks for our exploration of the hills.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "exploration",
+   "round": 0,
+   "s": "Walking along the stream was a fun exploration with Dad!",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "invitation",
+   "round": 0,
+   "s": "The card in the post box was an invitation to a picnic.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "education",
+   "round": 0,
+   "s": "A good education starts with reading books and asking questions.",
+   "reason": "checker: A good imagination could also start with reading books. (also fits: imagination)"
+  },
+  {
+   "word": "education",
+   "round": 0,
+   "s": "Is education the reason we go to school each day?",
+   "reason": "checker: The question is awkward and goes round in a circle, so it is not natural for a child."
+  },
+  {
+   "word": "imagination",
+   "round": 0,
+   "s": "Reading stories helps my imagination grow.",
+   "reason": "checker: Reading stories could also help your education grow. (also fits: education)"
+  },
+  {
+   "word": "exploration",
+   "round": 1,
+   "s": "Our exploration of the rock pools at the seaside took all morning.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "exploration",
+   "round": 1,
+   "s": "Is a long walk through the park a good exploration for a rainy day?",
+   "reason": "machine rule 3: 14 words (needs 5-12)"
+  },
+  {
+   "word": "exploration",
+   "round": 1,
+   "s": "What a brilliant exploration we had in the attic, looking in every box!",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "exploration",
+   "round": 1,
+   "s": "We made a map after our exploration of the school field.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "exploration",
+   "round": 1,
+   "s": "Do you want to join my exploration of the attic?",
+   "reason": "checker: \"Join my decoration of the attic\" also makes sense, so the gap is not unique. (also fits: decoration)"
+  },
+  {
+   "word": "exploration",
+   "round": 1,
+   "s": "After a day of exploration, the puppy slept on the sofa.",
+   "reason": "checker: \"A day of celebration\", \"a day of education\" and \"a day of decoration\" all fit the gap, so a child cannot tell which word belongs. (also fits: celebration, education, decoration)"
+  },
+  {
+   "word": "exploration",
+   "round": 2,
+   "s": "Walking down each lane to see what we could find was exploration.",
+   "reason": "checker: Without 'an' before the gap the sentence sounds stiff, and 'was education' could also be read into it. (also fits: education)"
+  },
+  {
+   "word": "exploration",
+   "round": 2,
+   "s": "Was our walk to find new places in the park an exploration?",
+   "reason": "checker: The question sounds unnatural because it already gives its own answer, so a child may find it confusing."
+  }
+ ],
+ "sitOut": []
+}

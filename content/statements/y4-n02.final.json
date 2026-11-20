@@ -1,0 +1,167 @@
+{
+ "chapter": "y4-n02",
+ "year": 4,
+ "words": {
+  "picture": [
+   "I used my paints to make a bright picture of the sea.",
+   "Gran put a framed picture of us on the shelf.",
+   "Which picture did you paint in art today?"
+  ],
+  "nature": [
+   "Birds, trees and flowers are all part of nature.",
+   "A nature walk is a good way to spot plants and insects.",
+   "Is it good for children to spend time in nature?"
+  ],
+  "future": [
+   "Will cars drive themselves in the future?",
+   "We plant trees now for a greener future.",
+   "Tomorrow and next week are both part of the future."
+  ],
+  "measure": [
+   "Use a tape to measure how long the garden is.",
+   "I need scales to measure how heavy the parcel is.",
+   "The shop lady will measure my feet for new trainers."
+  ],
+  "treasure": [
+   "The map has a cross to show where the treasure is buried.",
+   "Wow, what a lot of sparkling treasure we found in the sand!",
+   "We dug in the sandy beach and found a chest of treasure!"
+  ],
+  "pleasure": [
+   "She smiled with pleasure when she opened her present.",
+   "It was a pleasure to help my gran in her garden.",
+   "Do you take pleasure in baking cakes?"
+  ],
+  "creature": [
+   "A small furry creature was nibbling the lettuce in our garden.",
+   "Every living creature needs food and water.",
+   "Our cat is a gentle creature who loves to nap."
+  ],
+  "mixture": [
+   "I stirred flour, eggs and milk into a thick mixture.",
+   "Sand and water make a messy mixture.",
+   "Is this paint a mixture of blue and yellow?"
+  ],
+  "adventure": [
+   "Do you want to go on an adventure in the woods?",
+   "Climbing the tall hill felt like an exciting adventure.",
+   "What an adventure we had on the train today!"
+  ],
+  "furniture": [
+   "We need a new bed, a table and other furniture.",
+   "Dad polished the wooden furniture until it shone.",
+   "Is there enough furniture in the classroom for everyone?"
+  ]
+ },
+ "rounds": {
+  "picture": 0,
+  "nature": 0,
+  "future": 0,
+  "measure": 1,
+  "treasure": 1,
+  "pleasure": 0,
+  "creature": 0,
+  "mixture": 0,
+  "adventure": 0,
+  "furniture": 0
+ },
+ "rejected": [
+  {
+   "word": "picture",
+   "round": 0,
+   "s": "We looked at the picture in the book and read the words beneath.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "nature",
+   "round": 0,
+   "s": "Rain on the leaves is nature at its best!",
+   "reason": "checker: The phrase is poetic and abstract, so a child might hesitate or try pleasure."
+  },
+  {
+   "word": "measure",
+   "round": 0,
+   "s": "How tall are you? We can measure you against the door.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: We"
+  },
+  {
+   "word": "measure",
+   "round": 0,
+   "s": "Let's measure the window to see if the curtain will fit.",
+   "reason": "reader flag two_fit (\"picture\" could also fit as a verb meaning imagine: \"Let's picture the window to see if the curtain will fit.\"); re-judge: 'Let's picture the window to see if the curtain will fit' is correct grammar, and a child could fairly say you can imagine the window to judge whether a curtain fits. 'Measure' is the better choice, but 'picture' isn't clearly wrong, so the sentence has two possible answers."
+  },
+  {
+   "word": "measure",
+   "round": 0,
+   "s": "Can you measure how far the ball rolled across the grass?",
+   "reason": "reader flag two_fit (\"picture\" could also fit as a verb meaning imagine: \"Can you picture how far the ball rolled across the grass?\"); re-judge: 'Can you picture how far the ball rolled across the grass?' is a natural, correct sentence that means imagining or remembering the distance. Both 'measure' and 'picture' fully fit, so the flag is real."
+  },
+  {
+   "word": "treasure",
+   "round": 0,
+   "s": "At the party we hunted for a box of treasure in the garden.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "treasure",
+   "round": 0,
+   "s": "The gold coins are gone, so where is the treasure?",
+   "reason": "checker: The logic is muddled because the coins are the treasure, which may confuse a child."
+  },
+  {
+   "word": "treasure",
+   "round": 0,
+   "s": "My little brother calls his teddy his greatest treasure.",
+   "reason": "checker: This uses treasure in a figurative sense, and 'greatest pleasure' could also fit. (also fits: pleasure)"
+  },
+  {
+   "word": "adventure",
+   "round": 0,
+   "s": "Our walk over the hills was quite an adventure.",
+   "reason": "checker: 'Quite a pleasure' also works with only a tiny change of article. (also fits: pleasure)"
+  },
+  {
+   "word": "adventure",
+   "round": 0,
+   "s": "She told us all about her adventure at the farm.",
+   "reason": "checker: 'Her future at the farm' or 'her picture' could also make sense. (also fits: future, picture)"
+  },
+  {
+   "word": "furniture",
+   "round": 0,
+   "s": "Chairs, tables and wardrobes are all kinds of furniture.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "furniture",
+   "round": 0,
+   "s": "The removal van carried our sofa and all our furniture.",
+   "reason": "checker: 'All our treasure' could also fit after the sofa, so it is not clear-cut. (also fits: treasure)"
+  },
+  {
+   "word": "measure",
+   "round": 1,
+   "s": "Use a tape to measure the length of the sofa.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "measure",
+   "round": 1,
+   "s": "Carefully measure the flour in a cup before baking!",
+   "reason": "checker: Measuring flour in cups is American; in the UK flour is weighed on scales."
+  },
+  {
+   "word": "treasure",
+   "round": 1,
+   "s": "My puppy dug a hole, but there was no treasure inside!",
+   "reason": "checker: 'There was no creature inside' also makes sense, so the gap is not clear. (also fits: creature)"
+  },
+  {
+   "word": "treasure",
+   "round": 1,
+   "s": "At the museum, we saw old crowns and treasure behind glass.",
+   "reason": "checker: Museums also show old furniture and pictures behind glass, so other words fit the gap. (also fits: furniture, picture)"
+  }
+ ],
+ "sitOut": []
+}

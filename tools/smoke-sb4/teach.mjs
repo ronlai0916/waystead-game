@@ -70,7 +70,7 @@ export default function (H) {
   const restore = () => { acct.children = (id) => (id === ADULT ? KIDS.slice(0, 2).map((k, i) => ({ ...k, year: i ? 6 : 4 })) : []); acct.scan.missing = true; acct.scan.on = false; acct.failNext = null; };
   const withScene = (fn) => async () => { restore(); try { await fn(); } catch (e) { if (process.env.TEACH_STACK) console.log(e.stack); throw e; } finally { restore(); await send('Emulation.setEmulatedMedia', { media: '' }); await style('garden'); await width(390); } };
   const cell = (cid, label) => ev('(document.querySelector(' + q('tr[data-cid="' + cid + '"] td[data-label="' + label + '"]') + ') || {}).innerText || ""');
-  const chapterHash = (oid = OID) => '#/grownups/teach/' + oid;
+  const chapterHash = (oid = OID) => '#/grownups/own/' + oid + '/results';
   const isChapter = 'document.querySelector("[data-each-table]")';
 
   /** Every width and look: no sideways scroll, nothing off the page, every control at least 44 px. */
@@ -92,66 +92,35 @@ export default function (H) {
     await width(390);
   }
 
-  scene('SB4-WP11 teacher home: two lists with their summaries, the help table, and the links', withScene(async () => {
+  // SB5 (TR-43, TR-82): the teacher home (#/grownups/teach) is gone. A parent's lists are cards on Word lists (newest first, a sharing line, Set a week and
+  // Results); the per-child help table lives on each child's page; the scan link is a tab in the editor.
+  scene('SB4-WP11 Word lists: a card for each list, who it is given to, Set a week and Results; no lists says what to do', withScene(async () => {
     await width(1180, 900);
-    await asAdult({ own: lists({ c: true }) });
-    ok(/^For teachers and tutors$/.test(await text('h1')), 'the h1: ' + await text('h1'));
-    ok(await ev('document.activeElement === document.querySelector("h1")'), 'focus goes to the h1');
-    const page = await text();
-    ok(/Give up to 5 children the same list, set the test, and see how each one did\./.test(page), 'the lede');
-    ok(/Your account holds up to 5 children\. Whole classes are not here yet\./.test(page) && /Only add children whose parents or carers have agreed\./.test(page), 'the scope and permission lines');
-    ok(!/Scan a paper/.test(page) && await has('[data-type-link]'), 'no Scan a paper while scanning is dark; Type a list is there');
-    ok(await ev('document.querySelector("[data-type-link]").getAttribute("href")') === '#/grownups/own/new', 'Type a list goes to the editor');
-    const cards = await ev('[...document.querySelectorAll("[data-lists] [data-own]")].map((e) => ({ id: e.dataset.own, h: e.querySelector("h2").textContent, sum: (e.querySelector("[data-summary]") || {}).textContent || "", shared: e.querySelector("[data-shared]").textContent, btn: [...e.querySelectorAll(".gu-actions a")].map((a) => a.textContent + "|" + a.className + "|" + a.getAttribute("href")) }))');
-    ok(cards.map((c) => c.h).join() === 'Trip words,Spring spellings,Autumn 2 spellings', 'newest first: ' + cards.map((c) => c.h));
-    const [trip, spring, autumn] = cards;
-    ok(trip.shared === 'Not shared yet' && trip.sum === '' && /Share it\|btn btn--ghost\|#\/grownups\/own\/teach3/.test(trip.btn[0]), 'an unshared list: Share it and no summary: ' + JSON.stringify(trip));
-    ok(spring.shared === 'Shared with Robin' && spring.sum === '1 to do', 'Spring: ' + JSON.stringify(spring));
-    ok(autumn.shared === 'Shared with Robin, Wren, Ada and Kofi' && autumn.sum === '1 passed · 1 studying · 1 to do · 1 not sent yet', 'Autumn: ' + JSON.stringify(autumn));
-    ok(/See results\|btn btn--ghost\|#\/grownups\/teach\/teach1/.test(autumn.btn[0]) && /See results\|btn btn--ghost/.test(spring.btn[0]), 'See results on the shared cards');
-    ok(await ev('document.querySelectorAll("[data-lists] .btn--primary").length') === 0 && await ev('document.querySelector("[data-type-link]").classList.contains("btn--primary")') === false, 'the first card is unshared here, so no second green button is forced');
-    step('the help table');
-    const rows = await ev('[...document.querySelectorAll("[data-help-table] tbody tr")].map((tr) => [...tr.children].map((c) => c.innerText.replace(/\\s+/g, " ").trim()))');
-    ok(rows.length === 4 && rows.map((r) => r[0]).join() === 'Robin,Wren,Ada,Kofi', 'one row for each child in account order: ' + JSON.stringify(rows));
-    ok(rows[0][1] === 'Year 3' && rows[0][2] === 'Keyboard' && rows[0][3] === 'Standard' && rows[0][4] === 'Change', 'Robin: ' + JSON.stringify(rows[0]));
-    ok(rows[1][1] === 'Year 1' && rows[1][2] === 'Some letters', 'Wren is in Year 1 and starts with some letters: ' + JSON.stringify(rows[1]));
-    ok(await ev('document.querySelectorAll("[data-help-table] tbody a.btn")[1].getAttribute("aria-label")') === 'Change how Wren spells', 'the Change label');
-    ok(await ev('document.querySelectorAll("[data-help-table] tbody a.btn")[1].getAttribute("href")') === '#/grownups/child/' + CHILD2 + '/spelling', 'Change goes to that child\'s spelling page');
-    ok(await ev('document.querySelector("[data-help-table] caption").textContent') === 'How each child spells. Change it on the child\'s page.', 'the caption');
-    ok(await has('[data-overview-link]'), 'the link to all children in one table');
+    await asAdult({ own: lists({ c: true }), hash: '#/grownups/own', wait: 'document.querySelector("[data-own]")' });
+    ok(/^Word lists$/.test(await text('h1')), 'the h1: ' + await text('h1'));
+    const cards = await ev('[...document.querySelectorAll("[data-own]")].map((e) => ({ id: e.dataset.own, h: e.querySelector("h2").textContent, shared: e.querySelector("[data-shared]").textContent, set: !!e.querySelector("[data-set]"), res: !!e.querySelector("[data-results-link]") }))');
+    ok(cards.map((c) => c.h).join() === 'Trip words,Spring spellings,Autumn 2 spellings', 'the three lists, newest first (TR-43, S3-D11): ' + cards.map((c) => c.h));
+    const byName = Object.fromEntries(cards.map((c) => [c.h, c]));
+    const [trip, spring, autumn] = [byName['Trip words'], byName['Spring spellings'], byName['Autumn 2 spellings']];
+    ok(!trip.res && trip.set && /Not given/.test(trip.shared), 'an unshared list: Set a week, no Results: ' + JSON.stringify(trip));
+    ok(spring.res && /Given for practice to Robin/.test(spring.shared), 'Spring: ' + JSON.stringify(spring));
+    ok(autumn.res && /Week set for Ada · tested /.test(autumn.shared), 'Autumn: ' + JSON.stringify(autumn));
+    ok(await ev('document.querySelector("[data-own=\\"' + OID + '\\"] [data-results-link]").getAttribute("href")') === '#/grownups/own/' + OID + '/results', 'Results goes to the list\'s results page');
+    ok(await ev('document.querySelectorAll(".gu-ownlist .btn--primary").length') === 3 && await has('[data-own-new]'), 'each card has its Set a week and New list is in the bar');
     await shot('teach-home-1180');
-    step('the caption is one block on a phone, here and on the overview');
-    await width(390, 844);
-    const cap = await ev('(() => { const r = document.querySelector("[data-help-table] caption").getBoundingClientRect(); return { w: r.width, h: r.height }; })()');
-    ok(cap.w > 250 && cap.h < 90, 'the help caption is wide, not one word a line: ' + JSON.stringify(cap));
-    await go('#/grownups/overview');
-    await until('document.querySelector("[data-overview] caption")', 'the overview');
-    const cap2 = await ev('(() => { const r = document.querySelector("[data-overview] caption").getBoundingClientRect(); return { w: r.width, h: r.height }; })()');
-    ok(cap2.w > 250 && cap2.h < 90, 'the overview caption too: ' + JSON.stringify(cap2));
-    await go(HOME_HASH);
-    await until('document.querySelector("[data-teach-home] [data-help-table]")', 'the home again');
-    step('scanning on: Scan a paper appears');
-    acct.scan.missing = false;
-    acct.scan.on = true;
-    await open(DAY, HOME_HASH);
-    await until('document.querySelector("[data-teach-home] [data-help-table]")', 'the home');
-    ok(await has('[data-scan-link]') && await ev('document.querySelector("[data-scan-link]").getAttribute("href")') === '#/grownups/scan' && /Scan a paper/.test(await text('[data-scan-link]')), 'Scan a paper after the account says on');
-    ok(await ev('document.querySelector("[data-scan-link]").classList.contains("btn--primary")') === false, 'a list is there, so Scan a paper is quiet');
-    await layout('teach-home');
+    step('no lists');
+    await asAdult({ own: {}, hash: '#/grownups/own', wait: 'document.querySelector("[data-none]")' });
+    ok(/No lists of your own yet/.test(await text('[data-none]')) && /Make your first list/.test(await text('[data-own-new]')) && await ev('document.querySelector("[data-own-new]").classList.contains("btn--primary")'), 'no lists: Make your first list is the green button');
+    ok(await has('a[href="#/grownups/own/ready"], a[href^="#/grownups/own/ready"]'), 'the Ready-made lists card is there');
+    await layout('word-lists');
   }));
-  const HOME_HASH = '#/grownups/teach';
 
-  scene('SB4-WP11 teacher home: no lists, and no children', withScene(async () => {
-    await width(390, 844);
-    await asAdult({ own: {} });
-    ok(/No lists yet\. Make one above\./.test(await text('[data-none]')), 'no lists');
-    ok(await ev('document.querySelector("[data-type-link]").classList.contains("btn--primary")'), 'with no list, Type a list is the one green button');
-    ok(await has('[data-help-table]'), 'the help table is still there');
-    await asAdult({ own: {}, kids: [], docs: {} });
-    await until('document.querySelector("[data-first]")', 'Add your first child');
-    ok(/Add your first child/.test(await text('[data-first]')) && await has('[data-addchild]'), 'the first-child card');
-    ok(!await has('[data-help-table]') && !await has('[data-lists]') && !/Three steps/.test(await text()), 'steps, lists and the help table are hidden');
-    ok(/Whole classes are not here yet\./.test(await text()), 'the scope line is still there');
+  scene('SB4-WP11 the old teacher address goes to Word lists for a parent', withScene(async () => {
+    await asAdult({ own: lists(), hash: '#/grownups/teach', wait: 'document.querySelector("[data-own]")' });
+    ok(await ev('location.hash') === '#/grownups/own', 'teach goes to Word lists: ' + await ev('location.hash'));
+    await go('#/grownups/teach/' + OID);
+    await until('/\\/results$/.test(location.hash) || document.querySelector("[data-teach-chapter]")', 'the old results address');
+    ok(/^#\/grownups\/own\/[A-Za-z0-9_-]+\/results$/.test(await ev('location.hash')), 'teach/:oid goes to the list\'s results: ' + await ev('location.hash'));
   }));
 
   scene('SB4-WP11 one list across four children: results, the honest lines, the words', withScene(async () => {
@@ -160,42 +129,35 @@ export default function (H) {
     await until(isChapter, 'the table');
     const keysNow = () => ev('(async () => JSON.stringify([Object.keys(localStorage).sort(), Object.keys(sessionStorage).sort(), indexedDB.databases ? (await indexedDB.databases()).map((x) => x.name).sort() : []]))()');
     const storeBefore = await keysNow(); // whatever earlier scenes left is in here: only a change made by this page counts
-    ok(/^Autumn 2 spellings$/.test(await text('h1')) && await ev('document.activeElement === document.querySelector("h1")'), 'the list\'s name is the h1 and has focus');
-    ok(await text('[data-headline]') === '12 words · shared with Robin, Wren, Ada and Kofi', 'the header line: ' + await text('[data-headline]'));
-    ok(await ev('document.querySelector("[data-change-list]").getAttribute("href")') === '#/grownups/own/' + OID && /Change the list or who has it/.test(await text('[data-change-list]')), 'Change the list or who has it');
-    ok(await ev('document.querySelector(".gu-back").getAttribute("href")') === '#/grownups/teach', 'back to For teachers');
+    // SB5 (TR-45/TR-82): the results page is "Results: <list>", a table of Child, Score and To practise again, then "Given to" with each child's stage line.
+    ok(/^Results: Autumn 2 spellings$/.test(await text('h1')) && await ev('document.activeElement === document.querySelector("h1")'), 'the page name is the h1 and has focus: ' + await text('h1'));
+    ok(await text('[data-headline]') === '12 words · given for practice to Robin, Wren, Ada and Kofi', 'the header line: ' + await text('[data-headline]'));
+    ok(await ev('document.querySelector(".gu-back").getAttribute("href")') === '#/grownups/own' && /Word lists/.test(await text('.gu-back')), 'back to Word lists');
     ok((await ev('[...document.querySelectorAll("[data-each-table] tbody tr")].map((t) => t.dataset.cid)')).join() === [CHILD, CHILD2, K3, K4].join(), 'one row each, in the account\'s order');
-    // Robin: passed with letter tiles
-    ok(await cell(CHILD, 'Has the list') === 'Yes', 'Robin has the list');
-    ok(/Passed/.test(await cell(CHILD, 'Stage')) && /Learned the words: Yes/.test(await cell(CHILD, 'Stage')) && /Practised: Yes/.test(await cell(CHILD, 'Stage')), 'Robin stage: ' + await cell(CHILD, 'Stage'));
-    const rt = await cell(CHILD, 'Chapter test');
-    ok(/11 of 12 · Standard · with letter tiles \(Some letters\)/.test(rt) && /Passed/.test(rt) && /Taken 1 time/.test(rt), 'Robin\'s test says how it was taken: ' + rt);
-    ok(/4 of 5 · Standard · with letter tiles/.test(await cell(CHILD, 'Newest quiz')), 'Robin\'s quiz');
-    ok(await cell(CHILD, 'This week\'s test') === 'No week set from this list', 'no week from the list');
-    ok((await cell(CHILD, 'Words to practise')).trim() === 'knife', 'Robin practises knife (tricky list)');
-    // Wren: studying, a quiz that missed island and weight
-    ok(/Studying/.test(await cell(CHILD2, 'Stage')) && /Practised: Not yet/.test(await cell(CHILD2, 'Stage')), 'Wren studying');
-    ok(await cell(CHILD2, 'Chapter test') === 'Not taken yet', 'Wren has not taken the test');
-    ok(/3 of 5 · Extra support · with letter tiles \(Some letters\) · 1 peek/.test(await cell(CHILD2, 'Newest quiz')), 'Wren\'s quiz: ' + await cell(CHILD2, 'Newest quiz'));
-    ok(/island/.test(await cell(CHILD2, 'Words to practise')) && /weight/.test(await cell(CHILD2, 'Words to practise')), 'Wren practises island and weight');
-    // Ada: a tested week from the list, one word not right
-    ok(/Autumn test test · 9 of 10 · Standard · keyboard/.test(await cell(K3, 'This week\'s test')), 'Ada\'s week: ' + await cell(K3, 'This week\'s test'));
-    ok((await cell(K3, 'Words to practise')).trim() === 'thought', 'Ada practises thought');
-    ok(await cell(K3, 'Newest quiz') === 'No quiz yet', 'no quiz yet');
-    // Kofi: not started, not sent
-    ok(/Not sent to Kofi yet\./.test(await cell(K4, 'Has the list')) && await has('[data-resend="' + K4 + '"]'), 'Kofi: Not sent, with Try again');
-    ok(/To do/.test(await cell(K4, 'Stage')) && await cell(K4, 'Words to practise') === 'None noted yet' && await cell(K4, 'Chapter test') === 'Not taken yet', 'Kofi has nothing yet, and no result is invented');
-    ok(/Words to practise come from the newest quiz, this week's practice and test, and the tricky-words list\. Only what has been saved is shown\./.test(await text('[data-each-table]') + await text('[data-part="each"]')), 'the key line');
-    step('the words');
+    const sc = (cid) => cell(cid, 'Score');
+    const tp = async (cid) => (await cell(cid, 'To practise again')).replace(/\s+/g, ' ').trim();
+    ok(/^11 of 12 · Standard · with letter tiles \(Some letters\)$/.test((await sc(CHILD)).trim()) && await tp(CHILD) === 'knife', 'Robin: 11 of 12 with letter tiles, practises knife: ' + await sc(CHILD) + ' / ' + await tp(CHILD));
+    ok((await sc(CHILD2)).trim() === '–' && /island/.test(await tp(CHILD2)) && /weight/.test(await tp(CHILD2)), 'Wren: no test yet, practises island and weight: ' + await tp(CHILD2));
+    ok((await sc(K3)).trim() === '9 of 10' && await tp(K3) === 'thought', 'Ada: 9 of 10, practises thought: ' + await sc(K3));
+    ok((await sc(K4)).trim() === '–' && await tp(K4) === 'None noted yet', 'Kofi has nothing yet, and no result is invented');
+    const given = (cid) => ev('(document.querySelector(' + q('.ls-given[data-cid="' + cid + '"]') + ') || {}).innerText || ""').then((t) => t.replace(/\s+/g, ' ').trim());
+    ok(/^Robin Practice only · Passed · 11 of 12 · Standard · with letter tiles \(Some letters\) · newest quiz 4 of 5 · Standard · with letter tiles/.test(await given(CHILD)), 'Robin\'s stage line says how it was taken: ' + await given(CHILD));
+    ok(/^Wren Practice only · Studying · newest quiz 3 of 5 · Extra support · with letter tiles \(Some letters\) · 1 peek$/.test(await given(CHILD2)), 'Wren\'s stage line: ' + await given(CHILD2));
+    ok(/^Ada Week of .* · Autumn test test · 9 of 10 · Standard · keyboard/.test(await given(K3)), 'Ada\'s week from the list: ' + await given(K3));
+    ok(/Not sent to Kofi yet\./.test(await given(K4)) && await has('[data-resend="' + K4 + '"]'), 'Kofi: Not sent, with Try again');
+    ok(/Words to practise come from the newest quiz, this week's practice and test, and the tricky-words list\. Only what has been saved is shown\./.test(await text('[data-each-table]') + await text('main')), 'the key line');
+    step('the words tab');
+    await click('[data-tab=words]');
     const wr = await ev('[...document.querySelectorAll("[data-word-row]")].map((r) => r.innerText.replace(/\\s+/g, " ").trim())');
-    ok(wr.length === 12 && wr[0] === 'because No one noted' && wr[2] === 'island To practise: Wren' && wr[4] === 'weight To practise: Wren', 'one row for each word in the list\'s order: ' + JSON.stringify(wr));
-    ok(wr[3] === 'thought To practise: Ada' && wr[5] === 'knife To practise: Robin', 'thought and knife');
-    ok(/Which words to go over together\./.test(await text('[data-part="words"]')), 'the caption');
+    ok(wr.length === 12 && /^because/.test(wr[0]) && /island.*Wren/.test(wr[2]) && /weight.*Wren/.test(wr[4]), 'one row for each word in the list\'s order: ' + JSON.stringify(wr));
+    ok(/thought.*Ada/.test(wr[3]) && /knife.*Robin/.test(wr[5]), 'thought and knife: ' + JSON.stringify(wr.slice(3, 6)));
+    ok(/which to go over together/i.test(await text('[data-part="words"]')), 'the caption');
+    await click('[data-tab=results]');
     step('Try again on a list that did not reach Kofi');
     await click('[data-resend="' + K4 + '"]');
     await until('!document.querySelector("[data-resend]")', 'sent');
     await until('document.activeElement === document.querySelector("tr[data-cid=\\"' + K4 + '\\"] th")', 'focus goes to Kofi\'s row, not the top of the page');
-    ok(await cell(K4, 'Has the list') === 'Yes', 'Kofi has it now');
+    ok(!/Not sent/.test(await given(K4)), 'Kofi has it now: ' + await given(K4));
     ok(Object.keys(kidsWords(K4).setup.own || {}).join() === OID, 'Kofi\'s copy was saved');
     step('nothing about a child is kept on this device');
     const stored = await ev('JSON.stringify([Object.entries(localStorage), Object.entries(sessionStorage)])');
@@ -205,119 +167,29 @@ export default function (H) {
     await layout('teach-chapter');
   }));
 
-  scene('SB4-WP11 Set this week\'s test for three children: one id each, a failed one retried makes no second week, a child with a week from the list starts unticked', withScene(async () => {
+  // SB5: "Set this week's test" on the results page is gone. A week from a list is set on the Set a week page (#/grownups/set/list/:oid).
+  scene('SB4-WP11 Set a week from a 12-word list for four children: ten words, one week each with its own id', withScene(async () => {
     await width(1180, 900);
     const own = lists({ b: false });
     const docs = fixture(own);
-    docs[CHILD2] = { ...docs[CHILD2], words: W.withSetup(weekDoc('gw', 'Wren week', ['island', 'weight'], plus(9)), W.setupOf(docs[CHILD2].words)) }; // a week from this list, test not done
-    docs[K3] = { ...docs[K3], words: W.withSetup(weekDoc('go', 'Trip week', ['zebra', 'quay'], plus(9)), W.setupOf(docs[K3].words)) }; // another week
-    await asAdult({ own, docs, hash: chapterHash() });
-    await until(isChapter, 'the page');
-    ok(/Each child practises these words in the game every day, then takes the test on the test date\./.test(await text('[data-set]')), 'the line at the top of the card');
-    ok(/Spellbright may add up to 3 words each child found tricky before\./.test(await text('[data-set]')), 'the tricky line');
-    ok(/Pick 10 for this week/.test(await text('[data-set] legend')) && await ev('document.querySelectorAll("[data-pickword]:checked").length') === 10, 'twelve words: ten ticked');
-    ok(await text('[data-pickline]') === '10 of 10 ticked. Untick one to choose another.', 'full: ' + await text('[data-pickline]'));
-    ok(await ev('document.querySelectorAll("[data-pickword]:disabled").length') === 2 && await ev('document.querySelector("[data-pickword]:disabled").getAttribute("aria-describedby")') === 't-pickline', 'the two spare boxes are disabled, with the reason linked');
-    await click('[data-pickword][value="breathe"]'); // not ticked: disabled, so nothing happens
-    await ev('document.querySelector("[data-pickword][value=\\"history\\"]").click()');
-    ok(await ev('document.querySelectorAll("[data-pickword]:checked").length') === 9 && await text('[data-pickline]') === '9 of 10 ticked.', 'unticking one: ' + await text('[data-pickline]'));
-    await ev('document.querySelector("[data-pickword][value=\\"history\\"]").click()');
-    const ticks = await ev('[...document.querySelectorAll("[data-kid]")].map((b) => b.checked)');
-    ok(ticks.join() === 'true,false,true,true', 'Wren (a week from this list) is unticked, the others ticked: ' + ticks);
-    ok(/^Wren already has a week from this list, with a test on \w{3} \d{1,2} \w{3}\.$/.test(await ev('document.querySelectorAll("[data-running]")[0].textContent')), 'Wren\'s line: ' + await ev('document.querySelectorAll("[data-running]")[0].textContent'));
-    ok(await ev('document.querySelectorAll("[data-running]")[1].textContent') === 'Ada already has a week running: Trip week. This adds another week.', 'Ada\'s line (another week)');
-    ok(await text('[data-set-go]') === 'Set the test for 3 children', 'the button: ' + await text('[data-set-go]'));
-    step('no child ticked');
-    for (const id of [CHILD, K3, K4]) await ev('document.querySelector("[data-kid][value=\\"' + id + '\\"]").click()');
-    ok(await ev('document.querySelector("[data-set-go]").disabled') && await text('[data-set-go]') === 'Set the test for 0 children' && await text('[data-why]') === 'Tick at least one child.' && await ev('document.querySelector("[data-set-go]").getAttribute("aria-describedby")') === 't-why', 'disabled with its reason');
-    for (const id of [CHILD, K3, K4]) await ev('document.querySelector("[data-kid][value=\\"' + id + '\\"]").click()');
-    ok(await text('[data-set-go]') === 'Set the test for 3 children', 'three again');
-    step('a date of today is refused before anything is asked of the account');
-    const put = () => acct.calls.filter((c) => c.method === 'PUT').length;
-    await ev('(() => { const d = document.querySelector("[data-date]"); d.value = ' + q(DAY) + '; d.dispatchEvent(new Event("input", { bubbles: true })); })()');
-    const before = acct.calls.length;
-    await click('[data-set-go]');
-    ok(await text('[data-set-error]') === 'The test date needs to be after today.', 'the refusal: ' + await text('[data-set-error]'));
-    ok(acct.calls.length === before, 'no call was made');
-    step('a short week');
-    await ev('(() => { const d = document.querySelector("[data-date]"); d.value = ' + q(plus(6)) + '; d.dispatchEvent(new Event("input", { bubbles: true })); })()');
-    ok(!await ev('document.querySelector("[data-short]").hidden') && /Short week: some days will have two jobs\./.test(await text('[data-short]')), 'Short week line');
-    const test = plus(12);
-    await ev('(() => { const d = document.querySelector("[data-date]"); d.value = ' + q(test) + '; d.dispatchEvent(new Event("input", { bubbles: true })); })()');
-    ok(await ev('document.querySelector("[data-short]").hidden'), 'no short line for a full week');
-    step('Robin\'s save is stored, then the answer is lost: the page says not set, Try again makes no second week');
-    const real = acct.fetch;
-    let lost = false;
-    acct.fetch = async (url, init = {}) => {
-      const r = await real(url, init);
-      if (!lost && (init.method || 'GET') === 'PUT' && url.includes('/api/children/' + CHILD + '/')) { lost = true; return { ok: false, status: 404, headers: { get: () => null }, json: async () => ({ error: 'forced' }) }; }
-      return r;
-    };
-    try {
-      await click('[data-set-go]');
-      await until('document.querySelectorAll("[data-set-result]").length === 3', 'three results');
-    } finally { acct.fetch = real; }
-    ok(await ev('document.activeElement === document.querySelector("[data-set-results]")') && await ev('document.querySelector("[data-set-results]").getAttribute("role")') === 'status', 'focus on the results, a status');
-    const res = await ev('[...document.querySelectorAll("[data-set-result]")].map((p) => p.innerText.replace(/\\s+/g, " ").trim())');
-    ok(res.includes('Set for Ada.') && res.includes('Set for Kofi.') && res.some((r) => /^Not set for Robin yet\.\s*Try again$/.test(r)), 'one result each: ' + JSON.stringify(res));
-    const fromList = (k) => W.liveGroups(kidsWords(k)).filter((g) => g.name === 'Autumn 2 spellings');
-    const robinFirst = fromList(CHILD);
-    ok(robinFirst.length === 1 && robinFirst[0].test === test && robinFirst[0].words.length === 10, 'Robin\'s week was stored once: ' + JSON.stringify(robinFirst.map((g) => [g.id, g.test, g.words.length])));
-    await click('[data-set-retry="' + CHILD + '"]');
-    await until('/^Set for Robin\\./.test(document.querySelector("[data-set-result=\\"' + CHILD + '\\"]").innerText)', 'Robin set');
-    await sleep(300);
-    const robinAfter = fromList(CHILD);
-    ok(robinAfter.length === 1 && robinAfter[0].id === robinFirst[0].id, 'the retry made no second week: ' + JSON.stringify(robinAfter.map((g) => g.id)));
-    step('every ticked child has one week with the chosen words, name and date; one id each; Wren is untouched');
+    await asAdult({ own, docs, hash: '#/grownups/set/list/' + OID, wait: 'document.querySelector(".st-page")' });
+    await sleep(400);
+    ok(/12 words\. A week takes 10: you choose which 10/.test(await text('main')) && await has('[data-act=set]'), 'twelve words: you choose which 10');
+    ok(await ev('document.querySelectorAll("input[data-kid]").length') === 4, 'a box for each of the four children');
+    for (const k of [CHILD, CHILD2, K3, K4]) if (!await ev('document.querySelector("input[data-kid=\\"' + k + '\\"]").checked')) { await click('input[data-kid="' + k + '"]'); await sleep(80); }
+    ok(await ev('document.querySelectorAll("input[data-kid]:checked").length') === 4, 'all four ticked: ' + await ev('document.querySelectorAll("input[data-kid]:checked").length'));
+    await click('[data-act=set]');
+    await until('document.querySelector("[data-done], .st-done, [data-act=again], [data-act=retry]")', 'the done page', 15000);
+    await sleep(500);
+    const fromList = (k) => W.liveGroups(kidsWords(k)).filter((g) => g.words.every((w) => WORDS.includes(w)) && g.words.length === 10);
     const ids = [];
-    for (const k of [CHILD, K3, K4]) {
+    for (const k of [CHILD, CHILD2, K3, K4]) {
       const g = fromList(k);
-      ok(g.length === 1 && g[0].test === test && g[0].words.join() === WORDS.slice(0, 10).join(), NAMES[KIDS.findIndex((x) => x.id === k)] + ' has the week: ' + JSON.stringify(g));
-      ids.push(g[0].id);
+      ok(g.length >= 1, 'a week of ten words from the list for ' + k + ': ' + JSON.stringify(W.liveGroups(kidsWords(k)).map((x) => [x.id, x.words.length])));
+      ids.push(g[g.length - 1].id);
     }
-    ok(new Set(ids).size === 3, 'three different week ids: ' + ids);
-    ok(W.liveGroups(kidsWords(K3)).length === 2, 'Ada keeps her other week, and has the new one');
-    ok(W.liveGroups(kidsWords(CHILD2)).length === 1 && W.liveGroups(kidsWords(CHILD2))[0].id === 'gw', 'Wren was not ticked and is unchanged');
-    ok(/Test on \w{3} \d{1,2} \w{3}/.test(await cell(CHILD, 'This week\'s test')), 'part A shows the new week: ' + await cell(CHILD, 'This week\'s test'));
-    ok(await ev('document.activeElement === document.querySelector("[data-set-results]")'), 'focus stays in the results after Try again');
-    ok(put() >= 4, 'it did write');
-    step('after saving, the children who now have the week are unticked; pressing Set again makes no second week');
-    const after = await ev('[...document.querySelectorAll("[data-kid]")].map((b) => b.checked)');
-    ok(after.every((t) => t === false), 'everyone with a week from this list is unticked now: ' + after);
-    ok(/already has a week from this list/.test(await text('[data-set]')), 'the line shows after saving');
-    ok(await ev('document.querySelector("[data-set-go]").disabled') && await text('[data-why]') === 'All of these children already have a week from this list.' && await text('[data-set-go]') === 'Set the test', 'Set is off, plain, and says why (never 0 children, never Tick at least one child)');
-    ok(await text('[data-set-summary]') === 'Week set for Ada, Kofi and Robin.', 'a plain success line: ' + await text('[data-set-summary]'));
-    await ev('document.querySelectorAll("[data-kid]").forEach((b) => { if (!b.checked) b.click(); })'); // the teacher ticks them all again
-    await click('[data-set-go]');
-    await until('document.querySelectorAll("[data-set-result][data-ok]").length >= 3', 'saved again');
-    await sleep(300);
-    for (const k of [CHILD, K3, K4]) ok(fromList(k).length === 1 && fromList(k)[0].id === ids[[CHILD, K3, K4].indexOf(k)], 'still one week from the list, same id, for ' + k + ': ' + fromList(k).length);
-    ok(/^Week set for /.test(await text('[data-set-summary]')) && await text('[data-set-go]') === 'Set the test' && await ev('document.querySelector("[data-set-go]").disabled') && await text('[data-why]') === 'All of these children already have a week from this list.', 'a success line, a plain disabled button with its reason: ' + await text('[data-set-go]') + ' / ' + await text('[data-why]'));
-    await shot('teach-set-results-1180');
-  }));
-
-  scene('SB4-WP11 Set the test: a short list needs no picking; a child whose save fails shows its own Try again, the others are set', withScene(async () => {
-    await width(390, 844);
-    const own = Ow.set({}, OID, { name: 'Six words', words: WORDS.slice(0, 6), src: 'typed', to: [CHILD, CHILD2] }, NOW - 1000).own;
-    const docs = { [CHILD]: { words: W.withSetup(W.emptyDoc(), ownCopy(own, OID)), progress: PR.emptyDoc() }, [CHILD2]: { words: W.withSetup(W.emptyDoc(), ownCopy(own, OID)), progress: PR.emptyDoc() } };
-    await asAdult({ own, docs, kids: KIDS.slice(0, 2), hash: chapterHash() });
-    await until(isChapter, 'the page');
-    ok(!await has('[data-pickword]') && !await has('[data-pickline]'), 'six words: no Pick 10');
-    ok(await text('[data-set-go]') === 'Set the test for 2 children', 'two children');
-    await ev('document.querySelector("[data-kid][value=\\"' + CHILD2 + '\\"]").click()');
-    ok(await text('[data-set-go]') === 'Set the test for 1 child', 'one child: ' + await text('[data-set-go]'));
-    await ev('document.querySelector("[data-kid][value=\\"' + CHILD2 + '\\"]").click()');
-    acct.failNext = { status: 404, times: 1 }; // the first call, Robin's, is refused
-    await click('[data-set-go]');
-    await until('document.querySelectorAll("[data-set-result]").length === 2', 'two results');
-    const res = await ev('[...document.querySelectorAll("[data-set-result]")].map((p) => p.innerText.replace(/\\s+/g, " ").trim())');
-    ok(res.join() === 'Not set for Robin yet. Try again,Set for Wren.', 'Robin did not work, Wren did: ' + JSON.stringify(res));
-    ok(W.liveGroups(kidsWords(CHILD)).length === 0 && W.liveGroups(kidsWords(CHILD2)).length === 1, 'Wren has her week, Robin has none yet');
-    await click('[data-set-retry="' + CHILD + '"]');
-    await until('/^Set for Robin\\./.test(document.querySelector("[data-set-result=\\"' + CHILD + '\\"]").innerText)', 'Robin set on the retry');
-    await sleep(200);
-    ok(W.liveGroups(kidsWords(CHILD)).length === 1 && W.liveGroups(kidsWords(CHILD2)).length === 1, 'one week each');
-    await layout('teach-set', [320, 390]);
+    ok(new Set(ids).size === 4, 'four different week ids: ' + ids);
+    ok(new Set([CHILD, CHILD2, K3, K4].map((k) => fromList(k).slice(-1)[0].test)).size === 1, 'one test date for all');
   }));
 
   scene('SB4-WP11 print this page, print for one child (only that name on paper), Copy as text', withScene(async () => {
@@ -335,9 +207,9 @@ export default function (H) {
     const t = await paper();
     ok(/Printed on \d{1,2} \w{3} 2026/.test(t), 'the date line is printed: ' + t.slice(0, 60));
     for (const n of NAMES) ok(t.includes(n), n + ' is on the whole page');
-    ok(!await visible('[data-set]') && !await visible('[data-print-all]') && !await visible('.t-actions') && !await visible('[data-resend]'), 'the Set card and every button are hidden on paper');
+    ok(!await visible('[data-print-all]') && !await visible('.t-actions') && !await visible('[data-resend]'), 'every button is hidden on paper');
     ok(await ev('getComputedStyle(document.querySelector("[data-each-table] tr[data-cid]")).display') === 'block' && await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'stacked for each child, no sideways overflow on A4');
-    ok(await ev('[...document.querySelectorAll("[data-each-table] td")].every((td) => getComputedStyle(td).overflowWrap !== "anywhere")'), 'no mid-word breaks');
+    ok(await ev('[...document.querySelectorAll("[data-each-table] td")].every((td) => getComputedStyle(td).overflowWrap !== "anywhere")'), 'on paper a word never splits mid-word (S3-D12)');
     await shot('teach-print-all-a4');
     await media('');
     await width(1180, 900);
@@ -346,7 +218,7 @@ export default function (H) {
     await click('[data-print-one]');
     await until('document.querySelector("[data-dialog]")', 'the dialog');
     ok(await ev('document.querySelector("[data-dialog]").getAttribute("aria-describedby")') === 't-onedesc' && await ev('document.activeElement.name') === 't-kid', 'described by its line; focus on the first child');
-    ok(await text('[data-onedesc]') === 'Only Robin’s results will print or copy. Use this when you share with one family.', 'the line: ' + await text('[data-onedesc]'));
+    ok(await text('[data-onedesc]') === 'Only Robin’s results will print or copy. Use this when you hand it to one family.', 'the line: ' + await text('[data-onedesc]'));
     ok((await ev('[...document.querySelectorAll("[data-dialog] [data-act]")].map((b) => b.textContent)')).join() === 'Print,Copy as text,Cancel', 'Print, Copy as text, Cancel');
     await ev('document.querySelector("input[name=t-kid][value=\\"' + CHILD2 + '\\"]").click()');
     ok(/^Only Wren’s results will print or copy\./.test(await text('[data-onedesc]')), 'the line follows the choice');
@@ -364,7 +236,7 @@ export default function (H) {
     ok(one.includes('Wren') && /12 words · Wren/.test(one), 'Wren and the line naming only Wren are printed: ' + one.slice(0, 200));
     for (const n of ['Robin', 'Ada', 'Kofi']) ok(!one.includes(n), n + ' is nowhere on the paper');
     ok(!/The words|No one noted|shared with/.test(one), 'no word rows and no list of children');
-    ok(await ev('[...document.querySelectorAll("[data-cid]")].filter((r) => getComputedStyle(r).display !== "none").length') === 1, 'one child\'s row is visible');
+    ok(await ev('[...document.querySelectorAll("tr[data-cid], .ls-given[data-cid]")].filter((r) => getComputedStyle(r).display !== "none").length') === 2, 'one child\'s row and given line are visible');
     ok(/island/.test(one) && /weight/.test(one), 'Wren\'s own words to practise are on it');
     await shot('teach-print-one-a4');
     await media(''); // print media off again, as after a print: nothing is left hidden
@@ -381,7 +253,7 @@ export default function (H) {
     await until('document.querySelector("[data-dialog]")', 'the dialog a fourth time');
     await click('[data-dialog] [data-act="print"]');
     await go('#/grownups');
-    await until('document.querySelector("[data-teachlink]")', 'the grown-ups home');
+    await until('document.querySelector("main h1")', 'the grown-ups home');
     await go(chapterHash());
     await until(isChapter, 'the page again');
     ok(!await ev('!!document.querySelector("[data-print-skip]") || document.querySelector(".gu").hasAttribute("data-print-only")'), 'nothing is left in one-child state after leaving and coming back');
@@ -415,38 +287,39 @@ export default function (H) {
     await asAdult({ own, docs: { [CHILD]: { words: W.emptyDoc(), progress: PR.emptyDoc() }, [CHILD2]: { words: W.emptyDoc(), progress: PR.emptyDoc() }, [K3]: { words: W.emptyDoc(), progress: PR.emptyDoc() }, [K4]: { words: W.emptyDoc(), progress: PR.emptyDoc() } }, hash: chapterHash() });
     await until('document.querySelector("[data-nochild]")', 'No child has this list yet');
     ok(/No child has this list yet\./.test(await text('[data-nochild]')) && /It hasn't reached Robin, Wren, Ada or Kofi yet\./.test(await text('[data-nochild]')), 'one summary line: ' + await text('[data-nochild]'));
-    ok(!await has('[data-each-table]') && !await has('[data-set]'), 'no table and no Set card');
+    ok(!await has('[data-each-table]'), 'no table');
     await click('[data-resend-all]');
     await until('document.querySelector("[data-each-table]")', 'sent: the table appears');
     ok(Object.keys(kidsWords(CHILD).setup.own || {}).join() === OID, 'Try again sent the list');
     // shared with nobody
     await asAdult({ own: lists({ a: false, b: false, c: true }), hash: chapterHash(OID3) });
     await until('document.querySelector("[data-shared-none]")', 'shared with nobody');
-    ok(/Not shared yet\./.test(await text('[data-shared-none]')) && /Share this list with up to 5 children to see how they get on\./.test(await text('[data-shared-none]')), 'the lines');
-    ok(await ev('document.querySelector("[data-shared-none] a").getAttribute("href")') === '#/grownups/own/' + OID3, 'Share it goes to the editor');
+    ok(/No results yet/.test(await text('[data-shared-none]')) && /Results show after a child practises these words\./.test(await text('[data-shared-none]')) && /Not given to anyone yet\./.test(await text('[data-notgiven]')), 'the lines');
+    ok(await ev('document.querySelector("[data-give]").getAttribute("href")') === '#/grownups/own/' + OID3 + '/give' && /Give for practice/.test(await text('[data-give]')), 'Give for practice goes to the give page');
     // gone: an id that is not there, and a bad address
     for (const h of [chapterHash('nothere'), chapterHash('bad%'), chapterHash('a'.repeat(60))]) {
       await go(h);
       await until('document.querySelector("[data-gone]")', 'gone at ' + h);
-      ok(/That list isn't here any more\./.test(await text('[data-gone]')) && /Back to For teachers/.test(await text('[data-gone] a')) && await ev('document.querySelector("[data-gone] a").getAttribute("href")') === '#/grownups/teach', 'gone: ' + h);
+      ok(/It may have been deleted, or the link is old/.test(await text('[data-gone]')) && /Back to Word lists/.test(await text('[data-gone] a')) && await ev('document.querySelector("[data-gone] a").getAttribute("href")') === '#/grownups/own', 'gone: ' + h);
     }
     // a deleted list
     const gone = { ...lists({ b: false }) };
     gone[OID] = { ...gone[OID], gone: NOW - 1000, at: NOW };
     await asAdult({ own: gone, hash: chapterHash() });
-    await until('document.querySelector("[data-gone]")', 'a deleted list');
+    await until('document.querySelector("[data-deleted]")', 'a deleted list still shows its results, with a line saying it was deleted');
+    ok(/This list was deleted\./.test(await text('[data-deleted]')), 'the deleted line');
     // offline on opening
-    await asAdult({ hash: HOME_HASH });
+    await asAdult({ hash: '#/grownups/own', wait: 'document.querySelector("[data-own]")' });
     await ev('Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false })');
     try {
       await go(chapterHash());
       await until('document.querySelector("[data-teach-offline]")', 'the offline card');
       ok(/You're offline\. You can see results when you're back online\./.test(await text()) && await has('[data-retry]'), 'offline line and Try again');
-      await go(HOME_HASH);
-      await until('document.querySelector("[data-teach-offline]")', 'offline on the home too');
+      await go('#/grownups/own');
+      await until('document.querySelector("[data-offline]")', 'offline on Word lists too');
     } finally { await ev('delete navigator.onLine'); }
     // one child's data could not be read: that card says so, the others still draw
-    await asAdult({ hash: HOME_HASH });
+    await asAdult({ hash: '#/grownups/own', wait: 'document.querySelector("[data-own]")' });
     const real = acct.fetch;
     acct.fetch = async (url, init = {}) => (url.includes('/api/children/' + K3 + '/game/') ? { ok: false, status: 404, headers: { get: () => null }, json: async () => ({ error: 'forced' }) } : real(url, init));
     try {
@@ -454,10 +327,10 @@ export default function (H) {
       await until(isChapter, 'the table');
       const row = await ev('(document.querySelector("tr[data-cid=\\"' + K3 + '\\"]") || {}).innerText || ""');
       ok(/Something went wrong on our side\. Please try again\./.test(row) && /Try again/.test(row), 'Ada\'s card says so: ' + row);
-      ok(/Passed/.test(await cell(CHILD, 'Stage')), 'the other cards still draw');
+      ok(/11 of 12/.test(await cell(CHILD, 'Score')), 'the other rows still draw');
     } finally { acct.fetch = real; }
     // the account says signed out: the usual line, no table
-    await asAdult({ hash: HOME_HASH });
+    await asAdult({ hash: '#/grownups/own', wait: 'document.querySelector("[data-own]")' });
     H.allowLog(/status of 401/); // the signed-out step asks for it
     acct.failNext = { status: 401, times: 1 };
     acct.calls.length = 0;
@@ -465,43 +338,27 @@ export default function (H) {
     await until('document.querySelector("[data-teach-problem]")', 'a problem page');
     ok(await has('[data-retry]') && /signed out/i.test(await text('[data-teach-problem]')), 'signed out: the usual line and Try again: ' + await text('[data-teach-problem]'));
     await until('true', 'settled'); await sleep(300);
-    ok(acct.calls.some((c) => c.path === '/api/me'), 'the account was asked who is signed in again');
+    ok(acct.calls.some((c) => c.path === '/api/me'), 'the account was asked who is signed in again (S3-D13)');
   }));
 
-  scene('SB4-WP11 the Menu has eight rows and For teachers opens the page with focus on the h1; a child and an adult playing as a child get no data', withScene(async () => {
-    for (const w of [1280, 390]) {
-      await width(w, w === 390 ? 844 : 800);
-      await asAdult({ hash: '#/grownups', wait: 'document.querySelector("[data-teachlink]")' });
-      await until('document.querySelector("[data-teachlink]")', 'the grown-ups home');
-      ok(/For teachers and tutors/.test(await text('[data-teachlink]')) && await ev('document.querySelector("[data-teachlink]").getAttribute("href")') === '#/grownups/teach', 'the quiet link on the home at ' + w);
-      ok(await ev('document.querySelector("[data-teachlink]").getBoundingClientRect().height') >= 44, 'the link is 44 px high');
-      await click('#adult-menu-btn');
-      await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
-      const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => ({ t: a.querySelector("b").textContent, h: a.getAttribute("href"), tall: a.getBoundingClientRect().height, sub: a.querySelector("span.adultrow__text > span").textContent }))');
-      ok(rows.length === 8 && rows[4].t === 'For teachers' && rows[4].sub === 'One list for up to 5 children' && rows[4].h === '#/grownups/teach', 'eight rows, For teachers after Your own chapters: ' + JSON.stringify(rows.map((r) => r.t)));
-      ok(rows.every((r) => r.tall >= 48), 'each row 48 px or more');
-      if (w === 390) await shot('teach-menu-390');
-      await click('#adult-menu-panel a[href="#/grownups/teach"]');
-      await until('location.hash === "#/grownups/teach" && document.querySelector("[data-help-table]")', 'the teacher page');
-      ok(await ev('document.activeElement === document.querySelector("main h1")'), 'focus goes to the h1 at ' + w);
-    }
-    step('a child');
+  // SB5: the Menu has five rows and no "For teachers" row (the teacher page is gone; see the 'adult Menu' scene), so this scene keeps what still applies.
+  scene('SB4-WP11 a child and an adult playing as a child get no results data; See results is on each shared list card; About is for teachers too', withScene(async () => {
+    await width(390, 844);
     await H.seedChild(W.emptyDoc(), DAY);
     acct.calls.length = 0;
-    for (const h of ['#/grownups/teach', chapterHash()]) {
+    for (const h of ['#/grownups/own', chapterHash()]) {
       await open(DAY, h);
       await until('document.querySelector("[data-notforyou]")', 'refused at ' + h);
     }
     acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
-    await open(DAY, '#/grownups/teach');
+    await open(DAY, '#/grownups/own');
     await until('document.querySelector("[data-playing]")', 'the switch-back card');
     ok(await has('[data-switchback]'), 'Switch back to myself');
     ok(!acct.calls.some((c) => c.path.startsWith('/api/children')), 'nothing under /api/children was asked for');
     step('the shared pages that mention it');
     await asAdult({ hash: '#/grownups/own', wait: 'document.querySelector("[data-own]")' });
-    await until('document.querySelector("[data-own]")', 'the list page');
-    ok(await ev('document.querySelectorAll("[data-teach-link]").length') === 2 && await ev('document.querySelector("[data-teach-link]").getAttribute("href")').then((h) => /^#\/grownups\/teach\/teach[12]$/.test(h)), 'See results on each shared card');
+    ok(await ev('document.querySelectorAll("[data-results-link]").length') === 2 && await ev('[...document.querySelectorAll("[data-results-link]")].every((a) => /^#\\/grownups\\/own\\/teach[12]\\/results$/.test(a.getAttribute("href")))'), 'Results on each shared card');
     await open(DAY, '#/about');
-    ok(/Teachers and tutors: a grown-up's account can hold up to 5 children\. Make one list, share it with them, and see each child's results on one page\./.test(await text()), 'the About sentence');
+    ok(/For parents, teachers and tutors\./.test(await text()), 'About is for parents, teachers and tutors (SB5 06d: the long teachers paragraph is gone)');
   }));
 }

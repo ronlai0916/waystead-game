@@ -1,0 +1,137 @@
+{
+ "chapter": "y2-ch06",
+ "year": 2,
+ "words": {
+  "pass": [
+   "Can you pass the jam to me, please?",
+   "Did you pass the post box on your way?",
+   "I will pass the ball to my friend."
+  ],
+  "plant": [
+   "The seed grew into a tall green plant.",
+   "This plant needs sunshine and a little water.",
+   "Our class put a new plant by the window."
+  ],
+  "path": [
+   "Follow the winding path to the garden gate.",
+   "Which path leads to the duck pond?",
+   "We walked single file along the narrow path."
+  ],
+  "bath": [
+   "The puppy was muddy so he needed a bath.",
+   "Can you run the bath for the baby, please?",
+   "My toy boat floats in the bath!"
+  ],
+  "half": [
+   "Cut the pizza in two, and I get half.",
+   "Wow, half the biscuits have gone!",
+   "It is half past three, so school is over."
+  ],
+  "hour": [
+   "We waited an hour for the late train.",
+   "Our reading time lasts a whole hour.",
+   "What a long hour that was in the car!"
+  ],
+  "hopped": [
+   "The frog hopped onto a big green leaf.",
+   "She hopped on one foot all the way home.",
+   "The kangaroo hopped round its pen at the zoo!"
+  ],
+  "baking": [
+   "Can you smell the bread baking in the oven?",
+   "We are baking little pies in the oven for tea.",
+   "Baking a cake needs flour, eggs and sugar."
+  ],
+  "bigger": [
+   "My shoes are too small, so I need bigger ones.",
+   "Is an elephant bigger than a horse?",
+   "Blow harder and the balloon gets bigger!"
+  ],
+  "biggest": [
+   "Which of these three teddies is the biggest?",
+   "The oak is the biggest tree in our park.",
+   "Gran has the biggest smile when we visit."
+  ]
+ },
+ "rounds": {
+  "pass": 0,
+  "plant": 0,
+  "path": 0,
+  "bath": 0,
+  "half": 0,
+  "hour": 0,
+  "hopped": 0,
+  "baking": 1,
+  "bigger": 0,
+  "biggest": 0
+ },
+ "rejected": [
+  {
+   "word": "plant",
+   "round": 0,
+   "s": "Dad gave Gran a leafy plant for her birthday!",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "plant",
+   "round": 0,
+   "s": "Is that a plant or a flower in the pot?",
+   "reason": "checker: Confusing, because a flower is a plant, so the question does not make sense."
+  },
+  {
+   "word": "path",
+   "round": 0,
+   "s": "Leaves covered the path in autumn!",
+   "reason": "checker: Leaves could just as well cover a plant, so the answer is not clear. (also fits: plant)"
+  },
+  {
+   "word": "hour",
+   "round": 0,
+   "s": "The clock hand moves round once every hour.",
+   "reason": "checker: Not accurate, because only the minute hand goes round once an hour, so it may confuse a child."
+  },
+  {
+   "word": "baking",
+   "round": 0,
+   "s": "The kitchen smells lovely because Dad is baking bread.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "baking",
+   "round": 0,
+   "s": "I love baking with my nan on Saturday!",
+   "reason": "machine rule 4: not on the word lists: nan"
+  },
+  {
+   "word": "baking",
+   "round": 0,
+   "s": "We are baking cookies for the school sale.",
+   "reason": "checker: 'Cookies' is American English; a UK sentence would say 'biscuits'."
+  },
+  {
+   "word": "bigger",
+   "round": 0,
+   "s": "Our new classroom is bigger than the old one.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "biggest",
+   "round": 0,
+   "s": "I ate the biggest slice of birthday cake!",
+   "reason": "checker: 'The bigger slice' also works if there were two slices, so the answer is not clear. (also fits: bigger)"
+  },
+  {
+   "word": "baking",
+   "round": 1,
+   "s": "Mum is baking a tray of warm biscuits in the oven.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "baking",
+   "round": 1,
+   "s": "The cake needs one more minute of baking in the hot oven.",
+   "reason": "machine rule 3: 12 words (needs 5-10)"
+  }
+ ],
+ "sitOut": []
+}

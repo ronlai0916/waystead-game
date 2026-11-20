@@ -1,0 +1,251 @@
+{
+ "chapter": "y1-ch05",
+ "year": 1,
+ "words": {
+  "you": [
+   "Thank you for the lovely birthday card.",
+   "Can I sit next to you?",
+   "Here is a present just for you!"
+  ],
+  "your": [
+   "Wash your hands before lunch, please.",
+   "What is the name of your pet?",
+   "Brush your teeth before bed."
+  ],
+  "they": [
+   "The clouds grew dark and they brought rain.",
+   "The girls love the swings, so they stay.",
+   "The girls got wet, so they dried off."
+  ],
+  "are": [
+   "Look, the ducks are on the pond now.",
+   "Where are my wellies now?",
+   "Are we nearly at the seaside?"
+  ],
+  "were": [
+   "Yesterday the children were at the library.",
+   "Last night the stars were very bright.",
+   "On Monday, the shops were shut."
+  ],
+  "dogs": [
+   "My gran walks her dogs every morning.",
+   "Dogs like bones and long walks.",
+   "Puppies grow up to be big dogs."
+  ],
+  "hens": [
+   "Which hens laid the brown eggs?",
+   "The farmer fed corn to the hens.",
+   "Feathers floated down as the hens flapped!"
+  ],
+  "boxes": [
+   "Cats love to sit inside empty boxes.",
+   "We stacked the cardboard boxes in the shed.",
+   "Which boxes hold the Christmas lights?"
+  ],
+  "dishes": [
+   "Please put the dirty dishes in the sink.",
+   "We ate our pudding from little dishes.",
+   "We set the table with dishes for the pie."
+  ],
+  "foxes": [
+   "Wild foxes hide their cubs in a den.",
+   "I saw a fox, and then more foxes!",
+   "One fox plus one fox makes two foxes!"
+  ]
+ },
+ "rounds": {
+  "you": 0,
+  "your": 0,
+  "they": 1,
+  "are": 0,
+  "were": 1,
+  "dogs": 0,
+  "hens": 0,
+  "boxes": 0,
+  "dishes": 1,
+  "foxes": 2
+ },
+ "rejected": [
+  {
+   "word": "you",
+   "round": 0,
+   "s": "I love you very much.",
+   "reason": "checker: 'I love dogs very much' and similar animal words also make good sense. (also fits: dogs, hens, foxes)"
+  },
+  {
+   "word": "you",
+   "round": 0,
+   "s": "Did you bring a hat today?",
+   "reason": "checker: 'Did they bring a hat today?' works just as well. (also fits: they)"
+  },
+  {
+   "word": "they",
+   "round": 0,
+   "s": "Mum and Dad said they will be late.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "they",
+   "round": 0,
+   "s": "The children sat down when they came in.",
+   "reason": "checker: 'When you came in' and 'when dogs came in' also make sense. (also fits: you, dogs)"
+  },
+  {
+   "word": "they",
+   "round": 0,
+   "s": "The ducks swam, then they ate bread.",
+   "reason": "checker: 'Then hens ate bread' or 'then dogs ate bread' also work. (also fits: you, dogs, hens)"
+  },
+  {
+   "word": "are",
+   "round": 0,
+   "s": "We are going to the park today.",
+   "reason": "checker: 'We were going to the park today' is also natural. (also fits: were)"
+  },
+  {
+   "word": "are",
+   "round": 0,
+   "s": "The stars are out tonight!",
+   "reason": "checker: 'The stars were out tonight' can work in storytelling, so it is doubtful. (also fits: were)"
+  },
+  {
+   "word": "were",
+   "round": 0,
+   "s": "We were late for school this morning.",
+   "reason": "checker: 'We are late for school this morning' is also natural. (also fits: are)"
+  },
+  {
+   "word": "were",
+   "round": 0,
+   "s": "Where were my socks last night?",
+   "reason": "checker: Asking where socks were last night is an odd, unnatural question."
+  },
+  {
+   "word": "were",
+   "round": 0,
+   "s": "The cakes were gone by tea time!",
+   "reason": "checker: With no clear past-time word, 'are gone by tea time' could also be read. (also fits: are)"
+  },
+  {
+   "word": "dogs",
+   "round": 0,
+   "s": "Which dogs wag their tails and bark?",
+   "reason": "checker: Foxes bark too, and the question sounds unnatural. (also fits: foxes)"
+  },
+  {
+   "word": "hens",
+   "round": 0,
+   "s": "Cluck, cluck! The hens want their corn.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: The"
+  },
+  {
+   "word": "hens",
+   "round": 0,
+   "s": "Our hens sleep in a little wooden house.",
+   "reason": "checker: Dogs can sleep in a little wooden house (a kennel) too. (also fits: dogs)"
+  },
+  {
+   "word": "dishes",
+   "round": 0,
+   "s": "We dried the clean dishes with a towel.",
+   "reason": "checker: 'We dried the clean dogs with a towel' also makes sense after a bath. (also fits: dogs)"
+  },
+  {
+   "word": "dishes",
+   "round": 0,
+   "s": "Which dishes hold the soup and rice?",
+   "reason": "reader flag two_fit (boxes also fits: 'Which boxes hold the soup and rice?' makes sense, so I can't tell whether the gap needs boxes or dishes.); re-judge: The flag is correct. 'Which boxes hold the soup and rice?' also makes sense. Takeaway or delivery boxes often hold tubs of soup and rice, and lunch boxes hold rice. The sentence gives no clue that only dishes fit, so a child cannot tell which word the gap needs."
+  },
+  {
+   "word": "foxes",
+   "round": 0,
+   "s": "The foxes have red fur and bushy tails.",
+   "reason": "checker: Some dogs have red fur and bushy tails, so 'dogs' could fit. (also fits: dogs)"
+  },
+  {
+   "word": "foxes",
+   "round": 0,
+   "s": "Look at the foxes with bushy tails!",
+   "reason": "checker: 'Look at the dogs with bushy tails!' works too. (also fits: dogs)"
+  },
+  {
+   "word": "foxes",
+   "round": 0,
+   "s": "In the story, the sly foxes played tricks.",
+   "reason": "checker: Story dogs could play tricks too, and 'sly' is a story trait rather than the animal meaning. (also fits: dogs)"
+  },
+  {
+   "word": "they",
+   "round": 1,
+   "s": "My cousins came for lunch, and they stayed late.",
+   "reason": "checker: 'and you stayed late' also makes sense, so the gap is not clear. (also fits: you)"
+  },
+  {
+   "word": "they",
+   "round": 1,
+   "s": "Mum asked the twins if they wanted toast.",
+   "reason": "checker: 'if you wanted toast' is also correct, so a child could choose 'you'. (also fits: you)"
+  },
+  {
+   "word": "they",
+   "round": 1,
+   "s": "The boys love football, and they play every day.",
+   "reason": "checker: 'you play every day' and 'dogs play every day' both work. (also fits: you, dogs)"
+  },
+  {
+   "word": "they",
+   "round": 1,
+   "s": "The pupils lined up because they heard the bell.",
+   "reason": "checker: 'because you heard the bell' is also possible, so the gap is not clear. (also fits: you)"
+  },
+  {
+   "word": "were",
+   "round": 1,
+   "s": "Were the apples ripe last week?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "dishes",
+   "round": 1,
+   "s": "Wipe the gravy off the dishes with a cloth.",
+   "reason": "checker: 'Wipe the gravy off the dogs' also makes sense, so the gap is not clear. (also fits: dogs)"
+  },
+  {
+   "word": "foxes",
+   "round": 1,
+   "s": "Foxes live in dens in the woods.",
+   "reason": "reader flag two_fit (Both \"they\" and \"foxes\" fit the gap: \"They live in dens in the woods\" and \"Foxes live in dens in the woods\" both make sense.); re-judge: The flag is correct. The gap is at the start of the sentence and is followed by 'live', so any plural subject from the bank fits. 'They live in dens in the woods' and 'Foxes live in dens in the woods' are both grammatical and make sense, and 'You live in dens in the woods' also works. Nothing in the sentence points only to 'foxes', so it has more than one right answer and should be dropped."
+  },
+  {
+   "word": "foxes",
+   "round": 2,
+   "s": "At night, orange-furred foxes crept into the garden.",
+   "reason": "machine rule 3: 52 characters (max 50)"
+  },
+  {
+   "word": "foxes",
+   "round": 2,
+   "s": "I read a story about sly foxes with bushy tails.",
+   "reason": "machine rule 3: 10 words (needs 4-9)"
+  },
+  {
+   "word": "foxes",
+   "round": 2,
+   "s": "Little foxes curl up in their den.",
+   "reason": "checker: Dogs can also curl up in a den or bed, and nothing else in the sentence points only to foxes. (also fits: dogs)"
+  },
+  {
+   "word": "foxes",
+   "round": 2,
+   "s": "Mum saw two red, bushy-tailed foxes by the bins.",
+   "reason": "checker: Red, bushy-tailed dogs are possible too, and 'bushy-tailed' is hard to read in Year 1. (also fits: dogs)"
+  },
+  {
+   "word": "foxes",
+   "round": 2,
+   "s": "Why do foxes have such big bushy red tails?",
+   "reason": "checker: Some dogs have big bushy red tails too, so a child could not be sure which word goes in the gap. (also fits: dogs)"
+  }
+ ],
+ "sitOut": []
+}

@@ -1,5 +1,5 @@
-// SB4-WP11: the teacher page, the rules and the wording. Pure: no DOM, no storage, no clock, no random. The date comes in
-// as `today` / `day`, every child's data as arguments. One own chapter (own-doc.js) is shown across the children it is shared
+// SB5: the pure results module for a Word list (was the teacher page). SB4-WP11: the rules and the wording. Pure: no DOM, no storage, no clock, no random. The date comes in
+// as `today` / `day`, every child's data as arguments. One Word list (own-doc.js) is shown across the children it is given to
 // with; nothing here is saved, and no new field is made. The page is teach-views.js.
 import * as W from './words-doc.js';
 import * as Ow from './own-doc.js';
@@ -7,21 +7,13 @@ import * as PR from './progress-doc.js';
 import * as P from './grownups-doc.js';
 import * as F from './front-doc.js';
 import * as A from './assess-doc.js';
+import * as SD from './set-doc.js';
 
 // ---- the lines a grown-up reads (exact strings: HF check section 5, then the BA's section 5) ------------------
-export const TITLE = 'For teachers and tutors';
-export const LEDE = 'Give up to 5 children the same list, set the test, and see how each one did.';
 export const SCOPE_LINE = 'Your account holds up to 5 children. Whole classes are not here yet.';
 export const PERMISSION_LINE = 'Only add children whose parents or carers have agreed.';
-export const STEPS = [
-  { n: 1, title: 'Make the list' },
-  { n: 2, title: 'Share it with your children', text: 'Choose them when you save the list.' },
-  { n: 3, title: 'Set the test and see results', text: 'Open a list below.' },
-];
-export const NO_LISTS = 'No lists yet. Make one above.';
-export const NOT_SHARED_YET = 'Not shared yet';
-export const HELP_CAPTION = 'How each child spells. Change it on the child\'s page.';
-export const HEADINGS = { lists: 'Your lists', help: 'Help for each child', each: 'Each child', words: 'The words', set: 'Set this week\'s test', share: 'Print and share' };
+export const NOT_SHARED_YET = 'Not given for practice yet';
+export const HEADINGS = { lists: 'Word lists', each: 'Each child', words: 'The words' };
 export const GONE = 'That list isn\'t here any more.';
 export const OFFLINE = 'You\'re offline. You can see results when you\'re back online.';
 export const NO_WEEK = 'No week set from this list';
@@ -33,12 +25,7 @@ export const WORDS_CAPTION = 'Which words to go over together.';
 export const KEY_LINE = 'Words to practise come from the newest quiz, this week\'s practice and test, and the tricky-words list. Only what has been saved is shown.';
 export const KEEP_SAFE = 'Printed or copied results show children\'s names. Keep them safe.';
 export const NOBODY_NOW = 'Not started by anyone yet';
-// Set this week's test
-export const SET_LINE = 'Each child practises these words in the game every day, then takes the test on the test date.';
-export const TRICKY_LINE = 'Spellbright may add up to 3 words each child found tricky before.';
-export const TICK_ONE_CHILD = 'Tick at least one child.';
-export const TICK_ONE_WORD = 'Tick at least one word.';
-export const PICK_LEGEND = 'Pick ' + W.MAX_WORDS + ' for this week';
+// Copy and print
 export const COPIED = 'Copied.';
 export const COPY_FAILED = 'Couldn\'t copy. You can print instead.';
 
@@ -49,8 +36,8 @@ export function joinNames(names, joiner = 'and') {
   return n.length <= 1 ? n.join('') : n.slice(0, -1).join(', ') + ' ' + joiner + ' ' + n[n.length - 1];
 }
 export const wordsLine = (n) => plural(n, 'word');
-export const sharedLine = (names) => (names.length ? 'Shared with ' + joinNames(names) : NOT_SHARED_YET);
-export const headLine = (n, names) => wordsLine(n) + ' · ' + (names.length ? 'shared with ' + joinNames(names) : 'not shared yet');
+export const sharedLine = (names) => (names.length ? 'Given for practice to ' + joinNames(names) : NOT_SHARED_YET);
+export const headLine = (n, names) => wordsLine(n) + ' · ' + (names.length ? 'given for practice to ' + joinNames(names) : 'not given for practice yet');
 export const printOneLine = (n, name) => wordsLine(n) + ' · ' + name;
 export const printedLine = (day) => 'Printed on ' + W.dayLabel(day).replace(/^\w+ /, '') + ' ' + day.slice(0, 4);
 export const notSentLine = (name) => 'Not sent to ' + name + ' yet.';
@@ -58,31 +45,15 @@ export const notReachedLine = (names) => 'It hasn\'t reached ' + joinNames(names
 export const attemptsLine = (n) => 'Taken ' + plural(n, 'time');
 export const seeChildLine = (name) => 'See ' + P.possessive(name) + ' page';
 export const changeSpellLabel = (name) => 'Change how ' + name + ' spells';
-export const onePrintLine = (name) => 'Only ' + P.possessive(name) + ' results will print or copy. Use this when you share with one family.';
-export const setDone = (name) => 'Set for ' + name + '.';
-export const setFailed = (name) => 'Not set for ' + name + ' yet.';
-export const pickLine = (n) => n + ' of ' + W.MAX_WORDS + ' ticked.' + (n >= W.MAX_WORDS ? ' Untick one to choose another.' : '');
-/** After a successful Set: who was set, and why the button now waits (every child has a week from this list). */
-export const weekSetFor = (names) => 'Week set for ' + joinNames(names) + '.';
-export const ALL_HAVE_WEEK = 'All of these children already have a week from this list.';
-export const SET_BUTTON_PLAIN = 'Set the test';
-export const setButton = (n) => 'Set the test for ' + plural(n, 'child', 'children');
-export const hasWeekFromList = (name, test) => name + ' already has a week from this list, with a test on ' + W.dayLabel(test) + '.';
-export const hasOtherWeek = (name, week) => name + ' already has a week running: ' + week + '. This adds another week.';
-
+export const onePrintLine = (name) => 'Only ' + P.possessive(name) + ' results will print or copy. Use this when you hand it to one family.';
 // ---- lists and their children --------------------------------------------------------------------------------
-/** Every live own chapter, newest first. */
+/** Every live Word list, newest first. */
 export const liveLists = (own) => Ow.live(own).sort((a, b) => b.at - a.at || a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
 
 const lc = (w) => String(w).toLowerCase();
 
-/** The newest live week whose every word is in `words` (case does not matter), or null. A week with one outside word is not from this list. */
-export function weekFor(d, words, pool = null) {
-  const set = new Set((words || []).map(lc));
-  const from = (pool || W.liveGroups(d)).filter((g) => g.words.length && g.words.every((w) => set.has(lc(w))));
-  from.sort((a, b) => b.at - a.at || b.test.localeCompare(a.test) || a.id.localeCompare(b.id));
-  return from[0] || null;
-}
+/** The newest live week whose every word is in `words` (case does not matter), or null. (set-doc.js holds the rule.) */
+export const weekFor = SD.weekFor;
 
 /** Words of the list to go over, in the list's order, no repeats: missed in the newest quiz, needing help or not right in the week, or tricky. */
 export function toPractise({ words, quizMiss = [], weekHelp = [], tricky = [] }) {
@@ -103,7 +74,7 @@ const bare = (line) => line.replace(/^(Test|Quiz \(practice\)) · /, '');
  * One child's results on one list, only from what the account holds (no new saved data). master = the grown-up's own entry
  * { name, words, at, to }; d = the child's words doc; progress = their progress doc; setup = their setup.
  * Answers { has: 'sent' | 'behind', stage: { key, label }, studied, practised, test: { line, passed, attempts } | null,
- *           quiz: line | null, week: { id, name, test, line, done } | null, toPractise: [word] }
+ *           quiz: line | null, week: { id, name, test, line, done } | null (the newest week from this list), weeks: [that, newest first], toPractise: [word] }
  */
 export function childResult({ oid, master, d, progress, setup, today, childId = 'c' }) {
   const row = Ow.delivery({ [oid]: master }, { [childId]: setup || {} }).find((r) => r.oid === oid && r.childId === childId);
@@ -113,13 +84,18 @@ export function childResult({ oid, master, d, progress, setup, today, childId = 
   const t = P.chapterTestLine(progress, { id: 'own-' + oid }, '');
   const run = PR.checksOf(progress, 'q:own-' + oid).runs[0] || null;
   const quiz = run ? bare(A.resultLine({ kind: 'quiz', scope: '', right: run.s, of: run.t, pf: run.pf, lv: run.lv, hr: run.hr, hn: run.hn, pk: run.pk })) : null;
-  const g = weekFor(d, master.words);
+  const found = SD.weeksFromList(d, oid, [{ id: oid, words: master.words }]);
+  const g = found[0] || null;
+  const rowOf = (x) => {
+    const done = W.testDone(d, x);
+    const line = done ? (P.weekTestLine(d, x) || x.name + ' test') : 'Test on ' + W.dayLabel(x.test) + ' · ' + P.weekCard(d, x, today).chip.label;
+    return { id: x.id, name: x.name, test: x.test, line, done };
+  };
+  const weeks = found.map(rowOf);
   let week = null;
   let weekHelp = [];
   if (g) {
-    const done = W.testDone(d, g);
-    const line = done ? (P.weekTestLine(d, g) || g.name + ' test') : 'Test on ' + W.dayLabel(g.test) + ' · ' + P.weekCard(d, g, today).chip.label;
-    week = { id: g.id, name: g.name, test: g.test, line, done };
+    week = weeks[0];
     weekHelp = [...P.weekWords(d, g, today).filter((x) => x.status === 'help').map((x) => x.word), ...W.slipped(d, g)];
   }
   return {
@@ -130,25 +106,9 @@ export function childResult({ oid, master, d, progress, setup, today, childId = 
     test: t ? { line: bare(t.line), passed: !!t.passed, attempts: cp.attempts } : null,
     quiz,
     week,
+    weeks,
     toPractise: toPractise({ words: master.words, quizMiss: run && Array.isArray(run.miss) ? run.miss : [], weekHelp, tricky: PR.trickyWords(progress).map((x) => x.word) }),
   };
-}
-
-/** A child with a live week whose test is not done: from this list (HF M12) or another one. Answers null, or { from: true|false, name, test }. */
-export function runningWeek(d, words) {
-  const live = W.liveGroups(d).filter((g) => !W.testDone(d, g));
-  const own = weekFor(d, words, live); // the newest week from this list that is still running (an older one counts when a newer one is tested)
-  if (own) return { from: true, name: own.name, test: own.test };
-  const other = live[0];
-  return other ? { from: false, name: other.name, test: other.test } : null;
-}
-
-/** A child who already has a week from this list that is not tested yet starts unticked; everyone else is ticked. */
-export const startsTicked = (running) => !(running && running.from);
-/** The line under a child in the Set this week's test card, or ''. */
-export function runningLine(name, running) {
-  if (!running) return '';
-  return running.from ? hasWeekFromList(name, running.test) : hasOtherWeek(name, running.name);
 }
 
 // ---- the summary on a list card -----------------------------------------------------------------------------------
@@ -192,18 +152,6 @@ export function wordRows(words, results) {
 }
 export const wordRowLine = (names) => (names.length ? 'To practise: ' + names.join(', ') : NO_ONE);
 
-// ---- the Set this week's test card --------------------------------------------------------------------------------
-/** The words picked for the week: all of them up to 10; more than 10 start with the first 10 ticked. */
-export const firstPick = (words) => (words || []).slice(0, W.MAX_WORDS);
-/** What is wrong with a plan before anything is asked of the account ('' when nothing). */
-export function planProblem({ words, test, name, today }) {
-  if (!words.length) return TICK_ONE_WORD;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(test || '')) return 'Please choose a test date.';
-  const r = W.createGroup(W.emptyDoc(), { id: 'check', name, test, words, today, now: 1 });
-  return r.error || '';
-}
-export const isShort = (today, test) => /^\d{4}-\d{2}-\d{2}$/.test(test || '') && test > today && P.isShortWeek(today, test);
-
 // ---- print and copy -----------------------------------------------------------------------------------------------------
 const yn = (b) => (b ? 'Yes' : 'Not yet');
 /**
@@ -220,7 +168,7 @@ export function reportText({ listName, day, rows, words, only = '' }) {
     if (!x) { out.push(r.problem ? P.PROBLEM_TEXT[r.problem] || P.PROBLEM_TEXT.other : ''); out.push(''); continue; }
     out.push('Has the list: ' + (x.has === 'sent' ? 'Yes' : notSentLine(r.name)));
     out.push('Stage: ' + x.stage.label + '. Learned the words: ' + yn(x.studied) + '. Practised: ' + yn(x.practised));
-    out.push('Chapter test: ' + (x.test ? x.test.line + (x.test.passed ? ' · Passed' : '') + ' · ' + attemptsLine(x.test.attempts) : NO_TEST));
+    out.push('List test: ' + (x.test ? x.test.line + (x.test.passed ? ' · Passed' : '') + ' · ' + attemptsLine(x.test.attempts) : NO_TEST));
     out.push('Newest quiz: ' + (x.quiz || NO_QUIZ));
     out.push('This week\'s test: ' + (x.week ? x.week.line : NO_WEEK));
     out.push('Words to practise: ' + (x.toPractise.length ? x.toPractise.join(', ') : NONE_NOTED));

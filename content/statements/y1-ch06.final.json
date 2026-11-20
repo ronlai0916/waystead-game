@@ -1,0 +1,198 @@
+{
+ "chapter": "y1-ch06",
+ "year": 1,
+ "words": {
+  "said": [
+   "Yesterday my gran said it might rain.",
+   "I said thank you after the party.",
+   "Mum said yes, so we went to the beach."
+  ],
+  "says": [
+   "Right now, the little parrot says hello!",
+   "My teacher says we can paint today.",
+   "The sign at the pool says no running."
+  ],
+  "ask": [
+   "Please ask before you take a biscuit.",
+   "Don't be shy, just ask the teacher!",
+   "Can I ask you for some help?"
+  ],
+  "jumping": [
+   "Kangaroos are good at jumping very high.",
+   "Is the horse jumping over the tall fence?",
+   "Jumping with a skipping rope is fun!"
+  ],
+  "helped": [
+   "We helped the gardener plant some seeds.",
+   "A kind girl helped me find my coat!",
+   "Who helped you make this card?"
+  ],
+  "walking": [
+   "The ducks are walking slowly in a line.",
+   "We went walking in the woods in autumn.",
+   "Walking to school is better than going by car."
+  ],
+  "painter": [
+   "A painter used blue and yellow for the sky.",
+   "Is the painter coming to paint our fence?",
+   "The painter put a ladder against the wall."
+  ],
+  "kicked": [
+   "I kicked the football into the net.",
+   "We kicked the autumn leaves into a big pile!",
+   "He kicked off his wet shoes at the door."
+  ]
+ },
+ "rounds": {
+  "said": 0,
+  "says": 2,
+  "ask": 0,
+  "jumping": 0,
+  "helped": 0,
+  "walking": 0,
+  "painter": 0,
+  "kicked": 0
+ },
+ "rejected": [
+  {
+   "word": "said",
+   "round": 0,
+   "s": "Last night Dad said goodnight to me.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "said",
+   "round": 0,
+   "s": "The teacher said well done to us all.",
+   "reason": "checker: 'The teacher says well done to us all' works just as well, so the gap has two answers. (also fits: says)"
+  },
+  {
+   "word": "says",
+   "round": 0,
+   "s": "The clock says it is time for lunch.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "says",
+   "round": 0,
+   "s": "Nan always says please and thank you.",
+   "reason": "machine rule 4: not on the word lists: Nan"
+  },
+  {
+   "word": "says",
+   "round": 0,
+   "s": "My teddy never says a word!",
+   "reason": "checker: 'My teddy never said a word' is just as natural, so the gap has two answers. (also fits: said)"
+  },
+  {
+   "word": "says",
+   "round": 0,
+   "s": "The note on the door says back soon.",
+   "reason": "checker: 'The note on the door said back soon' also works, so the gap has two answers. (also fits: said)"
+  },
+  {
+   "word": "ask",
+   "round": 0,
+   "s": "Put up your hand to ask a question.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "jumping",
+   "round": 0,
+   "s": "The children are jumping on the bouncy castle.",
+   "reason": "checker: 'Walking on the bouncy castle' also makes sense, so the gap has two answers. (also fits: walking)"
+  },
+  {
+   "word": "jumping",
+   "round": 0,
+   "s": "The grasshopper is jumping through the long grass.",
+   "reason": "checker: 'Walking through the long grass' also makes sense, so the gap has two answers. (also fits: walking)"
+  },
+  {
+   "word": "helped",
+   "round": 0,
+   "s": "Yesterday I helped Dad wash the car.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "helped",
+   "round": 0,
+   "s": "Nan helped me bake a cake.",
+   "reason": "machine rule 4: not on the word lists: Nan"
+  },
+  {
+   "word": "walking",
+   "round": 0,
+   "s": "Is Gran walking to the shop or driving?",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "walking",
+   "round": 0,
+   "s": "I can hear you walking up the stairs!",
+   "reason": "checker: 'Jumping up the stairs' also fits, so the gap has two answers. (also fits: jumping)"
+  },
+  {
+   "word": "painter",
+   "round": 0,
+   "s": "I want to be a painter when I grow up!",
+   "reason": "machine rule 3: 10 words (needs 4-9)"
+  },
+  {
+   "word": "says",
+   "round": 1,
+   "s": "Every night, Dad says sleep well.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "says",
+   "round": 1,
+   "s": "Whenever I sneeze, Mum says bless you.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "says",
+   "round": 1,
+   "s": "Does your dog sit when Dad says sit?",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "says",
+   "round": 1,
+   "s": "Look, the sign says open.",
+   "reason": "checker: 'The sign said open' also works, and a sign shows words rather than speaking them aloud. (also fits: said)"
+  },
+  {
+   "word": "says",
+   "round": 2,
+   "s": "Now the cuckoo clock says it is noon.",
+   "reason": "checker: 'Now the clock said it is noon' also reads naturally, and a clock does not speak words out loud. (also fits: said)"
+  },
+  {
+   "word": "says",
+   "round": 2,
+   "s": "Now my teacher says it is story time.",
+   "reason": "checker: A single 'Now' is too weak a clue, because 'Now my teacher said it is story time' still sounds natural. (also fits: said)"
+  },
+  {
+   "word": "says",
+   "round": 2,
+   "s": "Whenever it rains, my gran says wear boots.",
+   "reason": "checker: 'Says wear boots' without speech marks or 'to' is awkward for a Year 1 reader."
+  },
+  {
+   "word": "says",
+   "round": 2,
+   "s": "Who says we can play outside now?",
+   "reason": "checker: 'Who said we can play outside now?' is just as natural, and the phrase is an idiom rather than speaking out loud. (also fits: said)"
+  },
+  {
+   "word": "says",
+   "round": 2,
+   "s": "Our teacher always says please and thank you.",
+   "reason": "checker: 'Our teacher always said please and thank you' is equally natural. (also fits: said)"
+  }
+ ],
+ "sitOut": [],
+ "manualEdits": "19 Nov 2026: Opus spot-check fixes (OPUS-SPOTCHECK.md), machine-checked with statements-check rules"
+}

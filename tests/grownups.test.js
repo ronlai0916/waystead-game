@@ -87,8 +87,6 @@ test('typed school words: curriculum, or our list; blocked and unknown get the s
   assert.equal(usableWord('zzqx', deps), null);
   assert.equal(usableWord('arse', deps), null, 'a blocked word: as unknown');
   assert.equal(usableWord('a b', deps), null);
-  const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  assert.match(src, /checkTyped\(typed, findEntry\)/, 'the plan uses the same check as My words');
   assert.ok(REFUSED.includes('isn\'t on our lists'));
 });
 
@@ -226,7 +224,7 @@ test('only an adult playing as themselves sees Grown-ups', () => {
 });
 test('the pages check before they draw or fetch anything', () => {
   const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  for (const fn of ['grownups', 'childDashboard', 'planWeek', 'planAny', 'editWeek']) {
+  for (const fn of ['grownups', 'childDashboard']) {
     const body = src.slice(src.indexOf('export function ' + fn + '('), src.indexOf('export function ' + fn + '(') + 120);
     assert.match(body, /adultOnly\(main\)/, fn);
   }
@@ -338,12 +336,6 @@ test('the answer lost after the save arrived: trying again makes no second plan'
   assert.deepEqual(await A.changeWords(lost, KID, make(at(MON))), { problem: 'network' });
   assert.equal((await A.changeWords(api, KID, make(at(MON) + 1))).ok, true);
   assert.deepEqual(Object.keys(acct.data.get(KID).get('spellbright/words').value.groups), ['p1']);
-  assert.match(readFileSync(file('site/js/grownups-views.js'), 'utf8'), /id: planId/, 'the form keeps one id');
-});
-test('a save that fails says nothing was saved, and the button comes back', () => {
-  const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  assert.match(src, /P\.PROBLEM_TEXT\[r\.problem\] \+ ' Nothing has been saved\.'/);
-  assert.match(src, /button\.disabled = false;/);
 });
 test('too big and rate-limited are reported too', async () => {
   const { acct, api } = family();
@@ -365,7 +357,7 @@ test('the new time is everywhere, and the old one nowhere', () => {
     assert.doesNotMatch(text(f), /10[–-]15|10 to 15|ten to fifteen/i, f);
   }
   // The child's home says "About 15 minutes" in its own words (SB3-C1: child-doc.js CHILD_TIME).
-  for (const f of ['site/js/views.js', 'site/js/words-views.js', 'site/js/grownups-views.js']) assert.match(text(f), /DAILY_TIME/, f);
+  for (const f of ['site/js/views.js', 'site/js/words-views.js']) assert.match(text(f), /DAILY_TIME/, f);
   assert.match(text('site/js/study-doc.js'), /about 15–20 minutes a day/);
   assert.match(text('README.md'), /about 15–20 minutes a day/);
 });
@@ -410,9 +402,6 @@ test('a plan with no clash isn\'t reported as updated', async () => {
   const { api } = family();
   const r = await A.changeWords(api, KID, (d) => P.createPlan(d, plan(), { id: 'p1', today: MON, now: at(MON) }));
   assert.equal(r.updated, false);
-});
-test('the page says it', () => {
-  assert.match(readFileSync(file('site/js/grownups-views.js'), 'utf8'), /if \(r\.updated\) toast\('Updated with the latest'\)/);
 });
 test('a bad plan saves nothing', async () => {
   const { acct, api } = family();

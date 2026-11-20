@@ -1,0 +1,167 @@
+{
+ "chapter": "y3-n02",
+ "year": 3,
+ "words": {
+  "replay": [
+   "Press the button to replay the song I like.",
+   "The match was a draw, so we replay it on Friday.",
+   "I lost the level, so I will replay it."
+  ],
+  "reheat": [
+   "Can we reheat the cold pasta for tea?",
+   "Please ask a grown-up to reheat the cold beans!",
+   "The pizza went cold, so I will reheat it in the oven."
+  ],
+  "rewrite": [
+   "I made spelling mistakes, so I will rewrite the page.",
+   "Can you rewrite this poem with some different rhymes?",
+   "Let's rewrite the ending of the story to make it funnier!"
+  ],
+  "rebuild": [
+   "The wind knocked down our den, so we will rebuild it.",
+   "Can we rebuild the tower of bricks, taller this time?",
+   "The little bird will rebuild its nest in the spring."
+  ],
+  "subway": [
+   "Dad pushed the pram through the subway under the main road.",
+   "Our shortcut to the park is the subway beneath the road!",
+   "Is there a subway under the big roundabout?"
+  ],
+  "superstar": [
+   "The pop superstar sang at the concert and the crowd clapped.",
+   "I want to be a famous superstar and sing on stage!",
+   "The superstar signed my poster after the concert."
+  ],
+  "subtract": [
+   "If you subtract two from ten, you have eight left.",
+   "Can you subtract seven from twelve?",
+   "To find how many are left, you subtract!"
+  ],
+  "superhero": [
+   "The superhero in my comic can lift a bus.",
+   "I wore a red cape and a mask like a superhero.",
+   "Is that a superhero flying past the window?"
+  ],
+  "submarine": [
+   "The submarine sailed silently under the sea.",
+   "Fish swam past the window of the submarine.",
+   "I drew a submarine with a round window under the waves."
+  ],
+  "supermarket": [
+   "We bought milk, bread and eggs at the supermarket.",
+   "Which aisle in the supermarket has the biscuits?",
+   "I helped carry the shopping bags out of the supermarket!"
+  ]
+ },
+ "rounds": {
+  "replay": 0,
+  "reheat": 0,
+  "rewrite": 0,
+  "rebuild": 0,
+  "subway": 1,
+  "superstar": 0,
+  "subtract": 0,
+  "superhero": 0,
+  "submarine": 0,
+  "supermarket": 0
+ },
+ "rejected": [
+  {
+   "word": "reheat",
+   "round": 0,
+   "s": "My porridge got cold, so Dad put it in to reheat.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "reheat",
+   "round": 0,
+   "s": "Soup tastes best when you reheat it until it steams.",
+   "reason": "checker: Saying soup tastes best reheated is an odd claim and reads unnaturally."
+  },
+  {
+   "word": "rebuild",
+   "round": 0,
+   "s": "After the storm, Dad and I will rebuild the garden fence.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "subway",
+   "round": 0,
+   "s": "We held hands and walked down the steps into the subway.",
+   "reason": "checker: You could also walk down steps into a submarine or a supermarket. (also fits: submarine, supermarket)"
+  },
+  {
+   "word": "subway",
+   "round": 0,
+   "s": "Our voices echoed in the long, tiled subway.",
+   "reason": "checker: Voices could also echo in a long, tiled supermarket. (also fits: supermarket)"
+  },
+  {
+   "word": "subway",
+   "round": 0,
+   "s": "The pictures on the subway wall were bright and lovely!",
+   "reason": "checker: A supermarket wall could have bright pictures too. (also fits: supermarket)"
+  },
+  {
+   "word": "superstar",
+   "round": 0,
+   "s": "Everyone cheered as the superstar walked onto the stage.",
+   "reason": "checker: A superhero could also walk onto a stage at a show. (also fits: superhero)"
+  },
+  {
+   "word": "subtract",
+   "round": 0,
+   "s": "Use your counters to subtract three sweets from the pile.",
+   "reason": "checker: Using counters to take away sweets is muddled, and 'take away' would sound more natural."
+  },
+  {
+   "word": "superhero",
+   "round": 0,
+   "s": "Our dog wears a cape and thinks he is a superhero.",
+   "reason": "checker: A dog could just as well think he is a superstar. (also fits: superstar)"
+  },
+  {
+   "word": "submarine",
+   "round": 0,
+   "s": "A yellow toy submarine floated in my bath.",
+   "reason": "checker: A yellow toy superhero could also float in a bath. (also fits: superhero)"
+  },
+  {
+   "word": "submarine",
+   "round": 0,
+   "s": "Could a submarine really go to the bottom of the sea?",
+   "reason": "checker: A child could imagine a superhero going to the bottom of the sea. (also fits: superhero)"
+  },
+  {
+   "word": "supermarket",
+   "round": 0,
+   "s": "Mum pushed a trolley round the supermarket.",
+   "reason": "checker: It shows mum doing the shopping, a mild stereotype about who shops."
+  },
+  {
+   "word": "supermarket",
+   "round": 0,
+   "s": "The supermarket was full of shoppers on Saturday.",
+   "reason": "checker: A subway near the shops could also be full of shoppers. (also fits: subway)"
+  },
+  {
+   "word": "subway",
+   "round": 1,
+   "s": "We stayed dry in the subway while rain fell on the street above.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "subway",
+   "round": 1,
+   "s": "The subway goes under the railway to the other side.",
+   "reason": "checker: A child could read 'The superhero goes under the railway to the other side' as a small story, so the gap does not point to one word. (also fits: superhero)"
+  },
+  {
+   "word": "subway",
+   "round": 1,
+   "s": "The tunnel called the subway lets walkers go beneath the railway.",
+   "reason": "checker: 'The tunnel called the subway' sounds unnatural and is close to just giving the meaning."
+  }
+ ],
+ "sitOut": []
+}

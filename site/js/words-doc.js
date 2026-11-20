@@ -167,7 +167,7 @@ function checkTest(test, today, start) {
 }
 function checkWords(words) {
   if (!words.length) return 'Please add at least one word.';
-  return words.length > MAX_WORDS ? 'A group can have up to ' + MAX_WORDS + ' words.' : '';
+  return words.length > MAX_WORDS ? 'A week can have up to ' + MAX_WORDS + ' words.' : '';
 }
 
 /** A new group, with up to 3 words back from earlier groups. Answers { doc, id } or { error }. */
@@ -197,11 +197,11 @@ export const needsStarter = (d) => !Object.values(d.groups).some((g) => g.at > d
  */
 export function editGroup(d, id, changes, today, now) {
   const g = d.groups[id];
-  if (!g || g.gone) return { error: 'That group has gone.' };
+  if (!g || g.gone) return { error: 'That week has gone.' };
   const next = { ...g, at: now };
   if ('name' in changes) {
     const name = String(changes.name || '').trim().slice(0, MAX_NAME);
-    if (!name) return { error: 'Please give the group a name.' };
+    if (!name) return { error: 'Please give the week a name.' };
     next.name = name;
   }
   if ('words' in changes || 'test' in changes) {
@@ -684,7 +684,7 @@ export const setWeekPick = (d, on, now) => ({ ...d, weekPick: { on: !!on, at: Ma
 /** Only a grown-up (who.js kind 'adult') may delete a week; a child never, and an unknown player never. */
 /** The words page's link to the edit form: a child only where their own rules allow a change, and never a word "delete"; '' = no link. */
 export function editLinkLabel(d, g, today, kind) {
-  if (canEditAsChild(d, g, today)) return 'Change this group';
+  if (canEditAsChild(d, g, today)) return 'Change this week';
   return kind === 'adult' ? 'Rename or delete' : ''; // a child and an unknown player are treated alike: never the word "delete"
 }
 /** Only a grown-up may clear a player's progress (it wipes every week): never a child, never an unknown player. */

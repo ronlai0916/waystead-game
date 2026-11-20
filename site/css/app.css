@@ -37,6 +37,8 @@
 }
 
 :root {
+  /* WP-S (17 Nov): the bottom safe zone. A phone's floating browser bar covers about 110 px, so the last control must end this far above the screen's foot. */
+  --safe-zone: calc(env(safe-area-inset-bottom, 0px) + 112px);
   --paper: #FAF8F3;
   --ink: #1B1A20;
   --amber: #F2A31D;
@@ -132,10 +134,10 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid var(--line);
 }
 .topbar__inner {
-  max-width: var(--wrap); margin: 0 auto; padding: 10px 16px;
+  max-width: var(--wrap); margin: 0 auto; padding: 8px 16px;
   display: flex; align-items: center; gap: 10px;
 }
-.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; min-width: 0; }
+.brand { display: inline-flex; align-items: center; min-height: 44px; padding-block: 5px; box-sizing: border-box; gap: 10px; text-decoration: none; margin-right: auto; min-width: 44px; }
 .brand__mark { width: 34px; height: 34px; flex: none; }
 .brand__stroke { fill: none; stroke: var(--wordmark); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
 .brand__dot { fill: var(--amber); }
@@ -158,7 +160,7 @@ img { max-width: 100%; display: block; }
 @media (max-width: 599.98px) { .navmenu__phone { display: block; } }
 
 .iconbtn {
-  width: 40px; height: 40px; flex: none; display: inline-grid; place-items: center;
+  width: 44px; height: 44px; flex: none; display: inline-grid; place-items: center;
   border: 1px solid var(--line); background: var(--surface); border-radius: 12px; cursor: pointer; color: var(--text);
 }
 .iconbtn:hover { border-color: var(--muted); }
@@ -188,7 +190,7 @@ img { max-width: 100%; display: block; }
 .btn--ghost { background: var(--surface); border-color: var(--btn-ghost-edge); color: var(--text); box-shadow: var(--btn-ghost-shadow); }
 .btn--ghost:hover { border-color: var(--muted); }
 .btn--quiet { background: var(--surface-2); color: var(--text); }
-.btn--small { min-height: 40px; padding: 6px 14px; font-size: 0.92rem; }
+.btn--small { min-height: 44px; padding: 6px 14px; font-size: 0.92rem; }
 .btn[disabled] { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 .btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .btnrow { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -379,17 +381,27 @@ details.hint .hint__body { padding: 0 16px 14px; display: grid; gap: 6px; }
 .settings { display: grid; gap: 12px; }
 .setting { padding: 16px; display: grid; gap: 10px; }
 .radios { display: flex; gap: 8px; flex-wrap: wrap; }
-.radios label { display: inline-flex; gap: 6px; align-items: center; font-weight: 600; }
+.radios label { min-height: 44px; display: inline-flex; gap: 6px; align-items: center; font-weight: 600; }
 
 .foot { border-top: 1px solid var(--line); padding: 20px 0 28px; margin-top: 24px; }
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .foot { padding-bottom: calc(28px + var(--safe-zone)); } }
 .foot__inner { display: grid; gap: 6px; font-size: 0.92rem; }
 .foot__small { color: var(--muted); font-size: 0.8rem; }
 
 .toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 40px); opacity: 0; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 12px; font-weight: 600; transition: all 200ms ease; pointer-events: none; z-index: 40; max-width: calc(100% - 32px); }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* WP-S: on a phone the bars sit above the browser's floating bar, the page ends clear of it, and a toast rises above it. */
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) {
+  /* the bar keeps to the foot and its own background fills the 72 px under its buttons, so nothing shows through below it */
+  .stickybar { bottom: 0; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px) + 72px); }
+  /* the toast rides under the top bar, so it never covers the last control or sits under the browser's bar */
+  .toast { bottom: auto; top: 72px; transform: translate(-50%, -40px); }
+  .toast.show { transform: translate(-50%, 0); }
+}
+
 /* ---- Theme button: icon, plus its name on wider screens ------------------- */
-.themebtn { display: inline-flex; align-items: center; width: auto; min-width: 40px; gap: 8px; padding: 0 12px; font-weight: 600; font-size: 0.92rem; color: var(--text); white-space: nowrap; }
+.themebtn { display: inline-flex; align-items: center; width: auto; min-width: 44px; gap: 8px; padding: 0 12px; font-weight: 600; font-size: 0.92rem; color: var(--text); white-space: nowrap; }
 @media (max-width: 899.98px) { .themebtn { padding: 0; width: 40px; } .themebtn__text { display: none; } }
 :root[data-theme="dark"] .toast { background: var(--paper); color: var(--ink); }
 
@@ -535,7 +547,7 @@ main:focus, main:focus-visible { outline: none; }
 .groupform .field + label { margin-top: 8px; }
 .addwords { margin-top: 14px; }
 .typedword { flex: 1 1 160px; width: auto; }
-.chip { font: inherit; font-weight: 600; color: var(--text); background: var(--surface-2); border: 0; border-radius: 8px; padding: 2px 10px; cursor: pointer; }
+.chip { font: inherit; font-weight: 600; color: var(--text); background: var(--surface-2); border: 0; border-radius: 8px; min-height: 44px; min-width: 44px; padding: 8px 12px; cursor: pointer; }
 .spellpage { text-align: center; }
 .spellpage .pagehead { text-align: center; }
 .peek { min-height: 1.5em; margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.5rem, 7vw, 2.2rem); color: var(--sb); }
@@ -598,6 +610,7 @@ a.tab { color: var(--text); text-decoration: none; }
 .tile:disabled { opacity: 0.45; }
 .matchgrid { display: grid; gap: 12px; text-align: left; }
 @media (min-width: 720px) { .matchgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
+@media (min-width: 640px) and (max-height: 520px) { .matchgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); } } /* SB5 S1: a phone on its side, 667 wide, puts the words beside the meanings too (the page is short there) */
 .matchcol { display: grid; gap: 8px; align-content: start; }
 .matchcard { display: flex; gap: 10px; align-items: center; width: 100%; min-height: 48px; padding: 8px 12px; text-align: left; cursor: pointer; background: var(--surface); color: var(--text); border: 2px solid var(--line); border-radius: var(--r); font-size: 0.98rem; }
 .matchcard--word { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
@@ -650,7 +663,7 @@ ul.report__list.card { padding-left: 34px; }
    (picture, flower, Hear the word, the letter boxes, Peek, Skip) and the keyboard on the right, so both are in view at once.
    Portrait (a phone, an iPad upright) and a tall window stay one column. A page with no keyboard has an empty second column of
    width 0: its content keeps its x and width but moves a few px (less top padding, grid margins do not collapse). [data-slot] is display: contents so its children join the grid. No :has(), no script. */
-@media (min-width: 820px) and (max-height: 1000px) {
+@media (min-width: 820px) and (max-height: 1000px), (min-width: 640px) and (max-height: 520px) {
   main > .page.play, main > .page.spellpage {
     display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: repeat(10, auto) 1fr auto; gap: 0; align-content: start;
     max-width: var(--wrap); padding-top: 12px; padding-bottom: 12px; /* child.css keeps a practice page 560 px wide: not here */
@@ -682,7 +695,7 @@ ul.report__list.card { padding-left: 34px; }
   main > .page.spellpage .answerline { margin: 4px auto 8px; }
 }
 /* A phone on its side (under 520 px tall): the page may scroll, and the keyboard stays in view beside it. */
-@media (min-width: 820px) and (max-height: 520px) {
+@media (min-width: 640px) and (max-height: 520px) {
   main > .page.play .keyboard, main > .page.spellpage .keyboard { position: sticky; top: 76px; align-self: start; }
 }
 
@@ -691,3 +704,42 @@ ul.report__list.card { padding-left: 34px; }
 .pic--sentence .example { margin: 0; font-size: 1.15rem; line-height: 1.35; }
 .wordcard > .pic--sentence { grid-column: 1 / -1; }
 .wordcard--hello .pic.pic--sentence { max-width: none; margin: 0; }
+
+/* WP-S: the top bar's buttons are 44 x 44 here (the shared Menu and player-chip blocks above are byte-identical in all three sites, so they are widened here). */
+.iconbtn.navmenu__btn, .playerchip--out { min-height: 44px; }
+@media (max-width: 599.98px) { .iconbtn.navmenu__btn, .playerchip--out { width: 44px; } }
+/* WP-S: on a short phone (under 700 px high, or landscape) the bar would cover the controls above it, so it scrolls with the page there; the page's own bottom room keeps it above the browser's bar. */
+@media (max-width: 600px) and (max-height: 699px), (max-height: 480px) and (max-width: 950px) { .stickybar { position: static; padding-bottom: 12px; } }
+
+/* ---- SB5 (R4): a phone on its side, 844 x 390 and 915 x 412 (F8, F9): the keyboard pages keep Hear, Peek and Skip in the first screen ----------------------------
+   The two-column rule above already puts the keyboard on the right. Under 520 px high the left column tightens: the top bar and the page gap shrink, the heading is kept for a screen reader only and its
+   small lines share one row, the lede line goes, and the Peek hint (still said when you peek) is hidden. Targets stay 48 px high; keys stay at least 44 x 48.
+   F7 (667 x 375, under 820 wide) is not helped: ten 44 px keys need 476 px, so the keyboard stays below the page there (a known failure, see fold-known.json). */
+@media (min-width: 640px) and (max-height: 520px) {
+  body.is-child .topbar__inner { padding-block: 4px; }
+  body.is-child main > section.wrap.page.spellpage, body.is-child main > section.wrap.page.play { padding-top: 2px; padding-bottom: 8px; }
+  body main > .page.spellpage .pagehead { display: flex; flex-wrap: wrap; align-items: center; column-gap: 14px; row-gap: 0; margin-bottom: 2px; text-align: left; }
+  body main > .page.spellpage .pagehead h1 { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } /* still the page's heading for a screen reader; "Read it to me" says it */
+  body main > .page.spellpage .pagehead .muted, body main > .page.spellpage .pagehead .eyebrow { display: none; }
+  body main > .page.spellpage .pagehead .linkbtn { min-height: 36px; padding-block: 0; }
+  body main > .page.spellpage .spellline:empty, body main > .page.spellpage .tileline { display: none; }
+  body main > .page.spellpage .peek { min-height: 0; margin: 0; }
+  body main > .page.spellpage .peekrow__hint { display: none; }
+  body main > .page.spellpage .peekrow, body main > .page.spellpage .skiprow, body main > .page.spellpage .btnrow--center { margin-top: 2px; margin-bottom: 0; }
+  body main > .page.spellpage .answerline, body main > .page.spellpage .spellboxes { margin: 2px auto; }
+  body main > .page.spellpage .tileword { padding: 2px 4px; gap: 4px; }
+  body.is-child .topbar__inner { padding-block: 0; }
+  body main > .page.spellpage .btnrow--center .btn, body main > .page.spellpage .peekrow .btn, body main > .page.spellpage .skiprow .linkbtn { min-height: 48px; height: 48px; padding-block: 0; }
+  body main > .page.spellpage .tileword .btn { min-height: 48px; }
+  /* The flower game and Hello's spell-it-out page: a smaller picture and flower, the small lines gone, so "Hear the word" is in the first screen. */
+  body main > .page.play .pagehead .muted, body main > .page.play .pagehead .eyebrow, body main > .page.hellopage .pagehead .muted { display: none; }
+  body main > .page.play .play__top .pic, body main > .page.play .flower { height: clamp(72px, 20svh, 120px); max-height: clamp(72px, 20svh, 120px); }
+  body main > .page.play .btnrow--center .btn, body main > .page.play [data-hearmain] { min-height: 48px; height: 48px; }
+  body main > .page.play .status, body main > .page.play .hint { margin-top: 0; margin-bottom: 0; }
+  body.is-child main > section.wrap.page.spellpage { padding-top: 0; }
+  body main > .page.spellpage .pagehead { margin-bottom: 0; }
+  body main > .page.spellpage .pagehead .linkbtn { min-height: 32px; }
+  body main > .page.spellpage .peekrow, body main > .page.spellpage .skiprow, body main > .page.spellpage .btnrow--center, body main > .page.spellpage .spellboxes, body main > .page.spellpage .answerline { margin-top: 0; margin-bottom: 0; }
+  /* S3-D14: Hear and Peek on a tile page are 8 px or more apart (Hear's 2 px bottom padding + 8), not 3-4: two targets a thumb can hit one for the other. */
+  body main > .page.spellpage.tilepage .peekrow { margin-top: 8px; }
+}

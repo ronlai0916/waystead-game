@@ -1,0 +1,350 @@
+{
+ "chapter": "y2-ch04",
+ "year": 2,
+ "words": {
+  "great": [
+   "We heard great news about our school trip!",
+   "Thanks for your great help in the garden!",
+   "My brother is great at football."
+  ],
+  "break": [
+   "Can you break the chocolate bar into small pieces?",
+   "If you drop an egg, it will break.",
+   "We have a short break to play outside at school."
+  ],
+  "steak": [
+   "The butcher cut a thick steak from the beef.",
+   "Would you like chips with your steak?",
+   "Is that meat a steak or a sausage?"
+  ],
+  "pretty": [
+   "It was pretty cold, so I wore my coat.",
+   "I was pretty tired after the long walk.",
+   "I am pretty sure it will rain today."
+  ],
+  "beautiful": [],
+  "people": [
+   "How many people are coming to your party?",
+   "The bus was full of people going to work.",
+   "People wear sunhats when the sun is hot."
+  ],
+  "apple": [
+   "A red apple fell from the tree in autumn.",
+   "Can I have an apple instead of a biscuit?",
+   "I like to dip a slice of apple in honey."
+  ],
+  "camel": [
+   "Which has a hump, a camel or a horse?"
+  ],
+  "animal": [
+   "My pet rabbit is a gentle animal.",
+   "Which animal says moo on the farm?",
+   "A hedgehog is a small animal in our garden."
+  ],
+  "pencil": [
+   "Please sharpen your pencil before you write.",
+   "Can I borrow a pencil to do my sums?",
+   "Write your name in pencil, then in pen."
+  ]
+ },
+ "rounds": {
+  "great": 1,
+  "break": 0,
+  "steak": 0,
+  "pretty": 1,
+  "beautiful": 2,
+  "people": 0,
+  "apple": 0,
+  "camel": 2,
+  "animal": 0,
+  "pencil": 0
+ },
+ "rejected": [
+  {
+   "word": "great",
+   "round": 0,
+   "s": "Great! The sun is out, so we can play outside.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: The"
+  },
+  {
+   "word": "great",
+   "round": 0,
+   "s": "You did a great job tidying your room!",
+   "reason": "checker: 'You did a beautiful job' is natural English, so beautiful also fits. (also fits: beautiful)"
+  },
+  {
+   "word": "great",
+   "round": 0,
+   "s": "Was the birthday party great fun?",
+   "reason": "checker: 'Was the party pretty fun?' also makes sense, so the gap is not clear. (also fits: pretty)"
+  },
+  {
+   "word": "great",
+   "round": 0,
+   "s": "We did great in the egg and spoon race.",
+   "reason": "checker: 'Did great' is American usage; British English says 'did well'."
+  },
+  {
+   "word": "steak",
+   "round": 0,
+   "s": "Mum put the steak and onions in a hot pan.",
+   "reason": "checker: It shows Mum doing the cooking (a stereotype), and 'apple and onions' could just about fit. (also fits: apple)"
+  },
+  {
+   "word": "pretty",
+   "round": 0,
+   "s": "She tied a pretty bow on the little box.",
+   "reason": "checker: 'A beautiful bow' fits just as well. (also fits: beautiful)"
+  },
+  {
+   "word": "pretty",
+   "round": 0,
+   "s": "The small bird had pretty yellow feathers.",
+   "reason": "checker: 'Beautiful yellow feathers' fits just as well. (also fits: beautiful)"
+  },
+  {
+   "word": "pretty",
+   "round": 0,
+   "s": "Look at the pretty pink shell I found!",
+   "reason": "checker: 'Beautiful pink shell' fits just as well. (also fits: beautiful)"
+  },
+  {
+   "word": "beautiful",
+   "round": 0,
+   "s": "The rainbow over the hills was beautiful!",
+   "reason": "checker: Pretty and great also fit the gap. (also fits: pretty, great)"
+  },
+  {
+   "word": "beautiful",
+   "round": 0,
+   "s": "What a beautiful sunset over the sea tonight!",
+   "reason": "checker: 'What a pretty sunset' and 'What a great sunset' also fit. (also fits: pretty, great)"
+  },
+  {
+   "word": "beautiful",
+   "round": 0,
+   "s": "The singer had a beautiful voice.",
+   "reason": "checker: 'A great voice' and 'a pretty voice' fit, and a voice is heard, not looked at. (also fits: great, pretty)"
+  },
+  {
+   "word": "beautiful",
+   "round": 0,
+   "s": "We watched the beautiful snow fall in the garden.",
+   "reason": "checker: 'The pretty snow' fits just as well. (also fits: pretty)"
+  },
+  {
+   "word": "beautiful",
+   "round": 0,
+   "s": "The painting in the library looks beautiful.",
+   "reason": "checker: 'Looks pretty' and 'looks great' also fit. (also fits: pretty, great)"
+  },
+  {
+   "word": "apple",
+   "round": 0,
+   "s": "Mum cut the apple into four slices.",
+   "reason": "checker: 'Cut the steak into four slices' also makes sense. (also fits: steak)"
+  },
+  {
+   "word": "apple",
+   "round": 0,
+   "s": "We baked an apple pie in the oven.",
+   "reason": "checker: 'A steak pie' also fits with only a small change to the article. (also fits: steak)"
+  },
+  {
+   "word": "camel",
+   "round": 0,
+   "s": "The camel carried our bags across the sandy desert.",
+   "reason": "checker: 'The animal carried our bags' also makes sense. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 0,
+   "s": "I rode on a slow camel at the beach.",
+   "reason": "checker: Animal also fits, and a camel ride at a UK beach is an odd setting. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 0,
+   "s": "The camel in the desert drank lots of water.",
+   "reason": "checker: 'The animal in the desert' also makes sense. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 0,
+   "s": "Look at the big hump on that camel!",
+   "reason": "checker: 'The hump on that animal' still makes sense, so the gap is not unique. (also fits: animal)"
+  },
+  {
+   "word": "animal",
+   "round": 0,
+   "s": "Every animal on the farm had hay and water.",
+   "reason": "checker: 'Every camel on the farm had hay and water' also makes sense. (also fits: camel)"
+  },
+  {
+   "word": "great",
+   "round": 1,
+   "s": "A great many stars shone in the sky.",
+   "reason": "checker: 'A great many' is a set phrase that a Year 2 child may not know, and it gives a weak clue to the meaning."
+  },
+  {
+   "word": "great",
+   "round": 1,
+   "s": "Dad spent a great deal of time mending the shed.",
+   "reason": "checker: 'A great deal' is a set phrase, and 'Dad fixes' is a stereotype about who fixes things."
+  },
+  {
+   "word": "great",
+   "round": 1,
+   "s": "Is it not great that Saturday is my birthday?",
+   "reason": "checker: 'Is it not great' sounds stiff and unnatural for a young reader."
+  },
+  {
+   "word": "pretty",
+   "round": 1,
+   "s": "Is the soup pretty hot, or can I eat it?",
+   "reason": "checker: The question does not make sense as written, and it uses the 'quite' meaning."
+  },
+  {
+   "word": "pretty",
+   "round": 1,
+   "s": "The little doll wore a pretty frilly hat.",
+   "reason": "checker: 'A beautiful frilly hat' works just as well. (also fits: beautiful)"
+  },
+  {
+   "word": "pretty",
+   "round": 1,
+   "s": "Mum put a pretty ribbon on my plait.",
+   "reason": "checker: 'A beautiful ribbon' works just as well. (also fits: beautiful)"
+  },
+  {
+   "word": "pretty",
+   "round": 1,
+   "s": "The shop sells pretty cards with tiny flowers.",
+   "reason": "checker: 'Beautiful cards' works just as well. (also fits: beautiful)"
+  },
+  {
+   "word": "beautiful",
+   "round": 1,
+   "s": "Which is more beautiful, the red rose or the white?",
+   "reason": "checker: 'Prettier' fits with only a small change. (also fits: pretty)"
+  },
+  {
+   "word": "beautiful",
+   "round": 1,
+   "s": "The cake was too beautiful to eat!",
+   "reason": "checker: 'Too pretty to eat' works just as well. (also fits: pretty)"
+  },
+  {
+   "word": "beautiful",
+   "round": 1,
+   "s": "It was the most beautiful rainbow I had ever seen!",
+   "reason": "checker: 'Prettiest rainbow' and 'greatest rainbow' fit with small changes. (also fits: pretty, great)"
+  },
+  {
+   "word": "beautiful",
+   "round": 1,
+   "s": "Nothing looks more beautiful than snow on Christmas morning.",
+   "reason": "checker: 'Prettier' fits with only a small change. (also fits: pretty)"
+  },
+  {
+   "word": "beautiful",
+   "round": 1,
+   "s": "Gran says the park looks more beautiful each autumn.",
+   "reason": "checker: 'Prettier' fits with only a small change. (also fits: pretty)"
+  },
+  {
+   "word": "camel",
+   "round": 1,
+   "s": "Is a camel taller than a horse?",
+   "reason": "checker: The clue is weak, and 'an animal' also makes a sentence that works. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 1,
+   "s": "Mum has a soft camel coat for cold days.",
+   "reason": "checker: Here camel is a colour, which would confuse a Year 2 child and does not teach the animal meaning."
+  },
+  {
+   "word": "camel",
+   "round": 1,
+   "s": "My sister made a camel from brown clay at school.",
+   "reason": "checker: 'An animal' or 'an apple' made from clay also work. (also fits: animal, apple)"
+  },
+  {
+   "word": "camel",
+   "round": 1,
+   "s": "Our class painted a camel on the wall.",
+   "reason": "checker: Several other nouns could be painted on the wall, so there is no clue. (also fits: animal, apple, pencil)"
+  },
+  {
+   "word": "beautiful",
+   "round": 2,
+   "s": "The slow music was so beautiful that we all sat still.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "beautiful",
+   "round": 2,
+   "s": "Look how beautiful the huge round moon is tonight!",
+   "reason": "checker: Both 'pretty' and 'great' fit naturally in 'Look how ___ the moon is'. (also fits: pretty, great)"
+  },
+  {
+   "word": "beautiful",
+   "round": 2,
+   "s": "Gran sang a beautiful song to the baby.",
+   "reason": "checker: 'A pretty song' and 'a great song' both work, and a song is heard, not looked at. (also fits: pretty, great)"
+  },
+  {
+   "word": "beautiful",
+   "round": 2,
+   "s": "The bride wore a long, beautiful white dress.",
+   "reason": "checker: 'A long, pretty white dress' fits just as well. (also fits: pretty)"
+  },
+  {
+   "word": "beautiful",
+   "round": 2,
+   "s": "Is the view from the top of the hill beautiful?",
+   "reason": "checker: A view can just as well be 'pretty' or 'great'. (also fits: pretty, great)"
+  },
+  {
+   "word": "camel",
+   "round": 2,
+   "s": "Look, the camel has two big humps!",
+   "reason": "machine rule 5: word overlap with the meaning is 75%"
+  },
+  {
+   "word": "camel",
+   "round": 2,
+   "s": "In the book, a camel with two humps walked far.",
+   "reason": "checker: 'An animal with two humps' also makes sense, and 'walked far' sounds awkward. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 2,
+   "s": "Can you draw a camel with a big hump?",
+   "reason": "checker: 'Draw an animal with a big hump' also makes sense, so the clue is not unique. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 2,
+   "s": "The camel walked slowly across the hot, sandy desert.",
+   "reason": "checker: 'The animal walked slowly across the desert' fits perfectly. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 2,
+   "s": "A camel can go for days without a drink.",
+   "reason": "checker: 'An animal can go for days without a drink' is also grammatical and makes sense. (also fits: animal)"
+  },
+  {
+   "word": "camel",
+   "round": 2,
+   "s": "We rode a camel over the sand dunes.",
+   "reason": "checker: 'We rode an animal over the sand dunes' also fits. (also fits: animal)"
+  }
+ ],
+ "sitOut": [
+  "beautiful",
+  "camel"
+ ]
+}

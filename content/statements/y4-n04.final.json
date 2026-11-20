@@ -1,0 +1,281 @@
+{
+ "chapter": "y4-n04",
+ "year": 4,
+ "words": {
+  "nervous": [
+   "I had butterflies in my tummy because I felt nervous.",
+   "My hands shook a little because I was nervous about the quiz.",
+   "Do you feel nervous when you read aloud to the class?"
+  ],
+  "serious": [
+   "We all stopped joking when the head teacher sounded serious.",
+   "Please be serious, because this job needs real care.",
+   "Mum said it was a serious matter to lose the school key."
+  ],
+  "curious": [
+   "My brother is curious and asks why the sky is blue.",
+   "Are you curious about how bread rises in the oven?",
+   "We were curious about space, so we borrowed books from the library."
+  ],
+  "jealous": [
+   "I felt jealous when my sister got a bigger slice of cake.",
+   "Are you jealous of her shiny new trainers?",
+   "She wished she had a pony like her friend, and felt jealous."
+  ],
+  "generous": [
+   "A generous neighbour gave us a bag of apples from her tree.",
+   "It was generous of you to share your sweets with everyone.",
+   "Are you generous enough to lend your crayons to the class?"
+  ],
+  "dangerous": [
+   "A sign said the broken bridge was dangerous, so we turned back.",
+   "Storm winds can be dangerous, so we stayed in.",
+   "Never touch a hot oven, because it is dangerous!"
+  ],
+  "enormous": [
+   "An enormous lorry took up the whole street.",
+   "How enormous the elephant looked next to the tiny mouse!",
+   "My tent is enormous, with room for ten children inside."
+  ],
+  "adventurous": [
+   "I am adventurous, so I chose the tallest slide in the park.",
+   "My adventurous uncle spends every holiday hiking up tall hills.",
+   "Only the adventurous children tried the high rope bridge at the park."
+  ],
+  "mysterious": [
+   "Nobody can explain why my socks vanish, so it is mysterious.",
+   "The lamp switching on was mysterious until we found the timer.",
+   "The parcel had no name or stamp, so its sender stayed mysterious."
+  ],
+  "ridiculous": [
+   "The joke was so ridiculous that I could not stop giggling.",
+   "What a ridiculous sight, a dog wearing sunglasses and a bow tie!",
+   "We laughed at the ridiculous dance my uncle did at the party."
+  ]
+ },
+ "rounds": {
+  "nervous": 1,
+  "serious": 0,
+  "curious": 0,
+  "jealous": 0,
+  "generous": 0,
+  "dangerous": 0,
+  "enormous": 0,
+  "adventurous": 1,
+  "mysterious": 2,
+  "ridiculous": 0
+ },
+ "rejected": [
+  {
+   "word": "nervous",
+   "round": 0,
+   "s": "Do you feel nervous on your first day at school?",
+   "reason": "checker: A child could also feel curious or adventurous on a first day, so the gap is unclear. (also fits: curious, adventurous)"
+  },
+  {
+   "word": "nervous",
+   "round": 0,
+   "s": "The nervous cat hid under the bed when visitors came.",
+   "reason": "checker: An enormous cat could also hide under the bed, so the gap is unclear. (also fits: enormous)"
+  },
+  {
+   "word": "nervous",
+   "round": 0,
+   "s": "How nervous I am before the big spelling test!",
+   "reason": "checker: The word order is awkward and unnatural for a child to read."
+  },
+  {
+   "word": "serious",
+   "round": 0,
+   "s": "Is this a joke, or are you being serious?",
+   "reason": "checker: Ridiculous could also go with a joke here, so a child might choose it. (also fits: ridiculous)"
+  },
+  {
+   "word": "serious",
+   "round": 0,
+   "s": "Listen carefully, because this is a serious job and needs care.",
+   "reason": "checker: A dangerous job also needs care, and the sentence repeats another candidate. (also fits: dangerous)"
+  },
+  {
+   "word": "curious",
+   "round": 0,
+   "s": "I was curious about what lay inside the old suitcase.",
+   "reason": "checker: A child could also feel nervous about what was inside, so the gap is unclear. (also fits: nervous)"
+  },
+  {
+   "word": "curious",
+   "round": 0,
+   "s": "I took the radio apart because I was curious how it worked.",
+   "reason": "checker: Taking an electrical item apart is risky play to show children."
+  },
+  {
+   "word": "jealous",
+   "round": 0,
+   "s": "The dog was jealous when the cat sat on Dad's lap.",
+   "reason": "machine rule 4: capital word not allowed: Dad's"
+  },
+  {
+   "word": "jealous",
+   "round": 0,
+   "s": "How jealous I was of his huge sandcastle!",
+   "reason": "checker: The word order is awkward and unnatural for a child to read."
+  },
+  {
+   "word": "generous",
+   "round": 0,
+   "s": "How generous my grandad was, giving everyone a present!",
+   "reason": "machine rule 4: not on the word lists: grandad"
+  },
+  {
+   "word": "generous",
+   "round": 0,
+   "s": "The generous baker gave every child a free bun!",
+   "reason": "checker: A mysterious baker could also hand out buns, so the gap is unclear. (also fits: mysterious)"
+  },
+  {
+   "word": "dangerous",
+   "round": 0,
+   "s": "The sharp saw is dangerous, so only a grown-up should use it.",
+   "reason": "checker: A sharp cutting tool brings in the idea of injury."
+  },
+  {
+   "word": "dangerous",
+   "round": 0,
+   "s": "Is it dangerous to ride a bike without a helmet?",
+   "reason": "checker: It brings in road and injury risk and could be read as a real question."
+  },
+  {
+   "word": "enormous",
+   "round": 0,
+   "s": "The enormous pumpkin was so big that Dad could not lift it.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "adventurous",
+   "round": 0,
+   "s": "I am adventurous, so I love trying food I have never tasted.",
+   "reason": "checker: A curious child might also love trying new food, so the gap is unclear. (also fits: curious)"
+  },
+  {
+   "word": "adventurous",
+   "round": 0,
+   "s": "She was adventurous, always choosing a new path on our walks.",
+   "reason": "checker: Choosing new paths could also show she was curious. (also fits: curious)"
+  },
+  {
+   "word": "adventurous",
+   "round": 0,
+   "s": "My adventurous gran signed up for a new class every term.",
+   "reason": "checker: Joining a new class each term also fits curious, meaning keen to learn. (also fits: curious)"
+  },
+  {
+   "word": "mysterious",
+   "round": 0,
+   "s": "Who left this mysterious note on my desk?",
+   "reason": "checker: A ridiculous or enormous note would also make sense here. (also fits: ridiculous, enormous)"
+  },
+  {
+   "word": "mysterious",
+   "round": 0,
+   "s": "How mysterious it was when my socks vanished again!",
+   "reason": "checker: The wording is awkward, and ridiculous could also fit. (also fits: ridiculous)"
+  },
+  {
+   "word": "mysterious",
+   "round": 0,
+   "s": "The lights flickered for no reason, which was mysterious.",
+   "reason": "reader flag two_fit (Both 'mysterious' and 'ridiculous' could go in the gap: 'The lights flickered for no reason, which was ___.'); re-judge: The flag is correct, so drop. 'Ridiculous' is a weak fit, because lights flickering is not silly or absurd. But 'curious' also fits the gap, since 'which was curious' means strange or odd, and that matches 'for no reason' just as well as 'mysterious'. A sentence about flickering lights could also take 'dangerous'. The gap does not lead to one answer."
+  },
+  {
+   "word": "ridiculous",
+   "round": 0,
+   "s": "That wig is ridiculous, and it made us all giggle.",
+   "reason": "checker: Laughing at a wig could be a put-down about how someone looks."
+  },
+  {
+   "word": "nervous",
+   "round": 1,
+   "s": "My hands shook because I was nervous about playing the piano.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "nervous",
+   "round": 1,
+   "s": "I felt nervous, so Mum held my hand at the gate.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "adventurous",
+   "round": 1,
+   "s": "Are you adventurous enough to try the fastest ride at the fair?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "adventurous",
+   "round": 1,
+   "s": "What an adventurous holiday, with hiking and a night in a tent!",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "adventurous",
+   "round": 1,
+   "s": "What an adventurous trip, with a new ride every hour!",
+   "reason": "checker: It describes a trip, not a person keen to try things, and 'dangerous' could also fit with a small change of article. (also fits: dangerous)"
+  },
+  {
+   "word": "adventurous",
+   "round": 1,
+   "s": "Are you adventurous enough to try a brand new sport?",
+   "reason": "checker: 'Curious enough to try a brand new sport' also makes sense, so the gap is not clear. (also fits: curious)"
+  },
+  {
+   "word": "mysterious",
+   "round": 1,
+   "s": "Nobody could explain the mysterious sound coming from the attic.",
+   "reason": "checker: 'A curious sound' is natural British English for a strange sound, and an unexplained noise in the attic is a little spooky. (also fits: curious)"
+  },
+  {
+   "word": "mysterious",
+   "round": 1,
+   "s": "A mysterious parcel with no name on it sat by the door.",
+   "reason": "checker: 'An enormous parcel' also makes sense, so the gap is not clear. (also fits: enormous)"
+  },
+  {
+   "word": "mysterious",
+   "round": 1,
+   "s": "Mysterious footprints led across the lawn and stopped by the shed.",
+   "reason": "checker: 'Enormous footprints' fits just as well, so the gap is not clear. (also fits: enormous)"
+  },
+  {
+   "word": "mysterious",
+   "round": 1,
+   "s": "Nobody knows what the mysterious old key in the drawer opens.",
+   "reason": "checker: 'Enormous old key' and 'curious old key' also make sense. (also fits: enormous, curious)"
+  },
+  {
+   "word": "mysterious",
+   "round": 1,
+   "s": "What a mysterious tapping came from behind the bookshelf!",
+   "reason": "checker: 'What a curious tapping' also fits, and the sentence shape is a little awkward for the year. (also fits: curious)"
+  },
+  {
+   "word": "mysterious",
+   "round": 1,
+   "s": "The magician gave a mysterious smile and would not share his trick.",
+   "reason": "checker: 'A nervous smile' is a very common phrase and makes sense here too. (also fits: nervous)"
+  },
+  {
+   "word": "mysterious",
+   "round": 2,
+   "s": "Who left the flowers on our step? It is all so mysterious!",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: It"
+  },
+  {
+   "word": "mysterious",
+   "round": 2,
+   "s": "How the cat got onto the shed roof is mysterious to us.",
+   "reason": "checker: 'Curious' can also mean strange, so 'is curious to us' could fit and the clue is weak. (also fits: curious)"
+  }
+ ],
+ "sitOut": []
+}

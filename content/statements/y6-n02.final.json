@@ -1,0 +1,119 @@
+{
+ "chapter": "y6-n02",
+ "year": 6,
+ "words": {
+  "doughnut": [
+   "The baker rolled a warm, fried doughnut in sugar.",
+   "Would you like jam or cream inside your doughnut?",
+   "What a lovely ring-shaped doughnut with pink icing and sprinkles!"
+  ],
+  "cough": [
+   "When the dust tickled my throat, I began to cough.",
+   "Did you hear him cough loudly at the back of the library?",
+   "I had to cough to clear a crumb from my throat."
+  ],
+  "tough": [
+   "This old rope is strong and tough, so it will not snap.",
+   "Is the shell of a coconut really hard and tough?",
+   "The gardener wore tough gloves to cut the prickly bushes."
+  ],
+  "roughly": [
+   "The jar holds roughly a hundred marbles, but I did not count them.",
+   "Roughly how many biscuits are in that big tin?",
+   "The walk to school takes roughly ten minutes."
+  ],
+  "bought": [
+   "She counted her coins at the till and bought two apples.",
+   "Dad sold his old bike, and I bought it from him.",
+   "I saved my pocket money for weeks and bought a football at last!"
+  ],
+  "thoughtful": [
+   "A thoughtful neighbour watered our plants while we were on holiday.",
+   "My thoughtful friend saved me a seat on the bus.",
+   "Sharing your umbrella with a classmate was very thoughtful."
+  ],
+  "brought": [
+   "I brought my football to the park so we could all play.",
+   "Everyone brought a book from home for the class swap.",
+   "My gran came by train and brought her knitting with her."
+  ],
+  "plough": [
+   "The tractor pulled the plough, turning the soil into neat rows.",
+   "In the old picture, a horse was pulling a plough.",
+   "Behind the barn stood a rusty plough covered in weeds."
+  ],
+  "drought": [
+   "No rain fell for weeks, and the long drought dried the garden.",
+   "During the drought, the grass turned brown and the pond shrank.",
+   "Is there a hosepipe ban because of the drought?"
+  ],
+  "throughout": [
+   "Throughout the lesson, the class sat quietly and listened.",
+   "I wore my red scarf throughout the cold winter.",
+   "Our dog stayed calm throughout the long film."
+  ]
+ },
+ "rounds": {
+  "doughnut": 0,
+  "cough": 0,
+  "tough": 0,
+  "roughly": 0,
+  "bought": 1,
+  "thoughtful": 0,
+  "brought": 0,
+  "plough": 0,
+  "drought": 0,
+  "throughout": 0
+ },
+ "rejected": [
+  {
+   "word": "cough",
+   "round": 0,
+   "s": "My grandad likes to cough politely before he starts to speak.",
+   "reason": "machine rule 4: not on the word lists: grandad"
+  },
+  {
+   "word": "cough",
+   "round": 0,
+   "s": "Please turn your head and cough into your elbow.",
+   "reason": "checker: Coughing into your elbow is a germ-hygiene message that suggests illness, so it is dropped as doubtful."
+  },
+  {
+   "word": "bought",
+   "round": 0,
+   "s": "My gran bought tickets for the puppet show last week.",
+   "reason": "checker: Gran brought tickets makes equal sense, so the gap is not unique. (also fits: brought)"
+  },
+  {
+   "word": "bought",
+   "round": 0,
+   "s": "We paid at the till, and then we bought new trainers.",
+   "reason": "checker: Paying first and then buying is the wrong order and reads unnaturally."
+  },
+  {
+   "word": "bought",
+   "round": 0,
+   "s": "He bought a birthday card, and the shopkeeper wrapped it up.",
+   "reason": "checker: Brought a card to the shopkeeper could also fit, so the gap is not clear enough. (also fits: brought)"
+  },
+  {
+   "word": "plough",
+   "round": 0,
+   "s": "What does a plough do to the soil in a field?",
+   "reason": "machine rule 5: word overlap with the meaning is 100%"
+  },
+  {
+   "word": "bought",
+   "round": 1,
+   "s": "The shop sold the last loaf, so we bought it.",
+   "reason": "checker: The logic is muddled (if the shop sold the last loaf, who bought it?), and 'brought it' (home) could also fit. (also fits: brought)"
+  },
+  {
+   "word": "bought",
+   "round": 1,
+   "s": "Which kite would you have bought if the price was lower?",
+   "reason": "checker: The conditional is ungrammatical; it should be 'had been lower'."
+  }
+ ],
+ "sitOut": []
+}

@@ -17,10 +17,14 @@
 //     finished, if it is on or after the test date). Only then is it due and its
 //     words hidden: W.jobFor in words-doc.js decides that, for every page.
 //   · Mend and keep: the day after the test was done.
+//   · SB5 short weeks (D39, TR-102): no job is ever dropped and no date or share rule changes (tests/study-sb5.test.js hashes them).
+//     Only the INSIDE of Game day and Story day gets shorter: weekKind(g) 'quick' (1-2 days to the test) | 'short' (3-4) | 'full',
+//     storySentences(kind) 1 | 2 | 3, games from games-doc dayGames(year, kind). planByDay(g, year) lists what each day holds.
 //   · Weeks from before this rule: a test already finished while jobs were left
 //     undone. Those jobs are 'missed' ("Not done"): never a job, never waiting.
 //     A week that follows this rule never has one.
 import * as W from './words-doc.js';
+import { dayGames } from './games-doc.js';
 
 export const DAILY_TIME = 'about 15–20 minutes a day';
 export const DAILY_TIME_CAP = 'About 15–20 minutes a day';
@@ -32,12 +36,13 @@ export const CATCH_UP = 2; // jobs a day once the test date has come and some ar
 export const MEND_WAIT = 7; // Mend and keep is on offer this many days after its date
 export const MIN_SENTENCE = 4;
 export const SENTENCES = 3;
+export const WEEK_KINDS = ['quick', 'short', 'full'];
 
 export const STEP_TEXT = {
   hello: { title: 'Hello words', short: 'Hello', line: 'Meet each word: hear it, see what it means, then play the flower game.' },
-  fix: { title: 'Fix it in', short: 'Fix', line: 'Look, say, cover, write and check each word, then spell it 3 times in a row.' },
-  games: { title: 'Game day', short: 'Games', line: 'Four quick games with your words.' },
-  story: { title: 'Story day', short: 'Story', line: 'See your words at work, then write three sentences of your own.' },
+  fix: { title: 'Fix it in', short: 'Fix', line: 'Look, say, hide, write and check each word, then spell it 3 times in a row.' },
+  games: { title: 'Game day', short: 'Games', line: 'Quick games with your words.' },
+  story: { title: 'Story day', short: 'Story', line: 'See your words at work, then write sentences of your own.' },
   practice: { title: 'Practice day', short: 'Practice', line: 'One round of the practice grid: every word, hidden and spoken, 3 times in a row.' },
   test: { title: 'Test day', short: 'Test', line: 'Each word is spoken, with no peeking and one go each.' },
   mend: { title: 'Mend and keep', short: 'Mend', line: 'Mend any words that slipped, then a quick-fire round of them all.' },
@@ -67,8 +72,8 @@ function beforeTest(d, g, today, done) {
   const left = BEFORE_TEST.filter((s) => !done[s] || done[s] === today).length;
   const share = Math.ceil(left / W.daysBetween(today, g.test));
   const dates = stepDates(g);
-  if (today < dates[first] || doneToday >= share) return { status: doneToday ? 'done' : 'rest', job: null };
-  return { status: 'job', job: first };
+  if (today < dates[first] || doneToday >= share) return { status: doneToday ? 'done' : 'rest', job: null, share };
+  return { status: 'job', job: first, share };
 }
 
 // On or after the test date, with jobs still waiting: they come first, in order, CATCH_UP a day.
@@ -98,19 +103,20 @@ function afterTest(d, g, today, done, dates) {
  *   'missed' (only a legacy week: the test was finished with this job undone).
  *   catchUp: the test date has come and jobs are still waiting.
  *   waiting: how many jobs before the test are still to do with their date gone.
+ *   share (SB5): before the test date, how many jobs today's share allows (2 or more: "Today: 2 jobs"); 0 on and after the test date.
  */
 export function studyState(d, g, today) {
   const done = Object.fromEntries(STEPS.map((s) => [s, doneDay(d, g, s)]));
   const dates = stepDates(g, done.test);
   const catching = today >= g.test && W.jobFor(d, g, today) === 'practise';
-  const { status, job } = today < g.test ? beforeTest(d, g, today, done) : catching ? catchUp(done, today) : afterTest(d, g, today, done, dates);
+  const { status, job, share = 0 } = today < g.test ? beforeTest(d, g, today, done) : catching ? catchUp(done, today) : afterTest(d, g, today, done, dates);
   const steps = STEPS.map((id, i) => {
     const state = done[id] ? 'done' : id === job ? 'today' : done.test && BEFORE_TEST.includes(id) ? 'missed'
       : catching && !BEFORE_TEST.includes(id) ? 'later' : dates[id] < today ? 'waiting' : 'later';
     return { id, n: i + 1, date: dates[id], state, ...STEP_TEXT[id] };
   });
   const waiting = done.test ? 0 : BEFORE_TEST.filter((id) => !done[id] && dates[id] < today).length;
-  return { status, job, steps, catchUp: catching, waiting, squeezed: W.daysBetween(g.start, g.test) < BEFORE_TEST.length };
+  return { status, job, steps, catchUp: catching, waiting, share, squeezed: W.daysBetween(g.start, g.test) < BEFORE_TEST.length };
 }
 
 /** The line for a child once the test date has come and jobs are still waiting. */
@@ -153,10 +159,48 @@ export const gamesOpen = (d, g, today) => W.jobFor(d, g, today) !== 'test';
 
 export const weekStars = (d, g) => W.practiceDays(g).reduce((n, day) => n + W.starsOn(d, g, day), 0);
 
-/** Three words for Story day: those with the fewest sentences so far, in order. */
-export function sentenceWords(d, g) {
+/** Words for Story day: those with the fewest sentences so far, in order (`n` of them: 3 unless a short week asks for fewer). */
+export function sentenceWords(d, g, n = SENTENCES) {
   const count = (w) => W.notesFor(d, g).filter((x) => x.w === w).length;
-  return [...g.words].map((w, i) => ({ w, i })).sort((a, b) => count(a.w) - count(b.w) || a.i - b.i).slice(0, SENTENCES).map((x) => x.w);
+  return [...g.words].map((w, i) => ({ w, i })).sort((a, b) => count(a.w) - count(b.w) || a.i - b.i).slice(0, n).map((x) => x.w);
+}
+
+// ---- short weeks (SB5, D39, TR-102) -----------------------------------------------------------
+/** 'quick' (1-2 days from the day the week starts to its test), 'short' (3-4), else 'full'. Derived from the dates every device has. */
+export function weekKind(g) {
+  const n = W.daysBetween(g.start, g.test);
+  return n <= 2 ? 'quick' : n <= 4 ? 'short' : 'full';
+}
+/** How many sentences Story day asks for: full 3, short 2, quick 1. */
+export const storySentences = (kind) => (kind === 'quick' ? 1 : kind === 'short' ? 2 : SENTENCES);
+
+/**
+ * What each day holds, from the same date and share rules the child's app uses, day by day, assuming every offered job is done on its day.
+ * -> [{ day, jobs: [{ id, games?, gameIds?, sentences? }] }] for each day that has a job, then { day: test date, jobs: [{ id: 'test' }] }.
+ * Rest days are left out. games = how many games Game day plays (dayGames for the child's `year`), sentences = Story day's count.
+ */
+export function planByDay(g, year) {
+  const kind = weekKind(g);
+  const dates = stepDates(g);
+  const done = {};
+  const days = [];
+  for (let day = g.start; day < g.test; day = W.addDays(day, 1)) {
+    const jobs = [];
+    for (;;) {
+      const first = BEFORE_TEST.find((s) => !done[s]);
+      if (!first) break;
+      const doneToday = BEFORE_TEST.filter((s) => done[s] === day).length;
+      const left = BEFORE_TEST.filter((s) => !done[s] || done[s] === day).length;
+      const share = Math.ceil(left / W.daysBetween(day, g.test));
+      if (day < dates[first] || doneToday >= share) break;
+      done[first] = day;
+      const games = first === 'games' ? dayGames(year, kind) : null;
+      jobs.push({ id: first, ...(games ? { games: games.length, gameIds: games } : {}), ...(first === 'story' ? { sentences: storySentences(kind) } : {}) });
+    }
+    if (jobs.length) days.push({ day, jobs });
+  }
+  days.push({ day: g.test, jobs: [{ id: 'test' }] });
+  return days;
 }
 
 // Fix it in: ready-made memory clues for a tricky word; the child can type their own.

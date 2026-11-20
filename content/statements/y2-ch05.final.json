@@ -1,0 +1,149 @@
+{
+ "chapter": "y2-ch05",
+ "year": 2,
+ "words": {
+  "after": [
+   "Tuesday comes straight after Monday each week.",
+   "Can we have pudding after our dinner?",
+   "After the rain stopped, we splashed in puddles."
+  ],
+  "fast": [
+   "The little red car goes very fast.",
+   "Why is the toy train so fast today?",
+   "A snail that is fast would be a surprise!"
+  ],
+  "last": [
+   "December is the last month of the year.",
+   "This is the last page of my book.",
+   "Who ate the last biscuit in the tin?"
+  ],
+  "past": [
+   "Yesterday is part of the past, but tomorrow is not.",
+   "Are knights and castles part of the past?",
+   "Dinosaurs lived in the past, before any people."
+  ],
+  "father": [
+   "My father drove us to the seaside.",
+   "I gave my father a card for his birthday.",
+   "Is that tall man your father?"
+  ],
+  "class": [
+   "Our teacher read the whole class a story.",
+   "Which class are you in this year?",
+   "We painted a big picture as a class."
+  ],
+  "grass": [
+   "The sheep are eating the fresh grass.",
+   "Is the grass wet with morning dew?",
+   "A ladybird sat on a blade of grass!"
+  ],
+  "sky": [
+   "The moon and stars shine in the sky tonight.",
+   "The sun sets and the sky turns orange!",
+   "Rain falls from a dark sky."
+  ],
+  "fly": [
+   "I wish I could fly like a bird!",
+   "Bees buzz and fly from flower to flower.",
+   "We will fly in a plane on holiday."
+  ],
+  "babies": [
+   "Little babies drink milk from bottles.",
+   "Babies learn to crawl before they walk.",
+   "Look at those tiny babies waving their hands!"
+  ]
+ },
+ "rounds": {
+  "after": 0,
+  "fast": 0,
+  "last": 0,
+  "past": 1,
+  "father": 0,
+  "class": 0,
+  "grass": 0,
+  "sky": 0,
+  "fly": 0,
+  "babies": 0
+ },
+ "rejected": [
+  {
+   "word": "after",
+   "round": 0,
+   "s": "Wash your hands after painting with messy glue.",
+   "reason": "checker: Painting with glue is an odd idea that may confuse a young reader."
+  },
+  {
+   "word": "fast",
+   "round": 0,
+   "s": "Run fast to catch the bus!",
+   "reason": "checker: Running for a bus suggests hurrying near a road, which is not safe play."
+  },
+  {
+   "word": "fast",
+   "round": 0,
+   "s": "Hold on tight, the roundabout is spinning fast!",
+   "reason": "checker: Holding on tight to a fast-spinning ride hints at danger, and roundabout could also mean a road junction."
+  },
+  {
+   "word": "last",
+   "round": 0,
+   "s": "Z is the last letter of the alphabet.",
+   "reason": "machine rule 4: not on the word lists: Z"
+  },
+  {
+   "word": "last",
+   "round": 0,
+   "s": "Hooray, we sang the last song of the show!",
+   "reason": "checker: The fast song of the show makes sense too, so the gap is ambiguous. (also fits: fast)"
+  },
+  {
+   "word": "past",
+   "round": 0,
+   "s": "Grandad likes to tell stories about the past.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "past",
+   "round": 0,
+   "s": "Old photos tell us about the past.",
+   "reason": "checker: Old photos could tell us about the class or the babies too. (also fits: class, babies)"
+  },
+  {
+   "word": "past",
+   "round": 0,
+   "s": "The train zoomed past me without stopping.",
+   "reason": "checker: Here past is a preposition, not the time before now, and after could also go in the gap. (also fits: after)"
+  },
+  {
+   "word": "father",
+   "round": 0,
+   "s": "My mum and father both love the park.",
+   "reason": "checker: Mum and father is an unnatural pair; people would say mum and dad."
+  },
+  {
+   "word": "father",
+   "round": 0,
+   "s": "Dad is another name for a father.",
+   "reason": "checker: This just repeats the meaning instead of using the word in a real situation."
+  },
+  {
+   "word": "sky",
+   "round": 0,
+   "s": "Look up! The sky is full of grey clouds.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: The"
+  },
+  {
+   "word": "babies",
+   "round": 0,
+   "s": "Which babies are wearing the yellow hats?",
+   "reason": "checker: Which class are wearing the yellow hats also works in British English. (also fits: class)"
+  },
+  {
+   "word": "past",
+   "round": 1,
+   "s": "Our museum visit showed us life in the past.",
+   "reason": "checker: A museum could also show life in the grass or in the sky, so a child might pick the wrong word. (also fits: grass, sky)"
+  }
+ ],
+ "sitOut": []
+}

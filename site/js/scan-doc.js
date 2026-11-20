@@ -39,7 +39,7 @@ export function clean(data) {
 export const REASON = {
   cant: 'We can\'t use this word yet', // the same text as own-data.js OWN_REFUSED (a test compares the two)
   name: 'Looks like a name',
-  over: 'For the next chapter',
+  over: 'For the next list',
 };
 
 const isCapital = (w) => /^[A-Z]/.test(w);
@@ -105,7 +105,7 @@ export const PROBLEM_COPY = {
   monthly: { line: 'No scans left this month. They come back on {date}.', button: null },
   paused: { line: 'Scanning isn\'t working right now. You can type the words instead.', button: null },
   off: { line: 'Scanning isn\'t available yet.', button: null },
-  'own-full': { line: 'You have 30 chapters. Delete one to make another.', button: 'Back to your chapters', noType: true },
+  'own-full': { line: 'You have 30 word lists. Delete one to make another.', button: 'Back to Word lists', noType: true },
   'signed-out': { line: 'You\'ve been signed out. Please sign in again.', button: 'Sign in' },
 };
 export const TYPE_INSTEAD = 'Type the words instead';
@@ -181,7 +181,7 @@ export const T = {
   title: 'Scan a paper',
   cover: 'Cover any names first.',
   tip: 'Lay the paper flat in good light. A screenshot of a list works too.',
-  limits: 'A long list can become up to 3 chapters from one photo.',
+  limits: 'A long list can become up to 3 lists from one photo.',
   take: 'Take a photo',
   choose: 'Choose a photo',
   how: 'How scanning works',
@@ -204,24 +204,24 @@ export const T = {
   addedToList: 'Added to the list.',
   hide: 'Hide',
   show: 'Show',
-  next: 'Next: name and share',
+  next: 'Next: name the list',
   tickOne: 'Tick at least one word.',
   picOk: 'Has a meaning and picture',
   picNo: 'No picture',
   nameHidden: 'A name, hidden',
-  nameTitle: 'Name and share',
-  nameLabel: 'Name of the chapter',
-  shareLegend: 'Share with',
+  nameTitle: 'Name the list',
+  nameLabel: 'Name of the list',
+  shareLegend: 'Give for practice to',
   shareHelp: 'Children on your account.',
-  noChildren: 'Add a child to your Waystead account to share a chapter.',
-  notShared: 'Not shared yet. Children can\'t see it until you share it.',
+  noChildren: 'Add a child to your Waystead account to give a list for practice.',
+  notShared: 'Not given for practice yet. Children can\'t see it until you do.',
   tickAll: 'Tick all',
-  save: 'Save chapter',
-  savedTitle: 'Chapter saved',
-  useWeek: 'Use for this week',
-  backList: 'Back to your chapters',
+  save: 'Save list',
+  savedTitle: 'List saved',
+  useWeek: 'Set a week with this list',
+  backList: 'Back to Word lists',
   another: 'Scan another paper',
-  results: 'See results and set the test',
+  results: 'See results',
   leaveTitle: 'Leave without saving?',
   leaveBody: 'The words you ticked won\'t be kept.',
   stay: 'Stay',
@@ -230,13 +230,13 @@ export const T = {
   addNote: (a, r, d) => [a ? a + ' added.' : '', r ? r + ' we can\'t use yet.' : '', d ? d + ' already in the list.' : ''].filter(Boolean).join(' '),
 };
 export const foundLine = (n) => 'We found ' + n + ' word' + (n === 1 ? '' : 's') + '. Untick any you don\'t want.';
-export const foundMore = (n) => 'We found ' + n + ' words. A chapter holds ' + MAX_PICK + '. Tick up to ' + MAX_PICK + ' now. You can save the other ' + (n - MAX_PICK) + ' as a second chapter next, without scanning again.';
+export const foundMore = (n) => 'We found ' + n + ' words. A list holds ' + MAX_PICK + '. Tick up to ' + MAX_PICK + ' now. You can save the other ' + (n - MAX_PICK) + ' as a second list next, without scanning again.';
 export const otherLede = (m) => 'Here are the other ' + m + ' word' + (m === 1 ? '' : 's') + '. Untick any you don\'t want.';
 export const leftOutHead = (n) => 'We left these out (' + n + ')';
-export const tickedLine = (n) => (n > MAX_PICK ? n + ' ticked. A chapter holds ' + MAX_PICK + '.' : n + ' of ' + MAX_PICK + ' words');
-export const limitReason = (n) => (n > MAX_PICK ? 'Untick ' + (n - MAX_PICK) + ' word' + (n - MAX_PICK === 1 ? '' : 's') + ' to go on. You can save unticked words as another chapter next.' : n === 0 ? T.tickOne : '');
-/** The button on Done for the words left over (chapterNo = the one just saved, from 1). */
-export const moreButton = (chapterNo, m) => 'Make ' + (chapterNo === 1 ? 'a second' : chapterNo === 2 ? 'a third' : 'another') + ' chapter with the other ' + m + ' word' + (m === 1 ? '' : 's');
+export const tickedLine = (n) => (n > MAX_PICK ? n + ' ticked. A list holds ' + MAX_PICK + '.' : n + ' of ' + MAX_PICK + ' words');
+export const limitReason = (n) => (n > MAX_PICK ? 'Untick ' + (n - MAX_PICK) + ' word' + (n - MAX_PICK === 1 ? '' : 's') + ' to go on. You can save unticked words as another list next.' : n === 0 ? T.tickOne : '');
+/** The button on Done for the words left over (TRS: "Make another list from the rest"); the one source for scan-views. */
+export const MORE_BUTTON = 'Make another list from the rest';
 /** "School words, 16 Nov (2)", cut to 40 characters. */
 export const nextName = (base, n, max = 40) => {
   const tail = ' (' + n + ')';

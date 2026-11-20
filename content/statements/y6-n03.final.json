@@ -1,0 +1,113 @@
+{
+ "chapter": "y6-n03",
+ "year": 6,
+ "words": {
+  "knee": [
+   "Which part of your leg bends in the middle, the ankle or the knee?",
+   "My trousers have a patch sewn over the knee.",
+   "The puppy rested its chin on my knee while we watched television."
+  ],
+  "castle": [
+   "We visited a castle with thick walls and a drawbridge on our school trip.",
+   "Long ago, a castle stood on the hill to keep the town safe.",
+   "Can you draw a castle with four towers and a flag?"
+  ],
+  "listen": [
+   "Please be quiet and listen to the story I am reading.",
+   "Can you listen to the rain tapping on the window?",
+   "I like to listen to music while I paint."
+  ],
+  "ghost": [
+   "Do you want to dress as a ghost in a white sheet?",
+   "A paper ghost with big round eyes hung in our classroom window.",
+   "The friendly ghost in my picture book wears a bobble hat."
+  ],
+  "whistle": [
+   "Our teacher blew a whistle and we lined up in the playground.",
+   "I got a shiny silver whistle in my party bag.",
+   "The kettle gave a loud whistle when the water was ready."
+  ],
+  "honest": [
+   "It was honest of you to hand in the pencil case you found.",
+   "A good friend is kind and honest, even when the truth is hard.",
+   "She was honest and told her mum she had eaten the last biscuit."
+  ],
+  "doubt": [
+   "Without a doubt, this is the best chocolate cake I have tasted.",
+   "She had a doubt in her mind about the answer, so she checked.",
+   "Do you have any doubt that spring comes after winter?"
+  ],
+  "autumn": [
+   "In autumn we collect conkers and kick the crunchy leaves.",
+   "We wore wellies and coats on a wet, windy autumn walk.",
+   "Back to school in September means the start of autumn!"
+  ],
+  "column": [
+   "A thick stone column held up the roof of the museum.",
+   "Add up the numbers in the first column of the table.",
+   "The ants walked in a long column across the path."
+  ],
+  "wrestle": [
+   "At the sports club, we learn to wrestle on a soft mat.",
+   "The puppies wrestle and roll about on the lawn.",
+   "I had to wrestle with the stiff lid to open the jar."
+  ]
+ },
+ "rounds": {
+  "knee": 0,
+  "castle": 0,
+  "listen": 0,
+  "ghost": 0,
+  "whistle": 0,
+  "honest": 0,
+  "doubt": 0,
+  "autumn": 0,
+  "column": 0,
+  "wrestle": 0
+ },
+ "rejected": [
+  {
+   "word": "castle",
+   "round": 0,
+   "s": "At the seaside we made a tall sand castle with a moat.",
+   "reason": "checker: British spelling is the one word 'sandcastle', and a sandcastle is a model, not a real building."
+  },
+  {
+   "word": "ghost",
+   "round": 0,
+   "s": "The little ghost in the school play wore a floaty white sheet.",
+   "reason": "machine rule 4: not on the word lists: floaty"
+  },
+  {
+   "word": "ghost",
+   "round": 0,
+   "s": "I drew a smiling ghost on the card for my friend's party.",
+   "reason": "checker: The clue is too weak because almost anything could be drawn on a card."
+  },
+  {
+   "word": "doubt",
+   "round": 0,
+   "s": "I have a doubt about whether the shop is still open.",
+   "reason": "checker: 'Have a doubt about whether' sounds stiff and unnatural."
+  },
+  {
+   "word": "doubt",
+   "round": 0,
+   "s": "There is no doubt that it will rain, look at those black clouds.",
+   "reason": "checker: The comma joining two full sentences is a poor model for Year 6."
+  },
+  {
+   "word": "autumn",
+   "round": 0,
+   "s": "Which season comes after summer, winter or autumn?",
+   "reason": "machine rule 5: word overlap with the meaning is 75%"
+  },
+  {
+   "word": "autumn",
+   "round": 0,
+   "s": "The squirrels are busy hiding nuts before winter, as autumn days grow shorter.",
+   "reason": "checker: The clauses are in an awkward order, which makes it hard to read."
+  }
+ ],
+ "sitOut": []
+}

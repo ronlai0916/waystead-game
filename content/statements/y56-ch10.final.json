@@ -1,0 +1,144 @@
+{
+ "chapter": "y56-ch10",
+ "year": 6,
+ "words": {
+  "bargain": [
+   "Mum found a bargain because the coat was half price in the sale.",
+   "Dad waited for the sale to get a bargain on new trainers.",
+   "Is it a bargain when the price drops to half?"
+  ],
+  "correspond": [
+   "My cousin lives far away, so we correspond by writing letters.",
+   "Do the numbers on the map correspond to the pictures in the book?",
+   "After the holiday, we promise to correspond with our new friends."
+  ],
+  "determined": [
+   "The small puppy was determined to climb up the big step.",
+   "The team felt determined to keep trying, even after losing the first game.",
+   "I am determined to tidy my room before tea!"
+  ],
+  "disastrous": [
+   "Our picnic was disastrous because the rain ruined every single sandwich.",
+   "Adding salt instead of sugar was a disastrous mistake for the biscuits.",
+   "Was sports day really so disastrous, with every race rained off?"
+  ],
+  "especially": [
+   "I love the seaside, especially when the sun is shining.",
+   "Be careful with the glue, especially near the carpet.",
+   "We all enjoyed the party, especially the games!"
+  ],
+  "identity": [
+   "The costume hid the actor's identity until the end of the play.",
+   "Can you work out the identity of the mystery guest?",
+   "A passport shows your identity when you travel on holiday."
+  ],
+  "prejudice": [
+   "He had a prejudice against the new team, but the game changed his mind.",
+   "Our class talked about how prejudice can stop us making new friends.",
+   "Let's show kindness and never let prejudice spoil our playground!"
+  ],
+  "privilege": [
+   "Being chosen to feed the class rabbit was a great privilege.",
+   "The winner had the privilege of cutting the ribbon at the opening.",
+   "Is it a privilege to ring the school bell each morning?"
+  ],
+  "recommend": [
+   "Can you recommend a good book for me to read at bedtime?",
+   "The waiter said he would recommend the soup on a cold day.",
+   "I would recommend a warm coat if you go out in the snow."
+  ],
+  "sincere": [
+   "Dad's thanks were sincere, and he really meant them.",
+   "Is his smile sincere, or is he just pretending?",
+   "Please be sincere when you say well done to the winner."
+  ],
+  "sincerely": [
+   "Do you sincerely want to join the choir, or are you just joking?",
+   "She sincerely thanked the bus driver, meaning every word.",
+   "He sincerely said sorry for the broken window."
+  ],
+  "variety": [
+   "Look at the variety of colours in this paint box!",
+   "Our library has a great variety of books about animals.",
+   "Is there enough variety in the games at the party?"
+  ],
+  "available": [
+   "Is the football pitch available for our practice on Friday?",
+   "The library books are available to borrow every afternoon.",
+   "Hot lunches are available in the hall from noon."
+  ],
+  "vegetable": [
+   "A potato is a vegetable that grows under the ground.",
+   "Which vegetable would you like in your soup, peas or carrots?",
+   "We planted a vegetable patch in the garden this spring."
+  ]
+ },
+ "rounds": {
+  "bargain": 0,
+  "correspond": 0,
+  "determined": 0,
+  "disastrous": 0,
+  "especially": 0,
+  "identity": 0,
+  "prejudice": 0,
+  "privilege": 0,
+  "recommend": 0,
+  "sincere": 0,
+  "sincerely": 0,
+  "variety": 0,
+  "available": 0,
+  "vegetable": 0
+ },
+ "rejected": [
+  {
+   "word": "determined",
+   "round": 0,
+   "s": "Although it was raining, Gran was determined to finish the gardening.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "determined",
+   "round": 0,
+   "s": "Are you determined to learn to ride your bike today?",
+   "reason": "checker: 'Are you available to learn' also makes sense, so the gap is ambiguous. (also fits: available)"
+  },
+  {
+   "word": "identity",
+   "round": 0,
+   "s": "Who is the mystery visitor? Their identity is a secret.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: Their"
+  },
+  {
+   "word": "prejudice",
+   "round": 0,
+   "s": "It is unfair to have prejudice against a new classmate.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "sincere",
+   "round": 0,
+   "s": "Her thank you note was sincere, and Gran could tell she meant every word.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "sincerely",
+   "round": 0,
+   "s": "I sincerely hope the sun shines for our school trip.",
+   "reason": "checker: 'I especially hope' also reads naturally, so the gap is ambiguous. (also fits: especially)"
+  },
+  {
+   "word": "variety",
+   "round": 0,
+   "s": "A good garden has flowers in lots of colours, a wonderful variety.",
+   "reason": "checker: The tacked-on ending is awkward and not natural English for a child."
+  },
+  {
+   "word": "available",
+   "round": 0,
+   "s": "Mum is not available to chat now because she is baking.",
+   "reason": "checker: Mum baking is a who-cooks stereotype, and this is a different sense of the word."
+  }
+ ],
+ "sitOut": [],
+ "manualEdits": "19 Nov 2026: Opus spot-check fixes (OPUS-SPOTCHECK.md), machine-checked with statements-check rules"
+}

@@ -1,0 +1,125 @@
+{
+ "chapter": "y56-ch06",
+ "year": 6,
+ "words": {
+  "criticise": [
+   "Can you criticise my poster and tell me what to change?",
+   "Please criticise my drawing gently, because I want to make it better.",
+   "The judges will criticise each model, then suggest ways to make it stronger."
+  ],
+  "recognise": [
+   "Would you recognise your old teacher if you saw her at the shops?",
+   "I can always recognise my cat by her white paws.",
+   "Birdwatchers learn to recognise each bird by its song."
+  ],
+  "sacrifice": [
+   "Mum made a sacrifice and gave up her free Saturday for my party.",
+   "Is it a sacrifice to miss football so you can help a friend?",
+   "Giving up her seat on the bus was a small sacrifice."
+  ],
+  "definite": [
+   "We need a definite time for the picnic, not just maybe.",
+   "Is it definite that we are going to the seaside on Sunday?",
+   "There is a definite smell of toast coming from the kitchen!"
+  ],
+  "desperate": [
+   "The little puppy was desperate for a drink after the long walk.",
+   "In a desperate hunt for the last jigsaw piece, we searched under the sofa.",
+   "Why are you so desperate to open your birthday presents?"
+  ],
+  "immediate": [
+   "My immediate reaction was to laugh, with no time to think.",
+   "The immediate task was to put the wet washing inside before the rain.",
+   "Her immediate thought on seeing the cake was to taste it right away."
+  ],
+  "immediately": [
+   "When the bell rang, we lined up immediately.",
+   "The ice cream melted almost immediately in the hot sun!",
+   "Did the puppy come immediately when you called its name?"
+  ],
+  "competition": [
+   "Who will win the sandcastle competition on the beach today?",
+   "The egg and spoon race is my favourite competition on sports day.",
+   "Our class entered the cake baking competition at the school fair."
+  ],
+  "explanation": [
+   "Can you give me an explanation for why the cake sank?",
+   "The teacher gave a clear explanation of how rainbows form.",
+   "His explanation of the game rules was so clear that we all understood."
+  ],
+  "pronunciation": [
+   "Reading aloud helps me with my pronunciation of long words!",
+   "The word is hard to spell, but its pronunciation is easy.",
+   "Is the pronunciation of this word the same as the one in the song?"
+  ]
+ },
+ "rounds": {
+  "criticise": 0,
+  "recognise": 0,
+  "sacrifice": 0,
+  "definite": 0,
+  "desperate": 0,
+  "immediate": 0,
+  "immediately": 0,
+  "competition": 0,
+  "explanation": 0,
+  "pronunciation": 0
+ },
+ "rejected": [
+  {
+   "word": "recognise",
+   "round": 0,
+   "s": "Can you recognise the colour of every crayon in the tin?",
+   "reason": "checker: Criticise also works in the gap, and recognising a colour is a weak sense. (also fits: criticise)"
+  },
+  {
+   "word": "definite",
+   "round": 0,
+   "s": "She gave a definite nod, so we knew the answer was yes.",
+   "reason": "checker: 'She gave an immediate nod' works just as well. (also fits: immediate)"
+  },
+  {
+   "word": "desperate",
+   "round": 0,
+   "s": "I was desperate to find my other trainer before school started.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "immediate",
+   "round": 0,
+   "s": "The sweets had an immediate effect, and the whole room went quiet.",
+   "reason": "checker: 'Had a definite effect' also works, and the idea is a bit odd. (also fits: definite)"
+  },
+  {
+   "word": "immediate",
+   "round": 0,
+   "s": "Is there an immediate need to tidy, or can it wait?",
+   "reason": "checker: 'A desperate need to tidy' also makes sense. (also fits: desperate)"
+  },
+  {
+   "word": "explanation",
+   "round": 0,
+   "s": "I read the explanation on the box to learn how to build the model.",
+   "reason": "checker: It sounds unnatural because 'instructions' is the expected word here."
+  },
+  {
+   "word": "explanation",
+   "round": 0,
+   "s": "The wet footprints have a simple explanation because the dog played in puddles.",
+   "reason": "checker: Awkward grammar with 'because'; it is not natural English."
+  },
+  {
+   "word": "pronunciation",
+   "round": 0,
+   "s": "My teacher liked my pronunciation of every word in the poem.",
+   "reason": "checker: 'My explanation of every word in the poem' also makes sense. (also fits: explanation)"
+  },
+  {
+   "word": "pronunciation",
+   "round": 0,
+   "s": "A dictionary shows the pronunciation of each word beside it.",
+   "reason": "checker: A dictionary also shows an explanation of each word. (also fits: explanation)"
+  }
+ ],
+ "sitOut": []
+}

@@ -7,7 +7,7 @@
 // Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-16c';
+const VERSION = 'spellbright-2026-11-19f';
 
 const SHELL = [
   './',
@@ -118,7 +118,24 @@ const SHELL = [
 
   // SB4-WP11 files
   'js/teach-doc.js',
-  'js/teach-views.js',
+
+  // SB5 files (the old teach-views.js is gone: its two routes only redirect)
+  'js/role-doc.js',
+  'js/info-doc.js',
+  'js/set-doc.js',
+  'js/nav-doc.js',
+  'js/practice-doc.js',
+  'js/set-data.js',
+  'js/role-data.js',
+  'js/sentences-data.js',
+  'js/statement-rules.js',
+  'js/set-views.js',
+  'js/results-views.js',
+  'js/lists-doc.js',
+  'css/set.css',
+  'css/lists.css',
+  'css/mix.css',
+  'data/statements.json',
 ];
 
 // Install the app shell only, so a new version takes over within seconds.

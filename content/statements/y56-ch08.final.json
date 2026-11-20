@@ -1,0 +1,137 @@
+{
+ "chapter": "y56-ch08",
+ "year": 6,
+ "words": {
+  "familiar": [
+   "I felt happy to see a familiar face at my new school.",
+   "Is this street familiar to you, or have we never been here?",
+   "Everything in my gran's house feels warm and familiar."
+  ],
+  "temperature": [
+   "Use the thermometer to read the temperature of the classroom.",
+   "What temperature should the oven be for baking this cake?",
+   "Ice cubes melt when the temperature goes above freezing."
+  ],
+  "signature": [
+   "Mum wrote her signature at the bottom of the school letter.",
+   "Can you read the swirly signature on this birthday card?",
+   "The delivery driver asked for a signature when the parcel came."
+  ],
+  "persuade": [
+   "Nothing could persuade the cat to come out from under the bed.",
+   "Mum tried to persuade me to eat my peas.",
+   "How will you persuade the class to play your game at break time?"
+  ],
+  "curiosity": [
+   "Her curiosity about the stars made her ask lots of questions at bedtime.",
+   "The kitten's curiosity grew when it saw the open cupboard.",
+   "With great curiosity, we watched the snail slide up the wall."
+  ],
+  "average": [
+   "It was just an average day, with nothing special at school.",
+   "The film was only average, so we felt a bit bored.",
+   "The average mark in our spelling test was seven out of ten."
+  ],
+  "develop": [
+   "Tadpoles slowly develop legs and turn into frogs.",
+   "Practise every day and your football skills will develop.",
+   "I want to develop my story by adding a funny ending."
+  ],
+  "environment": [
+   "Picking up litter helps keep our environment clean and tidy.",
+   "Penguins live in a cold environment full of ice and snow.",
+   "Why is it important to care for the environment around our school?"
+  ],
+  "shoulder": [
+   "My little cousin fell asleep on my shoulder in the car.",
+   "I tapped my friend on the shoulder to say hello.",
+   "Which shoulder do you use to hold your school bag?"
+  ],
+  "achieve": [
+   "If you practise every day, you can achieve your goal.",
+   "Did our class achieve its target of reading fifty books?",
+   "I will keep trying until I achieve a perfect score in the quiz."
+  ]
+ },
+ "rounds": {
+  "familiar": 0,
+  "temperature": 0,
+  "signature": 0,
+  "persuade": 0,
+  "curiosity": 0,
+  "average": 0,
+  "develop": 0,
+  "environment": 0,
+  "shoulder": 0,
+  "achieve": 1
+ },
+ "rejected": [
+  {
+   "word": "signature",
+   "round": 0,
+   "s": "The author wrote her signature inside my new library book.",
+   "reason": "checker: An author signing a library book is odd, because library books are shared, so the setting is muddled."
+  },
+  {
+   "word": "persuade",
+   "round": 0,
+   "s": "I will try to persuade Dad to let us get a puppy.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "curiosity",
+   "round": 0,
+   "s": "What a lot of curiosity you have about how clocks work!",
+   "reason": "checker: 'What a lot of curiosity you have' is awkward, unnatural English."
+  },
+  {
+   "word": "average",
+   "round": 0,
+   "s": "Is my sister taller than the average girl in her class?",
+   "reason": "checker: Comparing a child's height is body talk, so we drop it."
+  },
+  {
+   "word": "develop",
+   "round": 0,
+   "s": "How do butterflies develop inside their cocoons?",
+   "reason": "checker: Butterflies develop in a chrysalis, not a cocoon, so the fact is wrong."
+  },
+  {
+   "word": "achieve",
+   "round": 0,
+   "s": "What do you hope to achieve in the art lesson this term?",
+   "reason": "checker: 'What do you hope to develop in the art lesson' also makes sense. (also fits: develop)"
+  },
+  {
+   "word": "achieve",
+   "round": 0,
+   "s": "It takes patience to achieve a tall tower of blocks!",
+   "reason": "reader flag odd (Achieve sounds strange with 'a tall tower of blocks'; you would normally say build a tower.); re-judge: The flag is right. 'Achieve' normally goes with goals, results or success (achieve a goal, achieve your best), not with a physical object like a tower. Children would naturally say 'build a tower', so 'build' fits the gap better than the target word. That makes the sentence a poor model of how 'achieve' is used and leaves the answer unclear."
+  },
+  {
+   "word": "achieve",
+   "round": 1,
+   "s": "If you practise your spelling every night, you will achieve full marks.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "achieve",
+   "round": 1,
+   "s": "After many weeks of trying, we could finally achieve our aim of a tidy garden!",
+   "reason": "machine rule 3: 15 words (needs 6-14)"
+  },
+  {
+   "word": "achieve",
+   "round": 1,
+   "s": "We worked as a team to achieve a tidy classroom.",
+   "reason": "checker: 'Achieve a tidy classroom' sounds a little odd and could tempt a child to try develop, so it is dropped."
+  },
+  {
+   "word": "achieve",
+   "round": 1,
+   "s": "Mum says patience and hard work help you achieve almost anything!",
+   "reason": "checker: 'Help you shoulder almost anything' also makes sense, so the gap has more than one answer. (also fits: shoulder)"
+  }
+ ],
+ "sitOut": []
+}

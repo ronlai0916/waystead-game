@@ -114,9 +114,21 @@ function initKeyPop() {
     clearTimeout(popTimer);
     pop.textContent = key.dataset.letter.toLowerCase();
     const w = 50;
-    const left = Math.max(0, Math.min(board.clientWidth - w, key.offsetLeft + key.offsetWidth / 2 - w / 2));
-    pop.style.left = left + 'px';
-    pop.style.top = (key.offsetTop - 76) + 'px';
+    // S3-D1: on a phone the 72 px room above the keys is gone (child.css, FOLD), so a pop-up above the key would sit on Hear, Peek and Skip.
+    // There it shows in the key's own row, a key's width beyond the neighbour, on the side with the room (it never covers a control).
+    const side = getComputedStyle(board, '::before').display === 'none';
+    pop.classList.toggle('keypop--side', side);
+    // Work in the board's own coordinates (its box may not be the key's offset parent), then shift back to the key's.
+    const bw = board.getBoundingClientRect().width;
+    const kr = key.getBoundingClientRect();
+    const inBoard = kr.left - board.getBoundingClientRect().left;
+    const mid = inBoard + kr.width / 2;
+    let left;
+    if (side) left = mid < bw / 2 ? inBoard + kr.width * 2 + 6 : inBoard - kr.width - 6 - w;
+    else left = mid - w / 2;
+    left = Math.max(0, Math.min(bw - w, left));
+    pop.style.left = (key.offsetLeft + left - inBoard) + 'px';
+    pop.style.top = (side ? key.offsetTop : key.offsetTop - 76) + 'px';
     pop.classList.add('is-on');
     key.classList.add('is-pressed');
   });

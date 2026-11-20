@@ -11,12 +11,20 @@ import * as T from './tiles-doc.js';
 import * as P from './grownups-doc.js';
 import * as Dt from './grownups-data.js';
 import { adultOnly } from './grownups-views.js';
+import * as AC from './adult-chrome.js';
+import * as RD from './role-doc.js';
 import { adultName } from './adult-doc.js';
 import { playerName, recheckWho } from './who.js';
 import { newId } from './store.js';
 import { esc, ICON } from './ui.js';
 import { accountOrigin } from './account/config.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
+
+import { PLAN_KEY } from './own-data.js';
+/** "Use this list again" on a week with no list behind it: the words ride to Set a week in the session's hand-off slot (read once there). */
+export function handOffWords(words, storage = globalThis.sessionStorage) {
+  try { storage.setItem(PLAN_KEY, JSON.stringify(words)); return true; } catch (e) { return false; }
+}
 
 const today = () => W.localDay(Date.now());
 let api = null;
@@ -28,7 +36,6 @@ const spellHref = (id) => childHref(id) + '/spelling';
 const examHref = (id) => childHref(id) + '/exam';
 const examReportHref = (id, eid) => examHref(id) + '/' + encodeURIComponent(eid);
 const plural = (n, one, many = one + 's') => n + ' ' + (n === 1 ? one : many);
-const dateOf = (ms) => W.dayLabel(W.localDay(ms));
 
 // One line carried to the next page, read once.
 let flash = '';
@@ -189,7 +196,7 @@ export function spellingPage(main, { cid }) {
       + '<span class="gu-radio__text"><b>' + esc(As.PROFILE_NAME[p]) + '</b><span>' + esc(As.PROFILE_HELP[p]) + '</span>' + (p === 'normal' ? badge(year) : '') + '</span></label>').join('');
     const offers = '<label class="gu-check gu-opt"><input type="checkbox" name="quiz"' + (off.quiz ? ' checked' : '') + '><span class="gu-radio__text"><b>Quiz</b><span>' + esc(P.QUIZ_OFFER_TEXT) + '</span></span></label>'
       + '<label class="gu-check gu-opt is-fixed"><input type="checkbox" name="test" checked disabled><span class="gu-radio__text"><b>Test</b><span>' + esc(P.TEST_OFFER_TEXT) + '</span></span></label>'
-      + '<label class="gu-check gu-opt"><input type="checkbox" name="exam"' + (off.exam ? ' checked' : '') + '><span class="gu-radio__text"><b>Exam</b><span>' + esc(P.examOfferText(name, year, pf)) + '</span></span></label>';
+      + '<label class="gu-check gu-opt"><input type="checkbox" name="exam"' + (off.exam ? ' checked' : '') + '><span class="gu-radio__text"><b>Big test</b><span>' + esc(P.examOfferText(name, year, pf)) + '</span></span></label>';
     main.querySelector('[data-changed]').textContent = card.changed;
     const warnSlot = main.querySelector('[data-slot="warn"], [data-warnbox]');
     warnSlot.outerHTML = '<div data-warnbox>' + (warn ? '<p class="gu-line gu-line--warn" role="alert" data-problemline><span>' + esc(warn) + '</span>' + (retry ? '<button type="button" class="btn btn--ghost" data-tryagain>Try again</button>' : '') + '</p>' : '') + '</div>';
@@ -350,8 +357,8 @@ export function reportHtml(ctx) {
     const score = st.state === 'done' && st.last ? ' · ' + st.last.s + ' of ' + st.last.t : '';
     return '<li data-exam="' + esc(e.id) + '"><a href="' + examReportHref(id, e.id) + '"><b>' + esc(e.name) + '</b><span>' + esc(W.dayLabel(e.date)) + ' · ' + esc(P.examStateLine(st.state, e, st.last)) + esc(score) + '</span></a></li>';
   }).join('');
-  const examHtml = '<h3>Exams</h3>' + (exams ? '<ul class="gu-lines gu-lines--links" data-examlist>' + exams + '</ul>' : '<p class="muted small">No exams set.</p>')
-    + (off.exam ? '<div class="gu-actions noprint"><a class="btn btn--ghost" href="' + examHref(id) + '" data-setexam>' + I.plus + 'Set an exam</a></div>' : '');
+  const examHtml = '<h3>Big tests</h3>' + (exams ? '<ul class="gu-lines gu-lines--links" data-examlist>' + exams + '</ul>' : '<p class="muted small">No Big tests set.</p>')
+    + (off.exam ? '<div class="gu-actions noprint"><a class="btn btn--ghost" href="' + examHref(id) + '" data-setexam>' + I.plus + 'Set a Big test</a></div>' : '');
   return '<section class="card gu-report" data-report aria-labelledby="gu-rep-h"><div class="gu-report__head"><h2 id="gu-rep-h">' + esc(name) + '’s results</h2>'
     + (ctx.print ? '<button type="button" class="btn btn--plain noprint" data-print-report>' + I.print + 'Print this page</button>' : '') + '</div>'
     + '<p class="small muted">Each line says how the test was taken. Only what has been saved is shown.</p>'
@@ -377,7 +384,7 @@ export function examForm(main, { cid }) {
   let date = '';
   let nameText = '';
   let message = '';
-  main.innerHTML = wrap('Grown-ups', 'Set an exam', '', '<p class="muted">Loading…</p>');
+  main.innerHTML = wrap('Grown-ups', 'Set a Big test', '', '<p class="muted">Loading…</p>');
 
   const pf = () => Su.effectiveProfile(c.setup, true);
   const plan = () => P.examPlan(sources, [...chosen], pf());
@@ -387,15 +394,15 @@ export function examForm(main, { cid }) {
     const year = yearOf(c.child);
     const kind = As.kindName('exam', pf(), year);
     if (!Su.offers(c.setup).exam) {
-      main.innerHTML = '<section class="wrap page grownups gu" data-examoff>' + backLink(childHref(id), name + '’s page') + '<div class="card gu-empty"><h1>Exams are off for ' + esc(name) + '</h1>'
-        + '<p class="muted">Switch them on in “' + esc(P.spellTitle(name)) + '”, under Tests to offer.</p><a class="btn btn--primary" href="' + spellHref(id) + '">' + esc(P.spellTitle(name)) + '</a></div></section>';
+      main.innerHTML = '<section class="wrap page grownups gu" data-examoff>' + backLink(childHref(id), name + '’s page') + '<div class="card gu-empty"><h1>Big tests are off for ' + esc(name) + '</h1>'
+        + '<p class="muted">Turn them on in ' + esc(P.spellTitle(name)) + ', under Tests to offer.</p><a class="btn btn--primary" href="' + spellHref(id) + '">' + esc(P.spellTitle(name)) + '</a></div></section>';
       return;
     }
     const rows = sources.map((s) => '<label class="gu-check gu-opt' + (s.ready ? '' : ' is-off') + '" data-src="' + esc(s.key) + '"><input type="checkbox" value="' + esc(s.key) + '"' + (chosen.has(s.key) ? ' checked' : '') + (s.ready ? '' : ' disabled') + '>'
       + '<span class="gu-radio__text"><b>' + esc(s.label) + '</b><span>' + (s.ready ? esc(plural(s.words.length, 'word')) : esc(P.EXAM_NOT_DONE)) + '</span></span></label>').join('');
     const pl = plan();
     main.innerHTML = '<section class="wrap page grownups gu gu-examform" data-examform>' + backLink(childHref(id), name + '’s page')
-      + '<div class="pagehead"><span class="eyebrow">' + esc(name) + esc(yearBit(year)) + '</span><h1>Set an exam for ' + esc(name) + '</h1><p class="muted">' + esc(name) + ' sees ‘' + esc(kind) + '’. It only uses words whose test is done.</p></div>'
+      + '<div class="pagehead"><span class="eyebrow">' + esc(name) + esc(yearBit(year)) + '</span><h1>Set a Big test for ' + esc(name) + '</h1><p class="muted">' + esc(name) + ' sees ‘' + esc(kind) + '’. It only uses words whose test is done.</p></div>'
       + '<div class="gu-set"><div class="gu-set__groups">'
       + '<fieldset class="card gu-group" data-group="include"><legend><h2>What to include</h2></legend><p class="muted">Choose chapters and weeks. A test still to come never shows its words.</p>'
       + (rows || '<p class="muted">Nothing to choose yet.</p>') + '<p class="gu-count" data-examline aria-live="polite">' + esc(P.examSummary(pl)) + '</p></fieldset>'
@@ -405,7 +412,7 @@ export function examForm(main, { cid }) {
       + '<dl class="gu-facts"><div class="gu-fact"><dt>' + esc(name) + ' sees</dt><dd>' + esc(kind) + '</dd></div><div class="gu-fact"><dt>Words</dt><dd data-exwords>' + esc(String(pl.n)) + '</dd></div>'
       + '<div class="gu-fact"><dt>Help in tests</dt><dd>' + esc(As.PROFILE_NAME[pf()]) + '</dd></div></dl>'
       + '<p class="gu-error" role="alert" data-error>' + esc(message) + '</p>'
-      + '<button type="button" class="btn btn--primary" data-setexam-go' + (saving ? ' disabled' : '') + '>Set the exam</button></aside></div></section>';
+      + '<button type="button" class="btn btn--primary" data-setexam-go' + (saving ? ' disabled' : '') + '>Set the Big test</button></aside></div></section>';
     wire();
   }
 
@@ -448,7 +455,7 @@ export function examForm(main, { cid }) {
     if (r.problem === 'playing' || r.problem === 'no-child') { showProblem(main, r.problem); return; }
     if (r.problem === 'signed-out') recheckWho();
     btn.disabled = false;
-    message = r.error === 'too-many' ? P.examPlanLimit() : r.error ? 'That exam could not be saved. Check the name and the date.' : P.PROBLEM_TEXT[r.problem] + ' Nothing has been saved.';
+    message = r.error === 'too-many' ? P.examPlanLimit() : r.error ? 'That Big test could not be saved. Check the name and the date.' : P.PROBLEM_TEXT[r.problem] + ' Nothing has been saved.';
     err.textContent = message;
   }
 
@@ -473,7 +480,7 @@ export function examReport(main, { cid, eid }) {
   let warn = '';
   let framed = false;
   const line = takeFlash();
-  main.innerHTML = wrap('Grown-ups', 'Exam', '', '<p class="muted">Loading…</p>');
+  main.innerHTML = wrap('Grown-ups', 'Big test', '', '<p class="muted">Loading…</p>');
   // One status line, set with textContent and never rebuilt.
   const statusEl = document.createElement('p');
   statusEl.setAttribute('role', 'status');
@@ -495,7 +502,7 @@ export function examReport(main, { cid, eid }) {
     q1('[data-warnbox]').innerHTML = warn ? '<p class="gu-line gu-line--warn" role="alert" data-problemline>' + esc(warn) + '</p>' : '';
     if (!exam) {
       q1('[data-head]').innerHTML = backLink(childHref(id), name + '’s page');
-      q1('[data-body]').innerHTML = '<div class="card gu-empty" data-noexam><h1>That exam is not here</h1><p class="muted">It may have been deleted.</p>'
+      q1('[data-body]').innerHTML = '<div class="card gu-empty" data-noexam><h1>That Big test is not here</h1><p class="muted">It may have been deleted.</p>'
         + '<a class="btn btn--primary" href="' + childHref(id) + '">' + esc(name) + '’s page</a></div>';
       return;
     }
@@ -506,15 +513,15 @@ export function examReport(main, { cid, eid }) {
     const miss = isDone && st.last ? P.examMissLine(st.last) : '';
     main.firstElementChild.setAttribute('data-examreport', exam.id);
     q1('[data-head]').innerHTML = backLink(childHref(id), name + '’s page')
-      + '<div class="pagehead"><span class="eyebrow">' + esc(name) + ' · ' + esc(As.kindName('exam', Su.effectiveProfile(c.setup, true), yearOf(c.child))) + '</span><h1>' + esc(exam.name) + '</h1>'
+      + '<div class="pagehead"><span class="eyebrow">' + esc(name) + ' · ' + 'Big test' + '</span><h1>' + esc(exam.name) + '</h1>'
       + '<p class="muted">' + esc(W.dayLabel(exam.date)) + ' · ' + esc(plural(exam.words.length, 'word')) + '</p></div>';
-    const detail = !isDone ? '<p class="muted small">' + esc(name) + ' has not sat it yet.</p>'
+    const detail = !isDone ? '<p class="muted small"><b>' + esc(name) + ' has not sat this Big test yet.</b> It opens on ' + esc(W.dayLabel(exam.date)) + '. They start it from their Today page.</p>'
       : st.last ? '<p data-examresult>' + esc(result) + '</p>' + (miss ? '<p data-exammiss>' + esc(miss) + '</p>' : '<p class="muted small">Every word was spelled.</p>')
         : '<p class="muted small">The detail of this result is no longer kept.</p>';
     q1('[data-body]').innerHTML = '<section class="card gu-glance" data-examstate="' + st.state + '"><div class="gu-glance__head"><h2>State</h2><span class="gu-status gu-status--' + P.examChip(st.state) + '"><span data-examstatetext>' + esc(P.examStateLine(st.state, exam, st.last)) + '</span></span></div>'
       + detail
       + '<div class="gu-actions noprint">' + (isDone ? '<button type="button" class="btn btn--ghost" data-reopen>Let ' + esc(name) + ' sit it again</button>' : '')
-      + '<button type="button" class="btn btn--danger" data-delete>Delete</button><button type="button" class="btn btn--plain" data-print-report>' + I.print + 'Print this page</button></div></section>';
+      + '<button type="button" class="btn btn--danger" data-delete>Delete this Big test</button><button type="button" class="btn btn--plain" data-print-report>' + I.print + 'Print the report</button></div><p class="small muted">Printed reports show ' + esc(name) + '’s name. Keep them safe.</p></section>';
     wire(exam);
   }
 
@@ -545,7 +552,7 @@ export function examReport(main, { cid, eid }) {
     }
     const del = q('[data-delete]');
     del.addEventListener('click', async () => {
-      const yes = await confirmDialog({ title: 'Delete ' + exam.name + '?', body: c.child.nickname + '’s practice is kept. The exam is taken away.', confirm: 'Delete', keep: 'Keep it', opener: del });
+      const yes = await confirmDialog({ title: 'Delete ' + exam.name + '?', body: c.child.nickname + '’s practice is kept. The Big test is taken away.', confirm: 'Delete this Big test', keep: 'Keep it', opener: del });
       if (!yes || stopped) return;
       warn = '';
       say('');
@@ -566,12 +573,18 @@ export function examReport(main, { cid, eid }) {
 
 /* ------------------------------------------------------------- the overview --- */
 /** The link on the grown-ups home: only with two or more children. */
-export const overviewLink = (n) => (n >= 2 ? '<p class="small gu-overview-link"><a href="#/grownups/overview" data-overview-link>See all your children in one table</a></p>' : '');
+export const overviewLink = (n) => (n >= 2 ? '<p class="small gu-overview-link"><a href="#/grownups/overview" data-overview-link>All children in one table</a></p>' : '');
 
 export function overview(main) {
   if (!adultOnly(main) || noApi()) return undefined;
   let stopped = false;
-  main.innerHTML = wrap('Grown-ups', 'All your children', '', '<p class="muted">Finding your children…</p>');
+  const role = AC.currentRole();
+  const many = role === 'tutor' ? 'learners' : 'children';
+  const title = role === 'tutor' ? 'All learners' : role === 'teacher' ? 'Class results' : 'All children';
+  const backTo = role === 'tutor' ? RD.WORDS.tutor.home : role === 'teacher' ? RD.WORDS.teacher.home : 'Children';
+  const back = backLink('#/grownups', backTo);
+  const shell = (body) => '<section class="wrap page grownups gu gu-overviewpage">' + back + '<div class="pagehead"><h1>' + esc(title) + '</h1></div>' + body + '</section>';
+  main.innerHTML = shell('<p class="muted">Finding your ' + many + '…</p>');
   Dt.listChildren(childApi()).then(async ({ children, problem }) => {
     if (stopped) return;
     if (problem) { showProblem(main, problem); return; }
@@ -582,15 +595,28 @@ export function overview(main) {
     const chapters = D.allChapters();
     const rows = list.map((ch, i) => {
       const d = data[i];
-      if (d.problem) return '<tr data-child="' + esc(ch.id) + '"><th scope="row">' + esc(ch.nickname) + '</th><td colspan="4" data-problem="' + esc(d.problem) + '">' + esc(P.PROBLEM_TEXT[d.problem]) + '</td></tr>';
-      const r = P.overviewRow({ name: ch.nickname, words: d.words, progress: d.progress, setup: d.setup, chapters, today: day, now: Date.now() });
-      return '<tr data-child="' + esc(ch.id) + '"><th scope="row"><a href="' + childHref(ch.id) + '">' + esc(r.name) + '</a></th><td data-label="Current week">' + esc(r.week) + '</td><td data-label="Last test">' + esc(r.test) + '</td>'
-        + '<td data-label="Chapters passed">' + esc(String(r.passed)) + '</td><td data-label="Next exam">' + esc(r.exam) + '</td></tr>';
-    }).join('');
-    main.innerHTML = wrap('Grown-ups', 'All your children', '', '<div class="card gu-overview"><table class="gu-table" data-overview><caption>' + esc(P.OVERVIEW_CAPTION) + '</caption>'
-      + '<thead><tr><th scope="col">Child</th><th scope="col">Current week</th><th scope="col">Last test</th><th scope="col">Chapters passed</th><th scope="col">Next exam</th></tr></thead><tbody>' + rows + '</tbody></table>'
-      + (children.length > list.length ? '<p class="small muted">Showing the first ' + P.OVERVIEW_MAX + ' children.</p>' : '')
-      + '<div class="gu-actions noprint"><button type="button" class="btn btn--plain" data-print-report>' + I.print + 'Print this page</button><a class="btn btn--ghost" href="#/grownups">Back to the list</a></div></div>');
+      if (d.problem) return { id: ch.id, name: ch.nickname, problem: P.PROBLEM_TEXT[d.problem], code: d.problem };
+      return { id: ch.id, year: ch.year, ...P.overviewRow({ name: ch.nickname, words: d.words, progress: d.progress, setup: d.setup, chapters, today: day, now: Date.now() }) };
+    });
+    const noWeek = rows.every((r) => r.problem || r.week === 'No week planned');
+    const lastOf = (r) => r.lastWeek || (r.week === 'No week planned' ? 'No week. ' + r.test : r.week);
+    const cards = rows.map((r) => r.problem
+      ? '<div class="gu-ocard" data-child="' + esc(r.id) + '"><div class="gu-ocard__top"><span class="gu-avatar" aria-hidden="true">' + esc(r.name.slice(0, 1).toUpperCase()) + '</span><h2>' + esc(r.name) + '</h2></div><p data-problem="' + esc(r.code) + '">' + esc(r.problem) + '</p></div>'
+      : '<div class="gu-ocard" data-child="' + esc(r.id) + '"><a class="gu-ocard__top" href="' + childHref(r.id) + '"><span class="gu-avatar" aria-hidden="true">' + esc(r.name.slice(0, 1).toUpperCase()) + '</span><h2>' + esc(r.name) + '</h2>' + (r.year ? '<span class="gu-ocard__year">Year ' + esc(String(r.year)) + '</span>' : '') + '</a>'
+        + '<dl><div><dt>' + esc(P.weekKey(r)) + '</dt><dd>' + esc(lastOf(r)) + '</dd></div><div><dt>Score</dt><dd>' + esc(r.score) + '</dd></div><div><dt>To practise again</dt><dd>' + esc(r.practise || 'None') + '</dd></div>'
+        + '<div><dt>Chapters passed</dt><dd>' + esc(r.passed + ' of ' + chapters.length) + '</dd></div><div><dt>Next Big test</dt><dd>' + esc(r.exam) + '</dd></div></dl></div>').join('');
+    const trs = rows.map((r) => r.problem
+      ? '<tr data-child="' + esc(r.id) + '"><th scope="row">' + esc(r.name) + '</th><td colspan="5" data-problem="' + esc(r.code) + '">' + esc(r.problem) + '</td></tr>'
+      : '<tr data-child="' + esc(r.id) + '"><th scope="row"><a href="' + childHref(r.id) + '">' + esc(r.name) + '</a></th><td>' + (r.week === 'No week planned' && !r.lastWeek ? '' : '<span class="small muted">' + esc(P.weekKey(r)) + ': </span>') + esc(lastOf(r)) + '</td><td>' + esc(r.score) + '</td><td>' + esc(r.practise || 'None') + '</td><td>' + esc(r.passed + ' of ' + chapters.length) + '</td><td>' + esc(r.exam) + '</td></tr>').join('');
+    const first = rows.find((r) => !r.problem);
+    main.innerHTML = shell((noWeek ? '<p class="gu-line" data-noweek><b>No week is set yet</b>, for anyone.</p>' : '')
+      + '<div class="gu-ocards" data-overview-cards>' + cards + '</div>'
+      + '<div class="card gu-overview gu-overview--table"><table class="gu-table" data-overview><caption class="sr">' + esc(P.OVERVIEW_CAPTION) + '</caption>'
+      + '<thead><tr><th scope="col">' + (role === 'tutor' ? 'Learner' : 'Child') + '</th><th scope="col">Week</th><th scope="col">Score</th><th scope="col">To practise again</th><th scope="col">Chapters passed</th><th scope="col">Next Big test</th></tr></thead><tbody>' + trs + '</tbody></table></div>'
+      + (children.length > list.length ? '<p class="small muted">Showing the first ' + P.OVERVIEW_MAX + ' ' + many + '.</p>' : '')
+      + '<p class="small muted">' + esc(P.OVERVIEW_CAPTION) + ' Printed pages show names. Keep them safe.</p>'
+      + '<div class="gu-actions noprint"><button type="button" class="btn btn--ghost" data-print-report>' + I.print + 'Print for all ' + many + '</button></div>'
+      + (first ? '<div class="gu-obar noprint"><a class="btn btn--primary" href="#/grownups/set" data-setweek>Set a week</a></div>' : ''));
     const b = main.querySelector('[data-print-report]');
     if (b) b.addEventListener('click', () => window.print());
   });

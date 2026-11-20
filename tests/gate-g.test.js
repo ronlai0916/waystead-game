@@ -24,11 +24,11 @@ test('only an adult may delete a week', () => {
 test('the words page never offers a child a delete link; an adult keeps it', () => {
   const d = two();
   const g = W.groupById(d, 'ga');
-  assert.equal(W.editLinkLabel(d, g, MON, 'child'), 'Change this group');
+  assert.equal(W.editLinkLabel(d, g, MON, 'child'), 'Change this week');
   // from the test date the child's own rules allow no change: no link at all
   assert.equal(W.editLinkLabel(d, g, g.test, 'child'), '');
   assert.equal(W.editLinkLabel(d, g, g.test, 'adult'), 'Rename or delete');
-  assert.equal(W.editLinkLabel(d, g, MON, 'adult'), 'Change this group');
+  assert.equal(W.editLinkLabel(d, g, MON, 'adult'), 'Change this week');
   for (const day of [MON, g.test]) assert.doesNotMatch(W.editLinkLabel(d, g, day, 'child'), /delete/i);
 });
 
@@ -128,7 +128,7 @@ test('review fixes: unknown is treated like a child; only an adult clears progre
   const g = W.groupById(d, 'ga');
   assert.equal(W.editLinkLabel(d, g, g.test, 'unknown'), '');
   assert.equal(W.editLinkLabel(d, g, g.test, undefined), '');
-  assert.equal(W.editLinkLabel(d, g, MON, 'unknown'), 'Change this group');
+  assert.equal(W.editLinkLabel(d, g, MON, 'unknown'), 'Change this week');
   assert.equal(W.mayClearProgress('adult'), true);
   for (const k of ['child', 'unknown', '', undefined]) assert.equal(W.mayClearProgress(k), false);
   const v = src('views.js');

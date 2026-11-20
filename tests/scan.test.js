@@ -52,7 +52,7 @@ test('sortFound: names are masked, the limit counts usable words, one line for u
   const all = Object.fromEntries(words.map((w) => [w, true]));
   const big = S.sortFound(words, all);
   assert.equal(big.use.length, 15);
-  assert.deepEqual(big.out, [{ word: 'wp', shown: 'wp', reason: 'For the next chapter' }]);
+  assert.deepEqual(big.out, [{ word: 'wp', shown: 'wp', reason: 'For the next list' }]);
   assert.equal(S.sortFound(words, all, 3).use.length, 3);
 });
 
@@ -243,7 +243,7 @@ test('REASON.cant is the same string as the typed editor\'s OWN_REFUSED, and the
   assert.equal(S.REASON.cant, OWN_REFUSED);
   assert.equal(S.REASON.cant, 'We can\'t use this word yet');
   assert.equal(S.REASON.name, 'Looks like a name');
-  assert.equal(S.REASON.over, 'For the next chapter');
+  assert.equal(S.REASON.over, 'For the next list');
   assert.equal(OWN_REPEAT, 'Already in the list');
 });
 
@@ -359,20 +359,17 @@ test('clockTime: local, lower-case am and pm', () => {
 
 test('lines for the check, the count and the second chapter', () => {
   assert.equal(S.foundLine(14), 'We found 14 words. Untick any you don\'t want.');
-  assert.equal(S.foundMore(28), 'We found 28 words. A chapter holds 15. Tick up to 15 now. You can save the other 13 as a second chapter next, without scanning again.');
+  assert.equal(S.foundMore(28), 'We found 28 words. A list holds 15. Tick up to 15 now. You can save the other 13 as a second list next, without scanning again.');
   assert.equal(S.otherLede(13), 'Here are the other 13 words. Untick any you don\'t want.');
   assert.equal(S.otherLede(1), 'Here are the other 1 word. Untick any you don\'t want.');
   assert.equal(S.leftOutHead(3), 'We left these out (3)');
   assert.equal(S.tickedLine(14), '14 of 15 words');
-  assert.equal(S.tickedLine(16), '16 ticked. A chapter holds 15.');
-  assert.equal(S.limitReason(16), 'Untick 1 word to go on. You can save unticked words as another chapter next.');
-  assert.equal(S.limitReason(18), 'Untick 3 words to go on. You can save unticked words as another chapter next.');
+  assert.equal(S.tickedLine(16), '16 ticked. A list holds 15.');
+  assert.equal(S.limitReason(16), 'Untick 1 word to go on. You can save unticked words as another list next.');
+  assert.equal(S.limitReason(18), 'Untick 3 words to go on. You can save unticked words as another list next.');
   assert.equal(S.limitReason(0), 'Tick at least one word.');
   assert.equal(S.limitReason(7), '');
-  assert.equal(S.moreButton(1, 13), 'Make a second chapter with the other 13 words');
-  assert.equal(S.moreButton(2, 10), 'Make a third chapter with the other 10 words');
-  assert.equal(S.moreButton(3, 4), 'Make another chapter with the other 4 words');
-  assert.equal(S.moreButton(1, 1), 'Make a second chapter with the other 1 word');
+  assert.equal(S.MORE_BUTTON, 'Make another list from the rest');
   assert.equal(S.nextName('School words, 16 Nov', 2), 'School words, 16 Nov (2)');
   assert.ok(S.nextName('x'.repeat(40), 3).length <= 40);
   assert.ok(S.nextName('x'.repeat(40), 3).endsWith(' (3)'));
@@ -381,9 +378,11 @@ test('lines for the check, the count and the second chapter', () => {
   assert.equal(S.T.leaveTitle, 'Leave without saving?');
   assert.equal(S.T.leaveBody, 'The words you ticked won\'t be kept.');
   assert.equal(S.T.addedToList, 'Added to the list.');
-  assert.equal(S.T.limits, 'A long list can become up to 3 chapters from one photo.');
-  assert.equal(S.T.savedTitle, 'Chapter saved');
-  assert.equal(S.T.results, 'See results and set the test');
+  assert.equal(S.T.limits, 'A long list can become up to 3 lists from one photo.');
+  assert.equal(S.T.savedTitle, 'List saved');
+  assert.equal(S.T.results, 'See results');
+  assert.equal(S.T.useWeek, 'Set a week with this list');
+  assert.equal(S.T.backList, 'Back to Word lists');
 });
 
 test('the saved line names only the children it reached (the typed editor and the scan Done screen)', () => {
@@ -392,9 +391,9 @@ test('the saved line names only the children it reached (the typed editor and th
   assert.equal(one, 'Saved. Robin can find it under \'From your grown-up\'.');
   assert.doesNotMatch(one, /Wren/);
   assert.equal(S.savedLineFor(2, [], savedLine), 'Saved.', 'shared with some, reached none');
-  assert.equal(S.savedLineFor(0, [], savedLine), 'Saved. Share it with a child so they can find it under \'From your grown-up\'.');
+  assert.equal(S.savedLineFor(0, [], savedLine), 'Saved. Set a week with it, or give it to a child for practice.');
   assert.match(readSrc('own-views.js'), /Sc\.savedLineFor\(saved\.shared, saved\.names, D\.savedLine\)/);
-  assert.match(readSrc('own-views.js'), /kidsFor\(\)\.filter\(\(k\) => !r\.notSent\.includes\(k\.id\)\)/);
+  assert.match(readSrc('own-views.js'), /kidsFor\(\)\.filter\(\(k\) => !out\.r\.notSent\.includes\(k\.id\)\)/);
   assert.match(readSrc('scan-views.js'), /Sc\.savedLineFor\(sharedKids\.length, reached, D\.savedLine\)/);
 });
 
@@ -411,9 +410,9 @@ test('the Scan link is drawn only after the account says on: true', async () => 
   } finally { globalThis.fetch = real; }
   const ov = readSrc('own-views.js');
   assert.match(ov, /const scanIsOn = async \(\) => Sc\.isOn\(await SD\.allowance\(accountOrigin\(location\)\)\);/);
-  assert.match(ov, /scanOn\s+\? '<div class="s-btns" data-scan-links>/);
-  assert.match(ov, /\(scanOn \? '<p class="gu-ownlink" data-scan-link>/);
-  assert.equal((ov.match(/href="#\/grownups\/scan"/g) || []).length, 2, 'the list and the editor, nowhere else');
+  // SB5 (TR-43): "New list" offers Type or Scan; no other scan entry (the library has none)
+  assert.match(ov, /\(scanOn \? '<a class="ls-tab" href="#\/grownups\/scan" data-scan-link>/);
+  assert.equal((ov.match(/href="#\/grownups\/scan"/g) || []).length, 1, 'the new-list page, nowhere else');
   assert.match(ov, /editing \? false : scanIsOn\(\)/, 'an existing chapter gets no link and no call');
   assert.match(ov, /export function list\(main\) \{\n  if \(!adultOnly\(main\)\) return undefined;/, 'a child session stops before any call');
   const sv = readSrc('scan-views.js');

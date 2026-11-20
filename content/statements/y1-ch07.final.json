@@ -1,0 +1,113 @@
+{
+ "chapter": "y1-ch07",
+ "year": 1,
+ "words": {
+  "no": [
+   "Did you say yes or no?",
+   "Mum said no to more sweets.",
+   "There is no milk left in the jug."
+  ],
+  "go": [
+   "Let us go to the library now.",
+   "On your marks, get set, go!",
+   "Please go and wash your hands."
+  ],
+  "so": [
+   "It was raining, so we stayed in.",
+   "The soup was so yummy that I had more.",
+   "The sand is so hot today!"
+  ],
+  "by": [
+   "The post box is by the gate.",
+   "Who is the book written by?",
+   "We came home by bus after school."
+  ],
+  "my": [
+   "Green is my favourite colour.",
+   "I lost my hat at the park.",
+   "Look at my drawing of a cat!"
+  ],
+  "train": [
+   "The train goes fast on its rails.",
+   "Which platform does the train leave from?",
+   "Mum and I went on a train ride."
+  ],
+  "soil": [
+   "Plants need water, sun and good soil.",
+   "Dig a hole in the soil for the seed.",
+   "The worm wriggled through the wet soil."
+  ],
+  "play": [
+   "Let us play hide and seek outside.",
+   "Can I play with the blocks?",
+   "The puppy likes to play with a stick."
+  ],
+  "boy": [
+   "What a happy boy he is!",
+   "The girl and the boy sang a song.",
+   "A little boy was eating an ice cream."
+  ]
+ },
+ "rounds": {
+  "no": 0,
+  "go": 0,
+  "so": 0,
+  "by": 0,
+  "my": 0,
+  "train": 0,
+  "soil": 0,
+  "play": 0,
+  "boy": 0
+ },
+ "rejected": [
+  {
+   "word": "no",
+   "round": 0,
+   "s": "Look, there is no one at the door!",
+   "reason": "checker: An empty doorway can feel a little spooky, and 'no one' is not the yes/no sense."
+  },
+  {
+   "word": "no",
+   "round": 0,
+   "s": "We have no school on Saturday!",
+   "reason": "checker: 'We have play school on Saturday' also makes sense. (also fits: play)"
+  },
+  {
+   "word": "by",
+   "round": 0,
+   "s": "This picture was painted by Dad.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "by",
+   "round": 0,
+   "s": "Please finish your tea by six o'clock.",
+   "reason": "machine rule 4: not on the word lists: o'clock"
+  },
+  {
+   "word": "my",
+   "round": 0,
+   "s": "I gave my nan a big hug.",
+   "reason": "machine rule 4: not on the word lists: nan"
+  },
+  {
+   "word": "train",
+   "round": 0,
+   "s": "We waved as the train went past.",
+   "reason": "checker: 'We waved as the boy went past' also makes sense. (also fits: boy)"
+  },
+  {
+   "word": "train",
+   "round": 0,
+   "s": "We bought tickets for the train.",
+   "reason": "checker: 'Tickets for the play' also makes sense, and money talk is best avoided. (also fits: play)"
+  },
+  {
+   "word": "play",
+   "round": 0,
+   "s": "Can we play indoors when it rains?",
+   "reason": "checker: 'Can we go indoors when it rains?' also makes sense. (also fits: go)"
+  }
+ ],
+ "sitOut": []
+}

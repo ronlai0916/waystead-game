@@ -18,7 +18,7 @@ export default function (H) {
   const passedCh = (id, n = 1) => ({ id: 'r' + id + n, c: id, s: 5, t: 5, at: T0 + n });
   const me = (year) => ({ signedIn: true, kind: 'child', id: CHILD, nickname: 'Robin', year, avatar: null, parentId: H.ADULT });
   const noSideways = () => ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth');
-  const years = () => ev('[...document.querySelectorAll(".yearswitch__b")].map((b) => b.dataset.year || "more")');
+  const years = () => ev('[...document.querySelectorAll("[data-yearswitch] [data-year], [data-moreyears]")].map((b) => b.dataset.year || "more")');
   const panelStones = () => ev('[...document.querySelectorAll("[data-yearpanel] .stonelink")].map((a) => a.dataset.state)');
   const said = () => ev('globalThis.__lines.slice()');
   /** A child of `year` with `passed` chapters passed, opened at `hash` two days in. */
@@ -36,7 +36,7 @@ export default function (H) {
     const stones = await panelStones();
     ok(stones.length === 10, 'ten stones in Year 1: ' + stones.length);
     ok(stones.every((s) => s === 'todo') && await ev('document.querySelectorAll("[data-yearpanel] .stonelink")[0].classList.contains("is-next")'), 'nothing begun, the first is the next one: ' + stones);
-    ok(JSON.stringify(await years()) === JSON.stringify(['y1', 'y2', 'more']), 'Year 1, Year 2 and Other years: ' + await years());
+    ok(JSON.stringify(await years()) === JSON.stringify(['y1', 'y2', 'y3', 'y4', 'y5', 'y6']), 'SB5: a button for each of the six years, no Other years: ' + await years());
     ok(!/\b(all )?10 passed\b/i.test(await text('.yearcard')), 'no "10 passed" count in the card');
     ok(await noSideways(), 'no sideways scroll at 390');
     await click('[data-chapter=ch01]');
@@ -137,11 +137,11 @@ export default function (H) {
       await width(w, 900);
       ok(JSON.stringify(await years()) === JSON.stringify(['y1', 'y2', 'y3', 'y4', 'y5', 'y6']), 'six tabs at ' + w + ': ' + await years());
       ok(await noSideways(), 'no sideways scroll at ' + w + ' with six tabs');
-      const sizes = await ev('[...document.querySelectorAll(".yearswitch__b")].map((b) => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })');
+      const sizes = await ev('[...document.querySelectorAll("[data-yearswitch] [data-year]")].map((b) => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })');
       ok(sizes.every(([x, y]) => x >= 44 && y >= 44), 'every tab at least 44 px at ' + w + ': ' + JSON.stringify(sizes));
       for (const y of ['y1', 'y2', 'y3', 'y4', 'y5', 'y6']) {
         step(y);
-        await click('.yearswitch__b[data-year=' + y + ']');
+        await click('[data-yearswitch] [data-year=' + y + ']');
         await until('document.querySelector("[data-yearpanel=' + y + ']")', y + ' at ' + w);
         ok((await panelStones()).length === 10, y + ' has ten stones at ' + w);
         ok(await noSideways(), y + ' does not scroll sideways at ' + w);
@@ -149,31 +149,32 @@ export default function (H) {
     }
     step('Year 1 and Year 2 say where their words come from, and never "statutory"');
     await width(390);
-    await click('.yearswitch__b[data-year=y1]');
+    await click('[data-yearswitch] [data-year=y1]');
     const t1 = await text('[data-yearpanel=y1]');
     ok(/Year 1 common exception words \(from the national curriculum\)/.test(t1), 'Year 1 source line: ' + t1.slice(0, 300));
     ok(!/statutory/i.test(t1), 'Year 1 never says statutory');
-    await click('.yearswitch__b[data-year=y2]');
+    await click('[data-yearswitch] [data-year=y2]');
     const t2 = await text('[data-yearpanel=y2]');
     ok(/Year 2 common exception words \(from the national curriculum\)/.test(t2) && !/statutory/i.test(t2), 'Year 2 source line');
-    step('the Menu says which years have chapters, and each row has its own icon');
+    step('SB5: Play yourself says which years have chapters; the Menu has five rows, each with its own icon');
+    await go('#/grownups/yourself');
+    await until('document.querySelector("main a[href=\\"#/chapters\\"]")', 'Play yourself');
+    ok(/Year 1 to Year 6 chapters/.test(await text('main a[href="#/chapters"]')), 'More practice says Year 1 to Year 6 chapters: ' + await text('main a[href="#/chapters"]'));
     await click('#adult-menu-btn');
-    await until('!document.querySelector("#adult-panel-menu, [data-adult-panel=menu]")?.hidden || document.querySelector("[data-adultrow=chapters]")', 'the Menu');
-    ok(/Year 1 to Year 6 chapters/.test(await text('[data-adultrow=chapters]')), 'More practice says Year 1 to Year 6 chapters: ' + await text('[data-adultrow=chapters]'));
+    await until('document.querySelector("[data-adultrow=yourself]")', 'the Menu');
     const icons = await ev('[...document.querySelectorAll("[data-adultrow]")].map((a) => a.dataset.adultrow + "|" + a.querySelector(".adultrow__ico svg").innerHTML)');
     const distinct = new Set(icons.map((s) => s.split('|')[1]));
-    ok(icons.length === 8 && distinct.size === 8, 'eight rows, eight icons: ' + icons.length + ' / ' + distinct.size);
-    ok(icons.some((s) => s.startsWith('own|')) && icons.some((s) => s.startsWith('teach|')), 'Your own chapters and For teachers have their own');
+    ok(icons.length === 5 && distinct.size === 5, 'five rows, five icons: ' + icons.length + ' / ' + distinct.size);
+    ok(icons.some((s) => s.startsWith('lists|')) && icons.some((s) => s.startsWith('yourself|')), 'Word lists and Play yourself have their own');
+    await H.key('Escape');
     await H.seedChild(W.emptyDoc(), plus(2));
     acct.who = me(2);
     await width(390);
     await open(plus(2), '#/chapters');
     await until('document.querySelector("[data-yearpanel]")', 'a Year 2 child\'s page');
-    ok(JSON.stringify(await years()) === JSON.stringify(['y2', 'y3', 'more']), 'a Year 2 child: Year 2, Year 3, Other years: ' + await years());
-    await click('[data-moreyears]');
-    ok(await ev('[...document.querySelectorAll("#yearmore .yearswitch__b")].map((b) => b.dataset.year).join()') === 'y1,y4,y5,y6', 'the other four years');
+    ok(JSON.stringify(await years()) === JSON.stringify(['y1', 'y2', 'y3', 'y4', 'y5', 'y6']) && await ev('document.querySelector("[data-yearswitch] [data-year][aria-pressed=true]").dataset.year') === 'y2', 'a Year 2 child: all six years, Year 2 chosen: ' + await years());
     await width(320);
-    ok(await noSideways(), 'no sideways scroll at 320 with Other years open');
+    ok(await noSideways(), 'no sideways scroll at 320 with six year buttons');
     await width(1180, 800);
     ok(await noSideways(), 'no sideways scroll at 1180');
     await width(390);

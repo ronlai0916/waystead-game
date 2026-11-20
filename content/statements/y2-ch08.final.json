@@ -1,0 +1,294 @@
+{
+ "chapter": "y2-ch08",
+ "year": 2,
+ "words": {
+  "could": [
+   "Even on tiptoes, I could not reach the tin.",
+   "The torch was bright, so we could see the path.",
+   "I wish I could fly like a bird!"
+  ],
+  "should": [
+   "Children should walk, not run, in the school hall."
+  ],
+  "would": [
+   "If I won a prize, I would be so happy!",
+   "I would love a puppy for my birthday!",
+   "Would you like some jam on your toast?"
+  ],
+  "who": [
+   "Who left the muddy trainers by the door?",
+   "Do you know who lives next door?",
+   "The girl who sits next to me likes painting."
+  ],
+  "whole": [
+   "The whole class sang a song for the visitor.",
+   "Our cat slept the whole afternoon on the sofa.",
+   "Did you read the whole book in one night?"
+  ],
+  "eye": [
+   "Close one eye and look through the paper tube.",
+   "The cat opened one eye and looked at me.",
+   "My teddy has a button for one eye."
+  ],
+  "payment": [
+   "Please hand your payment to the lady at the till.",
+   "We gave the bus driver our payment for the ride.",
+   "The shop wanted payment before we took the toy."
+  ],
+  "kindness": [
+   "Thank you for your kindness in carrying my bag!",
+   "Your kindness when I dropped my crayons made me smile.",
+   "Her kindness made the new child happy at school."
+  ],
+  "carefully": [
+   "Walk carefully so you do not spill the juice.",
+   "Turn the pages of the old book carefully.",
+   "Draw slowly and carefully between the lines!"
+  ],
+  "spotless": [
+   "The kitchen floor looks spotless after we mopped it!",
+   "Is your plate spotless, with not one crumb left?",
+   "Wow, the car is spotless after its wash!"
+  ]
+ },
+ "rounds": {
+  "could": 1,
+  "should": 2,
+  "would": 2,
+  "who": 0,
+  "whole": 0,
+  "eye": 0,
+  "payment": 0,
+  "kindness": 0,
+  "carefully": 0,
+  "spotless": 0
+ },
+ "rejected": [
+  {
+   "word": "could",
+   "round": 0,
+   "s": "I could not tie my laces last year.",
+   "reason": "checker: \"I would not tie my laces\" also works, meaning I refused to tie them. (also fits: would)"
+  },
+  {
+   "word": "could",
+   "round": 0,
+   "s": "The little bird could fly high above the garden.",
+   "reason": "checker: \"would fly\" and \"should fly\" both make sense in the gap. (also fits: would, should)"
+  },
+  {
+   "word": "could",
+   "round": 0,
+   "s": "We could hear the waves from our bedroom.",
+   "reason": "checker: \"would hear\" (something we did often) and \"should hear\" also fit. (also fits: would, should)"
+  },
+  {
+   "word": "should",
+   "round": 0,
+   "s": "You should put on a coat when it is cold.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "should",
+   "round": 0,
+   "s": "You should say thank you when someone helps you.",
+   "reason": "checker: \"You could say thank you\" is just as natural as a suggestion. (also fits: could)"
+  },
+  {
+   "word": "should",
+   "round": 0,
+   "s": "We should tidy our toys before bedtime.",
+   "reason": "checker: \"We could tidy\" and \"we would tidy\" (something we always did) both fit. (also fits: could, would)"
+  },
+  {
+   "word": "should",
+   "round": 0,
+   "s": "You should put your litter in the bin.",
+   "reason": "checker: \"You could put your litter in the bin\" also makes sense. (also fits: could)"
+  },
+  {
+   "word": "would",
+   "round": 0,
+   "s": "If it rains, we would stay in and bake.",
+   "reason": "checker: \"If it rains\" needs \"will\", not \"would\", and \"could\" fits better. (also fits: could)"
+  },
+  {
+   "word": "would",
+   "round": 0,
+   "s": "If I had a rabbit, I would give it carrots.",
+   "reason": "checker: \"could give\" and \"should give\" also fit. (also fits: could, should)"
+  },
+  {
+   "word": "would",
+   "round": 0,
+   "s": "If we had a garden, we would grow beans.",
+   "reason": "checker: \"We could grow beans\" fits just as well. (also fits: could)"
+  },
+  {
+   "word": "kindness",
+   "round": 0,
+   "s": "Sharing your lunch with a friend is an act of kindness.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "kindness",
+   "round": 0,
+   "s": "The teacher praised us for our kindness to the little ones.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "carefully",
+   "round": 0,
+   "s": "I carefully put the glass jar on the shelf.",
+   "reason": "checker: \"I could put\", \"I would put\" and \"I should put\" all fit the gap. (also fits: could, would, should)"
+  },
+  {
+   "word": "carefully",
+   "round": 0,
+   "s": "Dad carefully painted the fence in the garden.",
+   "reason": "checker: Dad doing jobs around the house is a mild stereotype, so it is dropped to be safe."
+  },
+  {
+   "word": "spotless",
+   "round": 0,
+   "s": "My white shirt was spotless after Mum washed it.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "spotless",
+   "round": 0,
+   "s": "Mum wiped the table until it was spotless.",
+   "reason": "checker: Mum doing the cleaning is a stereotype."
+  },
+  {
+   "word": "could",
+   "round": 1,
+   "s": "He stood on a chair so he could reach the jar.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "could",
+   "round": 1,
+   "s": "Mum lifted me up so I could see the ducks.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "could",
+   "round": 1,
+   "s": "I ran fast so I could catch the bus.",
+   "reason": "checker: 'so I would catch the bus' also reads naturally, so the gap is not clear. (also fits: would)"
+  },
+  {
+   "word": "should",
+   "round": 1,
+   "s": "Everyone should wait for a turn on the slide!",
+   "reason": "checker: 'Everyone could wait' also works as a suggestion, so the gap is not clear. (also fits: could)"
+  },
+  {
+   "word": "should",
+   "round": 1,
+   "s": "The sign says we should not pick the flowers.",
+   "reason": "checker: 'The sign says we could not pick the flowers' also makes sense to a child. (also fits: could)"
+  },
+  {
+   "word": "should",
+   "round": 1,
+   "s": "After lunch, you should push your chair in.",
+   "reason": "checker: 'you could push your chair in' works as a polite request, so the gap is not clear. (also fits: could)"
+  },
+  {
+   "word": "should",
+   "round": 1,
+   "s": "If you borrow a book, you should bring it back.",
+   "reason": "reader flag two_fit (could, should and would all make grammatical sentences here: 'you could bring it back', 'you should bring it back', 'you would bring it back'.); re-judge: The flag is correct. 'If you borrow a book, you could bring it back' is a natural, sensible sentence. 'You would bring it back' also works as a plain statement of what happens. Nothing in the sentence points only to 'should', such as a rule, a duty or a 'must'. A child who picks 'could' has given a fair answer but would be marked wrong. I can't give a specific reason why the flag is wrong, so drop it."
+  },
+  {
+   "word": "would",
+   "round": 1,
+   "s": "Would you like jam on your toast?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "would",
+   "round": 1,
+   "s": "Every Saturday, Dad would make pancakes for us.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "would",
+   "round": 1,
+   "s": "Each night, Gran would read me a story.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "would",
+   "round": 1,
+   "s": "Every autumn, we would collect conkers in the park.",
+   "reason": "checker: 'we could collect conkers' also fits, and the sense is a past habit. (also fits: could)"
+  },
+  {
+   "word": "would",
+   "round": 1,
+   "s": "Our old dog would wag his tail every morning.",
+   "reason": "checker: Talking about a past habit suggests the dog has died, and the sense is not 'what might happen'."
+  },
+  {
+   "word": "should",
+   "round": 2,
+   "s": "Is it true that we should drink water on hot days?",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "should",
+   "round": 2,
+   "s": "Mum says we should brush our teeth every night.",
+   "reason": "checker: 'Mum says we carefully brush our teeth every night' also works, so the gap is not clear. (also fits: carefully)"
+  },
+  {
+   "word": "should",
+   "round": 2,
+   "s": "Mum says I should go to bed at seven.",
+   "reason": "checker: 'Mum says I could go to bed at seven' also makes sense, as a parent giving permission. (also fits: could)"
+  },
+  {
+   "word": "should",
+   "round": 2,
+   "s": "The rule is that we should hold the handrail.",
+   "reason": "checker: 'The rule is that we carefully hold the handrail' also works, so a child could put 'carefully' here. (also fits: carefully)"
+  },
+  {
+   "word": "should",
+   "round": 2,
+   "s": "In the library, we should whisper and walk slowly.",
+   "reason": "checker: 'In the library, we could whisper and walk slowly' also makes sense as a suggestion. (also fits: could)"
+  },
+  {
+   "word": "should",
+   "round": 2,
+   "s": "You should brush your teeth twice every day.",
+   "reason": "checker: Both 'You could brush' and 'You carefully brush' also make sense here. (also fits: could, carefully)"
+  },
+  {
+   "word": "would",
+   "round": 2,
+   "s": "If we added more sugar, the tea would taste too sweet.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "would",
+   "round": 2,
+   "s": "I wish the rain would stop soon!",
+   "reason": "checker: 'I wish the rain could stop soon' is just as natural. (also fits: could)"
+  },
+  {
+   "word": "would",
+   "round": 2,
+   "s": "She said she would bring a cake to the party.",
+   "reason": "checker: 'She said she could bring' and 'she said she should bring' both make sense too. (also fits: could, should)"
+  }
+ ],
+ "sitOut": [
+  "should"
+ ],
+ "manualEdits": "19 Nov 2026: Opus spot-check fixes (OPUS-SPOTCHECK.md), machine-checked with statements-check rules"
+}

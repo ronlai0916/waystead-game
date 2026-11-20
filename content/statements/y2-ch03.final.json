@@ -1,0 +1,167 @@
+{
+ "chapter": "y2-ch03",
+ "year": 2,
+ "words": {
+  "gold": [
+   "Which is worth more, silver or gold?",
+   "Her necklace is silver, but his ring is gold.",
+   "A rainbow ended at a pot of gold!"
+  ],
+  "hold": [
+   "Hold the kitten gently, with both hands.",
+   "Can I hold your hamster for a minute?",
+   "The jug can hold two cups of milk."
+  ],
+  "told": [
+   "She told me a joke and I laughed!",
+   "Yesterday my teacher told us to line up.",
+   "Who told you the shop was shut?"
+  ],
+  "every": [
+   "I brush my teeth every morning and night.",
+   "Every child in the class got a sticker.",
+   "I ate every crumb of my toast!"
+  ],
+  "everybody": [
+   "We waved, and everybody waved back!",
+   "Everybody wore a party hat at my birthday.",
+   "Please tell everybody that lunch is ready."
+  ],
+  "even": [
+   "Is the number eight odd or even?",
+   "Ten is an even number, but nine is odd.",
+   "If a number is even, you can make pairs."
+  ],
+  "gnat": [
+   "Was that buzz a bee or a gnat?",
+   "The gnat buzzing by my ear made me giggle.",
+   "A tiny gnat flew into my cup of juice."
+  ],
+  "wrist": [
+   "My watch strap is tight on my wrist.",
+   "Can you bend your hand at the wrist?",
+   "Mum put a hair band round my wrist."
+  ],
+  "wren": [
+   "A tiny brown wren hopped along the fence.",
+   "The wren built a nest in our hedge.",
+   "I heard a wren singing in the garden."
+  ],
+  "knock": [
+   "I will knock on the door and say hello.",
+   "Did you hear someone knock at the door?",
+   "Be careful not to knock over the cup."
+  ]
+ },
+ "rounds": {
+  "gold": 0,
+  "hold": 0,
+  "told": 0,
+  "every": 0,
+  "everybody": 0,
+  "even": 0,
+  "gnat": 2,
+  "wrist": 0,
+  "wren": 0,
+  "knock": 0
+ },
+ "rejected": [
+  {
+   "word": "told",
+   "round": 0,
+   "s": "I told Mum I had tidied my room.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "everybody",
+   "round": 0,
+   "s": "Mum made tea and everybody had a biscuit.",
+   "reason": "checker: Mum made tea and even had a biscuit also reads naturally, so even fits too. (also fits: even)"
+  },
+  {
+   "word": "even",
+   "round": 0,
+   "s": "Six sweets make two even groups of three.",
+   "reason": "checker: Even groups of three is confusing, because three is an odd number."
+  },
+  {
+   "word": "gnat",
+   "round": 0,
+   "s": "The gnat is so small, I can hardly see it.",
+   "reason": "checker: A wren is also very small, so a child could put wren here. (also fits: wren)"
+  },
+  {
+   "word": "gnat",
+   "round": 0,
+   "s": "A gnat landed on my sandwich at the picnic.",
+   "reason": "checker: A wren could land on a picnic sandwich too. (also fits: wren)"
+  },
+  {
+   "word": "gnat",
+   "round": 0,
+   "s": "Look at the gnat dancing in the sunshine!",
+   "reason": "checker: A wren could also be dancing in the sunshine. (also fits: wren)"
+  },
+  {
+   "word": "wren",
+   "round": 0,
+   "s": "Is that little brown bird a wren?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "knock",
+   "round": 0,
+   "s": "Knock twice, then wait for Gran to open.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "gnat",
+   "round": 1,
+   "s": "A gnat is a tiny insect with thin wings.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "gnat",
+   "round": 1,
+   "s": "A bee is bigger than a gnat, but both are insects.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "gnat",
+   "round": 1,
+   "s": "The insect on the window was a tiny gnat.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "gnat",
+   "round": 1,
+   "s": "Is that tiny insect a ladybird or a gnat?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "gnat",
+   "round": 1,
+   "s": "What a tiny insect a gnat is!",
+   "reason": "machine rule 5: word overlap with the meaning is 100%"
+  },
+  {
+   "word": "gnat",
+   "round": 1,
+   "s": "Is that a gnat or a tiny fly?",
+   "reason": "checker: Asking 'is that a ___ or a tiny fly' could be about any small flying thing seen from far away, so wren also makes sense and the clue is not clear enough. (also fits: wren)"
+  },
+  {
+   "word": "gnat",
+   "round": 2,
+   "s": "The gnat was too small to see clearly.",
+   "reason": "checker: A small wren far away could also be hard to see, so the gap is not clear. (also fits: wren)"
+  },
+  {
+   "word": "gnat",
+   "round": 2,
+   "s": "Look at that gnat dancing in the evening sun!",
+   "reason": "checker: A wren could also hop or 'dance' in the evening sun, so the gap is not clear. (also fits: wren)"
+  }
+ ],
+ "sitOut": []
+}

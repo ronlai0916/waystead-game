@@ -11,6 +11,9 @@ body.is-child .keyboard--tray { padding: 10px 6px; background: var(--tray-bg); b
 body.is-child .keyboard--tray .keyboard-row, body.is-child .keyboard--pad .keyboard-row { gap: var(--tgap); justify-content: center; }
 .keyboard--tray { gap: var(--tgap); align-items: center; background: var(--tray-bg); border-radius: var(--r); padding: 10px 6px; box-sizing: border-box; }
 .keyboard--tray .keyboard-row { gap: var(--tgap); justify-content: center; }
+/* S3-D14: a grown-up's tiles are as far apart as a child's (child.css's phone rule `:is(body.is-child, body) .keyboard-row` set 3 px and 4 px for the adult). */
+body .keyboard.keyboard--tray { gap: var(--tgap); }
+body .keyboard--tray .keyboard-row { gap: var(--tgap); }
 @media (max-width: 480px) { body.is-child .spellpage .keyboard--tray { width: 100%; margin-inline: auto; } }
 /* Under 360 px wide (a 320 px phone): a smaller page margin and tray, at most 5 tiles to a row (tile 48 wide), nothing scrolls sideways. */
 @media (max-width: 359.98px) {
@@ -122,7 +125,7 @@ body.is-child .keyboard.keyboard--pad .key, .keyboard.keyboard--pad .key { width
 .keyboard--pad .key.miss { text-decoration: none; }
 .keyboard--pad .keyboard-row { gap: var(--tgap); }
 
-@media (min-width: 820px) and (max-height: 1000px) {
+@media (min-width: 820px) and (max-height: 1000px), (min-width: 640px) and (max-height: 520px) {
   body.is-child main > section.wrap.page .keyboard--pad { width: min(520px, 58vw); }
   /* The tray column: the tray with Check and Skip directly under it, in the second column. */
   main > section.wrap.page.spellpage > [data-slot] > .traycol {
@@ -137,10 +140,46 @@ body.is-child .keyboard.keyboard--pad .key, .keyboard.keyboard--pad .key { width
   main > section.wrap.page.spellpage > [data-slot] > .traycol { width: min(380px, 46vw); }
   .traycol .keyboard--tray { --tw: 52px; --th: 60px; --tgap: 8px; --tfs: 30px; }
 }
-@media (min-width: 820px) and (max-height: 520px) {
+@media (min-width: 640px) and (max-height: 520px) {
   main > section.wrap.page.spellpage > [data-slot] > .traycol { position: sticky; top: 76px; bottom: auto; align-self: start; }
 }
 
 /* A word that took more than one go (Fix it in): soft honey, never red. */
 .result--soft { border-color: var(--soft-fg); }
 .result--soft .result__badge { background: var(--soft-fg); color: var(--soft-bg); }
+
+/* HOTFIX1 (17 Nov): a phone's floating browser bar (Safari's URL pill, Chrome's bar) sits over the bottom of the page, so Check, Next and
+   Skip must always be able to scroll clear of it. Extra room (112 px, the brief said at least 96) under the last control on every page with keys or tiles, phones only (up to 480 px wide).
+   A page shorter than the screen keeps its keys at the foot, now 112 px up, so the bar never covers Check. Colours: none; no inline style. */
+@media (max-width: 600px) {
+  body main > section.wrap.page.spellpage, body main > section.wrap.page.play, body main > section.wrap.page.game, body main > section:has(.keyboard),
+  body.is-child main > section:has(.keyboard) { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); }
+}
+
+/* HOTFIX1, part 2: on a phone (up to 480 px wide) the practice, spelling, test, quiz, Fix it in and Quick-fire pages tighten above the keys, so Check or
+   Next is normally nearer the top of the screen: a smaller heading, a smaller instruction card, a shorter Hear again and Peek, tighter gaps.
+   The keys, tiles, peeked word and the 24 px between Peek and the tray are left exactly as they were (their tests hold them). */
+@media (max-width: 480px) {
+  body main > section.wrap.page.spellpage .pagehead { grid-template-columns: auto auto; justify-content: start; align-items: center; column-gap: 12px; row-gap: 0; margin-bottom: 4px; }
+  body main > section.wrap.page.spellpage .pagehead > .eyebrow, body main > section.wrap.page.spellpage .pagehead > h1 { grid-column: 1 / -1; }
+  body main > section.wrap.page.spellpage .pagehead h1 { font-size: 1.3rem; }
+  body main > section.wrap.page.spellpage .pagehead .rowcount { margin-top: 0; }
+  .tilepage .tileline, .game .tileline { min-height: 52px; padding: 4px 8px 4px 12px; margin-bottom: 4px; }
+  .tilepage .tileline__body, .game .tileline__body { min-height: 2.4em; }
+  .tilepage .tileline__text, .game .tileline__text { font-size: 1.1rem; }
+  .tileword { gap: 6px; padding: 6px 4px; }
+  .tileword .tileboxes { margin: 2px 0 2px; }
+  .tileword .btn { min-height: 48px; }
+  .tilepage .peekrow .btn { min-height: 48px; }
+  .spellpage .btnrow--center .btn { min-height: 48px; }
+  .testbtns { margin-top: 8px; }
+  .answerline { margin: 4px auto 8px; }
+}
+
+/* WP-S: a little more room above Check on the keys page (Fix it in, Test): tighter gaps between the button rows on a phone. */
+@media (max-width: 480px) {
+  main > .page.spellpage:not(.tilepage) .btnrow--center { margin-bottom: 4px; }
+  main > .page.spellpage:not(.tilepage) .peekrow { margin-top: 4px; }
+  main > .page.spellpage:not(.tilepage) .keyboard + .btnrow, main > .page.spellpage:not(.tilepage) [data-slot] > .btnrow.testbtns { margin-top: 8px; }
+  main > .page.spellpage:not(.tilepage) .answerline + .btnrow--center, main > .page.spellpage:not(.tilepage) [data-slot] > .btnrow--center:not(.testbtns) { margin-top: 8px; }
+}

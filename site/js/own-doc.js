@@ -3,14 +3,17 @@
 // children as a copy in the child's setup (setup-doc.js `own`). Pure: no DOM, no
 // storage; `now` comes in.
 //
-//   { [oid]: { name 1..40, words: [1..15], src: 'typed'|'scan', at, gone?: ms, to: [childId, ≤5] } }
+//   { [oid]: { name 1..40, words: [1..15], src: 'typed'|'scan', at, gone?: ms, to: [childId, ≤15], info? } }
+//   info (SB5, TR-93): { [word]: { s?, m?, x? } } the grown-up's sentences and meanings for own words, cleaned by info-doc.js (≤400 bytes, D46).
 //
 // MERGE: per id, the later `at` wins (a tie: the larger JSON). A deleted list is
 // kept as `gone` for 30 days (a grown-up can bring it back), then trim drops it.
 
+import { cleanInfo, infoBytes, MAX_INFO_BYTES } from './info-doc.js';
+
 export const MAX_LISTS = 30;
 export const MAX_WORDS = 15;
-export const MAX_TO = 5;
+export const MAX_TO = 15; // SB5 (TR-107): the data cap; views use Math.min(account limit, MAX_TO). 16c devices cut `to` to 5 when they re-save.
 export const MAX_NAME = 40;
 export const UNDELETE_DAYS = 30;
 const DAY = 86400000;
@@ -27,7 +30,8 @@ function clean(e) {
   const words = uniq((Array.isArray(e.words) ? e.words : []).filter(isWord)).slice(0, MAX_WORDS);
   if (!name || !words.length || !['typed', 'scan'].includes(e.src)) return null;
   const to = [...new Set((Array.isArray(e.to) ? e.to : []).filter((c) => typeof c === 'string' && c))].slice(0, MAX_TO);
-  return { name, words, src: e.src, at: e.at, ...(pos(e.gone) ? { gone: pos(e.gone) } : {}), to };
+  const info = cleanInfo(e.info, words);
+  return { name, words, src: e.src, at: e.at, ...(pos(e.gone) ? { gone: pos(e.gone) } : {}), to, ...(info ? { info } : {}) };
 }
 
 export function normalise(x) {
@@ -58,13 +62,19 @@ export function trim(x, now) {
 
 export const live = (x) => Object.entries(normalise(x)).filter(([, e]) => !e.gone)
   .map(([id, e]) => ({ id, ...e })).sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
+/** TR-43: the Word lists library, newest first (then by name). */
+export const liveNewest = (x) => live(x).sort((a, b) => (b.at || 0) - (a.at || 0) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
 export const deleted = (x, now) => Object.entries(normalise(x)).filter(([, e]) => e.gone && now - e.gone < UNDELETE_DAYS * DAY)
   .map(([id, e]) => ({ id, ...e })).sort((a, b) => b.gone - a.gone || a.id.localeCompare(b.id));
 
 const nextAt = (prev, now) => Math.max(now, (prev ? prev.at : 0) + 1);
 
-/** Make or edit a list (the oid never changes). Answers { own } or { error: 'too-many' | 'no-words' | 'too-many-words' | 'no-name' }. */
-export function set(x, oid, { name, words, src, to }, now) {
+/**
+ * Make or edit a list (the oid never changes). Answers { own } or { error: 'too-many' | 'no-words' | 'too-many-words' | 'no-name' | 'info-too-big' }.
+ * `info` (SB5) is kept clean against the words; with none given, the list's earlier info stays for the words that remain.
+ * opts.isReady(word) drops info for ready-made words.
+ */
+export function set(x, oid, { name, words, src, to, info }, now, { isReady = null } = {}) {
   const own = isObj(x) ? x : {};
   const prev = own[oid];
   const n = name40(name);
@@ -73,7 +83,10 @@ export function set(x, oid, { name, words, src, to }, now) {
   if (!list.length) return { error: 'no-words' };
   if (list.length > MAX_WORDS) return { error: 'too-many-words' };
   if (live(own).filter((e) => e.id !== oid).length >= MAX_LISTS) return { error: 'too-many' };
-  const e = { name: n, words: list, src: src === 'scan' ? 'scan' : 'typed', at: nextAt(prev, now), to: [...new Set((Array.isArray(to) ? to : []).filter((c) => typeof c === 'string' && c))].slice(0, MAX_TO) };
+  const given = info === undefined ? (prev && prev.info) : info;
+  const kept = cleanInfo(given, list, { isReady, noBudget: true });
+  if (kept && infoBytes(kept) > MAX_INFO_BYTES) return { error: 'info-too-big' };
+  const e = { name: n, words: list, src: src === 'scan' ? 'scan' : 'typed', at: nextAt(prev, now), to: [...new Set((Array.isArray(to) ? to : []).filter((c) => typeof c === 'string' && c))].slice(0, MAX_TO), ...(kept ? { info: kept } : {}) };
   return { own: { ...own, [oid]: e } };
 }
 export function drop(x, oid, now) {

@@ -1,0 +1,119 @@
+{
+ "chapter": "y34-ch01",
+ "year": 3,
+ "words": {
+  "build": [
+   "Can we build a tall tower from these wooden blocks?",
+   "She wants to build a small shed for the garden tools.",
+   "Dad will build a sandcastle with a bucket and spade."
+  ],
+  "earth": [
+   "The worms wriggled through the damp earth in the garden.",
+   "Press the seeds into the soft earth and water them.",
+   "My trainers were covered in wet earth after the muddy walk."
+  ],
+  "fruit": [
+   "The apple tree gave us lots of fruit this autumn.",
+   "Mum put a bowl of fresh fruit on the table.",
+   "Which fruit is yellow and has a thick skin?"
+  ],
+  "group": [
+   "A group of ducks swam across the pond.",
+   "Please get into a group of four for the game.",
+   "Our class sat in a group on the carpet."
+  ],
+  "guard": [
+   "A guard at the castle gate wears a tall hat.",
+   "The train guard blew a whistle and we set off!",
+   "My dog likes to guard the garden gate."
+  ],
+  "heard": [
+   "Last night I heard rain tapping on the window.",
+   "We heard the ice cream van playing its tune!",
+   "She heard her name called across the playground."
+  ],
+  "heart": [
+   "Put your hand on your chest to feel your heart beat.",
+   "Cut the paper into the shape of a heart.",
+   "I felt my heart thump after the long race!"
+  ],
+  "learn": [
+   "Do you want to learn to ride a bike?",
+   "In the library, I can learn about space.",
+   "Children learn new songs in music lessons."
+  ],
+  "reign": [
+   "During her reign, the queen opened a new library.",
+   "The old king's reign lasted for many happy years.",
+   "His reign began when he was crowned in the spring!"
+  ],
+  "breath": [
+   "After running up the hill, I was out of breath.",
+   "My breath looked like a little cloud on the frosty day.",
+   "He held his breath and tiptoed past the sleeping cat."
+  ],
+  "length": [
+   "Cut the ribbon to the same length as this one.",
+   "Gran knitted a scarf of just the right length.",
+   "What is the length of your garden?"
+  ]
+ },
+ "rounds": {
+  "build": 0,
+  "earth": 0,
+  "fruit": 0,
+  "group": 0,
+  "guard": 0,
+  "heard": 0,
+  "heart": 0,
+  "learn": 0,
+  "reign": 0,
+  "breath": 0,
+  "length": 0
+ },
+ "rejected": [
+  {
+   "word": "build",
+   "round": 0,
+   "s": "Birds build a nest of twigs in the spring.",
+   "reason": "checker: Birds guard a nest also makes sense, so the gap has two answers. (also fits: guard)"
+  },
+  {
+   "word": "earth",
+   "round": 0,
+   "s": "Why is the earth under the tree so dry?",
+   "reason": "checker: Fruit under a tree being dry also makes sense, so the gap has two answers. (also fits: fruit)"
+  },
+  {
+   "word": "group",
+   "round": 0,
+   "s": "We split into a small group to read stories.",
+   "reason": "checker: 'Split into a small group' sounds wrong; it should be 'small groups'."
+  },
+  {
+   "word": "guard",
+   "round": 0,
+   "s": "The guard at the museum door smiled and waved.",
+   "reason": "checker: A group at the museum door could also smile and wave. (also fits: group)"
+  },
+  {
+   "word": "guard",
+   "round": 0,
+   "s": "The shop guard said good morning to every customer.",
+   "reason": "checker: 'Shop guard' is not natural; UK English says 'security guard'."
+  },
+  {
+   "word": "heart",
+   "round": 0,
+   "s": "He drew a red heart on the birthday card.",
+   "reason": "checker: Drawing a red fruit on a card could also make sense. (also fits: fruit)"
+  },
+  {
+   "word": "length",
+   "round": 0,
+   "s": "We used a ruler to find the length of the pencil.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  }
+ ],
+ "sitOut": []
+}

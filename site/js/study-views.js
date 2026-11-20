@@ -24,6 +24,19 @@ import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
+/**
+ * TR-61: every control that answers or moves on carries data-fold (check | next | hear | peek | skip | keys), so the fold test can find it.
+ * Marked from the attributes the pages already use; a control that has one is left alone.
+ */
+export function markFold(root) {
+  const set = (sel, v) => root.querySelectorAll(sel).forEach((el) => { if (!el.hasAttribute('data-fold')) el.setAttribute('data-fold', v); });
+  set('[data-check]', 'check');
+  set('[data-go], [data-next], [data-play], [data-cover], [data-written], [data-save]', 'next');
+  set('[data-hear], [data-instruct]', 'hear');
+  set('[data-peekbtn]', 'peek');
+  set('[data-skip]', 'skip');
+  set('.keyboard', 'keys');
+}
 const head = (step, line) => '<div class="pagehead"><span class="eyebrow">' + esc(St.STEP_TEXT[step].title) + '</span>' + line + '</div>';
 
 /** "Come back to this": straight to that word, in the job it was skipped from. */
@@ -48,8 +61,8 @@ function finishStep(main, g, step) {
   const more = s.status === 'job';
   main.innerHTML = '<section class="wrap page"><div class="card result result--good"><div class="result__head"><span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(12, 1.3) + '</span>'
     + '<h1>' + (more ? esc(St.STEP_TEXT[step].title) + ' done' : 'Done for today!') + '</h1></div>'
-    + '<div class="btnrow">' + (more ? '<a class="btn btn--primary" href="' + stepHref(d, g, s.job, day) + '">Next: ' + esc(St.STEP_TEXT[s.job].title) + ICON.arrow + '</a>' : '<a class="btn btn--primary" href="#/">Back to my room' + ICON.arrow + '</a>')
-    + '<a class="btn btn--ghost" href="' + groupHref(g.id) + '">My words</a></div></div></section>';
+    + '<div class="btnrow">' + (more ? '<a class="btn btn--primary" data-fold="next" href="' + stepHref(d, g, s.job, day) + '">Next: ' + esc(St.STEP_TEXT[s.job].title) + ICON.arrow + '</a>' : '<a class="btn btn--primary" data-fold="next" href="#/">Go to Today' + ICON.arrow + '</a>')
+    + '<a class="btn btn--ghost" href="' + groupHref(g.id) + '">This week’s words</a></div></div></section>';
   placeBursts(main);
   window.scrollTo(0, 0);
 }
@@ -120,6 +133,7 @@ function hello(main, g) {
       + wordCard(w, W.clueFor(S.readWords(), w.word))
       + '<div class="btnrow btnrow--wide"><button type="button" class="btn btn--primary btn--big" data-play>' + C.FLOWER_GAME + ICON.arrow + '</button></div></section>';
     wireWordCard(main, w);
+    markFold(main);
     main.querySelector('[data-instruct]').addEventListener('click', () => sayLine(C.HELLO_INSTRUCTION));
     main.querySelector('[data-play]').addEventListener('click', () => {
       stop();
@@ -140,7 +154,7 @@ function hello(main, g) {
 }
 
 /* -------------------------------------------------------------- Fix it in --- */
-// Look, say, cover, write, check; then the word is typed until it's clean 3
+// Look, say, hide, write, check; then the word is typed until it's clean 3
 // times in a row. A slip goes back to Look and starts the count again. `start`:
 // a row to open first, from "Come back to this".
 function fix(main, g, start) {
@@ -164,6 +178,7 @@ function fix(main, g, start) {
     main.innerHTML = '<section class="wrap page spellpage' + cls + '">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (rows.indexOf(word) + 1) + ' of ' + rows.length + '</p><p class="rowcount" data-row>' + inARowHtml(n) + '</p>') + body + '</section>';
     const b = main.querySelector('[data-skip]');
     if (b) b.addEventListener('click', skip);
+    markFold(main);
     window.scrollTo(0, 0);
   };
   const button = (sel, fn) => main.querySelector(sel).addEventListener('click', fn);
@@ -174,7 +189,7 @@ function fix(main, g, start) {
       + '<p class="muted">Look at the word. Say it out loud.</p>'
       + (W.clueFor(S.readWords(), w().word) ? '<p class="small"><b>Your clue:</b> ' + esc(W.clueFor(S.readWords(), w().word)) + '</p>' : '')
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button>'
-      + '<button type="button" class="btn btn--primary" data-cover>Cover it' + ICON.arrow + '</button></div></div>' + skipBtn);
+      + '<button type="button" class="btn btn--primary" data-cover>Hide it' + ICON.arrow + '</button></div></div>' + skipBtn);
     button('[data-hear]', () => speak(w().word));
     button('[data-cover]', cover);
     speak(w().word);
@@ -182,7 +197,7 @@ function fix(main, g, start) {
   function cover() {
     phase = 'cover';
     stop();
-    page('Cover and write', '<div class="card spell"><p>The word is hidden. Write it on paper.</p>'
+    page('Hide and write', '<div class="card spell"><p>The word is hidden. Write it on paper.</p>'
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button>'
       + '<button type="button" class="btn btn--primary" data-written>I\'ve written it' + ICON.arrow + '</button></div></div>' + skipBtn);
     button('[data-hear]', () => speak(w().word));
@@ -326,7 +341,8 @@ function fix(main, g, start) {
 
 /* ------------------------------------------------------------- Game day --- */
 function gameDay(main, g) {
-  return playGames(main, g, { eyebrow: 'Game day', part: 'games', onDone: () => finishStep(main, g, 'games') });
+  // SB5 (TR-101): the games of the day by the child's year and the week's length (6 in a full week, 3 to 4 or 2 in a short one).
+  return playGames(main, g, { eyebrow: 'Game day', part: 'games', games: G.dayGames(childYear(), St.weekKind(g)), onDone: () => finishStep(main, g, 'games') });
 }
 function mend(main, g) {
   return playGames(main, g, { eyebrow: 'Mend and keep', games: ['quick'], onDone: () => finishStep(main, g, 'mend') });
@@ -335,19 +351,22 @@ function mend(main, g) {
 /* ------------------------------------------------------- writing sentences --- */
 /** Write one sentence for each of `words`, then onDone(). */
 export function sentences(main, g, onDone) {
-  const words = St.sentenceWords(S.readWords(), g);
+  const kind = St.weekKind(g);
+  const count = St.storySentences(kind); // full 3, short 2, quick 1
+  const words = St.sentenceWords(S.readWords(), g, count);
   const left = [...words];
   let note = '';
   let draft = '';
   function draw() {
     const w = left[0];
     if (!w) { onDone(); return; }
-    main.innerHTML = '<section class="wrap page">' + head('story', '<h1>Write a sentence</h1><p class="muted">' + (words.length - left.length + 1) + ' of ' + words.length + '</p>') + '<div class="card setting">'
+    main.innerHTML = '<section class="wrap page" data-story>' + head('story', '<h1>Write a sentence</h1><p class="muted">' + (kind === 'full' ? '' : (kind === 'quick' ? 'Quick week: ' : 'Short week: ') + count + (count === 1 ? ' sentence' : ' sentences') + ' today. A full week has 3. ') + 'Sentence ' + (words.length - left.length + 1) + ' of ' + words.length + '</p>') + '<div class="card setting">'
       + '<p>Use this word in a sentence of your own:</p><p class="today__word">' + chunked(entryFor(w)) + '</p>'
       + '<div class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-hear>' + ICON.play + 'Hear it</button></div>'
       + '<label class="small muted" for="sentence">Your sentence</label><textarea id="sentence" class="field" rows="3" maxlength="' + W.MAX_NOTE + '" data-text>' + esc(draft) + '</textarea>'
       + '<p class="small" data-note role="status">' + esc(note) + '</p>'
       + '<div class="btnrow"><button type="button" class="btn btn--primary" data-save>Save' + ICON.arrow + '</button></div></div></section>';
+    markFold(main);
     const box = main.querySelector('[data-text]');
     box.addEventListener('input', () => { draft = box.value; });
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));

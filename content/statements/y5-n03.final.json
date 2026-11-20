@@ -1,0 +1,257 @@
+{
+ "chapter": "y5-n03",
+ "year": 5,
+ "words": {
+  "distant": [
+   "Dinosaurs lived in the distant past, long before people.",
+   "Is that a distant plane, or just a tiny bird?",
+   "The stars in the night sky are very distant from Earth."
+  ],
+  "instant": [
+   "As soon as the bell rang, there was an instant rush to the door.",
+   "Just add hot water and stir to make instant mash for tea.",
+   "The light came on in an instant when I pressed the switch."
+  ],
+  "pleasant": [
+   "Our new neighbour is so pleasant that she always says hello with a smile.",
+   "The breeze was warm and pleasant as we walked along the beach.",
+   "The new girl was friendly and pleasant to everyone in class."
+  ],
+  "elegant": [
+   "Her handwriting was tall and elegant, with curling loops on every letter.",
+   "The tall giraffe moved across the grass with slow, elegant steps.",
+   "We set the table with an elegant cloth and shiny silver spoons for Christmas."
+  ],
+  "brilliant": [
+   "Our teacher said my brilliant idea solved the puzzle.",
+   "The sun was so brilliant that I needed my sunglasses.",
+   "The torch was so brilliant that the whole shed glowed."
+  ],
+  "distance": [
+   "What is the distance from your house to the library?",
+   "From a distance, the sheep looked like tiny white dots.",
+   "The runners had a long distance to go before the finish line."
+  ],
+  "balance": [
+   "I wobbled on the log but found my balance again.",
+   "Gymnasts need good balance to walk along the beam.",
+   "The toy bird sat in perfect balance on my finger."
+  ],
+  "importance": [
+   "Our teacher talked about the importance of washing hands before lunch.",
+   "Do you know the importance of reading a little every day?",
+   "The poster showed the importance of recycling old bottles."
+  ],
+  "attendance": [
+   "Her attendance was perfect, because she never missed a day.",
+   "The teacher marks attendance in the register every morning.",
+   "Our class has full attendance this week, so everyone gets a sticker."
+  ],
+  "vacancy": [
+   "The sign in the window said there was a vacancy for a baker.",
+   "The caravan site had a vacancy, so we booked the last pitch.",
+   "Our school has a vacancy for a new cook in the kitchen."
+  ]
+ },
+ "rounds": {
+  "distant": 0,
+  "instant": 1,
+  "pleasant": 1,
+  "elegant": 2,
+  "brilliant": 0,
+  "distance": 0,
+  "balance": 0,
+  "importance": 0,
+  "attendance": 0,
+  "vacancy": 1
+ },
+ "rejected": [
+  {
+   "word": "distant",
+   "round": 0,
+   "s": "We heard a distant bell ringing from the far side of the valley.",
+   "reason": "checker: 'A pleasant bell ringing' also makes sense in the gap. (also fits: pleasant)"
+  },
+  {
+   "word": "instant",
+   "round": 0,
+   "s": "Her answer was instant, with no waiting at all.",
+   "reason": "checker: 'Her answer was brilliant' also works, and the sentence repeats the meaning. (also fits: brilliant)"
+  },
+  {
+   "word": "instant",
+   "round": 0,
+   "s": "Did you get an instant reply to your text message?",
+   "reason": "checker: A pleasant or brilliant reply makes equal sense. (also fits: pleasant, brilliant, elegant)"
+  },
+  {
+   "word": "instant",
+   "round": 0,
+   "s": "The camera makes instant photos that print out straight away!",
+   "reason": "checker: 'Brilliant photos' also fits naturally. (also fits: brilliant)"
+  },
+  {
+   "word": "pleasant",
+   "round": 0,
+   "s": "We had a pleasant chat with the kind lady at the shop.",
+   "reason": "checker: 'A brilliant chat' also fits. (also fits: brilliant)"
+  },
+  {
+   "word": "pleasant",
+   "round": 0,
+   "s": "It was a pleasant, sunny day, so we ate lunch outside.",
+   "reason": "checker: 'A brilliant, sunny day' also fits. (also fits: brilliant)"
+  },
+  {
+   "word": "pleasant",
+   "round": 0,
+   "s": "Kind words make a classroom a pleasant place to be.",
+   "reason": "checker: 'A brilliant place to be' also fits. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 0,
+   "s": "The tall glass vase looked elegant on the polished table.",
+   "reason": "checker: 'Looked brilliant' also fits. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 0,
+   "s": "Her long, graceful steps made the dance look elegant.",
+   "reason": "checker: 'Made the dance look brilliant' also fits, and 'graceful' repeats the meaning. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 0,
+   "s": "My mum wore an elegant blue dress to the wedding.",
+   "reason": "checker: 'A brilliant blue dress' also fits. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 0,
+   "s": "How elegant the heron looks as it steps slowly through the pond!",
+   "reason": "checker: 'How brilliant the heron looks' is natural for a child too. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 0,
+   "s": "My gran's tea set is thin white china and very elegant.",
+   "reason": "checker: 'Very pleasant' also fits. (also fits: pleasant)"
+  },
+  {
+   "word": "brilliant",
+   "round": 0,
+   "s": "A brilliant rainbow shone over the park after the rain.",
+   "reason": "checker: 'A distant rainbow' also fits. (also fits: distant)"
+  },
+  {
+   "word": "brilliant",
+   "round": 0,
+   "s": "The brilliant stars sparkled over the campsite.",
+   "reason": "checker: 'The distant stars' also fits. (also fits: distant)"
+  },
+  {
+   "word": "distance",
+   "round": 0,
+   "s": "Stay a good distance behind the swing while it moves!",
+   "reason": "checker: A warning about a moving swing hints at getting hurt."
+  },
+  {
+   "word": "importance",
+   "round": 0,
+   "s": "My dad explained the importance of saving the seeds for next spring.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "vacancy",
+   "round": 0,
+   "s": "The cafe has a vacancy for a helper on Saturdays.",
+   "reason": "machine rule 4: not on the word lists: cafe; capital word not allowed: Saturdays; not on the word lists: Saturdays"
+  },
+  {
+   "word": "vacancy",
+   "round": 0,
+   "s": "The shop put a card up to tell people about the vacancy.",
+   "reason": "checker: The clue is too weak, and other nouns could just about fill the gap. (also fits: importance)"
+  },
+  {
+   "word": "vacancy",
+   "round": 0,
+   "s": "The inn's sign said no vacancy, so every room was taken.",
+   "reason": "checker: UK signs usually say 'no vacancies', so 'no vacancy' sounds American."
+  },
+  {
+   "word": "instant",
+   "round": 1,
+   "s": "There was an instant hush in the hall when the head teacher walked in.",
+   "reason": "checker: 'A pleasant hush' also makes sense, so the gap is not clear enough. (also fits: pleasant)"
+  },
+  {
+   "word": "pleasant",
+   "round": 1,
+   "s": "Soft music made the waiting room a calm and pleasant place.",
+   "reason": "checker: 'A calm and elegant place' also makes sense. (also fits: elegant)"
+  },
+  {
+   "word": "pleasant",
+   "round": 1,
+   "s": "Is the voice on the phone always so pleasant and polite?",
+   "reason": "checker: 'So distant and polite' is also natural for a voice on the phone. (also fits: distant)"
+  },
+  {
+   "word": "pleasant",
+   "round": 1,
+   "s": "We took a pleasant, slow stroll round the park and chatted quietly.",
+   "reason": "checker: 'An elegant, slow stroll' and 'a brilliant, slow stroll' both make sense. (also fits: elegant, brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 1,
+   "s": "The dancer made an elegant bow and moved smoothly across the stage.",
+   "reason": "checker: 'A brilliant bow' also makes sense for a dancer. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 1,
+   "s": "What an elegant way the cat has of stepping over the puddles!",
+   "reason": "checker: 'What a brilliant way' is just as natural. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 1,
+   "s": "Do you think the model boat has an elegant, smooth shape?",
+   "reason": "checker: 'A pleasant, smooth shape' also works. (also fits: pleasant)"
+  },
+  {
+   "word": "vacancy",
+   "round": 1,
+   "s": "Is there a vacancy for one more player in your football team?",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "vacancy",
+   "round": 1,
+   "s": "A vacancy came up at the library, so Gran applied for the job.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "elegant",
+   "round": 2,
+   "s": "My aunt owns an elegant old clock with slim gold hands and curly edges.",
+   "reason": "checker: 'a brilliant old clock' also reads naturally, so the child could not be sure which word belongs. (also fits: brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 2,
+   "s": "Mum put on a long silk dress that looked very elegant.",
+   "reason": "checker: 'looked very pleasant' or 'looked very brilliant' could also be accepted, so the gap is not clear. (also fits: pleasant, brilliant)"
+  },
+  {
+   "word": "elegant",
+   "round": 2,
+   "s": "How elegant the ice skater looked as she glided in a slow spin!",
+   "reason": "checker: 'How brilliant the ice skater looked' is just as natural, so the target is not the only fit. (also fits: brilliant)"
+  }
+ ],
+ "sitOut": []
+}

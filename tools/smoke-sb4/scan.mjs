@@ -58,7 +58,7 @@ export default function (H) {
     for (const [label, o] of [['404', { missing: true }], ['on: false', { on: false }]]) {
       step(label);
       await asAdult('#/grownups/own', o);
-      await until('document.querySelector("[data-own-list]")', 'the list');
+      await until('document.querySelector("[data-own-list], [data-none]")', 'the list');
       ok(!await has('[data-scan-link]') && !/Scan a paper/.test(await text()), label + ': no Scan a paper on the list');
       await go('#/grownups/own/new');
       await until('document.querySelector("[data-own-editor]")', 'the editor');
@@ -72,7 +72,7 @@ export default function (H) {
     }
     step('a network error with the browser online is off too');
     await asAdult('#/grownups/own', { on: true });
-    await until('document.querySelector("[data-own-list]")', 'the list');
+    await until('document.querySelector("[data-own-list], [data-none]")', 'the list');
     acct.offline = true;
     allowLog(acctLog());
     await go(SCAN);
@@ -103,23 +103,25 @@ export default function (H) {
 
   scene('SB4-WP8 the links appear only when on: true; About says it to a grown-up', async () => {
     await width(1280, 900);
+    // SB5 (TR-45): the Word lists page has no Scan link; "Scan a paper" is a tab in the new-list editor.
     await asAdult('#/grownups/own');
-    await until('document.querySelector("[data-own-list]")', 'the list');
-    await until('document.querySelector("[data-scan-link]")', 'the Scan a paper link');
-    ok(await ev('document.querySelector("[data-scan-link]").getAttribute("href")') === SCAN && /^Scan a paper$/.test(await text('[data-scan-link]')), 'Scan a paper on the list');
+    await until('document.querySelector("[data-own-list], [data-none]")', 'the list');
+    await sleep(300);
+    ok(!await has('[data-scan-link]'), 'no Scan a paper on the list page (SB5: it is in the editor)');
+    acct.calls.length = 0;
+    await go('#/grownups/own/new');
+    await until('document.querySelector("[data-own-editor] [data-scan-link]")', 'the Scan a paper tab');
+    ok(await ev('document.querySelector("[data-scan-link]").getAttribute("href")') === SCAN && /^Scan a paper$/.test(await text('[data-scan-link]')), 'Scan a paper in the editor');
     ok(await ev('document.querySelectorAll("[data-scan-link]").length') === 1, 'one link');
     ok(scanCalls().filter((c) => c.path === '/api/scan/allowance').length === 1, 'the allowance was asked once for the page');
-    await go('#/grownups/own/new');
-    await until('document.querySelector("[data-own-editor] [data-scan-link]")', 'the quiet link');
-    ok(/^Scan a paper instead$/.test(await text('[data-scan-link]')), 'Scan a paper instead');
     step('an existing chapter has no link');
     const own = Ow.set({}, 'o1', { name: 'Spring list', words: ['island', 'because'], src: 'typed', to: [] }, Date.parse(DAY + 'T10:00:00')).own;
     await ev('localStorage.setItem("sb.words:' + ADULT + '",' + q(JSON.stringify(W.withOwn(W.emptyDoc(), own))) + ')');
-    await go('#/grownups/own/o1');
+    await go('#/grownups/own/o1/edit');
     await until('document.querySelector("[data-own-editor]")', 'the editor for an existing chapter');
-    ok(!await has('[data-scan-link]') && /Spring list/.test(await ev('document.querySelector("[data-own-editor] input").value || document.body.innerText')), 'an existing chapter has no Scan link');
+    ok(!await has('[data-scan-link]') && /Spring list/.test(await ev('document.querySelector("[data-name]").value')), 'an existing chapter has no Scan link');
     await go('#/grownups/own');
-    await until('document.querySelector("[data-own-list]")', 'the list');
+    await until('document.querySelector("[data-own-list], [data-none]")', 'the list');
     await go('#/about');
     await until('document.querySelector("main h1")', 'About');
     ok(/Scanning a school paper is for grown-ups only\. When it is switched on, the photo goes to an AI service/.test(await text('main')), 'the About paragraph');
@@ -143,12 +145,12 @@ export default function (H) {
     await onStep('photo');
     ok(acct.calls.filter((c) => c.path === '/api/scan/consent' && c.method === 'POST').length === 1 && JSON.parse(acct.calls.find((c) => c.path === '/api/scan/consent').body).version === 'v1', 'POST consent { version: v1 }');
     ok(/You have 20 scans left this month\./.test(await text('main')) && /Cover any names first\./.test(await text('main')) && /Lay the paper flat in good light\. A screenshot of a list works too\./.test(await text('main')), 'the photo screen');
-    ok(/A long list can become up to 3 chapters from one photo\./.test(await text('main')), 'the limits line');
+    ok(/A long list can become up to 3 lists from one photo\./.test(await text('main')), 'the limits line');
     ok(await ev('!document.querySelector("[data-file-take]").value && document.activeElement.tagName !== "INPUT"'), 'the camera was not opened by the consent tap');
     step('the second visit has no consent');
     acct.calls.length = 0;
     await go('#/grownups/own');
-    await until('document.querySelector("[data-own-list]")', 'the list');
+    await until('document.querySelector("[data-own-list], [data-none]")', 'the list');
     await go(SCAN);
     await onStep('photo');
     ok(!acct.calls.some((c) => c.path === '/api/scan/consent') && !await has('[data-agree]'), 'no consent the second time');
@@ -203,11 +205,11 @@ export default function (H) {
     await width(390, 844);
     await toCheck();
     ok(await ev('document.activeElement === document.querySelector("h1")') && /Check the words/.test(await text('h1')), 'focus on the h1');
-    ok(/^We found 28 words\. A chapter holds 15\. Tick up to 15 now\. You can save the other 13 as a second chapter next, without scanning again\.$/.test(await text('[data-lede]')), 'the lede: ' + await text('[data-lede]'));
+    ok(/^We found 28 words\. A list holds 15\. Tick up to 15 now\. You can save the other 13 as a second list next, without scanning again\.$/.test(await text('[data-lede]')), 'the lede: ' + await text('[data-lede]'));
     ok(await ev('document.querySelector("[data-lede]").closest("[role]") === null && !document.querySelector("[data-lede]").hasAttribute("aria-live")'), 'the lede is not a live region');
     ok(await tickedN() === 15 && await ev('document.querySelectorAll("[data-row]").length') === 28, '15 of 28 ticked');
     ok(/^15 of 15 words$/.test(await text('[data-count]')) && await ev('document.querySelector("[data-count]").getAttribute("aria-live")') === 'polite', 'the count');
-    ok(await ev('document.querySelectorAll("[data-row] [data-st]").length') === 28 && await ev('[...document.querySelectorAll("[data-row]")].filter((li) => !li.querySelector("[data-tick]").checked).every((li) => li.querySelector("[data-st]").textContent === "For the next chapter")'), 'unticked rows say For the next chapter');
+    ok(await ev('document.querySelectorAll("[data-row] [data-st]").length') === 28 && await ev('[...document.querySelectorAll("[data-row]")].filter((li) => !li.querySelector("[data-tick]").checked).every((li) => li.querySelector("[data-st]").textContent === "For the next list")'), 'unticked rows say For the next list');
     ok(await ev('[...document.querySelectorAll("[data-row]")].filter((li) => li.querySelector("[data-tick]").checked).every((li) => /^(Has a meaning and picture|No picture)$/.test(li.querySelector("[data-st]").textContent))'), 'ticked rows have their usual status');
     ok(await ev('[...document.querySelectorAll("[data-tick]")].every((b) => b.getAttribute("aria-describedby") && document.getElementById(b.getAttribute("aria-describedby")))'), 'every box is described by its status');
     ok(await ev('document.querySelector("[aria-label=\\"Edit \'because\'\\"]") !== null'), "Edit 'because'");
@@ -222,12 +224,12 @@ export default function (H) {
     await click('[data-lo-toggle]');
     step('16 ticked: allowed, the button waits and says why');
     await ev('document.querySelectorAll("[data-tick]:not(:checked)")[0].click()');
-    ok(await tickedN() === 16 && await text('[data-count]') === '16 ticked. A chapter holds 15.', 'the count at 16: ' + await text('[data-count]'));
-    ok(await ev('document.querySelector("[data-next]").disabled') && /Untick 1 word to go on\. You can save unticked words as another chapter next\./.test(await text('[data-why]')) && await ev('document.querySelector("[data-next]").getAttribute("aria-describedby")') === 'scan-why', 'disabled with its reason');
+    ok(await tickedN() === 16 && await text('[data-count]') === '16 ticked. A list holds 15.', 'the count at 16: ' + await text('[data-count]'));
+    ok(await ev('document.querySelector("[data-next]").disabled') && /Untick 1 word to go on\. You can save unticked words as another list next\./.test(await text('[data-why]')) && await ev('document.querySelector("[data-next]").getAttribute("aria-describedby")') === 'scan-why', 'disabled with its reason');
     await ev('[...document.querySelectorAll("[data-tick]:checked")].slice(-1)[0].click()');
     ok(await tickedN() === 15, 'back to 15');
     await ev('document.querySelectorAll("[data-tick]:checked")[0].click()');
-    ok(await ev('document.querySelectorAll("[data-row]")[0].querySelector("[data-st]").textContent') === 'For the next chapter', 'an unticked row says For the next chapter while more than 15 were found');
+    ok(await ev('document.querySelectorAll("[data-row]")[0].querySelector("[data-st]").textContent') === 'For the next list', 'an unticked row says For the next list while more than 15 were found');
     await ev('document.querySelectorAll("[data-row]")[0].querySelector("[data-tick]").click()');
     ok(await tickedN() === 15, 'ticked again');
     step('edit in place: a misspelling is refused, the row keeps its place');
@@ -318,11 +320,11 @@ export default function (H) {
     ok(acct.scan.left === 19, 'one scan used: ' + acct.scan.left);
     await click('[data-next]');
     await onStep('name');
-    ok(await ev('document.activeElement === document.querySelector("h1")') && /Name and share/.test(await text('h1')), 'focus on the h1');
+    ok(await ev('document.activeElement === document.querySelector("h1")') && /Name the list/.test(await text('h1')), 'focus on the h1');
     ok(/^School words, \d{1,2} [A-Z][a-z]{2}$/.test(await ev('document.querySelector("[data-name]").value')) && await ev('document.querySelector("[data-name]").maxLength') === 40, 'the default name, 40 characters');
-    ok(/Share with/.test(await text('.gu-share legend')) && /Children on your account\./.test(await text('main')) && !/class/i.test(await text('main')), 'Share with, Children on your account.');
+    ok(/Give for practice to/.test(await text('.gu-share legend')) && /Children on your account\./.test(await text('main')) && !/class/i.test(await text('main')), 'Share with, Children on your account.');
     ok(await ev('document.querySelectorAll("[data-share]").length') === 2 && await ev('document.querySelectorAll("[data-share]:checked").length') === 0, 'two children, none ticked');
-    ok(/Not shared yet\. Children can't see it until you share it\./.test(await text('[data-notshared]')) && await ev('document.querySelector("[data-save]").getAttribute("aria-describedby")') === 'scan-ns', 'the not-shared line');
+    ok(/Not given for practice yet\. Children can't see it until you do\./.test(await text('[data-notshared]')) && await ev('document.querySelector("[data-save]").getAttribute("aria-describedby")') === 'scan-ns', 'the not-shared line');
     ok(!await has('[data-tick-all]'), 'no Tick all with two children');
     await ev('document.querySelectorAll("[data-share]").forEach((b) => b.click())');
     ok(await ev('document.querySelector("[data-notshared]").hidden'), 'the line goes when a child is ticked');
@@ -330,13 +332,13 @@ export default function (H) {
     await ev('(() => { const n = document.querySelector("[data-name]"); n.value = ""; n.dispatchEvent(new Event("input")); })()');
     await click('[data-save]');
     await until('document.querySelector("[data-error]")', 'the name line');
-    ok(await text('[data-error]') === 'Give the chapter a name.' && await ev('document.querySelector("[data-error]").getAttribute("role")') === 'alert' && await tickedNameKept(), 'Give the chapter a name., the words stay');
+    ok(await text('[data-error]') === 'Give the list a name.' && await ev('document.querySelector("[data-error]").getAttribute("role")') === 'alert' && await tickedNameKept(), 'Give the list a name., the words stay');
     await ev('(() => { const n = document.querySelector("[data-name]"); n.value = "Autumn list"; n.dispatchEvent(new Event("input")); })()');
     await click('[data-save]');
     await onStep('done');
-    ok(/Chapter saved/.test(await text('h1')) && await text('[data-saved]') === "Saved. Robin and Wren can find it under 'From your grown-up'." && await ev('document.activeElement === document.querySelector("[data-saved]")'), 'Done: the saved line has focus');
-    ok(await text('[data-more]') === 'Make a second chapter with the other 13 words' && await has('[data-use]') && /Back to your chapters/.test(await text('main')) && await has('[data-another]') && await has('[data-results]'), 'the buttons: ' + await text('main'));
-    ok(await ev('document.querySelector("[data-results]").getAttribute("href")').then((h) => /^#\/grownups\/teach\/[A-Za-z0-9_-]+$/.test(h)), 'the results link for two children');
+    ok(/List saved/.test(await text('h1')) && await text('[data-saved]') === "Saved. Robin and Wren can find it under 'From your grown-up'." && await ev('document.activeElement === document.querySelector("[data-saved]")'), 'Done: the saved line has focus');
+    ok(await text('[data-more]') === 'Make another list from the rest' && await has('[data-use]') && /Back to Word lists/.test(await text('main')) && await has('[data-another]') && await has('[data-results]'), 'the buttons: ' + await text('main'));
+    ok(await ev('document.querySelector("[data-results]").getAttribute("href")').then((h) => /^#\/grownups\/own\/[A-Za-z0-9_-]+\/results$/.test(h)), 'the results link (SB5: under the list)');
     await sleep(300);
     const own1 = (await ownLocal());
     const e1 = Object.values(own1)[0];
@@ -348,24 +350,20 @@ export default function (H) {
     await click('[data-more]');
     await onStep('check');
     ok(await text('[data-lede]') === "Here are the other 13 words. Untick any you don't want." && await tickedN() === 13 && await ev('document.querySelectorAll("[data-row]").length') === 13, 'the other 13, all ticked: ' + await text('[data-lede]'));
-    ok(await ev('[...document.querySelectorAll("[data-st]")].every((e) => /^(Has a meaning and picture|No picture)$/.test(e.textContent))'), 'no "For the next chapter" now: 13 are not more than 15');
+    ok(await ev('[...document.querySelectorAll("[data-st]")].every((e) => /^(Has a meaning and picture|No picture)$/.test(e.textContent))'), 'no "For the next list" now: 13 are not more than 15');
     await click('[data-next]');
     await onStep('name');
     ok(/^School words, \d{1,2} [A-Z][a-z]{2} \(2\)$/.test(await ev('document.querySelector("[data-name]").value')) && await ev('document.querySelectorAll("[data-share]:checked").length') === 2, 'the name (2) and the same children');
     await click('[data-save]');
     await onStep('done');
-    ok(!await has('[data-more]') && await has('[data-use]'), 'no third chapter offered; Use for this week');
+    ok(!await has('[data-more]') && await has('[data-use]'), 'no third list offered; Set a week with this list');
     await sleep(300);
     const own2 = (await ownLocal());
     ok(Object.keys(own2).length === 2 && Object.values(own2).map((e) => e.words.length).sort().join() === '13,15', 'two chapters 15 + 13: ' + JSON.stringify(Object.values(own2).map((e) => e.words.length)));
     ok(acct.scan.left === 19 && wordPosts().length === 1, 'still one scan: ' + acct.scan.left);
     const all = Object.values(own2).flatMap((e) => e.words);
     ok(new Set(all).size === 28, 'the 28 words, none twice');
-    step('Use for this week opens its dialog');
-    await click('[data-use]');
-    await until('document.querySelector("[data-dialog]")', 'the child dialog');
-    await key('Escape');
-    await until('!document.querySelector("[data-dialog]")', 'closed');
+    ok(/^#\/grownups\/set\/list\/[A-Za-z0-9_-]+$/.test(await ev('document.querySelector("[data-use]").getAttribute("href")')), 'Set a week with this list opens the Set a week page for this list');
     step('Scan another paper starts afresh, and nothing of the photo is left');
     await click('[data-another]');
     await onStep('photo');
@@ -375,7 +373,7 @@ export default function (H) {
   const tickedNameKept = async () => (await tickedN()) === 0 && (await ev('document.querySelector("[data-count]").textContent')) === '15 of 15 words';
   const noImageData = () => ev(`(() => { const all = JSON.stringify(Object.entries(localStorage)) + JSON.stringify(Object.entries(sessionStorage)); return !/data:image|\\/9j\\/|image\\/jpeg|blob:/.test(all); })()`);
 
-  scene('SB4-WP8 Use for this week after a scanned chapter opens the plan with the words, or says why not', async () => {
+  scene('SB4-WP8 Set a week with this list after a scan opens the Set a week page for that list', async () => {
     await width(390, 844);
     await toCheck(['because', 'island', 'thought']);
     await click('[data-next]');
@@ -384,12 +382,9 @@ export default function (H) {
     await click('[data-save]');
     await onStep('done');
     await click('[data-use]');
-    await until('document.querySelector("[data-dialog], .gu-dialog")', 'the which-child dialog');
-    await click('[data-act="go"]');
-    await until('/\\/plan$/.test(location.hash)', 'the plan page');
-    await until('document.querySelector("main h1")', 'the plan heading');
+    await until('/^#\\/grownups\\/set\\/list\\//.test(location.hash) && document.querySelector(".st-page")', 'the Set a week page for this list (SB5: no which-child dialog, no Plan page)');
     await sleep(500);
-    ok(/because/.test(await text('main')) && /island/.test(await text('main')), 'the plan page holds the scanned words: ' + (await text('main')).slice(0, 200));
+    ok(/3 words/.test(await text('main')) && /Spring|School words/.test(await text('main')), 'the page holds the scanned list: ' + (await text('main')).slice(0, 200));
   });
 
   scene('SB4-WP8 weekdays from a scan are offered ticked with their capital, in any case; a month is not', async () => {
@@ -422,17 +417,17 @@ export default function (H) {
     await until('!document.querySelector("[data-notsent]")', 'sent now');
     ok(await text('[data-saved]') === "Saved. Robin and Wren can find it under 'From your grown-up'.", 'both named after Try again: ' + await text('[data-saved]'));
     const mine = (await ownLocal());
-    ok(Object.keys(mine).length === 1, 'Try again kept one chapter');
+    ok(Object.keys(mine).length === 1, 'Try again kept one list');
     step('the typed editor');
     await asAdult('#/grownups/own/new');
     await until('document.querySelector("[data-own-editor]")', 'the editor');
-    await ev('(() => { const n = document.querySelector("[data-typed]"); n.value = "island, because"; n.dispatchEvent(new Event("input")); document.querySelector("[data-typeform]").requestSubmit(); })()');
+    await ev('(() => { const n = document.querySelector("[data-typed]"); n.value = "island, because"; n.dispatchEvent(new Event("input", { bubbles: true })); document.querySelector("[data-typeform]").requestSubmit(); })()');
     await until('document.querySelectorAll("[data-ownwords] [data-word]").length === 2', 'two words');
     await ev('document.querySelectorAll("[data-share]").forEach((b) => { if (!b.checked) b.click(); })');
     acct.children = (id) => (id === ADULT ? [{ id: CHILD, nickname: 'Robin', year: 4, avatar: null }] : []);
-    await click('[data-save]');
+    await click('[data-act=save]');
     await until('document.querySelector("[data-saved]")', 'the saved line');
-    ok(await text('[data-saved]') === "Saved. Robin can find it under 'From your grown-up'." && /^Not sent to Wren yet\./.test(await text('[data-notsent]')), 'the typed editor: ' + await text('[data-saved]'));
+    ok(/^(Saved\. )?Saved\. Robin can find it under 'From your grown-up'\.$/.test(await text('[data-saved]')) && /^Not sent to Wren yet\./.test(await text('[data-notsent]')), 'the typed editor: ' + await text('[data-saved]'));
     acct.children = (id) => (id === ADULT ? [{ id: CHILD, nickname: 'Robin', year: 4, avatar: null }, { id: CHILD2, nickname: 'Wren', year: 6, avatar: null }] : []);
   });
 
@@ -464,7 +459,7 @@ export default function (H) {
     await click('[data-type]');
     await until('document.querySelector("[data-own-editor]")', 'the editor');
     await until('document.querySelectorAll("[data-ownwords] [data-word]").length === 5', 'five carried words');
-    ok(await ev('[...document.querySelectorAll("[data-ownwords] [data-word]")].map((e) => e.dataset.word).join()') === WORDS28.slice(0, 5).join(), 'the ticked words: ' + await ev('[...document.querySelectorAll("[data-ownwords] [data-word]")].map((e) => e.dataset.word).join()'));
+    ok(await ev('[...document.querySelectorAll("[data-ownwords] [data-word]")].map((e) => e.dataset.word).reverse().join()') === WORDS28.slice(0, 5).join(), 'the ticked words (SB5 shows the newest first): ' + await ev('[...document.querySelectorAll("[data-ownwords] [data-word]")].map((e) => e.dataset.word).join()'));
     ok(await stNoDom('/frend|Rose/') && await ev('sessionStorage.getItem("sb.scanWords")') === null, 'no left-out word and the key is gone (read once)');
     await ev('location.reload()');
     await until('document.querySelector("[data-own-editor]")', 'the editor again');
@@ -472,7 +467,7 @@ export default function (H) {
     step('the phone\'s own back gesture (no dialog): the ticked words wait for the next visit, once');
     await toCheck(WORDS28.slice(0, 4));
     await ev('location.hash = "#/grownups/own"');
-    await until('document.querySelector("[data-own-list]")', 'the list');
+    await until('document.querySelector("[data-own-list], [data-none]")', 'the list');
     ok(JSON.parse(await ev('sessionStorage.getItem("sb.scanWords")')).words.join() === WORDS28.slice(0, 4).join(), 'the four words were kept for the scan page');
     await go(SCAN);
     await onStep('check', 15000);
@@ -683,19 +678,19 @@ export default function (H) {
     await click('[data-save]');
     await onStep('done', 12000);
     ok(!/fail|error|wrong/i.test(await text('main')) && await has('[data-saved]'), 'saved while offline: ' + await text('[data-saved]'));
-    ok(await text('[data-saved-offline]') === "Saved on this device. It will be sent when you're back online.", 'the offline line: ' + await text('main'));
+    ok(await text('[data-saved-offline]') === "Saved on this device. It is sent when you're back online. Your children see it after you open Word lists again.", 'the offline line: ' + await text('main'));
     acct.offline = false;
     step('the typed editor says the same when the connection goes during the edit');
     await ev('delete navigator.onLine');
     await go('#/grownups/own/new');
     await until('document.querySelector("[data-own-editor]")', 'the editor');
-    await ev('(() => { const n = document.querySelector("[data-typed]"); n.value = "island, because"; n.dispatchEvent(new Event("input")); document.querySelector("[data-typeform]").requestSubmit(); })()');
+    await ev('(() => { const n = document.querySelector("[data-typed]"); n.value = "island, because"; n.dispatchEvent(new Event("input", { bubbles: true })); document.querySelector("[data-typeform]").requestSubmit(); })()');
     await until('document.querySelectorAll("[data-ownwords] [data-word]").length === 2', 'two words');
     acct.offline = true;
     await ev('Object.defineProperty(navigator, "onLine", { get: () => false, configurable: true })');
-    await click('[data-save]');
+    await click('[data-act=save]');
     await until('document.querySelector("[data-saved]")', 'the saved line', 12000);
-    ok(await text('[data-saved-offline]') === "Saved on this device. It will be sent when you're back online.", 'typed editor, offline: ' + await text('main'));
+    ok(await text('[data-saved-offline]') === "Saved on this device. It is sent when you're back online. Your children see it after you open Word lists again.", 'typed editor, offline: ' + await text('main'));
     acct.offline = false;
     await ev('delete navigator.onLine');
     step('timeout');
@@ -709,7 +704,7 @@ export default function (H) {
     release();
     step('opening offline');
     await asAdult('#/grownups/own');
-    await until('document.querySelector("[data-own-list]")', 'the list');
+    await until('document.querySelector("[data-own-list], [data-none]")', 'the list');
     await ev('Object.defineProperty(navigator, "onLine", { get: () => false, configurable: true })');
     acct.calls.length = 0;
     await go('#/grownups/own/new');
@@ -730,7 +725,7 @@ export default function (H) {
     await ev('localStorage.setItem("sb.words:' + ADULT + '",' + q(JSON.stringify(W.withOwn(W.emptyDoc(), own))) + ')');
     await go('#/grownups/own'); await go(SCAN);
     await onStep('problem');
-    ok(await text('[data-msg]') === 'You have 30 chapters. Delete one to make another.' && /Back to your chapters/.test(await text('[data-own-back]')) && !await has('[data-type]') && !await has('[data-choose]'), 'own-full: ' + await text('main'));
+    ok(await text('[data-msg]') === 'You have 30 word lists. Delete one to make another.' && /Back to Word lists/.test(await text('[data-own-back]')) && !await has('[data-type]') && !await has('[data-choose]'), 'own-full: ' + await text('main'));
     await ev('localStorage.removeItem("sb.words:' + ADULT + '")');
     step('a laptop (a fine pointer, no touch)');
     await ev(`(() => { const mm = window.matchMedia.bind(window); window.matchMedia = (x) => (x === '(pointer: fine)' ? { matches: true, media: x, addEventListener() {}, removeEventListener() {} } : mm(x)); Object.defineProperty(navigator, 'maxTouchPoints', { get: () => 0, configurable: true }); })()`);

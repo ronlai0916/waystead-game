@@ -1,0 +1,344 @@
+{
+ "chapter": "y34-ch03",
+ "year": 3,
+ "words": {
+  "island": [
+   "A small island sat in the middle of the lake.",
+   "We could only get to the island by ferry.",
+   "I drew a map of a treasure island with palm trees!"
+  ],
+  "recent": [
+   "My most recent birthday was in the spring.",
+   "Mum wanted a recent map, not one from long ago.",
+   "My recent drawings are better than the ones I did years ago."
+  ],
+  "breathe": [
+   "Open the window so we can breathe fresh air!",
+   "Fish use gills to breathe under the water.",
+   "I ran so fast that I had to stop and breathe."
+  ],
+  "certain": [
+   "Are you certain that is the right bus?",
+   "I felt certain it would rain, so I took my coat.",
+   "She was certain the cat was hiding under the bed."
+  ],
+  "forward": [],
+  "quarter": [
+   "The cake was cut so each of four friends got a quarter.",
+   "Colour in one quarter of the circle and leave the rest white.",
+   "I ate a quarter of the apple and shared the rest."
+  ],
+  "strange": [
+   "It was strange to see snow in the garden in June.",
+   "What a strange cloud, shaped like a giant boot!",
+   "My pet rabbit made a strange squeak I had never heard."
+  ],
+  "famous": [
+   "She sang so well that she became famous across Britain.",
+   "The bakery is famous for its giant iced buns.",
+   "Is your favourite singer famous all around the world?"
+  ],
+  "appear": [
+   "Watch the rabbit appear from the magician's hat!",
+   "Rainbows appear when the sun shines through the rain.",
+   "I waited by the window for the first star to appear."
+  ],
+  "forwards": [
+   "The swing goes backwards and forwards in the park."
+  ],
+  "straight": [
+   "The path bends by the pond, but the next bit is straight.",
+   "The rope was pulled tight, so it was straight, not floppy.",
+   "Is the stick straight, or does it bend like a hook?"
+  ]
+ },
+ "rounds": {
+  "island": 0,
+  "recent": 1,
+  "breathe": 0,
+  "certain": 0,
+  "forward": 2,
+  "quarter": 0,
+  "strange": 0,
+  "famous": 0,
+  "appear": 0,
+  "forwards": 2,
+  "straight": 1
+ },
+ "rejected": [
+  {
+   "word": "recent",
+   "round": 0,
+   "s": "Do you remember the recent storm last week?",
+   "reason": "checker: Strange or famous storm also fits, and recent with last week says the same thing twice. (also fits: strange, famous)"
+  },
+  {
+   "word": "recent",
+   "round": 0,
+   "s": "Our recent trip to the seaside was great fun.",
+   "reason": "checker: Nothing points to the time, so strange trip could also fill the gap. (also fits: strange)"
+  },
+  {
+   "word": "recent",
+   "round": 0,
+   "s": "Her recent letter came just two days after she wrote it.",
+   "reason": "checker: Strange letter also fits, and the sentence is about how fast the post came, not about it being recent. (also fits: strange)"
+  },
+  {
+   "word": "breathe",
+   "round": 0,
+   "s": "Hold your nose and try not to breathe in.",
+   "reason": "checker: It encourages breath-holding, which is not safe play."
+  },
+  {
+   "word": "forward",
+   "round": 0,
+   "s": "I look forward to my birthday party every year.",
+   "reason": "checker: Look forward to is an idiom, not 'towards the front', and forwards could be put in by mistake. (also fits: forwards)"
+  },
+  {
+   "word": "forward",
+   "round": 0,
+   "s": "She did a forward roll on the gym mat.",
+   "reason": "checker: A strange roll or a famous roll also makes sense. (also fits: strange, famous)"
+  },
+  {
+   "word": "forward",
+   "round": 0,
+   "s": "Please forward the letter to my new house.",
+   "reason": "checker: Forward as a verb meaning send on is unfamiliar to Year 3 and not the taught sense."
+  },
+  {
+   "word": "forward",
+   "round": 0,
+   "s": "Please step forward when I call your name.",
+   "reason": "checker: Step forwards fits just as well, so the child cannot tell which word belongs. (also fits: forwards)"
+  },
+  {
+   "word": "quarter",
+   "round": 0,
+   "s": "Mix a quarter of a cup of flour with the milk.",
+   "reason": "checker: Measuring in cups is American; UK recipes use grams."
+  },
+  {
+   "word": "strange",
+   "round": 0,
+   "s": "The shop sold a strange fruit I had never seen.",
+   "reason": "checker: A famous fruit I had never seen also makes sense. (also fits: famous)"
+  },
+  {
+   "word": "famous",
+   "round": 0,
+   "s": "Visitors from all over come to see the famous bridge.",
+   "reason": "checker: People could also come to see a strange bridge. (also fits: strange)"
+  },
+  {
+   "word": "famous",
+   "round": 0,
+   "s": "Everybody knows this famous song, so we all sang along!",
+   "reason": "checker: Everybody could know a recent song too. (also fits: recent)"
+  },
+  {
+   "word": "appear",
+   "round": 0,
+   "s": "Little green shoots appear in the garden every spring.",
+   "reason": "machine rule 4: banned topic word: shoots"
+  },
+  {
+   "word": "forwards",
+   "round": 0,
+   "s": "The swing goes backwards and forwards.",
+   "reason": "checker: Forward means the same, so a child could reasonably put it in the gap. (also fits: forward)"
+  },
+  {
+   "word": "forwards",
+   "round": 0,
+   "s": "The crab walks sideways, but I walk forwards.",
+   "reason": "checker: I walk forward fits just as well. (also fits: forward)"
+  },
+  {
+   "word": "forwards",
+   "round": 0,
+   "s": "Mum is a word you can read forwards or backwards!",
+   "reason": "checker: Forward also fits, and reading a word backwards is not about moving to the front. (also fits: forward)"
+  },
+  {
+   "word": "forwards",
+   "round": 0,
+   "s": "Can you count forwards, then backwards, from ten?",
+   "reason": "checker: Count forward fits too, and counting is not about moving to the front. (also fits: forward)"
+  },
+  {
+   "word": "forwards",
+   "round": 0,
+   "s": "The train moved forwards with a jolt, then stopped.",
+   "reason": "checker: Moved forward fits just as well. (also fits: forward)"
+  },
+  {
+   "word": "straight",
+   "round": 0,
+   "s": "The road to the shop is long and straight.",
+   "reason": "checker: Long and strange also makes sense. (also fits: strange)"
+  },
+  {
+   "word": "straight",
+   "round": 0,
+   "s": "Hang the picture so it looks straight on the wall.",
+   "reason": "checker: Looks strange on the wall also makes sense. (also fits: strange)"
+  },
+  {
+   "word": "straight",
+   "round": 0,
+   "s": "Walk straight to the end of the path, then turn left.",
+   "reason": "checker: Walk forward or forwards fits just as well. (also fits: forward, forwards)"
+  },
+  {
+   "word": "recent",
+   "round": 1,
+   "s": "Old photos are black and white, but this recent one has colour.",
+   "reason": "checker: 'This famous one' or 'this strange one' also reads well, so the gap is not unique. (also fits: famous, strange)"
+  },
+  {
+   "word": "recent",
+   "round": 1,
+   "s": "We hung up our recent paintings, still wet from this morning!",
+   "reason": "checker: 'Our strange paintings' also fits, and 'recent' for this morning sounds a little odd. (also fits: strange, famous)"
+  },
+  {
+   "word": "recent",
+   "round": 1,
+   "s": "Is your most recent painting the one you finished today?",
+   "reason": "checker: 'Your most famous painting' is also a sensible question, so the gap is not unique. (also fits: famous)"
+  },
+  {
+   "word": "forward",
+   "round": 1,
+   "s": "The football team's forward ran down the pitch with the ball.",
+   "reason": "checker: Uses forward as a noun for a player, which many Year 3 children will not know, and not in the 'towards the front' sense."
+  },
+  {
+   "word": "forward",
+   "round": 1,
+   "s": "The forward seats on the bus are nearest the driver.",
+   "reason": "checker: 'Forward seats' is unnatural on a UK bus (we say front seats), and it is an adjective, not the adverb sense."
+  },
+  {
+   "word": "forward",
+   "round": 1,
+   "s": "Is the forward door of the train the one near the driver?",
+   "reason": "checker: 'Forward door' is unnatural (front door), and 'the strange door' could also fill the gap. (also fits: strange)"
+  },
+  {
+   "word": "forward",
+   "round": 1,
+   "s": "The forward wheel of my bike is the one at the front.",
+   "reason": "checker: 'Forward wheel' is unnatural (front wheel), and the sentence just goes round in a circle."
+  },
+  {
+   "word": "forward",
+   "round": 1,
+   "s": "We sat in the forward carriage, right behind the engine!",
+   "reason": "checker: 'Forward carriage' is unnatural in UK usage (front carriage), and it is an adjective, not the adverb sense."
+  },
+  {
+   "word": "forwards",
+   "round": 1,
+   "s": "Upwards, downwards, sideways, forwards: we tried every way to move!",
+   "reason": "machine rule 2: has a character outside letters, spaces and , . ! ? ' -"
+  },
+  {
+   "word": "forwards",
+   "round": 1,
+   "s": "The little toy car rolled forwards down the slope, then stopped.",
+   "reason": "checker: 'Rolled forward' and 'rolled straight' both fit just as well. (also fits: forward, straight)"
+  },
+  {
+   "word": "forwards",
+   "round": 1,
+   "s": "Snails creep forwards, one slow bit at a time.",
+   "reason": "checker: 'Creep forward' and 'creep straight' also fit. (also fits: forward, straight)"
+  },
+  {
+   "word": "forwards",
+   "round": 1,
+   "s": "Which way is the bus going, backwards or forwards?",
+   "reason": "checker: 'Backwards or forward' is close enough that a child could put forward. (also fits: forward)"
+  },
+  {
+   "word": "forwards",
+   "round": 1,
+   "s": "The baby crawled forwards towards the toy on the rug.",
+   "reason": "checker: 'Crawled forward' and 'crawled straight towards' both fit. (also fits: forward, straight)"
+  },
+  {
+   "word": "straight",
+   "round": 1,
+   "s": "The train track ran straight across the flat fields.",
+   "reason": "checker: 'Ran forwards across the fields' could also be put in, so the gap is not safely unique. (also fits: forwards)"
+  },
+  {
+   "word": "forward",
+   "round": 2,
+   "s": "We did a forward roll on the mat in PE.",
+   "reason": "machine rule 4: capital word not allowed: PE; not on the word lists: PE"
+  },
+  {
+   "word": "forward",
+   "round": 2,
+   "s": "Mum put the bags in the forward part of the boat.",
+   "reason": "checker: 'Forward part of the boat' sounds stiff for a Year 3 child, and 'strange part' could also fill the gap. (also fits: strange)"
+  },
+  {
+   "word": "forward",
+   "round": 2,
+   "s": "The queue moved forward, and soon I reached the front.",
+   "reason": "checker: 'The queue moved forwards' is just as correct, so the child cannot tell which word goes here. (also fits: forwards)"
+  },
+  {
+   "word": "forward",
+   "round": 2,
+   "s": "Do we put the clocks forward one hour in spring?",
+   "reason": "checker: British English also says 'the clocks go forwards', so 'forwards' fits too, and the sense is about time rather than moving to the front. (also fits: forwards)"
+  },
+  {
+   "word": "forward",
+   "round": 2,
+   "s": "Please step forward when the teacher calls your turn.",
+   "reason": "checker: 'Step forwards' is equally correct, so the gap does not point to one word. (also fits: forwards)"
+  },
+  {
+   "word": "forward",
+   "round": 2,
+   "s": "I look forward to my birthday party every year.",
+   "reason": "reader flag two_fit (Both 'forward' and 'forwards' could go in the gap, as 'look forwards to' is accepted British usage, so I could not tell which word was meant.); re-judge: The standard phrasal verb is 'look forward to', and dictionaries use 'forwards' only for physical direction. But 'look forwards to' is common in informal British speech, and the word bank holds both 'forward' and 'forwards'. A child aged 5 to 11 could fairly choose 'forwards' and be marked wrong. The flag is not clearly wrong, so under the strict rule this sentence is dropped. A replacement should test 'forward' in a way 'forwards' cannot fit, for example as an adjective ('the forward seats') or as a noun ('a football forward')."
+  },
+  {
+   "word": "forwards",
+   "round": 2,
+   "s": "Crabs walk sideways, but I walk forwards.",
+   "reason": "checker: 'I walk forward' and 'I walk straight' both make sense, so the gap is unclear. (also fits: forward, straight)"
+  },
+  {
+   "word": "forwards",
+   "round": 2,
+   "s": "Can you run forwards and then backwards in the game?",
+   "reason": "checker: 'Run forward and then backwards' is also natural, so both words fit. (also fits: forward)"
+  },
+  {
+   "word": "forwards",
+   "round": 2,
+   "s": "I read the word forwards, then backwards, for fun.",
+   "reason": "checker: 'Forward' could also fill the gap, and reading a word in order is not the sense of moving towards the front. (also fits: forward)"
+  },
+  {
+   "word": "forwards",
+   "round": 2,
+   "s": "The ball rolled backwards, then forwards, along the hall!",
+   "reason": "checker: Because the two words are split up, 'rolled backwards, then forward' also sounds fine, so the clue is weak. (also fits: forward)"
+  }
+ ],
+ "sitOut": [
+  "forward",
+  "forwards"
+ ]
+}

@@ -1,0 +1,155 @@
+{
+ "chapter": "y5-n04",
+ "year": 5,
+ "words": {
+  "valuable": [
+   "Grandma's old gold watch is so valuable that she keeps it locked away.",
+   "Why is a rare stamp so valuable to people who collect them?",
+   "Good advice from a teacher is valuable when you start something new."
+  ],
+  "adorable": [
+   "Everyone wanted to cuddle the adorable baby rabbit.",
+   "What an adorable little duckling, so fluffy and soft!",
+   "Isn't the baby hedgehog adorable when it sniffs a leaf?"
+  ],
+  "remarkably": [
+   "How remarkably still the pond was, without one ripple!",
+   "After the party, the kitchen was remarkably spotless, with not one crumb left.",
+   "The pumpkin in our garden was remarkably enormous, and we all stared!"
+  ],
+  "enjoyable": [
+   "The film was so enjoyable that we laughed all the way home.",
+   "What an enjoyable game of rounders we had on the field!",
+   "Our party was enjoyable, with lots of games and a big cake."
+  ],
+  "reasonable": [
+   "Mum said that sharing the last biscuit was a reasonable idea.",
+   "We all agreed that the rule was fair and reasonable.",
+   "Going to bed early before a big day is a reasonable plan."
+  ],
+  "noticeable": [
+   "There is a noticeable gap on the shelf where the book was.",
+   "Her bright yellow coat made her noticeable in the crowd.",
+   "Is the stain on my jumper noticeable from the back?"
+  ],
+  "comfortable": [
+   "I put a cushion behind my back to feel more comfortable.",
+   "The armchair by the window was so comfortable that I fell asleep.",
+   "Wrap yourself in this fluffy blanket and get comfortable!"
+  ],
+  "fashionable": [
+   "Long ago, tall hats were fashionable, but now few people wear them.",
+   "Bright colours are fashionable this year, so the shop is full of them.",
+   "Everyone at school wants the fashionable new trainers this autumn."
+  ],
+  "comfortably": [
+   "The dog stretched out comfortably in his big soft basket.",
+   "Can you fit comfortably in the tent with your sleeping bag?",
+   "Please sit comfortably on the carpet and listen to the story."
+  ],
+  "reasonably": [
+   "We talked calmly and reasonably until we agreed on a game.",
+   "She reasonably said we should wait until the rain stopped.",
+   "He asked reasonably for a little more time to finish."
+  ]
+ },
+ "rounds": {
+  "valuable": 0,
+  "adorable": 0,
+  "remarkably": 1,
+  "enjoyable": 0,
+  "reasonable": 0,
+  "noticeable": 0,
+  "comfortable": 0,
+  "fashionable": 0,
+  "comfortably": 0,
+  "reasonably": 0
+ },
+ "rejected": [
+  {
+   "word": "valuable",
+   "round": 0,
+   "s": "A map is valuable when you are lost on a long walk.",
+   "reason": "checker: Being lost on a walk could worry young children, so it is dropped to be safe."
+  },
+  {
+   "word": "adorable",
+   "round": 0,
+   "s": "My puppy looked adorable asleep with his paws over his nose.",
+   "reason": "checker: A sleeping puppy could just as well have 'looked comfortable'. (also fits: comfortable)"
+  },
+  {
+   "word": "remarkably",
+   "round": 0,
+   "s": "It was remarkably quiet in the library, even though the room was full.",
+   "reason": "checker: 'Reasonably quiet' also makes sense here. (also fits: reasonably)"
+  },
+  {
+   "word": "remarkably",
+   "round": 0,
+   "s": "The little seedling grew remarkably tall in only one week.",
+   "reason": "checker: 'Grew reasonably tall' is also possible, so the clue is not strict enough. (also fits: reasonably)"
+  },
+  {
+   "word": "remarkably",
+   "round": 0,
+   "s": "Although it was December, the day was remarkably warm.",
+   "reason": "checker: 'Reasonably warm' fits just as naturally. (also fits: reasonably)"
+  },
+  {
+   "word": "enjoyable",
+   "round": 0,
+   "s": "Baking biscuits with Gran is always an enjoyable afternoon.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "enjoyable",
+   "round": 0,
+   "s": "Was the school trip to the farm enjoyable?",
+   "reason": "checker: No clue in the sentence, and 'valuable' would also fit a school trip. (also fits: valuable)"
+  },
+  {
+   "word": "reasonable",
+   "round": 0,
+   "s": "Is it reasonable to wear shorts when it is snowing?",
+   "reason": "checker: 'Is it comfortable to wear shorts' also works. (also fits: comfortable)"
+  },
+  {
+   "word": "noticeable",
+   "round": 0,
+   "s": "The bright red door was very noticeable among the grey houses.",
+   "reason": "machine rule 4: not on the word lists: among"
+  },
+  {
+   "word": "comfortable",
+   "round": 0,
+   "s": "Are these new trainers comfortable enough to wear all day?",
+   "reason": "checker: 'Fashionable enough' also works for new trainers. (also fits: fashionable)"
+  },
+  {
+   "word": "remarkably",
+   "round": 1,
+   "s": "My brother ran remarkably far on sports day, which surprised us all.",
+   "reason": "checker: 'Ran reasonably far' is a very common phrase, so a child could fairly put 'reasonably' in the gap. (also fits: reasonably)"
+  },
+  {
+   "word": "remarkably",
+   "round": 1,
+   "s": "My gran's old teapot is remarkably tiny, smaller than a walnut!",
+   "reason": "checker: A teapot smaller than a walnut is hard to believe and may confuse a child."
+  },
+  {
+   "word": "remarkably",
+   "round": 1,
+   "s": "Why was the playground remarkably silent, without one single sound, at lunchtime?",
+   "reason": "checker: The question is awkward and unnatural, and 'without one single sound' repeats 'silent'."
+  },
+  {
+   "word": "remarkably",
+   "round": 1,
+   "s": "The snow was remarkably deep, taller than our little dog!",
+   "reason": "checker: 'Reasonably deep' is a natural phrase, so the gap is not clear enough. (also fits: reasonably)"
+  }
+ ],
+ "sitOut": []
+}

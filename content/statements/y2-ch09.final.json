@@ -1,0 +1,119 @@
+{
+ "chapter": "y2-ch09",
+ "year": 2,
+ "words": {
+  "any": [
+   "You may pick any book you like.",
+   "Is there any milk left in the jug?",
+   "We do not have any bread for toast."
+  ],
+  "many": [
+   "So many flowers grew in the garden!",
+   "I have too many toys to carry.",
+   "How many eggs are in the box?"
+  ],
+  "clothes": [
+   "Wash the dirty clothes in the machine.",
+   "Wet clothes dry on the line in the sun.",
+   "My school clothes are a jumper and trousers."
+  ],
+  "busy": [
+   "Are you busy, or can you play with me?",
+   "The shop was busy with people on Saturday.",
+   "Bees are busy in the garden today."
+  ],
+  "again": [
+   "I missed the ball, so I tried again.",
+   "Please read that story again!",
+   "We went to the seaside again this summer."
+  ],
+  "because": [
+   "I wore my coat because it was cold.",
+   "I smiled because my friend gave me a sweet.",
+   "The grass is wet because it rained last night."
+  ],
+  "station": [
+   "The train pulled into the station and stopped.",
+   "We bought our tickets at the station.",
+   "Is this the station where we get off the train?"
+  ],
+  "action": [
+   "Sharing your toys is a kind action.",
+   "What action can you do with your hands?",
+   "Hopping on one leg is a funny action."
+  ],
+  "lotion": [
+   "We rubbed sun lotion on our noses at the beach.",
+   "Dry hands feel soft after some hand lotion.",
+   "Can you squeeze the lotion from the tube?"
+  ],
+  "potion": [
+   "The fairy sipped her magic potion and shrank.",
+   "Drink the potion and you will fly!",
+   "Which spell book tells how to brew a potion?"
+  ]
+ },
+ "rounds": {
+  "any": 0,
+  "many": 0,
+  "clothes": 0,
+  "busy": 0,
+  "again": 0,
+  "because": 0,
+  "station": 0,
+  "action": 0,
+  "lotion": 0,
+  "potion": 0
+ },
+ "rejected": [
+  {
+   "word": "any",
+   "round": 0,
+   "s": "Is there any soup left for me?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "many",
+   "round": 0,
+   "s": "Many birds sat on the garden wall.",
+   "reason": "checker: 'Busy birds sat on the garden wall' also works. (also fits: busy)"
+  },
+  {
+   "word": "clothes",
+   "round": 0,
+   "s": "Which clothes will you wear to the party?",
+   "reason": "checker: People also 'wear' lotion, so a child could put 'lotion' here. (also fits: lotion)"
+  },
+  {
+   "word": "clothes",
+   "round": 0,
+   "s": "Mum folded the clean clothes into a pile.",
+   "reason": "checker: Mum doing the laundry is a stereotype about who does the housework."
+  },
+  {
+   "word": "busy",
+   "round": 0,
+   "s": "Dad was busy painting the fence.",
+   "reason": "checker: 'Dad was again painting' also works, and Dad doing the DIY is a stereotype. (also fits: again)"
+  },
+  {
+   "word": "action",
+   "round": 0,
+   "s": "Say the word, then show us the action!",
+   "reason": "checker: 'Show us the' works with many nouns from the bank. (also fits: clothes, lotion, potion)"
+  },
+  {
+   "word": "lotion",
+   "round": 0,
+   "s": "The lotion smelled sweet, like coconut.",
+   "reason": "checker: A potion could also smell sweet. (also fits: potion)"
+  },
+  {
+   "word": "potion",
+   "round": 0,
+   "s": "In the story, the potion made the frog sing.",
+   "reason": "checker: Nothing says it is a magic drink, so 'lotion' could go here too. (also fits: lotion)"
+  }
+ ],
+ "sitOut": []
+}

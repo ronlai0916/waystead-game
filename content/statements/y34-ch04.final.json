@@ -1,0 +1,227 @@
+{
+ "chapter": "y34-ch04",
+ "year": 3,
+ "words": {
+  "various": [
+   "Dad said there were various jobs to do, but not how many.",
+   "There were various pets at the show, too many to count.",
+   "I put various toys in the box, so many I lost count!"
+  ],
+  "grammar": [
+   "Learning grammar helps me to put words in the right order!",
+   "Do you know the grammar rule for joining two sentences?",
+   "In grammar lessons we learn about nouns and verbs."
+  ],
+  "decide": [
+   "I cannot decide whether to have toast or cereal.",
+   "Let's toss a coin to decide who goes first.",
+   "Please decide soon, as the shop is about to close."
+  ],
+  "minute": [
+   "Wait there, I will be back in a minute!",
+   "The egg timer rang after just one minute.",
+   "I brushed my teeth until the timer said one minute."
+  ],
+  "notice": [
+   "Look closely and you will notice a tiny snail on the leaf.",
+   "Walk slowly, and you might notice flowers by the path!",
+   "I always notice the sweet smell of bread in the kitchen."
+  ],
+  "eight": [
+   "Six plus two makes eight.",
+   "Can you count from one up to eight?",
+   "My little sister turns eight on Friday."
+  ],
+  "believe": [
+   "Do you believe the weather will be sunny tomorrow?",
+   "Please believe me, I tidied my room today.",
+   "I cannot believe how tall the sunflower has grown!"
+  ],
+  "bicycle": [
+   "Can I ride my bicycle to the park today?",
+   "Wow, my new bicycle has a shiny silver bell!",
+   "I pump up the tyres on my bicycle."
+  ],
+  "century": [
+   "The old oak tree has grown for a century!",
+   "Great-great-gran was a girl in the last century, long ago.",
+   "Will people in the next century live on the moon?"
+  ],
+  "extreme": [
+   "Penguins live where the cold is extreme.",
+   "Take extreme care when you carry the full cup.",
+   "The desert has extreme heat in the middle of the day."
+  ],
+  "history": [
+   "Do you enjoy history lessons about castles and kings?",
+   "My favourite library book is about the history of toys.",
+   "Our teacher showed us old photos from our school's history."
+  ]
+ },
+ "rounds": {
+  "various": 1,
+  "grammar": 0,
+  "decide": 0,
+  "minute": 0,
+  "notice": 0,
+  "eight": 0,
+  "believe": 0,
+  "bicycle": 0,
+  "century": 1,
+  "extreme": 0,
+  "history": 0
+ },
+ "rejected": [
+  {
+   "word": "various",
+   "round": 0,
+   "s": "The shop had various kinds of jam on the shelf.",
+   "reason": "checker: Eight also fits, since 'eight kinds of jam' makes sense. (also fits: eight)"
+  },
+  {
+   "word": "various",
+   "round": 0,
+   "s": "We saw various animals at the farm today.",
+   "reason": "checker: Eight also fits, since 'eight animals' makes sense. (also fits: eight)"
+  },
+  {
+   "word": "various",
+   "round": 0,
+   "s": "Mum bought various fruits, like apples, plums and grapes.",
+   "reason": "checker: Eight also fits, and 'fruits' sounds a little awkward. (also fits: eight)"
+  },
+  {
+   "word": "various",
+   "round": 0,
+   "s": "Which of the various hats on the table is yours?",
+   "reason": "checker: Eight also fits, since 'the eight hats' makes sense. (also fits: eight)"
+  },
+  {
+   "word": "various",
+   "round": 0,
+   "s": "Wow, there are various shapes in this big box of bricks!",
+   "reason": "checker: Eight also fits, since 'eight shapes' makes sense. (also fits: eight)"
+  },
+  {
+   "word": "decide",
+   "round": 0,
+   "s": "It is hard to decide between the red hat and the blue one.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "decide",
+   "round": 0,
+   "s": "Will you decide which game we play at the party?",
+   "reason": "checker: 'Will you notice which game we play' also works, so the answer is not certain. (also fits: notice)"
+  },
+  {
+   "word": "minute",
+   "round": 0,
+   "s": "Sixty seconds make one minute on the clock.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "minute",
+   "round": 0,
+   "s": "How many seconds are in a minute?",
+   "reason": "checker: 'How many seconds are in a century' is also a real question. (also fits: century)"
+  },
+  {
+   "word": "notice",
+   "round": 0,
+   "s": "Will Dad notice that I tidied my room?",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "notice",
+   "round": 0,
+   "s": "Did you notice the rain tapping on the window?",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "eight",
+   "round": 0,
+   "s": "A box of eight crayons is on my desk.",
+   "reason": "checker: 'A box of various crayons' also makes sense. (also fits: various)"
+  },
+  {
+   "word": "eight",
+   "round": 0,
+   "s": "We have eight chairs around our big kitchen table.",
+   "reason": "checker: 'Various chairs' also makes sense. (also fits: various)"
+  },
+  {
+   "word": "believe",
+   "round": 0,
+   "s": "I believe that my cat is hiding under the bed.",
+   "reason": "checker: 'I notice that my cat is hiding' also works. (also fits: notice)"
+  },
+  {
+   "word": "believe",
+   "round": 0,
+   "s": "Gran tells stories, and I believe every word.",
+   "reason": "checker: 'I notice every word' could also fit, so it is doubtful. (also fits: notice)"
+  },
+  {
+   "word": "bicycle",
+   "round": 0,
+   "s": "A bicycle has two wheels and a pair of pedals.",
+   "reason": "machine rule 5: word overlap with the meaning is 75%"
+  },
+  {
+   "word": "century",
+   "round": 0,
+   "s": "A century is a hundred years.",
+   "reason": "machine rule 5: word overlap with the meaning is 100%"
+  },
+  {
+   "word": "century",
+   "round": 0,
+   "s": "Our village church is more than a century old.",
+   "reason": "machine rule 4: banned topic word: church"
+  },
+  {
+   "word": "century",
+   "round": 0,
+   "s": "This clock has ticked in the hall for a century.",
+   "reason": "checker: 'Ticked for a minute' also makes sense. (also fits: minute)"
+  },
+  {
+   "word": "history",
+   "round": 0,
+   "s": "In history, we learned how people lived long ago.",
+   "reason": "machine rule 4: not on the word lists: learned"
+  },
+  {
+   "word": "history",
+   "round": 0,
+   "s": "Gran tells me history stories about when she was small.",
+   "reason": "checker: 'History stories' is not natural English."
+  },
+  {
+   "word": "various",
+   "round": 1,
+   "s": "Did you lose count of the various stickers in your book?",
+   "reason": "checker: 'The eight stickers' also reads as a real phrase, and 'the various stickers' sounds unnatural. (also fits: eight)"
+  },
+  {
+   "word": "century",
+   "round": 1,
+   "s": "The old oak is so tall because it grew for a century.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "century",
+   "round": 1,
+   "s": "How many years are in a century, ten or a hundred?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "century",
+   "round": 1,
+   "s": "The old bridge has carried walkers for a whole century, year after year.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  }
+ ],
+ "sitOut": []
+}

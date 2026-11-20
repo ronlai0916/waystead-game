@@ -1,0 +1,197 @@
+{
+ "chapter": "y34-ch05",
+ "year": 3,
+ "words": {
+  "library": [
+   "We borrowed three story books from the library today.",
+   "Shh, you must whisper when you are in the library!",
+   "Can I take these books back to the library?"
+  ],
+  "mention": [
+   "Did the teacher mention what time the trip starts?",
+   "I forgot to mention that I need new trainers.",
+   "Will you mention my idea at the class meeting?"
+  ],
+  "natural": [
+   "Is that pond natural, or did people dig it?",
+   "Cotton comes from plants, so it is a natural cloth.",
+   "Rocks and rivers are natural, but bridges are built by people."
+  ],
+  "perhaps": [
+   "I can't find my hat, so perhaps I left it at school.",
+   "Perhaps we could paint the fence a different colour.",
+   "Is it perhaps time for a snack?"
+  ],
+  "popular": [
+   "Most of the class voted, and red was the most popular colour.",
+   "That game is so popular that everyone in class plays it.",
+   "The beach is popular on sunny days, with crowds everywhere."
+  ],
+  "promise": [
+   "I promise I will feed the hamster every morning.",
+   "Can you promise to bring my book back tomorrow?",
+   "We promise to water the plants while you are away!"
+  ],
+  "purpose": [
+   "This little key has one purpose, which is to open the shed.",
+   "What is the purpose of an umbrella on a rainy day?",
+   "What was the purpose of digging that big hole in the garden?"
+  ],
+  "regular": [
+   "The bus comes at regular times, every ten minutes.",
+   "My dog needs a regular walk each morning and evening.",
+   "Feed the fish at regular times, like breakfast and tea."
+  ],
+  "special": [
+   "I wore my best dress for the special birthday tea.",
+   "Only a special key, not the usual ones, opens this box.",
+   "Mum keeps her best plates for special days only."
+  ],
+  "address": [
+   "Our address has a number, a street name and a town.",
+   "Please put the address on the card before you post it!",
+   "I forgot the address, so we could not find her house."
+  ],
+  "caught": [
+   "The puppy jumped up and caught the stick in its mouth.",
+   "I caught a snowflake on my glove!",
+   "Dad caught the keys I threw to him."
+  ]
+ },
+ "rounds": {
+  "library": 0,
+  "mention": 0,
+  "natural": 0,
+  "perhaps": 0,
+  "popular": 1,
+  "promise": 0,
+  "purpose": 0,
+  "regular": 0,
+  "special": 0,
+  "address": 0,
+  "caught": 0
+ },
+ "rejected": [
+  {
+   "word": "mention",
+   "round": 0,
+   "s": "Don't mention the surprise cake to Dad, it is a secret!",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "natural",
+   "round": 0,
+   "s": "Bees make honey, which is a natural food.",
+   "reason": "checker: 'A popular food' and 'a special food' also make sense. (also fits: popular, special)"
+  },
+  {
+   "word": "natural",
+   "round": 0,
+   "s": "Nobody dug the cave, because it is natural.",
+   "reason": "checker: The 'because' runs the wrong way, so the sentence sounds unnatural."
+  },
+  {
+   "word": "perhaps",
+   "round": 0,
+   "s": "The cat is not in the garden, so perhaps it is asleep inside.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "perhaps",
+   "round": 0,
+   "s": "Look at those dark clouds, perhaps it will rain soon.",
+   "reason": "checker: The comma joins two full sentences, which is poor punctuation for model content."
+  },
+  {
+   "word": "popular",
+   "round": 0,
+   "s": "Which pet is the most popular in your class?",
+   "reason": "checker: 'The most special' also makes sense here. (also fits: special)"
+  },
+  {
+   "word": "popular",
+   "round": 0,
+   "s": "The new slide is popular, so there is a long queue!",
+   "reason": "checker: A child could reasonably put special here too. (also fits: special)"
+  },
+  {
+   "word": "popular",
+   "round": 0,
+   "s": "Her stall was popular, and lots of people queued for cakes.",
+   "reason": "checker: 'Her stall was special' also reads sensibly. (also fits: special)"
+  },
+  {
+   "word": "promise",
+   "round": 0,
+   "s": "Cross your heart and promise you will keep the secret.",
+   "reason": "checker: Telling children to keep secrets is a safeguarding concern, and the idiom ties to 'hope to die'."
+  },
+  {
+   "word": "purpose",
+   "round": 0,
+   "s": "Our purpose today is to make a birthday card for my gran.",
+   "reason": "checker: 'Our promise today is to make a card' also makes sense. (also fits: promise)"
+  },
+  {
+   "word": "regular",
+   "round": 0,
+   "s": "We have a regular spelling test every Friday morning.",
+   "reason": "checker: 'A special spelling test every Friday' also makes sense. (also fits: special)"
+  },
+  {
+   "word": "regular",
+   "round": 0,
+   "s": "Listen to the regular beat of the drum!",
+   "reason": "checker: 'Special beat' and 'natural beat' also make sense. (also fits: special, natural)"
+  },
+  {
+   "word": "special",
+   "round": 0,
+   "s": "Eid is a special day when we wear new clothes.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "special",
+   "round": 0,
+   "s": "This is not an ordinary day, it is a special one!",
+   "reason": "checker: The comma joins two full sentences, which is poor punctuation for model content."
+  },
+  {
+   "word": "address",
+   "round": 0,
+   "s": "What is the address of your school?",
+   "reason": "checker: 'What is the purpose of your school?' also makes sense. (also fits: purpose)"
+  },
+  {
+   "word": "caught",
+   "round": 0,
+   "s": "Who caught the frisbee in the park?",
+   "reason": "machine rule 4: not on the word lists: frisbee"
+  },
+  {
+   "word": "caught",
+   "round": 0,
+   "s": "My gran caught the bus just as it started to move.",
+   "reason": "checker: Catching a bus is not the 'took hold of' sense, and boarding a moving bus is unsafe."
+  },
+  {
+   "word": "popular",
+   "round": 1,
+   "s": "Ice cream is very popular at the seaside in summer.",
+   "reason": "checker: 'Very special at the seaside' also makes sense, so the clue does not point to one word. (also fits: special)"
+  },
+  {
+   "word": "popular",
+   "round": 1,
+   "s": "Her songs are popular, so the whole school sings along!",
+   "reason": "checker: 'Her songs are special' also makes sense here, so the gap does not point to one word. (also fits: special)"
+  },
+  {
+   "word": "popular",
+   "round": 1,
+   "s": "Cheese is a popular filling, and most of us choose it.",
+   "reason": "checker: 'A regular filling' also reads naturally, so the gap does not point to one word. (also fits: regular)"
+  }
+ ],
+ "sitOut": []
+}

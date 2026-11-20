@@ -1,0 +1,197 @@
+{
+ "chapter": "y56-ch09",
+ "year": 6,
+ "words": {
+  "community": [
+   "Our street is a friendly community where neighbours share garden tools.",
+   "Everyone in our village, young and old, joined the community litter pick.",
+   "A school is a small community of teachers and children."
+  ],
+  "government": [
+   "Mum works for the government, planning where new railways should go."
+  ],
+  "individual": [
+   "Every child is a special individual with their own ideas.",
+   "Each individual in the choir sang a different note.",
+   "Only one individual can sit on the swing at a time."
+  ],
+  "marvellous": [
+   "What a marvellous rainbow stretched across the sky!",
+   "We had a marvellous day building sandcastles at the seaside.",
+   "Did you have a marvellous time at the zoo yesterday?"
+  ],
+  "mischievous": [
+   "The mischievous puppy hid my slipper under the sofa.",
+   "My little brother gave a mischievous grin and hid the remote.",
+   "The mischievous wind blew my hat right off my head!"
+  ],
+  "parliament": [
+   "A new law must be voted on in parliament first.",
+   "Members of parliament meet to talk about new laws.",
+   "In parliament, the members debate and vote on new laws."
+  ],
+  "profession": [
+   "What profession would you like to have when you grow up?",
+   "Teaching is a hard profession that needs years of training.",
+   "My uncle trained for years to learn his profession as an engineer."
+  ],
+  "opportunity": [
+   "The sunny weekend was a perfect opportunity for a picnic.",
+   "I jumped at the opportunity to feed the ducks at the park.",
+   "Will I get another opportunity to ride the big slide?"
+  ],
+  "programme": [
+   "We watched a nature programme about hedgehogs after tea.",
+   "The school play programme lists every song in order.",
+   "Mum wrote a programme of games for the birthday party."
+  ],
+  "guarantee": [
+   "Nobody can guarantee that the sun will shine on sports day.",
+   "Can you guarantee that you will feed the cat every morning?",
+   "I guarantee I will bring your pencil back tomorrow."
+  ]
+ },
+ "rounds": {
+  "community": 0,
+  "government": 2,
+  "individual": 0,
+  "marvellous": 0,
+  "mischievous": 0,
+  "parliament": 0,
+  "profession": 0,
+  "opportunity": 0,
+  "programme": 0,
+  "guarantee": 0
+ },
+ "rejected": [
+  {
+   "word": "government",
+   "round": 0,
+   "s": "Our prime minister is the leader of the government.",
+   "reason": "checker: A child could easily think the prime minister leads parliament. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 0,
+   "s": "The government decided to plant more trees along every road in the country.",
+   "reason": "checker: Parliament could also decide something for the whole country. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 0,
+   "s": "Who is in charge of the government in Britain?",
+   "reason": "checker: 'In charge of parliament' fits the gap just as well. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 0,
+   "s": "The government sent a letter to every home about the new bins!",
+   "reason": "checker: Bins are a local matter, so a community letter could fit too. (also fits: community)"
+  },
+  {
+   "word": "individual",
+   "round": 0,
+   "s": "Can you name the individual who won the egg race?",
+   "reason": "checker: 'Egg race' is not natural UK English; it should be 'egg and spoon race'."
+  },
+  {
+   "word": "marvellous",
+   "round": 0,
+   "s": "Grandad's apple pie tasted absolutely marvellous.",
+   "reason": "machine rule 4: not on the word lists: Grandad's"
+  },
+  {
+   "word": "marvellous",
+   "round": 0,
+   "s": "The magician's tricks were marvellous, and we clapped loudly.",
+   "reason": "checker: Tricks can be mischievous, so the gap is not clear. (also fits: mischievous)"
+  },
+  {
+   "word": "parliament",
+   "round": 0,
+   "s": "Our class pretended to be parliament and voted on a new playground rule.",
+   "reason": "checker: 'Pretended to be the government' fits just as well. (also fits: government)"
+  },
+  {
+   "word": "parliament",
+   "round": 0,
+   "s": "The members of parliament sit on long green benches.",
+   "reason": "checker: The benches clue is too specialist, and government could fill the gap. (also fits: government)"
+  },
+  {
+   "word": "profession",
+   "round": 0,
+   "s": "A pilot and a baker each have a different profession.",
+   "reason": "checker: 'Each have a different programme' also makes sense, and the wording is awkward. (also fits: programme)"
+  },
+  {
+   "word": "profession",
+   "round": 0,
+   "s": "She was proud to enter her chosen profession at last!",
+   "reason": "checker: 'Enter her chosen programme' fits too, and the clue is weak. (also fits: programme)"
+  },
+  {
+   "word": "government",
+   "round": 1,
+   "s": "After the election, the winning party will form the new government.",
+   "reason": "machine rule 4: banned topic word: election"
+  },
+  {
+   "word": "government",
+   "round": 1,
+   "s": "Mum says a new government takes charge of the country after each election.",
+   "reason": "machine rule 4: banned topic word: election"
+  },
+  {
+   "word": "government",
+   "round": 1,
+   "s": "Dad says the government is in charge of running our country.",
+   "reason": "checker: A child could just as well put 'parliament' in the gap, because both words go with being in charge of the country. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 1,
+   "s": "In our drama lesson, I played the government of a made-up country.",
+   "reason": "checker: One child playing a whole government reads oddly, and 'parliament' would fit the gap just as well. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 1,
+   "s": "Gran explained that people vote for a different party to change the government.",
+   "reason": "checker: 'Change the parliament' also makes sense, and children may read 'party' as a birthday party. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 2,
+   "s": "The old government lost the vote, so a new one took over!",
+   "reason": "checker: Losing a vote and being replaced is about politics, the phrase is hard for a child to follow, and 'parliament' could also seem to fit. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 2,
+   "s": "The prime minister is the leader of the government.",
+   "reason": "checker: Many children would think the prime minister leads parliament, so 'parliament' fits too well. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 2,
+   "s": "Our government paid for a new bridge over the river.",
+   "reason": "checker: A local community could pay for a bridge, so 'community' also fits. (also fits: community)"
+  },
+  {
+   "word": "government",
+   "round": 2,
+   "s": "Did you know the government decided to plant more trees in Britain?",
+   "reason": "checker: Parliament can also make decisions for the whole of Britain, so the gap is not clear. (also fits: parliament)"
+  },
+  {
+   "word": "government",
+   "round": 2,
+   "s": "The government sent out leaflets about keeping our beaches tidy!",
+   "reason": "checker: A community could just as easily send out leaflets about tidy beaches. (also fits: community)"
+  }
+ ],
+ "sitOut": [
+  "government"
+ ]
+}

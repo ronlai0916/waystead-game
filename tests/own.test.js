@@ -126,7 +126,7 @@ test('the 31st list is refused', async () => {
   S.updateWords((d) => W.withOwn(d, own));
   const r = await D.saveOwnChapter(api, { name: 'One more', words: WORDS, to: [K1] }, { now });
   assert.equal(r.error, 'too-many');
-  assert.equal(D.OWN_ERRORS['too-many'], 'You have 30 chapters. Delete one to make another.');
+  assert.equal(D.OWN_ERRORS['too-many'], 'You have 30 word lists. Delete one to make another.');
   assert.equal(Ow.live(master()).length, 30);
 });
 
@@ -226,7 +226,7 @@ test('parentOf: a page of an own chapter goes up to the chapter, the chapter to 
 test('the plan hand-off is read once', () => {
   const m = new Map();
   const st = { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, v), removeItem: (k) => m.delete(k) };
-  assert.equal(D.givePlanWords(st, ['island', 'quay']), true);
+  st.setItem(D.PLAN_KEY, JSON.stringify(['island', 'quay']));
   assert.deepEqual(D.takePlanWords(st), ['island', 'quay']);
   assert.equal(D.takePlanWords(st), null);
   m.set(D.PLAN_KEY, '{bad');
@@ -236,7 +236,7 @@ test('the plan hand-off is read once', () => {
 
 test('the lines, and no inline style or script in what this package wrote', () => {
   assert.equal(D.savedLine(['Robin', 'Wren']), "Saved. Robin and Wren can find it under 'From your grown-up'.");
-  assert.equal(D.startedLine(['Robin']), 'Robin has started this chapter. Changes show next time Robin plays.');
+  assert.equal(D.startedLine(['Robin']), 'Robin has started this list. Changes show next time Robin plays.');
   assert.equal(D.deleteTitle('School words, 13 Nov'), "Delete 'School words, 13 Nov'?");
   assert.equal(D.deleteBody(['Robin']), "Robin's stars stay.");
   assert.equal(D.defaultName('2026-11-13'), 'School words, 13 Nov');

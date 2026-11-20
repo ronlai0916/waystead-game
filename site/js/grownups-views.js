@@ -9,12 +9,17 @@ import * as St from './study-doc.js';
 import * as P from './grownups-doc.js';
 const { possessive } = P;
 import * as A from './grownups-data.js';
-import { mountSetupCard, mountReport, overviewLink } from './setup-views.js'; // SB4-WP6
-import { checkTyped } from './wordcheck.js';
-import { takePlanWords } from './own-data.js'; // SB4-WP7
+import * as RD from './role-doc.js'; // SB5 WP-C: three roles, three homes
+import * as AC from './adult-chrome.js'; // the saved role and name (roleStore), the Menu redraw
+import * as AD from './adult-doc.js';
+import * as Sdata from './set-data.js'; // pushName after a rename
+import * as S from './store.js';
+import * as Ow from './own-doc.js';
+import { mountSetupCard, mountReport, handOffWords } from './setup-views.js'; // SB4-WP6
+import * as SD from './set-doc.js';
 import { findEntry, hasMeaning, meaningsFor } from './word-info.js';
 import { loadStories } from './stories.js';
-import { isAdult, kind, playingAsChild, playerName, recheckWho } from './who.js';
+import { isAdult, kind, playingAsChild, playerName, recheckWho, unknownCard } from './who.js';
 import { esc, ICON, toast, dotsHtml } from './ui.js';
 import { accountOrigin } from './account/config.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
@@ -22,8 +27,10 @@ import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece
 const today = () => W.localDay(Date.now());
 const childHref = (id) => '#/grownups/child/' + encodeURIComponent(id);
 const weekHref = (id, gid) => childHref(id) + '/week/' + encodeURIComponent(gid);
-const planHref = (id) => childHref(id) + '/plan';
 const editHref = (id, gid) => childHref(id) + '/plan/' + encodeURIComponent(gid);
+const renameHref = (id, gid) => childHref(id) + '/rename/' + encodeURIComponent(gid);
+const printHref = (id, gid) => childHref(id) + '/print/' + encodeURIComponent(gid);
+const weeksHref = (id) => childHref(id) + '/weeks';
 const plural = (n, one, many = one + 's') => n + ' ' + (n === 1 ? one : many);
 const nb = (s) => String(s).replace(/ (\d)/g, ' $1').replace(/(\d) ([A-Z][a-z]{2})/g, '$1 $2'); // a date stays on one line
 const PRIVACY = 'Only you and your child can see this.';
@@ -51,7 +58,14 @@ const I = {
   circle: svg('<circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/>'),
   image: svg('<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M5 17l4.5-4 3 2.5 3-3 3.5 3.5"/>'),
   chat: svg('<path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-4 3.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>'),
+  copy: svg('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/>'),
+  again: svg('<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>'),
   undo: svg('<path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v4.5h4.5"/>'),
+  ext: svg('<path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5"/>'),
+  info: svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'),
+  warn: svg('<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>'),
+  cal: svg('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>'),
+  kids: svg('<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.5a3 3 0 0 1 0 5.5M18 14.8c1.8.7 3 2.4 3 5.2"/>'),
 };
 const CHIP_ICON = { note: I.image, dashed: I.image, ontrack: I.check, waiting: I.clock, notstarted: I.circle, finished: I.flag, none: I.circle, got: I.check, getting: I.trend, help: I.alert, new: I.circle };
 const chip = (key, text, extra = '') => '<span class="gu-status gu-status--' + key + '"' + extra + '>' + CHIP_ICON[key] + '<span>' + esc(text) + '</span></span>';
@@ -60,7 +74,7 @@ const wrap = (eyebrow, title, line, body) => '<section class="wrap page grownups
   + (line ? '<p class="muted">' + esc(line) + '</p>' : '') + '</div>' + body + '</section>';
 
 // An adult playing as a child: never the data, a way back to themselves.
-function playingCard(main) {
+export function playingCard(main) {
   const href = P.switchBackHref(accountOrigin(location), location.href);
   main.innerHTML = '<section class="wrap page"><div class="card empty" data-playing><h1>Grown-ups</h1><p class="muted">' + esc(P.playingLine(playingAsChild() ? playerName() : '')) + '</p>'
     + '<a class="btn btn--primary" href="' + esc(href) + '" data-switchback>Switch back to myself' + ICON.arrow + '</a></div></section>';
@@ -70,9 +84,8 @@ function playingCard(main) {
 export function adultOnly(main) {
   if (isAdult()) return true;
   if (playingAsChild()) { playingCard(main); return false; }
-  main.innerHTML = kind() === 'unknown'
-    ? '<section class="wrap page"><div class="card empty"><h1>Just a moment</h1><p class="muted">Checking who is here…</p></div></section>'
-    : '<section class="wrap page"><div class="card empty" data-notforyou><h1>This page is for grown-ups</h1><a class="btn btn--primary" href="#/">Back to the start</a></div></section>';
+  if (kind() === 'unknown') { unknownCard(main, 'gu'); return false; }
+  main.innerHTML = '<section class="wrap page"><div class="card empty" data-notforyou><h1>This page is for grown-ups</h1><a class="btn btn--primary" href="#/">Back to the start</a></div></section>';
   return false;
 }
 const redraw = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -103,90 +116,256 @@ const fact = (label, value, cls = '') => '<div class="gu-fact ' + cls + '"><dt>'
 const waitingText = (card) => (card.waiting ? card.waitingTitles.concat(card.waitingToday ? ["today's job"] : []).join(', ').replace(/^./, (x) => x.toUpperCase()) : 'None');
 const helpRow = (card) => '<div class="gu-help" data-help><span>Needs help' + (card.help.length ? '' : ': none') + '</span>' + card.help.map((w) => '<span class="gu-hw">' + esc(w) + '</span>').join('') + '</div>';
 
-/* ---------------------------------------------------------------- the home --- */
-// The adult's front page (SB3-F): a date, one sentence, one green button in the header row, a card for each child
-// (one or two children), or one compact row each (three or more). Order is the account's, never reshuffled.
-const hrefFor = (c, key) => (key === 'noweek' || key === 'ended' ? planHref(c.id) : childHref(c.id));
-const labelFor = (c, key) => (key === 'noweek' ? 'Plan a week for ' + c.nickname : key === 'ended' ? 'Plan ' + possessive(c.nickname) + ' next week' : 'See ' + possessive(c.nickname) + ' week');
-const cardButton = (c, key, extra = '') => '<a class="btn btn--ghost" href="' + hrefFor(c, key) + '"' + (key === 'noweek' || key === 'ended' ? ' data-plan' : ' data-see') + extra + '>'
-  + (key === 'noweek' || key === 'ended' ? I.plus : '') + esc(labelFor(c, key)) + (key === 'noweek' || key === 'ended' ? '' : I.next) + '</a>';
-/** The stones of a front-page card: the sun is on the next job whether or not today has one. */
-function glanceStrip(card, who) {
-  const sun = P.sunStep(card);
-  const hasToday = card.steps.some((v) => v.kind.startsWith('today'));
-  return '<ol class="gu-stones gu-stones--one" aria-label="' + esc(who + '\'s seven jobs') + '">' + card.steps.map((v) => {
-    const w = v.kind === 'waiting' || v.kind === 'todaywait';
-    const view = !hasToday && v.id === sun ? { ...v, kind: w ? 'todaywait' : 'today', icon: w ? 'clock' : v.icon } : v;
-    return '<li class="' + (view.kind.startsWith('today') ? 'is-today' : '') + '">' + stone(view)
-      + '<span class="gu-stones__name" aria-hidden="true">' + esc(St.STEP_TEXT[v.id].short) + '</span><span class="sr">' + esc(stoneSay(v)) + '</span></li>';
-  }).join('') + '</ol>';
+/* ------------------------------------------------- the three homes (SB5, TR-41, TR-85) --- */
+// One engine, three page sets on the same address: Children (parent), My learners (tutor), My class (teacher). The role comes from the
+// role store (adult-chrome roleStore: the account's prefs.sbRole, the device copy for first paint). Nothing here writes a child.
+const W3 = RD.WORDS;
+const roleNow = () => AC.currentRole();
+const backName = (role) => (role === 'parent' ? 'Children' : W3[role].home);
+const setHref = (cid) => (cid ? '#/grownups/set/child/' + encodeURIComponent(cid) : '#/grownups/set');
+const ASK_HREF = '#/grownups/more';
+const pill = (t, kind = '', ico = '') => '<span class="gh-pill' + (kind ? ' gh-pill--' + kind : '') + '">' + ico + esc(t) + '</span>';
+const faceOf = (name) => '<span class="gh-face" aria-hidden="true">' + esc(String(name).slice(0, 1).toUpperCase()) + '</span>';
+const ownLists = () => { try { return Ow.live(W.ownOf(S.readWords())); } catch (e) { return []; } };
+const asLink = (href, text, ico = '', extra = '') => '<a class="gh-quiet" href="' + esc(href) + '"' + extra + '>' + ico + esc(text) + '</a>';
+const outLink = (href, text, extra = '') => '<a class="gh-quiet" href="' + esc(href) + '" target="_blank" rel="noopener"' + extra + '>' + I.ext + esc(text) + '</a>';
+const bar = (btn, line) => '<div class="gh-bar">' + (line ? '<p class="gh-bar__line">' + esc(line) + '</p>' : '') + btn + '</div>';
+const bigBtn = (href, text, ico, extra = '') => '<a class="btn btn--primary" href="' + esc(href) + '"' + extra + '>' + ico + esc(text) + '</a>';
+
+/** The stones, small: one per job, done / today / waiting / later (D22). The key is drawn once under the cards. */
+const miniClass = (v) => (v.kind === 'done' ? 'is-done' : v.kind === 'today' || v.kind === 'todaywait' ? 'is-today' : v.kind === 'waiting' ? 'is-wait' : '');
+function miniStones(k, who) {
+  const done = k.steps.filter((v) => v.kind === 'done').length;
+  const wait = k.steps.filter((v) => v.kind === 'waiting' || v.kind === 'todaywait').length;
+  const label = who + ': ' + done + ' of ' + k.steps.length + ' jobs done' + (wait ? ', ' + wait + ' waiting' : '');
+  return '<ol class="gh-mini" role="img" aria-label="' + esc(label) + '">' + k.steps.map((v) => '<li class="gh-ms ' + miniClass(v) + '"></li>').join('') + '</ol>';
 }
-function homeCard(c, d, day, key, compact) {
-  const name = esc(c.nickname);
+const stoneKey = () => '<p class="gh-key" data-stonekey><span class="gh-key__s is-done" aria-hidden="true"></span>Done <span class="gh-key__s is-today" aria-hidden="true"></span>Today '
+  + '<span class="gh-key__s is-wait" aria-hidden="true"></span>Waiting <span class="gh-key__s" aria-hidden="true"></span>Later</p>';
+
+/** The newest week whose test is done, with its score; null when the child has not taken a test. */
+function lastTested(d) {
+  const done = W.liveGroups(d).filter((g) => W.testDone(d, g)).reverse();
+  if (!done.length) return null;
+  const g = done[0];
+  const rs = W.testResults(d, g);
+  return { g, test: g.test, right: rs.filter((x) => x.result && x.result.right).length, of: rs.length, slipped: W.slipped(d, g) };
+}
+/** What the home knows about one child: the week card, the last test, who needs help. */
+function kidModel(c, d, day) {
   const o = P.childOverview(d, day, Date.now());
-  const avatar = '<span class="gu-avatar" aria-hidden="true">' + esc(c.nickname.slice(0, 1).toUpperCase()) + '</span>';
-  const who = (sub) => '<div class="gu-card__who"><h2>' + name + ' <small>Year ' + esc(c.year) + '</small></h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>';
-  if (!o.current) {
-    return '<article class="card gu-card' + (compact ? ' gu-card--row' : '') + '" data-child="' + esc(c.id) + '" data-state="none"><div class="gu-card__top">' + avatar + who('No week planned yet.') + chip('none', P.CHIP_LABEL.none, ' data-chip="none"') + '</div>'
-      + '<div class="gu-card__act">' + cardButton(c, 'noweek') + '</div></article>';
-  }
-  const k = o.current;
-  const ended = key === 'ended';
-  const raw = P.nextLine(k);
-  const sub = esc(k.name) + ' · ' + (ended ? 'test was ' : 'test ') + nb(W.dayLabel(k.test));
-  return '<article class="card gu-card' + (compact ? ' gu-card--row' : '') + '" data-child="' + esc(c.id) + '" data-state="' + k.chip.key + '">'
-    + '<div class="gu-card__top">' + avatar + who(sub) + chip(k.chip.key, k.chip.label, ' data-chip="' + k.chip.key + '"') + '</div>'
-    + '<p class="gu-next" data-next>' + (ended ? esc(c.nickname + '\u2019s week ended on ' + W.dayLabel(k.test) + '. Plan the next one.') : raw ? '<b>Next:</b>' + esc(raw.slice(5)) : '') + '</p>'
-    + helpRow(k)
-    + (compact ? '' : glanceStrip(k, c.nickname))
-    + '<div class="gu-card__act">' + cardButton(c, key) + '</div></article>';
+  const last = lastTested(d);
+  const kid = { id: c.id, name: c.nickname, d, today: day, toPractise: last ? last.slipped : [] };
+  return { c, d, k: o.current, ended: !!o.current && o.current.status === 'finished', last, kid, help: RD.needsHelp(kid, day) };
 }
+
+function kidCard(m, role) {
+  const { c, k, last, help } = m;
+  const done = m.ended && last;
+  let status;
+  let l1;
+  let l2 = '';
+  if (!k) {
+    status = pill('No week yet');
+    l1 = last ? 'Last test ' + nb(W.dayLabel(last.test)) + ': <b>' + last.right + ' of ' + last.of + '</b>' : 'No test yet';
+  } else if (m.ended) {
+    status = help.length ? pill('Look at results', 'todo') : pill('Test done', 'ok', I.check);
+    l1 = done ? (role === 'tutor' ? 'Last test: ' : 'Last week’s test: ') + '<b>' + last.right + ' of ' + last.of + '</b>' : esc(k.name) + ' · test was ' + esc(nb(W.dayLabel(k.test)));
+    if (done && last.slipped.length) l2 = plural(last.slipped.length, 'word') + ' to practise again';
+  } else {
+    status = k.chip.key === 'waiting' ? pill(k.chip.label, 'todo', I.clock) : help.length ? pill('Look at results', 'todo') : pill(k.chip.label);
+    l1 = 'Test on ' + esc(nb(W.dayLabel(k.test)));
+    const next = P.nextLine(k);
+    l2 = next || '';
+  }
+  if (role === 'tutor') { // the tutor reads what to go over first (BR-25), then the last test
+    const n = last ? last.slipped.length : 0;
+    l1 = '<b>' + (n ? 'To go over: ' + plural(n, 'word') : 'Nothing to go over') + '</b>';
+    l2 = !k || m.ended ? (last ? 'Last test' + (k ? '' : ' ' + nb(W.dayLabel(last.test))) + ': ' + last.right + ' of ' + last.of : 'No test yet') : 'Test on ' + nb(W.dayLabel(k.test));
+  }
+  const state = !k ? 'none' : m.ended ? 'ended' : k.chip.key;
+  const showStones = !!k;
+  const dId = 'gu-d-' + c.id;
+  const statusText = !k ? 'No week yet' : m.ended ? (help.length ? 'Look at results' : 'Test done') : k.chip.label;
+  return '<div class="gh-kid" data-child="' + esc(c.id) + '" data-state="' + state + '">'
+    + '<a class="gh-kcard" href="' + childHref(c.id) + '" data-see aria-label="' + esc(c.nickname + ', Year ' + c.year + ', ' + statusText) + '" aria-describedby="' + esc(dId) + '">'
+    + '<span class="gh-kcard__body"><span class="gh-kcard__top">' + faceOf(c.nickname) + '<span class="gh-kcard__name">' + esc(c.nickname) + '</span><span class="gh-kcard__year">Year ' + esc(c.year) + '</span>' + status + '</span>'
+    + '<span class="gh-kcard__line" id="' + esc(dId) + '">' + l1 + '</span>' + (l2 ? '<span class="gh-kcard__line gh-kcard__line--muted">' + esc(l2) + '</span>' : '')
+    + (showStones ? miniStones(k, c.nickname) : '') + '</span><span class="gh-go" aria-hidden="true">' + I.chevron + '</span></a>'
+    + (!k ? '<a class="btn btn--ghost gh-kid__set" href="' + setHref(c.id) + '" data-plan>Set a week for ' + esc(c.nickname) + '</a>' : '') + '</div>';
+}
+
+/** "Ada, Ben and Cy" for up to three children, else "5 children". */
+const forNames = (names, many) => (names.length <= 3 ? names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0] || '' : names.length + ' ' + many);
+const AND = (names) => (names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0] || '');
+
+/** Who needs a week set, in a line: "No week is set yet. Ada and Cy had their test on Fri 20 Nov." (parent). '' when someone has a week running. */
+function nudgeNote(models) {
+  if (!models.length || models.some((m) => m.k && !m.ended)) return '';
+  const ended = models.filter((m) => m.ended && m.last);
+  const day = ended.map((m) => m.last.test).sort().pop();
+  return '<div class="gh-note gh-note--help" role="status" data-nudge>' + I.info + '<p><b>No week is set yet.</b>' + (ended.length ? ' ' + esc(AND(ended.map((m) => m.c.nickname)) + ' had their test on ' + nb(W.dayLabel(day)) + '.') : '') + '</p></div>';
+}
+
+const EMPTY = {
+  parent: { eyebrow: 'Children', title: 'Add your first child', text: 'Children are added on your Waystead account. When one is added, they appear here and you can set a week.', btn: 'Add a child on your account', help: () => 'Your plan says how many children you can add.', agree: 'Only add children whose parents or carers have agreed.' },
+  tutor: { eyebrow: 'My learners', title: 'Add your first learner', text: 'Learners are added on your Waystead account. When one is added, they appear here and you can set a week.', btn: 'Add a learner on your account', help: (n) => 'Your plan holds ' + n + ' learners.', agree: 'Only add learners whose parents or carers have agreed.' },
+  teacher: { eyebrow: 'My class', title: 'Add the children in your class', text: 'Children are added on your Waystead account. When they are added, your class appears here and you can set the class week.', btn: 'Add children on your account', help: (n) => 'Your plan holds ' + n + ' children.', agree: 'Only add children whose parents or carers have agreed.' },
+};
+const EXT_NEW = 'Opens your Waystead account in a new tab';
+
+/** The tail under the cards: key, links, the count line (01a, 01u, 01i). */
+function homeTail({ role, n, limit, atLimit, hasWeek, unread }) {
+  const w = W3[role];
+  const accountHref = P.accountHomeHref(accountOrigin(location));
+  const out = [];
+  if (hasWeek) out.push(stoneKey());
+  if (role === 'parent') {
+    out.push(asLink('#/grownups/help', w.help));
+    if (n >= 2) out.push(asLink('#/grownups/overview', w.all, I.kids));
+  } else if (role === 'tutor') {
+    if (n >= 2) out.push(asLink('#/grownups/overview', w.all, I.kids));
+    out.push(asLink('#/grownups/help', w.help));
+  } else out.push(asLink('#/grownups/help', w.help));
+  if (!unread) out.push(asLink('#/grownups/stories', 'Review the stories'));
+  out.push(atLimit ? asLink(ASK_HREF, RD.askMoreFor(role), I.ext, ' data-ask') : outLink(accountHref, role === 'parent' ? 'Add or manage children on your account' : role === 'tutor' ? 'Add or manage learners on your account' : 'Add or manage children on your account', ' data-addchild'));
+  const agree = EMPTY[role].agree;
+  let count = '';
+  if (role === 'parent') count = atLimit ? '' : '<b>' + esc(RD.limitLine(role, n, limit)) + '.</b> ';
+  else if (role === 'tutor') count = '<b>' + esc(RD.limitLine(role, n, limit)) + '.</b> ' + (atLimit ? '' : 'Your plan holds ' + limit + '. ');
+  else count = '<b>' + esc(atLimit ? n + ' of ' + limit + ' places used' : RD.limitLine(role, n, limit)) + '.</b> ';
+  out.push('<p class="gh-help" data-count>' + count + esc(agree) + '</p>');
+  return out.join('');
+}
+
+function teacherPanel(steps, hrefs) {
+  const body = '<ol class="gh-steps">' + steps.map((s, i) => '<li><a class="gh-step' + (s.done ? ' is-done' : '') + '" href="' + esc(hrefs[i]) + '" data-step="' + s.n + '"><span class="gh-step__n">' + (s.done ? I.check : s.n) + '</span>'
+    + '<span class="gh-step__t"><b>' + esc(s.title) + '</b><small>' + esc(['Type it, or scan the class sheet', 'One list, one test date, everyone ticked', 'Scores and words to practise again'][i]) + '</small></span><span class="gh-go" aria-hidden="true">' + I.chevron + '</span></a></li>').join('') + '</ol>';
+  if (steps[0].allDone) {
+    return '<details class="gh-det" data-steps><summary><b>How it works: 3 steps</b><span class="gh-det__cue"><span class="gh-det__show">Show</span><span class="gh-det__hide">Hide</span>' + I.chevron + '</span></summary>' + body + '</details>';
+  }
+  return '<section class="gh-card gh-card--flat" aria-labelledby="gu-s3" data-steps><h2 id="gu-s3" class="gh-card__h">How it works: 3 steps</h2>' + body + '</section>';
+}
+
+function classTable(models) {
+  return '<div class="gh-card gh-card--flat gh-class" data-classtable><table class="gh-ctable"><caption class="sr">Your class this week</caption><thead><tr><th scope="col">Child</th><th scope="col">This week</th><th scope="col">Needs help</th></tr></thead><tbody>'
+    + models.map((m) => {
+      const { c, k, last, help } = m;
+      const lastLine = !k ? 'No week yet' : last ? 'Last test ' + last.right + ' of ' + last.of : 'No test yet';
+      return '<tr data-child="' + esc(c.id) + '"><th scope="row"><a class="gh-ctable__who" href="' + childHref(c.id) + '">' + esc(c.nickname) + '<small>Year ' + esc(c.year) + '</small></a></th>'
+        + '<td data-label="This week">' + (k ? miniStones(k, c.nickname) : '') + '<small class="gh-help">' + esc(lastLine) + '</small></td>'
+        + '<td data-label="Needs help">' + (help.length ? help.map((h) => pill(h.line, 'todo')).join(' ') : '–') + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+export function needsRole() { const s = AC.roleStore(); return !!s && s.shouldAsk(); }
 
 export function grownups(main) {
   if (!adultOnly(main)) return undefined;
-  const storiesLink = '<p class="small"><a href="#/grownups/stories">Review the stories</a></p>';
-  const ownLink = '<p class="gu-ownlink small"><a href="#/grownups/own" data-ownlink>Your own chapters</a></p>' // SB4-WP7
-    + '<p class="gu-ownlink small"><a href="#/grownups/teach" data-teachlink>For teachers and tutors</a></p>'; // SB4-WP11
+  const role = roleNow();
+  if (needsRole()) { location.replace('#/grownups/role'); return undefined; } // TR-5: the first use asks once (Not now = Parent, again in 7 days)
+  const w = W3[role];
   if (!A.CHILD_DATA_API) {
-    main.innerHTML = wrap('Grown-ups', 'Grown-ups', '', '<div class="card setting gu-empty" data-noapi><h2>Plan a week and the dashboard</h2><p class="muted">These open with the next Waystead account update.</p></div>'
+    main.innerHTML = wrap('Grown-ups', 'Grown-ups', '', '<div class="card setting gu-empty" data-noapi><h2>Set a week and the dashboard</h2><p class="muted">These open with the next Waystead account update.</p></div>'
       + '<a class="card gu-notice" href="#/grownups/stories"><span class="gu-notice__text"><b>Review the stories</b><span>Read each one before children can see it</span></span></a>');
     return undefined;
   }
   let stopped = false;
-  main.innerHTML = wrap('Grown-ups', 'This week at a glance', '', '<p class="muted">Finding your children…</p>');
-  Promise.all([A.listChildren(childApi()), loadStories().catch(() => [])]).then(async ([{ children: list, problem }, stories]) => {
+  main.innerHTML = wrap('Grown-ups', w.home, '', '<p class="muted">Finding your ' + w.many.replace(' in your class', '') + '…</p>');
+  Promise.all([A.listChildren(childApi()), A.readMe(childApi()), loadStories().catch(() => [])]).then(async ([{ children: list, problem }, me, stories]) => {
     if (stopped) return;
-    if (problem) { showProblem(main, problem); return; }
-    const data = await Promise.all(list.map((c) => A.readChild(childApi(), c.id)));
+    if (problem) {
+      if (problem === 'playing' || problem === 'no-child' || problem === 'signed-out') { showProblem(main, problem); return; }
+      main.innerHTML = '<section class="wrap page grownups gu gh-page" data-notready><div class="gh-page__head"><p class="gh-eyebrow">' + esc(P.longDate(today())) + '</p><h1 class="gh-h1">' + esc(w.home) + '</h1></div>'
+        + '<div class="gh-note gh-note--help" role="status">' + I.info + '<p>Your ' + esc(w.many.replace(' in your class', '')) + ' are not ready to show yet. You can still set a week. Nothing is lost.</p></div>'
+        + '<div><button type="button" class="btn btn--ghost" data-retry>Try again</button></div>'
+        + bar(bigBtn(setHref(''), w.set, I.cal, ' data-setweek'), 'You choose the children next') + '</section>';
+      main.querySelector('[data-retry]').addEventListener('click', redraw);
+      return;
+    }
+    const data = await A.pool(list, (c) => A.readChild(childApi(), c.id));
     if (stopped) return;
     const day = today();
+    const limit = me.limit;
+    const n = list.length;
+    const atLimit = n >= limit;
     const unread = stories.filter((s) => !s.reviewed).length;
     const notice = unread
       ? '<a class="card gu-notice" href="#/grownups/stories" data-stories><span class="gu-notice__icon">' + I.chat + '</span><span class="gu-notice__text"><b>' + plural(unread, 'story', 'stories') + ' to read first</b><span>Children see their Story day story after you have read it.</span></span><span class="gu-notice__go">' + I.chevron + '</span></a>' : '';
-    if (!list.length) {
-      const href = P.accountHomeHref(accountOrigin(location));
-      main.innerHTML = '<section class="wrap page grownups gu"><div class="card gu-first" data-first><span class="pipring"><span class="pipring__disc"><img class="room__pip" src="assets/characters/pip-portrait-256.webp" width="148" height="148" alt=""></span></span>'
-        + '<div class="gu-first__text"><span class="eyebrow">Welcome</span><h1>Add your first child</h1><p class="muted">Spellbright plans a spelling week for each child. Start by adding a child to your Waystead account.</p>'
-        + '<div><a class="btn btn--primary" href="' + esc(href) + '" data-addchild>Add a child' + I.plus + '</a></div></div></div>' + notice + '<div class="gu-stories">' + storiesLink + '</div>' + ownLink + '</section>';
+    if (!n) {
+      const e = EMPTY[role];
+      main.innerHTML = '<section class="wrap page grownups gu gh-page" data-first><div class="gh-page__head"><p class="gh-eyebrow">' + esc(e.eyebrow) + '</p><h1 class="gh-h1">' + esc(e.title) + '</h1></div>'
+        + '<div class="gh-card gh-card--flat"><p class="gh-card__line">' + esc(e.text) + '</p><p class="gh-help">' + esc(e.help(limit)) + '</p></div>'
+        + '<div class="gh-note" role="status">' + I.info + '<p>' + esc(e.agree) + '</p></div>' + notice + asLink('#/grownups/stories', 'Review the stories')
+        + bar('<a class="btn btn--primary" href="' + esc(P.accountHomeHref(accountOrigin(location))) + '" target="_blank" rel="noopener" data-addchild>' + I.ext + esc(e.btn) + '</a>', EXT_NEW) + '</section>';
       return;
     }
-    const items = list.map((c, i) => ({ name: c.nickname, ...P.glanceKey(data[i].problem ? null : P.childOverview(data[i].words, day, Date.now()), data[i].problem || '') }));
-    const compact = P.isCompact(list.length);
-    const cards = list.map((c, i) => (data[i].problem
-      ? '<article class="card gu-card' + (compact ? ' gu-card--row' : '') + '" data-child="' + esc(c.id) + '"><div class="gu-card__who"><h2>' + esc(c.nickname) + '</h2><p>' + esc(P.PROBLEM_TEXT[data[i].problem]) + '</p></div><div><button type="button" class="btn btn--ghost" data-retry>Try again</button></div></article>'
-      : homeCard(c, data[i].words, day, items[i].key, compact)));
-    const act = P.primaryAction(items);
-    const plan = '<a class="btn ' + (act.kind === 'plan' ? 'btn--primary' : 'btn--ghost') + '" href="#/grownups/plan" data-planweek>' + I.plus + 'Plan a week</a>';
-    const lead = act.kind === 'plan' ? '' : '<a class="btn btn--primary" href="' + hrefFor(list[act.index], items[act.index].key) + '" data-primary' + (act.kind === 'see' ? ' data-see-lead' : ' data-plan-lead') + '>' + esc(act.label) + (act.kind === 'see' ? I.next : '') + '</a>';
-    main.innerHTML = '<section class="wrap page grownups gu"><div class="gu-top"><div class="pagehead"><span class="eyebrow" data-date>' + esc(P.longDate(day)) + '</span><h1>This week at a glance</h1>'
-      + '<p class="lede" data-summary>' + esc(P.glanceSummary(items)) + '</p></div>'
-      + '<div class="gu-top__acts">' + lead + plan + '</div></div>'
-      + notice
-      + '<div class="gu-cards' + (compact ? ' gu-cards--rows' : list.length === 1 ? ' gu-cards--one' : '') + '">' + cards.join('') + '</div>'
-      + (!compact && data.some((x) => !x.problem && P.childOverview(x.words, day, Date.now()).current) ? '<p class="gu-key" data-stonekey>' + esc(P.STONE_KEY_NEXT) + '</p>' : '')
-      + overviewLink(list.length)
-      + (unread ? '' : '<div class="gu-stories">' + storiesLink + '</div>') + ownLink + '</section>';
+    const models = data.map((x, i) => (x.problem ? { c: list[i], problem: x.problem } : kidModel(list[i], x.words, day)));
+    const good = models.filter((m) => !m.problem);
+    const ordered = role === 'tutor' ? RD.homeOrder('tutor', models.map((m) => (m.problem ? { id: m.c.id, name: m.c.nickname, bad: m } : { ...m.kid, m })), day).map((k) => (k.bad || k.m)) : models;
+    const failed = (m) => '<div class="gh-kid" data-child="' + esc(m.c.id) + '" data-state="problem"><div class="gh-card gh-card--flat"><div class="gh-card__top">' + faceOf(m.c.nickname) + '<h2 class="gh-card__name">' + esc(m.c.nickname) + '</h2></div>'
+      + '<p class="gh-card__line">We couldn’t load ' + esc(possessive(m.c.nickname)) + ' week. The others are fine.</p><div><button type="button" class="btn btn--ghost" data-retry>Try again</button></div></div></div>';
+    const hasWeek = good.some((m) => m.k);
+    const lists = ownLists();
+    const kidsForDefaults = good.map((m) => ({ id: m.c.id, d: m.d }));
+    const defaults = RD.setDefaults(role, { kids: kidsForDefaults, lists, today: day });
+    const nameOf = (id) => (list.find((c) => c.id === id) || {}).nickname || '';
+    let setBtn;
+    let setLine;
+    if (role === 'tutor') {
+      const first = defaults.cids[0];
+      setBtn = bigBtn(setHref(first), w.set, I.cal, ' data-setweek data-primary');
+      setLine = first ? 'Opens on ' + nameOf(first) + ', the first learner with no week' : 'One learner at a time';
+    } else if (role === 'teacher') {
+      const band = RD.classBand({ tests: good.filter((m) => m.k && !m.ended).map((m) => m.k.test), ended: good.filter((m) => m.ended).length, n, today: day, dayLabel: W.dayLabel });
+      setBtn = bigBtn(setHref(''), band.label, I.cal, ' data-setweek data-primary');
+      setLine = band.line;
+    } else {
+      setBtn = bigBtn(setHref(''), w.set, I.cal, ' data-setweek data-primary');
+      setLine = 'Starts today · for ' + forNames(defaults.cids.map(nameOf).filter(Boolean), 'children');
+    }
+    if (role === 'parent' && !defaults.cids.length) setLine = 'Starts today · you choose the children';
+    // the top of the page
+    const seenAs = (() => { const rs = AC.roleStore(); return rs ? RD.seenAsLine(role, rs.name()) : ''; })();
+    let top = '<div class="gh-page__head"><p class="gh-eyebrow" data-date>' + esc(P.longDate(day)) + '</p><h1 class="gh-h1">' + esc(w.home) + '</h1>'
+      + (role === 'tutor' ? '<p class="gh-sub">The learner who needs you most is first.</p>' : '')
+      + (seenAs ? '<p class="gh-help" data-seenas>' + esc(seenAs) + '</p>' : '')
+      + (role === 'teacher' ? '<p class="gh-sub" data-limitline>' + esc(atLimit ? n + ' of ' + limit + ' places used' : RD.limitLine(role, n, limit)) + '</p>' : '') + '</div>';
+    if (role === 'parent') top += atLimit ? asLink(ASK_HREF, RD.ASK_MORE, I.ext, ' data-ask') : outLink(P.accountHomeHref(accountOrigin(location)), 'Add a child on your account', ' data-addchild');
+    if (atLimit) {
+      if (role === 'teacher') {
+        top += '<div class="gh-warn" role="status" data-limit>' + I.warn + '<p><b>' + esc(n + ' of ' + limit + ' places used.') + '</b> ' + esc(RD.atLimitLine(role, n, limit)) + '</p></div>'
+          + '<div class="gh-card gh-card--flat"><h2 class="gh-card__h">What can I do?</h2><p class="gh-card__line"><b>1. Choose your ' + limit + '.</b> Keep the ' + limit + ' children who need Spellbright most this term.</p>'
+          + '<p class="gh-card__line"><b>2. Swap children.</b> Remove one on your account to make room for the next. Their results are kept for 30 days.</p>'
+          + '<div class="gh-row"><a class="btn btn--ghost" href="' + ASK_HREF + '" data-ask>' + I.ext + esc(RD.ASK_MORE) + '</a></div></div>';
+      } else {
+        top += '<div class="gh-note gh-note--help" role="status" data-limit>' + I.info + '<p><b>' + esc(RD.limitLine(role, n, limit)) + '.</b> ' + esc(RD.atLimitLine(role, n, limit))
+          + (role === 'parent' ? ' Ask for more places, or remove one on your account (their results are kept for 30 days).' : '') + '</p></div>'
+          + (role === 'tutor' ? asLink(ASK_HREF, RD.askMoreFor(role), I.ext, ' data-ask') : outLink(P.accountHomeHref(accountOrigin(location)), 'Manage children on your account', ' data-addchild'));
+      }
+    }
+    if (role === 'parent') top += nudgeNote(good);
+    top += notice;
+    let middle;
+    if (role === 'teacher') {
+      const everyWeek = good.filter((m) => m.k).map((m) => ({ done: m.ended }));
+      const store = AC.roleStore();
+      const steps = RD.teacherSteps({ lists, weeks: everyWeek, openedResults: store ? store.openedResults() : false });
+      const shared = lists.filter((l) => (l.to || []).length).sort((a, b) => (b.at || 0) - (a.at || 0))[0];
+      const hrefs = ['#/grownups/own/new', '#/grownups/set', shared ? '#/grownups/own/' + encodeURIComponent(shared.id) + '/results' : '#/grownups/own'];
+      const help = RD.helpList(good.map((m) => m.kid), day);
+      const hrow = (h) => '<li><a class="gh-hrow" href="' + childHref(h.id) + '">' + faceOf(h.name) + '<span><b>' + esc(h.name) + '</b><small>' + esc(h.reasons.map((r) => r.line).join(' · ')) + '</small></span><span class="gh-go" aria-hidden="true">' + I.chevron + '</span></a></li>';
+      middle = teacherPanel(steps, hrefs) + classTable(ordered.filter((m) => !m.problem))
+        + (ordered.some((m) => m.problem) ? ordered.filter((m) => m.problem).map(failed).join('') : '')
+        + (hasWeek ? '<section class="gh-card" aria-labelledby="gu-who" data-whoneeds><h2 class="gh-card__h" id="gu-who">Who needs help</h2>' + (help.length ? '<ul class="gh-hlist">' + help.map(hrow).join('') + '</ul>' : '<p class="gh-card__line">' + esc(RD.NOBODY_LINE) + '</p>') + '</section>' : '');
+    } else {
+      middle = '<div class="gh-cols' + (n === 1 ? ' gh-cols--one' : '') + '" data-cards>' + ordered.map((m) => (m.problem ? failed(m) : kidCard(m, role))).join('') + '</div>';
+    }
+    main.innerHTML = '<section class="wrap page grownups gu gh-page gh-page--wide" data-role="' + role + '">' + top + middle
+      + homeTail({ role, n, limit, atLimit, hasWeek, unread }) + bar(setBtn, setLine) + '</section>';
     main.querySelectorAll('[data-retry]').forEach((b) => b.addEventListener('click', redraw));
+    const three = main.querySelector('[data-step="3"]');
+    if (three) three.addEventListener('click', () => { const s = AC.roleStore(); if (s) s.markOpenedResults(); });
   });
   return () => { stopped = true; };
 }
@@ -265,7 +444,9 @@ export function childDashboard(main, { cid, gid }) {
   let line = takeFlash();
   let undo = null; // { gid, name }: "Deleted. Undo", for this visit
   let problemLine = '';
+  const meaningTried = new Set(); // S3-D3: typed words whose meanings were asked for this visit
   const visit = {}; // SB4-WP6: "Not now" on the level hint lasts for this visit
+  const role = roleNow();
   main.innerHTML = wrap('Grown-ups', 'This week', '', '<p class="muted">Loading…</p>');
 
   async function change(fn) {
@@ -285,7 +466,8 @@ export function childDashboard(main, { cid, gid }) {
     const nick = c.child.nickname;
     const o = P.childOverview(d, day, Date.now());
     const g = (wanted && W.groupById(d, wanted)) || (o.current && W.groupById(d, o.current.id)) || null;
-    const head = (title, sub) => '<a class="gu-back" href="#/grownups">' + I.back + 'All children</a><div class="gu-top"><div class="pagehead"><span class="eyebrow">' + esc(nick) + ' · Year ' + esc(c.child.year) + '</span><h1>' + esc(title) + '</h1>'
+    const byLine = (gid) => { const row = P.childPageWeeks(d, day, ownLists().map((l) => ({ id: l.id, words: l.words }))).find((r) => r.id === gid); return row ? P.setByLine(row.setBy, nick) : ''; };
+    const head = (title, sub) => '<a class="gu-back" href="#/grownups">' + I.back + esc(backName(role)) + '</a><div class="gu-top"><div class="pagehead"><span class="eyebrow">' + esc(nick) + ' · Year ' + esc(c.child.year) + '</span><h1>' + esc(title) + '</h1>'
       + (sub ? '<p class="muted">' + esc(sub) + '</p>' : '') + '</div></div>';
     const notes = (line ? '<p class="gu-line" role="status" data-flash>' + esc(line) + '</p>' : '')
       + (undo ? '<p class="gu-line" role="status" data-deleted>Deleted. <button type="button" class="btn btn--plain" data-undo>' + I.undo + 'Undo</button></p>' : '')
@@ -297,9 +479,21 @@ export function childDashboard(main, { cid, gid }) {
     const pickOn = W.weekPickOn(d);
     const pickCard = '<section class="card gu-weekpick" data-weekpick><p class="small muted" id="gu-weekpick-help">' + esc(P.weekPickHelp(nick, pickOn)) + '</p>'
       + '<button type="button" class="btn btn--ghost gu-weekpick__btn" data-weekpick-toggle aria-pressed="' + pickOn + '" aria-describedby="gu-weekpick-help"><span>' + esc(P.WEEKPICK_NAME) + '</span><span class="gu-weekpick__state" aria-hidden="true" data-weekpick-state>' + P.weekPickState(pickOn) + '</span></button></section>';
+    // The tutor reads the words to go over first, before the session (BR-25): the last test's slipped words and the ones to come back to.
+    const before = (wk, card, report) => {
+      if (role !== 'tutor') return '';
+      const last = lastTested(d);
+      const words = [...new Set([...(last ? last.slipped : []), ...(report ? report.comeBack : [])])];
+      const facts = [last ? 'Last test ' + last.right + ' of ' + last.of : '', card && card.waiting ? plural(card.waiting, 'job') + ' waiting' : ''].filter(Boolean).join(' · ');
+      return '<section class="card gh-before" data-before aria-labelledby="gh-before-h"><h2 id="gh-before-h">Before the session: words to go over</h2>' + (facts ? '<p class="gh-card__line">' + esc(facts) + '</p>' : '')
+        + (words.length ? '<p class="gh-words">' + words.map((w2) => '<span class="gu-hw">' + esc(w2) + '</span>').join('') + '</p>' : '<p class="gh-card__line">Nothing to go over.</p>')
+        + '<div class="gu-actions noprint"><button type="button" class="btn btn--ghost" data-print-before>' + I.print + 'Print for ' + esc(nick) + '</button></div></section>';
+    };
+    const nEarlier = W.liveGroups(d).filter((x) => W.testDone(d, x)).length;
+    const earlier = nEarlier || o.deleted.length ? '<a class="gh-sum gu-earlier" href="' + weeksHref(id) + '" data-earlier><b>Earlier weeks</b><span class="gh-go" aria-hidden="true">' + I.chevron + '</span><small>' + plural(nEarlier, 'earlier week') + ' · ' + o.deleted.length + ' deleted</small></a>' : '';
     if (!g) {
-      main.innerHTML = '<section class="wrap page grownups gu" data-noweek>' + head(nick + '\'s week', PRIVACY) + notes + '<div data-setupcard></div>' + pickCard
-        + '<div class="card gu-empty"><h2>No week yet</h2><p class="muted">Plan a week of words and a test date for ' + esc(nick) + '.</p><a class="btn btn--primary" href="' + planHref(id) + '" data-plan>' + I.plus + 'Plan a week</a></div><div data-setupreport></div>' + deleted + '</section>';
+      main.innerHTML = '<section class="wrap page grownups gu" data-noweek>' + head(nick + '\'s week', PRIVACY) + notes + before(null, null, null) + '<div data-setupcard></div>' + pickCard
+        + '<div class="card gu-empty"><h2>No week yet</h2><p class="muted">Set a week of words and a test date for ' + esc(nick) + '.</p><a class="btn btn--primary" href="' + setHref(id) + '" data-plan>' + I.plus + 'Set a week</a></div><div data-setupreport></div>' + earlier + deleted + '</section>';
       wire(null);
       return;
     }
@@ -308,16 +502,18 @@ export function childDashboard(main, { cid, gid }) {
     const words = P.weekWords(d, g, day);
     const over = W.overall(d);
     const switcher = o.weeks.length > 1
-      ? '<p class="gu-switchline" data-manyweeks><b>' + esc(nick) + ' has ' + o.weeks.length + ' weeks running.</b> Pick one to look at, change or delete.</p><ul class="gu-switch" aria-label="' + esc(nick) + '\'s weeks">' + o.weeks.map((x) => '<li><a href="' + weekHref(id, x.id) + '"' + (x.id === g.id ? ' aria-current="page"' : '') + '>' + esc(x.name) + ' · ' + esc(nb(W.dayLabel(x.test))) + '</a></li>').join('') + '</ul>' : '';
+      ? '<p class="gu-switchline" data-manyweeks><b>' + esc(nick) + ' has ' + o.weeks.length + ' weeks running.</b> Pick one to look at, change or delete.</p><ul class="gu-switch" aria-label="' + esc(nick) + '\'s weeks">' + o.weeks.map((x) => '<li><a href="' + weekHref(id, x.id) + '"' + (x.id === g.id ? ' aria-current="page"' : '') + '>' + esc(x.name) + ' · ' + esc(nb(W.dayLabel(x.test))) + '<small class="gh-setby" data-setby>' + esc(byLine(x.id)) + '</small></a></li>').join('') + '</ul>' : '';
     const path = '<section class="gu-path" aria-labelledby="gu-path-h"><h2 id="gu-path-h">The path</h2><ol>' + k.steps.map((v) => '<li class="' + (v.kind.startsWith('today') ? 'is-today' : '') + '">' + stone(v)
       + '<span class="gu-path__name">' + esc(v.name) + '</span><span class="gu-path__sub">' + esc(nb(pathSub(v, k))) + '</span><span class="sr">' + esc(stoneSay(v)) + '</span></li>').join('') + '</ol></section>';
     const glance = '<section class="card gu-glance" aria-labelledby="gu-glance-h" data-glance><div class="gu-glance__head"><h2 id="gu-glance-h">At a glance</h2>'
       + chip(k.chip.key, k.chip.label + (k.chip.key === 'ontrack' ? ' · nothing waiting' : ''), ' data-chip="' + k.chip.key + '"') + '</div>'
       + '<dl class="gu-facts">' + fact('Today', k.today) + fact('Jobs waiting', waitingText(k)) + fact('Test', nb(W.dayLabel(k.test))) + fact('Stars', plural(k.stars, 'star')) + '</dl>'
       + helpRow(k)
-      + '<div class="gu-actions noprint"><a class="btn btn--ghost" href="' + editHref(id, g.id) + '" data-edit>' + I.pencil + (k.canEdit ? 'Change words or test date' : 'Rename this week') + '</a>'
-      + '<button type="button" class="btn btn--plain" data-print>' + I.print + 'Print this week</button>'
-      + '<a class="btn btn--ghost" href="' + planHref(id) + '" data-plannext>' + I.plus + 'Plan next week</a>'
+      + '<div class="gu-actions noprint"><a class="btn btn--ghost" href="' + (k.canEdit ? editHref(id, g.id) : renameHref(id, g.id)) + '" data-edit>' + I.pencil + (k.canEdit ? 'Change words or test date' : 'Rename this week') + '</a>'
+      + (k.canEdit ? '<a class="btn btn--ghost" href="' + renameHref(id, g.id) + '" data-rename>' + I.pencil + 'Rename this week</a>' : '')
+      + (rep.test.taken ? '<a class="btn btn--ghost" href="' + printHref(id, g.id) + '" data-printpage>' + I.print + 'Print ' + esc(possessive(nick)) + ' results</a>'
+        : '<button type="button" class="btn btn--plain" data-print>' + I.print + 'Print this week</button>')
+      + '<a class="btn btn--ghost" href="' + setHref(id) + '" data-plannext>' + I.plus + 'Set next week</a>'
       + '<button type="button" class="btn btn--danger" data-delete>Delete this week</button></div></section>';
     const wordsCard = '<section class="card gu-words" aria-labelledby="gu-words-h"><h2 id="gu-words-h">Words</h2>'
       + '<p class="small muted">' + esc(St.ROW_LINE) + ' Words that need help come first.</p>'
@@ -330,9 +526,19 @@ export function childDashboard(main, { cid, gid }) {
       + '<h3>All weeks</h3><div class="stats"><div class="card stat"><b>' + over.remembered + '</b><span>Remembered</span></div><div class="card stat"><b>' + over.practised + '</b><span>Words practised</span></div>'
       + '<div class="card stat"><b>' + over.independent + '%</b><span>Independent first goes</span><span class="muted small">' + over.clean + ' of ' + plural(over.firstGoes, 'first go', 'first goes') + '</span></div></div>'
       + (rep.sentences.length ? '<h3>Sentences</h3><ul class="report__list">' + rep.sentences.map((s) => '<li><b>' + esc(s.word) + ':</b> ' + esc(s.text) + '</li>').join('') + '</ul>' : '')
-      + '<p class="small muted">' + esc(PRIVACY) + '</p></section>';
-    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + P.weekLine(k)) + notes + '<div data-setupcard></div>' + switcher + glance + path + wordsCard + more + '<div data-setupreport></div>' + pickCard + deleted + '</section>';
+      + '<p class="small muted">' + esc(PRIVACY) + '</p><p class="small"><a class="gh-quiet" href="#/grownups/help" data-helplink>' + esc(W3[role].help) + '</a></p></section>';
+    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + byLine(g.id) + ' · ' + P.weekLine(k)) + notes + before(g, k, rep) + '<div data-setupcard></div>' + switcher + glance + path + wordsCard + more + '<div data-setupreport></div>' + earlier + pickCard + deleted + '</section>';
     wire(g);
+    // S3-D3: a typed word's meaning comes from Wordbright's list, fetched once; only the word rows are redrawn when it arrives.
+    const typedNow = words.map((w) => w.word).filter((w2) => !findEntry(w2) && !meaningTried.has(w2));
+    if (typedNow.length) {
+      typedNow.forEach((w2) => meaningTried.add(w2));
+      meaningsFor(typedNow).then(() => {
+        const ul = main.querySelector('.gu-wordlist');
+        if (stopped || !ul || !typedNow.some((w2) => hasMeaning(w2))) return;
+        ul.innerHTML = words.map((w) => wordRow(w, g, nick, !findEntry(w.word))).join('');
+      });
+    }
   }
   function pathSub(v, k) {
     const st = k.steps.find((x) => x.id === v.id);
@@ -358,6 +564,8 @@ export function childDashboard(main, { cid, gid }) {
     }
     const printBtn = q('[data-print]');
     if (printBtn) printBtn.addEventListener('click', () => window.print());
+    const printBefore = q('[data-print-before]');
+    if (printBefore) printBefore.addEventListener('click', () => window.print());
     const del = q('[data-delete]');
     if (del) {
       del.addEventListener('click', async () => {
@@ -395,292 +603,384 @@ export function childDashboard(main, { cid, gid }) {
   return () => { stopped = true; dismissDialog(); };
 }
 
-/* ------------------------------------------------------------- plan a week --- */
-const AVATAR = (n) => '<span class="gu-avatar" aria-hidden="true">' + esc(n.slice(0, 1).toUpperCase()) + '</span>';
+/* ------------------------------------------------------ role: first use and change (00a, 00b) --- */
+const ROLE_CARDS = [
+  ['parent', 'My own children', 'A parent setting the school spellings at home', 'Parent'],
+  ['tutor', 'Learners I tutor', 'A tutor with a different list for each learner', 'Tutor'],
+  ['teacher', 'My class', 'A teacher setting one list for the whole class', 'Teacher'],
+];
+const SEE_LINE = { parent: 'Your children see', tutor: 'Your learners will see', teacher: 'Your class sees' };
+const SEES = { parent: 'Children see', tutor: 'Learners see', teacher: 'Class sees' };
+const NOUN3 = { parent: 'children', tutor: 'learners', teacher: 'class' };
+/** Under the name box: what the children will see, with the name or without. Not the email (D34). */
+export function nameHelp(role, name) {
+  return name ? SEE_LINE[role] + ' “Set by ' + name + '”. Not your email.'
+    : 'Until you ' + (role === 'parent' ? 'choose' : 'add') + ' a name your ' + NOUN3[role] + (role === 'teacher' ? ' sees' : ' see') + ' “' + W3[role].seen + '”. Not your email.';
+}
+/** The line over the Continue button. */
+export const barLine = (role, name) => SEES[role] + ' “' + (name ? 'Set by ' + name : W3[role].seen) + '”' + (name ? '' : ' for now');
+const NAME_LABEL = { parent: 'Or type another name (for example Auntie Jo)', tutor: 'Your name', teacher: 'Your name (for example Ms Patel)' };
+const NAME_HOLD = { parent: 'Type a name', tutor: '', teacher: 'Type your name' };
 
-function planForm(main, cid, gid) {
-  const day = today();
-  const fixedId = cid ? safeDecode(cid) : '';
-  const editing = gid ? safeDecode(gid) : null;
-  let kids = []; // [{ child, words, progress, version }]
-  let patterns = [];
-  let credit = '';
+export function rolePage(main) {
+  if (!adultOnly(main)) return undefined;
+  const store = AC.roleStore();
+  const saved = store ? store.get() : null;
+  const first = !saved;
   let stopped = false;
-  let step = 2;
-  let chosenId = fixedId;
-  let name = '';
-  let nameTouched = false;
-  let test = W.defaultTest(day);
-  let words = [];
-  let listName = '';
-  let other = false; // "Other lists" open
-  let tab = 'year';
-  let chapterId = D.chapters(D.defaultYear())[0].id;
-  let patternId = '';
-  let yearId = D.defaultYear();
-  let typed = '';
-  let note = '';
+  let picked = saved ? saved.r : '';
+  let name = saved && saved.n ? saved.n : '';
+  let touched = false; // the grown-up typed or chose a name: a role tap no longer swaps it
+  let pickedByHand = false;
+  let accountRole = '';
   let message = '';
-  let saving = false;
-  let existing = null; // the week being changed
-  const handed = editing ? null : takePlanWords(); // SB4-WP7: words from "Use for this week", read once
-  // One id for this plan, however many times it's sent: if a save arrives but
-  // its answer is lost, trying again changes that group, and never makes a second.
-  const planId = 'p' + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => b.toString(16).padStart(2, '0')).join('');
+  const me = () => (playerName() || '');
 
-  const kid = () => kids.find((k) => k.child.id === chosenId) || null;
-  const nick = () => (kid() ? kid().child.nickname : 'your child');
-  const start = () => (existing ? existing.start : day);
-  const tricky = () => (kid() ? P.childTricky(kid().progress).filter((w) => findEntry(w)) : []);
-  const shownName = () => (nameTouched ? name : P.suggestName({ typedCount: words.filter((w) => !findEntry(w)).length, listName, test }));
-  const yearWords = (y) => D.chapters(y).flatMap((x) => x.words.map((w) => w.word)).sort((a, b) => a.localeCompare(b, 'en-GB', { sensitivity: 'base' }));
-  const source = () => (tab === 'chapter' ? D.chapterById(chapterId).words.map((w) => w.word)
-    : tab === 'pattern' ? P.patternWords(patterns, patternId)
-      : tab === 'tricky' ? tricky() : yearWords(yearId));
-  const sourceLabel = () => (tab === 'chapter' ? D.chapterTitle(D.chapterById(chapterId)).name : tab === 'pattern' ? ((patterns.find((p) => p.id === patternId) || {}).title || 'a spelling pattern')
-    : tab === 'tricky' ? 'Tricky words' : D.years()[yearId].label + ' words');
-  const sourceHeading = () => (tab === 'year' ? 'Or tap words from ' + D.years()[yearId].label : tab === 'chapter' ? 'Or tap words from this chapter' : tab === 'pattern' ? 'Or tap words with this pattern' : 'Or tap this child\'s tricky words');
+  const nameBox = () => '<div class="gh-card gh-card--flat gh-namebox" data-namebox><h2 class="gh-card__h" id="gu-nq">' + esc(W3[picked].nameAsk) + '</h2>'
+    + (picked === 'parent' ? '<div class="gh-namechips" role="group" aria-label="Common names">' + RD.CHIPS.map((c) => '<button type="button" class="gh-chipbtn' + (c === name ? ' is-on' : '') + '" aria-pressed="' + (c === name) + '" data-chip="' + esc(c) + '">' + esc(c) + '</button>').join('') + '</div>' : '')
+    + '<div class="gh-field"><label for="gu-name">' + esc(NAME_LABEL[picked]) + '</label><input id="gu-name" class="gh-input" type="text" maxlength="24" autocomplete="off" autocapitalize="words" spellcheck="false" value="' + esc(name) + '"'
+    + (NAME_HOLD[picked] ? ' placeholder="' + esc(NAME_HOLD[picked]) + '"' : '') + ' aria-describedby="gu-name-help" data-name>'
+    + '<div id="gu-name-help" aria-live="polite">' + (message ? '<div class="gh-err" role="alert" data-nameerr>' + I.warn + '<p><b>' + esc(message) + '</b></p></div>' : '<p class="gh-help" data-namehelp>' + esc(nameHelp(picked, name)) + '</p>') + '</div></div></div>';
+  const cards = () => '<fieldset class="gh-roles' + (picked ? ' is-picked' : '') + '" data-roles><legend class="sr">' + (first ? 'Who are you setting spellings for?' : 'I use Spellbright as') + '</legend>' + ROLE_CARDS.map(([r, t, ex, word]) => {
+    const on = picked === r;
+    return '<label class="gh-rolecard' + (on ? ' is-on' : '') + '"><input class="gh-rolecard__in" type="radio" name="role" value="' + r + '"' + (on ? ' checked' : '') + ' data-role="' + r + '">'
+      + '<span class="gh-rolecard__body"><b>' + esc(t) + '</b>' + (first ? '<small>' + esc(ex) + '</small>' : '<small>' + esc(word) + '</small>') + '</span>'
+      + '<span class="gh-rolecard__go" aria-hidden="true">' + (on ? I.check : first && !picked ? I.chevron : '') + '</span></label>';
+  }).join('') + '</fieldset>';
 
-  const tabBtn = (k, label) => '<button type="button" class="tab" role="tab" aria-selected="' + (tab === k) + '" data-tab="' + k + '">' + esc(label) + '</button>';
-  const chapterOpts = () => D.liveYears().map((y) => '<optgroup label="' + esc(D.years()[y].label) + '">' + D.chapters(y).map((x) => '<option value="' + x.id + '"' + (x.id === chapterId ? ' selected' : '') + '>' + esc(D.chapterTitle(x).n + '. ' + D.chapterTitle(x).name) + '</option>').join('') + '</optgroup>').join('');
-  const patternOpts = () => [['y34', 'Years 3 and 4'], ['y56', 'Years 5 and 6']].map(([s, label]) => '<optgroup label="' + label + '">' + patterns.filter((p) => p.stage === s).map((p) => '<option value="' + p.id + '"' + (p.id === patternId ? ' selected' : '') + '>' + esc(p.title) + '</option>').join('') + '</optgroup>').join('');
-
-  const stepper = () => {
-    const parts = [['Who', 1], ['Which words', 2], ['Test date', 3]];
-    return '<ol class="gu-stepper" aria-label="Steps">' + parts.map(([label, n]) => {
-      const kindOf = n < step ? 'done' : n === step ? 'today' : 'later';
-      return '<li' + (n === step ? ' aria-current="step"' : '') + '><span class="stone stone--' + kindOf + ' stone--' + (n % 4) + '" aria-hidden="true">' + (kindOf === 'done' ? I.star : n) + '</span><span>' + label + '<span class="sr">' + (kindOf === 'done' ? ' (done)' : '') + '</span></span></li>';
-    }).join('') + '</ol>';
-  };
-  const eyebrow = () => (editing ? 'Change the week for ' + nick() : 'Plan a week' + (kid() ? ' for ' + nick() : '')) + ' · Step ' + step + ' of 3';
-  // Back on the left, the main button on the right: the same row, whatever the step.
-  const nav = (primary) => '<div class="gu-nav"><button type="button" class="btn btn--ghost" data-back>' + I.back + 'Back</button><button type="button" class="btn btn--primary" data-next>' + primary + '</button></div>';
-  const page = (title, line, body, primary) => '<section class="wrap page grownups gu" data-plan-step="' + step + '"><div class="pagehead"><span class="eyebrow" data-stepmark>' + esc(eyebrow()) + '</span></div>' + stepper()
-    + '<div class="pagehead"><h1>' + esc(title) + '</h1>' + (line ? '<p class="muted">' + esc(line) + '</p>' : '') + '</div>' + body + '<p class="gu-error" role="alert" data-error>' + esc(message) + '</p>' + nav(primary) + '</section>';
-
-  function draw() {
-    if (step === 1) drawWho(); else if (step === 2) drawWords(); else drawDate();
+  function draw(keepFocus) {
+    const sub = first ? (picked && picked === accountRole && !pickedByHand ? 'Your account says ' + ROLE_CARDS.find((x) => x[0] === picked)[3] + '. Tap another card if that is not right.' : 'Pick one. You can change it later in your Account.') : '';
+    const head = '<div class="gh-page__head"><h1 class="gh-h1">' + (first ? 'Who are you setting spellings for?' : 'I use Spellbright as') + '</h1>' + (sub ? '<p class="gh-sub" data-sub>' + esc(sub) + '</p>' : '') + '</div>';
+    let body = cards();
+    if (picked) body += nameBox();
+    if (first) {
+      body += picked ? '<button type="button" class="gh-quiet" data-skip>Skip: use the role words instead</button>' : '<button type="button" class="gh-quiet" data-notnow>Not now (I will use the parent pages)</button>';
+      body += picked ? bar('<button type="button" class="btn btn--primary" data-continue>Continue</button>', barLine(picked, name)) : '';
+    } else {
+      body += '<p class="gh-help">Nothing you made will change. Only the page names, layout and the name children see.</p>'
+        + '<div class="gh-bar gh-bar--two"><button type="button" class="btn btn--primary" data-save>Save</button><a class="gh-plain" href="#/grownups" data-cancel>Cancel</a></div>';
+    }
+    main.innerHTML = '<section class="wrap page grownups gu gh-page" data-rolepage="' + (first ? 'first' : 'change') + '">' + head + body + '</section>';
     wire();
-  }
-  function drawWho() {
-    const day0 = today();
-    main.innerHTML = page('Who is this week for?', 'Pick one child. Each child gets their own words.', '<fieldset class="gu-who"><legend>Who is this week for?</legend>' + kids.map((k) => {
-      const cur = P.childOverview(k.words, day0, Date.now()).current;
-      return '<label class="gu-radio"><input type="radio" name="who" value="' + esc(k.child.id) + '"' + (k.child.id === chosenId ? ' checked' : '') + ' data-who>' + AVATAR(k.child.nickname)
-        + '<span class="gu-radio__text"><b>' + esc(k.child.nickname) + ' <small>Year ' + esc(k.child.year) + '</small></b><span>' + (cur ? 'This week: ' + esc(cur.name) + ', test ' + esc(nb(W.dayLabel(cur.test))) : 'No week yet') + '</span></span></label>';
-    }).join('') + '</fieldset><p class="muted small">Same words for two children? Plan the first week, then plan again for the other child.</p>', 'Next' + I.next);
-  }
-  function chipsHtml(list, full) {
-    return '<ul class="gu-chips gu-chips--scroll" role="group" aria-label="' + esc(sourceLabel()) + '" tabindex="0">' + list.map((w) => {
-      const on = words.includes(w);
-      return '<li><button type="button" class="gu-chip" aria-pressed="' + on + '" data-pick="' + esc(w) + '"' + (full && !on ? ' disabled' : '') + '>' + (on ? I.check : I.plus) + esc(w) + '</button></li>';
-    }).join('') + '</ul>';
-  }
-  function drawWords() {
-    const full = P.atCap(words);
-    const list = source();
-    const p = patterns.find((x) => x.id === patternId);
-    const typedWords = words.filter((w) => !findEntry(w));
-    const listed = words.filter((w) => findEntry(w));
-    const typedRows = typedWords.map((w) => {
-      const r = P.readiness({ typed: true, hasMeaning: hasMeaning(w) });
-      return '<li data-typedrow="' + esc(w) + '"><span class="gu-mywords__main"><span class="gu-mywords__word">' + esc(w) + '<span class="gu-tag">Typed</span></span><span class="gu-mean' + (r.meaning ? '' : ' is-none') + '">' + esc(r.meaningLine) + '</span>'
-        + chip(r.meaning ? 'note' : 'dashed', r.picture) + '</span><button type="button" class="gu-x" data-remove="' + esc(w) + '" aria-label="Remove ' + esc(w) + '">' + I.x + '</button></li>';
-    }).join('');
-    const listedRows = listed.length ? '<li><span class="gu-mywords__main"><span class="small muted">' + plural(listed.length, 'word') + ' from our lists are ready, with a meaning.</span>'
-      + '<span class="gu-chips">' + listed.map((w) => '<span><button type="button" class="gu-chip" data-remove="' + esc(w) + '" aria-label="Remove ' + esc(w) + '">' + esc(w) + I.x + '</button></span>').join('') + '</span></span></li>' : '';
-    const other_ = other
-      ? '<div class="gu-lists"><div class="tabs" role="tablist" aria-label="Lists">' + tabBtn('year', 'A year list') + tabBtn('chapter', 'A chapter') + tabBtn('pattern', 'A spelling pattern') + tabBtn('tricky', 'Tricky words (' + tricky().length + ')') + '</div>'
-        + (tab === 'chapter' ? '<select class="field" aria-label="Chapter" data-chapter>' + chapterOpts() + '</select>' : '')
-        + (tab === 'pattern' ? '<select class="field" aria-label="Spelling pattern" data-pattern>' + patternOpts() + '</select>' + (p ? '<p class="small muted">' + esc(p.rule) + '</p>' : '') + '<p class="foot__small">' + esc(credit) + '</p>' : '')
-        + (tab === 'year' ? '<select class="field" aria-label="Year list" data-year>' + D.liveYears().map((y) => '<option value="' + y + '"' + (y === yearId ? ' selected' : '') + '>' + esc(D.years()[y].label) + '</option>').join('') + '</select>' : '')
-        + (tab === 'tricky' && !tricky().length ? '<p class="muted">No tricky words yet.</p>' : '') + '</div>' : '';
-    main.innerHTML = page('Which words?', 'Type the school\'s words, or tap words from a list. Up to ' + W.MAX_WORDS + '. ' + St.DAILY_TIME_CAP + '.',
-      '<div class="gu-plan gu-plan--two">'
-      + '<div class="stack"><section class="card gu-panel" aria-labelledby="gu-type-h"><h2 id="gu-type-h">Type a school word</h2>'
-      + '<form class="gu-typeform" data-typeform><input class="field typedword" aria-label="Type a school word" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="20" placeholder="' + (full ? 'Week is full' : '') + '" value="' + esc(full ? '' : typed) + '"' + (full ? ' disabled' : '') + ' data-typed>'
-      + '<button type="submit" class="btn btn--ghost" data-add' + (full ? ' disabled' : '') + '>Add</button></form>'
-      + (note ? '<p class="small" role="status" data-typednote>' + esc(note) + '</p>' : '<p class="small muted">We find the meaning for you, from the Wordbright word list.</p>') + '</section>'
-      + '<section class="card gu-panel" aria-labelledby="gu-pick-h"><h2 id="gu-pick-h">' + esc(sourceHeading()) + '</h2><p>Tap a ticked word to take it off.</p>'
-      + chipsHtml(list, full)
-      + '<div><button type="button" class="btn btn--ghost" data-other aria-expanded="' + other + '">' + (other ? 'Fewer lists' : 'Other lists') + I.chevron + '</button></div>' + (other ? other_ : '<p class="small muted">Chapters, spelling patterns, year lists and tricky words.</p>') + '</section></div>'
-      + '<section class="card gu-panel" aria-labelledby="gu-mine-h" data-mywords><div class="gu-panel__head"><h2 id="gu-mine-h">' + esc(nick()) + '\'s words</h2><span class="gu-count" data-count>' + words.length + ' of ' + W.MAX_WORDS + '</span></div>'
-      + (full ? '<p class="gu-line gu-line--warn" role="status" data-full>' + I.alert + esc(P.FULL_WEEK_LINE) + '</p>' : '')
-      + (words.length ? '<ul class="gu-mywords">' + typedRows + listedRows + '</ul>' : '<p class="muted">No words yet. Type one, or tap words from a list.</p>') + '</section></div>', 'Next' + I.next);
-  }
-  function drawDate() {
-    const short = P.isShortWeek(start(), test) && /^\d{4}-\d{2}-\d{2}$/.test(test);
-    const typedWords = words.filter((w) => !findEntry(w));
-    const mini = St.BEFORE_TEST.concat(['test', 'mend']).map((id, i) => '<span class="minipath__one"><span class="stone stone--mini stone--' + (i === 0 ? 'today' : 'later') + ' stone--' + (i % 4) + '" aria-hidden="true">' + (i === 0 ? '1' : id === 'test' ? I.flag : String(i + 1)) + '</span></span>').join('');
-    const first = P.firstSight(start());
-    main.innerHTML = page('When is the test?', existing ? 'The jobs already done stay done. Jobs not done by the test wait for ' + nick() + '.' : nick() + ' starts today. Jobs not done by the test wait for ' + nick() + '.',
-      '<div class="gu-plan gu-plan--date"><section class="card gu-panel"><div class="gu-field"><label for="p-test">Test date</label><div class="gu-datewrap"><input id="p-test" class="field" type="date" value="' + esc(test) + '" min="' + W.addDays(day, 1) + '" max="' + W.addDays(start(), W.MAX_DAYS) + '" data-test>'
-      + '<span class="gu-datewords" data-datewords aria-live="polite">' + esc(nb(P.dateWords(test))) + '</span></div><span class="small muted">A full week has ' + P.FULL_WEEK_DAYS + ' days before the test.</span>'
-      + (short ? '<p class="gu-line gu-line--warn" role="status" data-short>' + esc(P.SHORT_WEEK_LINE) + '</p>' : '')
-      + (existing && existing.test < day ? '<p class="small muted" data-datepassed>' + esc(P.passedLine(nick())) + '</p>' : '') + '</div>'
-      + '<div class="gu-field"><label for="p-name">Week name</label><input id="p-name" class="field" maxlength="' + W.MAX_NAME + '" value="' + esc(shownName()) + '" data-name></div>'
-      + '<p class="muted small" data-summary>' + esc(nick()) + ' · ' + plural(words.length, 'word') + '.' + (typedWords.length ? ' ' + typedWords.map((w) => w + (hasMeaning(w) ? ' has a meaning only' : ' has no picture or meaning')).join(', ').replace(/^./, (x) => x.toUpperCase()) + '.' : '') + '</p></section>'
-      + '<div><h2 class="gu-glimpse__h">What ' + esc(nick()) + ' will see first</h2><section class="card gu-glimpse" data-glimpse><span class="pipring"><span class="pipring__disc"><img class="room__pip" src="assets/characters/pip-portrait-256.webp" width="88" height="88" alt=""></span></span>'
-      + '<span class="eyebrow">' + esc(first.day === day ? 'Today' : W.dayLabel(first.day)) + ' · ' + esc(first.title) + '</span><h3>Meet your new words.</h3><span class="btn btn--primary gu-glimpse__btn" aria-hidden="true">Start ' + esc(first.title) + '</span>'
-      + '<span class="minipath" aria-hidden="true">' + mini + '</span><small>Test on ' + esc(nb(P.dateWords(test) || 'the test date')) + '</small></section></div></div>',
-      I.check + (editing ? 'Save the changes' : 'Start the week for ' + esc(nick())));
+    if (keepFocus) { const e = main.querySelector(keepFocus); if (e) e.focus(); }
   }
   function wire() {
     const q = (s) => main.querySelector(s);
-    q('[data-back]').addEventListener('click', goBack);
-    q('[data-next]').addEventListener('click', goNext);
-    main.querySelectorAll('[data-who]').forEach((r) => r.addEventListener('change', () => { chosenId = r.value; message = ''; }));
-    main.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => { tab = b.dataset.tab; note = ''; draw(); }));
-    const pick = (w, on) => { if (on) addWord(w, sourceLabel()); else removeWord(w); };
-    main.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => {
-      const box = q('.gu-chips--scroll');
-      const at = box ? box.scrollTop : 0;
-      pick(b.dataset.pick, b.getAttribute('aria-pressed') !== 'true');
-      draw();
-      const again = q('.gu-chips--scroll');
-      if (again) again.scrollTop = at;
-      focusAfter('[data-pick="' + CSS.escape(b.dataset.pick) + '"]');
+    main.querySelectorAll('[data-role]').forEach((r) => r.addEventListener('change', () => {
+      const changed = picked !== r.dataset.role;
+      picked = r.dataset.role;
+      pickedByHand = true;
+      message = '';
+      if (changed && !touched) name = RD.nameHint(picked, me()) || (saved && saved.r === picked && saved.n ? saved.n : '');
+      draw('[data-role="' + picked + '"]');
     }));
-    main.querySelectorAll('[data-remove]').forEach((b) => b.addEventListener('click', () => { removeWord(b.dataset.remove); draw(); }));
-    const o = q('[data-other]');
-    if (o) o.addEventListener('click', () => { other = !other; if (!other) { tab = 'year'; yearId = P.yearListFor(kid() ? kid().child.year : 4, D.liveYears()); } draw(); focusAfter('[data-other]'); });
-    if (q('[data-chapter]')) q('[data-chapter]').addEventListener('change', (e) => { chapterId = e.target.value; draw(); });
-    if (q('[data-pattern]')) q('[data-pattern]').addEventListener('change', (e) => { patternId = e.target.value; draw(); });
-    if (q('[data-year]')) q('[data-year]').addEventListener('change', (e) => { yearId = e.target.value; draw(); });
-    const form = q('[data-typeform]');
-    if (form) {
-      q('[data-typed]').addEventListener('input', (e) => { typed = e.target.value; });
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (P.atCap(words)) return;
-        const r = await checkTyped(typed, findEntry);
-        if (stopped) return;
-        if (r.word) {
-          if (words.includes(r.word)) note = r.word + ' is already in the week.';
-          else { addWord(r.word, ''); typed = ''; note = 'Added ' + r.word + '.'; if (!findEntry(r.word)) meaningsFor([r.word]).then(() => { if (!stopped && step === 2) { draw(); } }); }
-        } else if (r.error) note = r.error;
-        draw();
-        const t = q('[data-typed]');
-        if (t && !t.disabled) t.focus();
+    const input = q('[data-name]');
+    if (input) {
+      input.addEventListener('input', () => {
+        name = input.value;
+        touched = true;
+        message = '';
+        const clean = RD.cleanName(name);
+        const line = q('.gh-bar__line');
+        q('#gu-name-help').innerHTML = '<p class="gh-help" data-namehelp>' + esc(nameHelp(picked, clean)) + '</p>';
+        if (line) line.textContent = barLine(picked, clean);
+        main.querySelectorAll('[data-chip]').forEach((b) => { const on = b.dataset.chip === name.trim(); b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
       });
     }
-    const date = q('[data-test]');
-    if (date) {
-      date.addEventListener('input', (e) => {
-        test = e.target.value;
-        q('[data-datewords]').textContent = nb(P.dateWords(test));
-        const short = P.isShortWeek(start(), test) && /^\d{4}-\d{2}-\d{2}$/.test(test);
-        const shown = q('[data-short]');
-        if (short && !shown) date.closest('.gu-field').insertAdjacentHTML('beforeend', '<p class="gu-line gu-line--warn" role="status" data-short>' + esc(P.SHORT_WEEK_LINE) + '</p>');
-        else if (!short && shown) shown.remove();
-        q('.gu-glimpse small').textContent = 'Test on ' + nb(P.dateWords(test) || 'the test date');
-      });
-      q('[data-name]').addEventListener('input', (e) => { name = e.target.value; nameTouched = true; });
-    }
-  }
-  const focusAfter = (sel) => { const e = main.querySelector(sel); if (e && !e.disabled) e.focus(); };
-  function addWord(w, from) {
-    if (words.includes(w) || P.atCap(words)) return;
-    words.push(w);
-    if (from) listName = from;
-  }
-  function removeWord(w) { words = words.filter((x) => x !== w); if (!words.some((x) => findEntry(x))) listName = ''; }
-
-  function goBack() {
-    message = '';
-    const ctx = { children: kids.length, editing: !!editing };
-    const to = P.stepBack(step, ctx);
-    if (to) { step = to; draw(); window.scrollTo(0, 0); return; }
-    location.hash = editing && existing ? weekHref(chosenId, existing.id) : fixedId ? childHref(fixedId) : '#/grownups';
-  }
-  function goNext() {
-    message = '';
-    if (step === 1) {
-      if (!chosenId) { message = 'Please choose a child.'; draw(); return; }
-      step = 2;
-      yearId = P.yearListFor(kid().child.year, D.liveYears());
-      draw(); window.scrollTo(0, 0);
-    } else if (step === 2) {
-      if (!words.length) { message = 'Please add at least one word.'; draw(); return; }
-      step = 3; draw(); window.scrollTo(0, 0);
-    } else save();
-  }
-  async function save() {
-    if (saving) return;
-    saving = true;
-    const button = main.querySelector('[data-next]');
-    const err = main.querySelector('[data-error]');
-    button.disabled = true;
-    err.textContent = '';
-    const now = Date.now();
-    const finalName = (shownName().trim() || P.suggestName({ test })).slice(0, W.MAX_NAME);
-    const id = chosenId;
-    const r = await A.changeWords(childApi(), id, (doc) => (editing
-      ? P.editPlan(doc, editing, { name: finalName, words, test }, { today: day, now })
-      : P.createPlan(doc, { name: finalName, test, words }, { id: planId, today: day, now })));
-    saving = false;
-    if (stopped) return;
-    if (r.ok) {
-      if (r.updated) toast('Updated with the latest');
-      flash = editing ? P.editedLine(finalName) : P.confirmLine(finalName, nick());
-      location.hash = weekHref(id, editing || planId);
-      return;
-    }
-    if (r.problem === 'playing' || r.problem === 'no-child') { showProblem(main, r.problem); return; }
-    if (r.problem === 'signed-out') recheckWho();
-    button.disabled = false;
-    message = r.error || P.PROBLEM_TEXT[r.problem] + ' Nothing has been saved.';
-    err.textContent = message;
-  }
-
-  // A locked week (the test has begun): say why, kindly; the name can still change.
-  function drawLocked() {
-    const k = kid();
-    main.innerHTML = '<section class="wrap page grownups gu" data-locked><a class="gu-back" href="' + weekHref(chosenId, existing.id) + '">' + I.back + 'Back to the week</a>'
-      + '<div class="pagehead"><span class="eyebrow">' + esc(k.child.nickname) + ' · ' + esc(existing.name) + '</span><h1>This week has started its test</h1><p class="muted">' + esc(P.LOCKED_LINE) + '</p></div>'
-      + '<section class="card gu-panel"><div class="gu-field"><label for="p-name">Week name</label><input id="p-name" class="field" maxlength="' + W.MAX_NAME + '" value="' + esc(existing.name) + '" data-name></div>'
-      + '<p class="gu-error" role="alert" data-error></p><div class="btnrow"><button type="button" class="btn btn--primary" data-rename>Save the name</button><a class="btn btn--ghost" href="' + planHref(chosenId) + '" data-plannext>' + I.plus + 'Plan next week</a></div></section></section>';
-    main.querySelector('[data-rename]').addEventListener('click', async () => {
-      const text = main.querySelector('[data-name]').value;
-      const r = await A.changeWords(childApi(), chosenId, (doc) => P.editPlan(doc, editing, { name: text }, { today: day, now: Date.now() }));
+    main.querySelectorAll('[data-chip]').forEach((b) => b.addEventListener('click', () => {
+      name = name === b.dataset.chip ? '' : b.dataset.chip;
+      touched = true;
+      message = '';
+      draw('[data-chip="' + CSS.escape(b.dataset.chip) + '"]');
+    }));
+    const done = () => { AC.roleChanged(); location.hash = '#/grownups'; };
+    async function save(skipName) {
+      if (!store) { location.hash = '#/grownups'; return; }
+      // S7 (F-2): a role that appeared since this page opened (read from the account) is never overwritten by a pre-selected card;
+      // only a card the grown-up tapped, or the Change page's own Save, writes.
+      if (first && !pickedByHand && store.get()) { done(); return; }
+      const nm = skipName ? '' : name.trim();
+      const r = store.set(picked, nm);
+      if (r.error) {
+        message = r.error === 'not-saved' ? 'We could not save that on this device. Please try again.' : RD.NAME_LINE;
+        draw('[data-name]');
+        return;
+      }
       if (stopped) return;
-      if (r.ok) { flash = P.editedLine(text.trim()); location.hash = weekHref(chosenId, editing); return; }
-      main.querySelector('[data-error]').textContent = r.error || P.PROBLEM_TEXT[r.problem] + ' Nothing has been saved.';
-    });
-  }
-
-  main.innerHTML = wrap('Grown-ups', editing ? 'Change the week' : 'Plan a week', '', '<p class="muted">Loading…</p>');
-  Promise.all([A.listChildren(childApi()), fetch('data/patterns.json').then((r) => r.json()).catch(() => ({ patterns: [] }))]).then(async ([{ children, problem }, data]) => {
-    if (stopped) return;
-    if (problem) { showProblem(main, problem); return; }
-    if (fixedId && !children.some((x) => x.id === fixedId)) { showProblem(main, 'no-child'); return; }
-    const ours = fixedId && editing ? children.filter((x) => x.id === fixedId) : children;
-    const got = await Promise.all(ours.map((x) => A.readChild(childApi(), x.id)));
-    if (stopped) return;
-    const bad = got.find((x) => x.problem);
-    if (bad) { showProblem(main, bad.problem); return; }
-    kids = ours.map((child, i) => ({ child, ...got[i] }));
-    patterns = data.patterns;
-    credit = (data._meta || {}).credit || '';
-    patternId = patterns.length ? patterns[0].id : '';
-    if (kids.length === 1 && !chosenId) chosenId = kids[0].child.id;
-    if (editing) {
-      existing = W.groupById(kid().words, editing);
-      if (!existing) { location.replace(childHref(chosenId)); return; }
-      if (!W.canEdit(kid().words, existing)) { drawLocked(); return; }
-      name = existing.name;
-      nameTouched = true;
-      test = existing.test; // never moved silently: only a date the grown-up picks has to be after today
-      words = [...existing.words];
-      listName = '';
+      const before = saved && saved.n ? saved.n : '';
+      const after = r.entry.n || '';
+      if (before !== after) { // children see the new name after their next read: push it now, one child after another (failures are silent)
+        const c = childApi();
+        A.listChildren(c).then((l) => { if (l.children && l.children.length) Sdata.pushName(c, l.children, after); }).catch(() => {});
+      }
+      done();
     }
-    if (kid()) yearId = P.yearListFor(kid().child.year, D.liveYears());
-    if (handed) words = [...handed]; // SB4-WP7: opens on the words step with the chapter's words filled in
-    step = P.firstStep({ children: kids.length, chosen: chosenId && fixedId ? chosenId : '', editing: !!editing });
-    draw();
+    const go = q('[data-continue]') || q('[data-save]');
+    if (go) go.addEventListener('click', () => save(false));
+    const skip = q('[data-skip]');
+    if (skip) skip.addEventListener('click', () => save(true));
+    const notNow = q('[data-notnow]');
+    if (notNow) notNow.addEventListener('click', () => { if (store) store.notNow(); location.hash = '#/grownups'; });
+    if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && go) { e.preventDefault(); go.click(); } });
+  }
+  draw();
+  // S7 (F-2): the account's saved role arrives after the page opened (second device): this page has no job any more, so leave it.
+  let onPrefs = null;
+  if (first && typeof window !== 'undefined' && window.addEventListener) {
+    onPrefs = () => { try { if (!stopped && store && store.get() && !pickedByHand) location.replace('#/grownups'); } catch (e) { /* stay */ } };
+    window.addEventListener('wa:prefs', onPrefs);
+  }
+  // The account may say which role the grown-up is (read only): choose that card, unless a card has been tapped already.
+  if (first) {
+    A.readMe(childApi()).then((f) => {
+      if (stopped || !f.role) return;
+      accountRole = f.role;
+      if (pickedByHand || picked) return;
+      picked = f.role;
+      name = RD.nameHint(picked, me());
+      draw();
+    }).catch(() => {});
+  }
+  return () => { stopped = true; if (onPrefs) window.removeEventListener('wa:prefs', onPrefs); };
+}
+
+/* ---------------------------------------------------------- help for each child (D25, 05k) --- */
+const HELP_SUB = {
+  parent: 'How each child spells and what help they get in tests. Change opens that child’s settings.',
+  tutor: 'How each learner spells and what help they get in tests. Change opens that learner’s settings.',
+  teacher: 'How each child in your class spells and what help they get in tests.',
+};
+const NOUN1 = { parent: 'child', tutor: 'learner', teacher: 'child' };
+/** "Keyboard · hints in tests on": how the child spells and the help in tests, from the child's own setup. */
+export function helpLine(setup, year, name) {
+  const c = P.spellCard(setup, year, name);
+  return (c.lv === 5 ? 'Keyboard' : 'Letter tiles') + ' · hints in tests ' + (c.pf === 'sen' ? 'on' : 'off');
+}
+export function helpTable(main) {
+  if (!adultOnly(main) || needsApi()) return undefined;
+  const role = roleNow();
+  const noun = NOUN1[role];
+  let stopped = false;
+  main.innerHTML = wrap('Grown-ups', W3[role].help, '', '<p class="muted">Finding your ' + noun + 's…</p>');
+  (async () => {
+    const lc = await A.listChildren(childApi());
+    if (stopped) return;
+    if (lc.problem) { showProblem(main, lc.problem); return; }
+    const reads = await A.pool(lc.children, (c) => A.readChild(childApi(), c.id));
+    if (stopped) return;
+    const rows = lc.children.map((c, i) => (reads[i].problem
+      ? '<li class="gh-helprow" data-child="' + esc(c.id) + '"><span><b>' + esc(c.nickname) + '</b><small>' + esc(P.PROBLEM_TEXT[reads[i].problem] || P.PROBLEM_TEXT.other) + '</small></span><button type="button" class="btn btn--ghost" data-retry>Try again</button></li>'
+      : '<li class="gh-helprow" data-child="' + esc(c.id) + '"><span><b>' + esc(c.nickname) + '</b><small>' + esc(helpLine(reads[i].setup, c.year, c.nickname)) + '</small></span>'
+        + '<a class="btn btn--ghost" href="' + childHref(c.id) + '/spelling" aria-label="Change ' + esc(possessive(c.nickname)) + ' help">Change</a></li>')).join('');
+    main.innerHTML = '<section class="wrap page grownups gu gh-page" data-helppage>' + backLink('#/grownups', backName(role))
+      + '<div class="gh-page__head"><h1 class="gh-h1">' + esc(W3[role].help) + '</h1><p class="gh-sub">' + esc(HELP_SUB[role]) + '</p></div>'
+      + '<div class="gh-card gh-card--flat"><h2 class="sr">' + (role === 'tutor' ? 'Learner' : 'Child') + ' and help</h2><ul class="gh-helprows" data-help-table>' + rows + '</ul></div>'
+      + '<p class="gh-help">Changes apply from the ' + noun + '’s next word.</p></section>';
+    main.querySelectorAll('[data-retry]').forEach((b) => b.addEventListener('click', redraw));
+  })();
+  return () => { stopped = true; };
+}
+const backLink = (href, text) => '<a class="gu-back" href="' + esc(href) + '">' + I.back + esc(text) + '</a>';
+
+/* ------------------------------------------------------------- ask for more places (06e2) --- */
+// Spellbright sells nothing and takes no money (D41, TR-107 L0): the page says how to ask. The address is the account's.
+export const ASK_EMAIL = ''; // set when Waystead gives the address; empty sends the grown-up to their account page instead
+export function askMore(main) {
+  if (!adultOnly(main) || needsApi()) return undefined;
+  const role = roleNow();
+  const many = role === 'tutor' ? 'learners' : 'children';
+  let stopped = false;
+  main.innerHTML = wrap('Grown-ups', RD.askMoreFor(role), '', '<p class="muted">One moment…</p>');
+  Promise.all([A.listChildren(childApi()), A.readMe(childApi())]).then(([lc, me]) => {
+    if (stopped) return;
+    const n = lc.children ? lc.children.length : 0;
+    const href = ASK_EMAIL ? 'mailto:' + ASK_EMAIL + '?subject=' + encodeURIComponent('More places on Spellbright') : P.accountHomeHref(accountOrigin(location));
+    main.innerHTML = '<section class="wrap page grownups gu gh-page" data-askpage>' + backLink('#/grownups', backName(role))
+      + '<div class="gh-page__head"><h1 class="gh-h1">' + esc(RD.askMoreFor(role)) + '</h1><p class="gh-sub" data-places>' + esc(RD.placesLine(role, n, me.limit)) + '</p></div>'
+      + '<div class="gh-card gh-card--flat"><p class="gh-card__line">' + esc(RD.askLine(many, !!ASK_EMAIL)) + '</p>'
+      + '<p class="gh-help">' + (role === 'parent' ? 'Children' : role === 'tutor' ? 'Learners' : 'Children') + ' are only ever added on your Waystead account. Nothing is sold inside ' + (role === 'tutor' ? 'a pupil’s' : 'a child’s') + ' pages.</p></div>'
+      + '<a class="gh-quiet" href="#/grownups">Back to ' + esc(backName(role)) + '</a>'
+      + bar('<a class="btn btn--primary" href="' + esc(href) + '"' + (ASK_EMAIL ? '' : ' target="_blank" rel="noopener"') + ' data-email>' + I.ext + (ASK_EMAIL ? 'Email Waystead' : 'Open your Waystead account') + '</a>', ASK_EMAIL ? 'Opens your email app' : EXT_NEW) + '</section>';
   });
   return () => { stopped = true; };
 }
-export function planWeek(main, { cid }) { return !adultOnly(main) || needsApi() ? undefined : planForm(main, cid, null); }
-export function planAny(main) { return !adultOnly(main) || needsApi() ? undefined : planForm(main, '', null); }
-export function editWeek(main, { cid, gid }) { return !adultOnly(main) || needsApi() ? undefined : planForm(main, cid, gid); }
+
+/* ------------------------------------------------------------------ play yourself (TR-46, 06c) --- */
+const YOURSELF_SUB = { words: 'Words you pick to practise', custom: 'Choose your own', tricky: 'Words that need another go', progress: 'Chapters you have passed' };
+const YOURSELF_TITLE = { tricky: 'Your own words to practise again' };
+export function yourself(main) {
+  if (!adultOnly(main)) return undefined;
+  const role = roleNow();
+  const rows = AD.yourselfRows(D.liveYears());
+  main.innerHTML = '<section class="wrap page grownups gu gh-page" data-yourself>' + backLink('#/grownups', backName(role))
+    + '<div class="gh-page__head"><h1 class="gh-h1">' + esc(AD.YOURSELF_TITLE) + '</h1><p class="gh-sub">Your own spelling practice. Children’s results are not affected.</p></div>'
+    + '<ul class="gh-links" data-rows>' + rows.map((r) => '<li><a class="gh-sum" href="' + esc(r.href) + '" data-yrow="' + esc(r.id) + '"><b>' + esc(YOURSELF_TITLE[r.id] || r.title) + '</b><span class="gh-go" aria-hidden="true">' + I.chevron + '</span><small>' + esc(YOURSELF_SUB[r.id] || r.sub) + '</small></a></li>').join('') + '</ul>'
+    + '<hr class="gh-rule"><button type="button" class="gh-quiet gh-danger" data-clearprogress>Clear my progress</button></section>';
+  const clr = main.querySelector('[data-clearprogress]');
+  clr.addEventListener('click', async () => {
+    const yes = await confirmDialog({ title: 'Clear your progress?', body: 'This clears your own chapters and tricky words. Your children’s results are not affected. It can’t be undone.', confirm: 'Clear my progress', keep: 'Keep it', opener: clr });
+    if (!yes) return;
+    if (!W.mayClearProgress('adult')) return;
+    S.resetAll();
+    toast('Progress cleared');
+  });
+  return () => dismissDialog();
+}
+
+/* ------------------------------------------- print, earlier weeks, one past week (05e, 05f, 05g) --- */
+const longDay = (day) => nb(W.dayLabel(day)); // "Fri 20 Nov"
+const rangeLine = (g) => W.dayLabel(g.start).replace(/ \S+$/, '') + ' to ' + W.dayLabel(g.test); // "Sun 15 to Fri 20 Nov"
+const scoreOf = (d, g) => { const rs = W.testResults(d, g); return { right: rs.filter((x) => x.result && x.result.right).length, of: rs.length, rows: rs }; };
+const loadPage = (main, cid, after) => {
+  let stopped = false;
+  let inner = null;
+  loadChild(safeDecode(cid)).then((got) => {
+    if (stopped) return;
+    if (got.problem) { showProblem(main, got.problem); return; }
+    inner = after(got);
+  });
+  return () => { stopped = true; if (typeof inner === 'function') inner(); dismissDialog(); };
+};
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) { /* fall back below */ }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.className = 'sr';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch (e) { return false; }
+}
+
+/** #/grownups/child/:cid/print/:gid: one child's test on one page, to print or copy as text. */
+export function printWeek(main, { cid, gid } = {}) {
+  if (!adultOnly(main) || needsApi()) return undefined;
+  main.innerHTML = wrap('Grown-ups', 'Print', '', '<p class="muted">Loading…</p>');
+  return loadPage(main, cid, ({ child, words: d }) => {
+    const nick = child.nickname;
+    const g = W.groupById(d, safeDecode(gid));
+    const back = backLink(childHref(child.id), nick);
+    if (!g) {
+      main.innerHTML = '<section class="wrap page grownups gu gh-page" data-noprint>' + back + '<div class="card gu-empty"><h1>That week isn’t here</h1><p class="muted">It may have been deleted.</p></div></section>';
+      return undefined;
+    }
+    const sc = scoreOf(d, g);
+    const rows = sc.rows.map((x) => ({ word: x.word, text: x.result ? (x.result.right ? 'Right' : 'To practise again') : 'Not tested' }));
+    const head = nick + ' · Year ' + child.year + ' · Spellbright';
+    const sub = g.name + ' · test ' + longDay(g.test) + (sc.rows.some((x) => x.result) ? ': ' + sc.right + ' of ' + sc.of : '');
+    main.innerHTML = '<section class="wrap page grownups gu gh-page gu-printpage" data-printweek>' + back
+      + '<div class="gh-page__head"><h1 class="gh-h1">Print for ' + esc(nick) + '</h1></div>'
+      + '<div class="gu-paper" data-paper><h2>' + esc(head) + '</h2><p>' + esc(sub) + '</p>'
+      + '<table class="gu-ptable"><thead><tr><th scope="col">Word</th><th scope="col">Result</th></tr></thead><tbody>' + rows.map((r) => '<tr><td>' + esc(r.word) + '</td><td>' + esc(r.text) + '</td></tr>').join('') + '</tbody></table>'
+      + '<p class="small">Only ' + esc(possessive(nick)) + ' results are on this page.</p></div>'
+      + '<p class="gh-help noprint">Printed or copied results show children’s names. Keep them safe.</p>'
+      + '<p class="gu-line noprint" role="status" data-copied hidden>Copied.</p>'
+      + '<button type="button" class="btn btn--ghost gu-copybtn noprint" data-copy>' + I.copy + 'Copy results as text</button>'
+      + '<div class="gh-bar noprint"><button type="button" class="btn btn--primary" data-printnow>' + I.print + 'Print</button></div></section>';
+    main.querySelector('[data-printnow]').addEventListener('click', () => window.print());
+    const copyBtn = main.querySelector('[data-copy]');
+    copyBtn.addEventListener('click', async () => {
+      const text = [head, sub].concat(rows.map((r) => r.word + ': ' + r.text)).join('\n');
+      const ok = await copyText(text);
+      const say = main.querySelector('[data-copied]');
+      if (say) { say.textContent = ok ? 'Copied.' : 'We couldn’t copy. Use Print instead.'; say.hidden = false; }
+    });
+    return undefined;
+  });
+}
+
+/** #/grownups/child/:cid/weeks: finished weeks, newest first, and the deleted ones that can still come back. */
+export function earlierWeeks(main, { cid } = {}) {
+  if (!adultOnly(main) || needsApi()) return undefined;
+  main.innerHTML = wrap('Grown-ups', 'Earlier weeks', '', '<p class="muted">Loading…</p>');
+  let c = null;
+  let problemLine = '';
+  let stopped = false;
+  const id = safeDecode(cid);
+  async function restore(gone) {
+    problemLine = '';
+    const r = await A.changeWords(childApi(), id, (doc) => W.restoreGroup(doc, gone, Date.now()));
+    if (stopped) return;
+    if (r.problem === 'playing' || r.problem === 'no-child') { showProblem(main, r.problem); return; }
+    if (r.problem || r.error) problemLine = (r.problem ? P.PROBLEM_TEXT[r.problem] : r.error) + ' Nothing has been changed.';
+    else c = { ...c, words: W.normalise(r.doc) };
+    draw();
+  }
+  function draw() {
+    const d = c.words;
+    const nick = c.child.nickname;
+    const done = W.liveGroups(d).filter((g) => W.testDone(d, g)).sort((a, b) => (a.start < b.start ? 1 : a.start > b.start ? -1 : 0));
+    const gone = P.childOverview(d, today(), Date.now()).deleted;
+    const rows = done.map((g) => {
+      const s = scoreOf(d, g);
+      return '<li><a class="gh-sum" href="' + weekHref(id, g.id) + '" data-pastweek="' + esc(g.id) + '"><b>' + esc(longDay(g.start) + ': ' + g.name) + '</b><span class="gh-go" aria-hidden="true">' + I.chevron + '</span><small>Test ' + s.right + ' of ' + s.of + '</small></a></li>';
+    }).join('');
+    const left = (x) => Math.max(0, 30 - Math.floor((Date.now() - x.gone) / 86400000));
+    const deleted = gone.length ? '<h2 class="gh-h2">Deleted weeks (' + gone.length + ')</h2><p class="gh-help">You can bring a week back within 30 days.</p><ul class="gh-links" data-deletedweeks>'
+      + gone.map((x) => '<li class="gu-gone" data-gone="' + esc(x.id) + '"><b>' + esc(x.name) + '</b><span class="gh-pill">' + left(x) + ' days left</span><button type="button" class="btn btn--ghost" data-restore="' + esc(x.id) + '">Bring back this week<span class="sr">: ' + esc(x.name) + '</span></button></li>').join('') + '</ul>' : '';
+    main.innerHTML = '<section class="wrap page grownups gu gh-page" data-earlierweeks>' + backLink(childHref(id), nick)
+      + '<div class="gh-page__head"><h1 class="gh-h1">' + esc(possessive(nick)) + ' earlier weeks</h1><p class="gh-sub">These weeks are finished. You can look and use the list again.</p></div>'
+      + (problemLine ? '<p class="gu-line gu-line--warn" role="alert">' + esc(problemLine) + '</p>' : '')
+      + (rows ? '<ul class="gh-links" data-weeks>' + rows + '</ul>' : '<p class="muted" data-noearlier>No finished weeks yet.</p>')
+      + (gone.length ? '' : '<p class="gh-quiet-line">Deleted weeks (0)</p>') + deleted + '</section>';
+    main.querySelectorAll('[data-restore]').forEach((b) => b.addEventListener('click', () => restore(b.dataset.restore)));
+  }
+  loadChild(id).then((got) => {
+    if (stopped) return;
+    if (got.problem) { showProblem(main, got.problem); return; }
+    c = got;
+    draw();
+  });
+  return () => { stopped = true; dismissDialog(); };
+}
+
+/** #/grownups/child/:cid/week/:gid for a finished week: read only, with "Use this list again". A week still running opens the child page. */
+export function pastWeek(main, { cid, gid } = {}) {
+  if (!adultOnly(main) || needsApi()) return undefined;
+  main.innerHTML = wrap('Grown-ups', 'Earlier week', '', '<p class="muted">Loading…</p>');
+  let stopped = false;
+  let inner = null;
+  const id = safeDecode(cid);
+  const wanted = safeDecode(gid);
+  loadChild(id).then((got) => {
+    if (stopped) return;
+    if (got.problem) { showProblem(main, got.problem); return; }
+    const d = got.words;
+    const g = W.groupById(d, wanted);
+    if (g && !g.gone && !W.testDone(d, g)) { inner = childDashboard(main, { cid, gid }); return; }
+    const nick = got.child.nickname;
+    if (!g || g.gone) {
+      main.innerHTML = '<section class="wrap page grownups gu gh-page">' + backLink(weeksHref(id), 'Earlier weeks') + '<div class="card gu-empty"><h1>That week isn’t here</h1><p class="muted">It may have been deleted.</p></div></section>';
+      return;
+    }
+    const s = scoreOf(d, g);
+    const slipped = W.slipped(d, g);
+    const oid = SD.weekListOid(g.id);
+    const haveList = !!oid && ownLists().some((l) => l.id === oid);
+    const chips = (ws, cls = '') => '<span class="gh-chips">' + ws.map((w) => '<span class="gh-wchip' + cls + '">' + esc(w) + '</span>').join('') + '</span>';
+    main.innerHTML = '<section class="wrap page grownups gu gh-page" data-pastweek-page="' + esc(g.id) + '">' + backLink(weeksHref(id), 'Earlier weeks')
+      + '<div class="gh-page__head"><span class="eyebrow">Earlier week · read only</span><h1 class="gh-h1">' + esc(g.name) + '</h1><p class="gh-sub">' + esc(nick + ' · ' + rangeLine(g) + ' · test ' + s.right + ' of ' + s.of) + '</p></div>'
+      + '<div class="gh-note"><p><b>Finished on ' + esc(longDay(g.test)) + '.</b> The words and date can’t change now. The name can.</p></div>'
+      + '<a class="btn btn--ghost" href="' + renameHref(id, g.id) + '" data-rename>Rename this week</a>'
+      + '<h2 class="gh-h2">Words</h2>' + chips(g.words)
+      + (slipped.length ? '<h2 class="gh-h2">To practise again</h2>' + chips(slipped, ' is-miss') : '')
+      + '<hr class="gh-rule"><button type="button" class="gh-quiet gh-danger" data-delete>Delete this week</button>'
+      + '<div class="gh-bar"><button type="button" class="btn btn--primary" data-again>' + I.again + 'Use this list again</button><p class="gh-bar__line">Opens Set a week with these words</p></div></section>';
+    main.querySelector('[data-again]').addEventListener('click', () => {
+      if (haveList) { location.hash = '#/grownups/set/list/' + encodeURIComponent(oid); return; }
+      handOffWords(g.words);
+      location.hash = setHref(id);
+    });
+    const del = main.querySelector('[data-delete]');
+    del.addEventListener('click', async () => {
+      const yes = await confirmDialog({ title: P.deleteQuestion(g.name, nick), body: P.deleteBody(nick), confirm: 'Delete this week', keep: 'Keep it', opener: del });
+      if (!yes || stopped) return;
+      const r = await A.changeWords(childApi(), id, (doc) => ({ doc: W.deleteGroup(doc, g.id, Date.now()) }));
+      if (stopped) return;
+      if (r.problem || r.error) { toast((r.problem ? P.PROBLEM_TEXT[r.problem] : r.error) + ' Nothing has been changed.'); return; }
+      location.hash = weeksHref(id);
+    });
+  });
+  return () => { stopped = true; if (typeof inner === 'function') inner(); dismissDialog(); };
+}

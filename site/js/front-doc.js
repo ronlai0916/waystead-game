@@ -21,8 +21,8 @@ export const SIGNED_OUT = {
 /** The seven jobs of a week, in order, each with a three-to-five-word helper (the same names as the child's path). */
 export const JOBS = [
   { id: 'hello', name: 'Hello words', help: 'Meet each new word' },
-  { id: 'fix', name: 'Fix it in', help: 'Look, say, cover, write' },
-  { id: 'games', name: 'Game day', help: 'Four quick word games' },
+  { id: 'fix', name: 'Fix it in', help: 'Look, say, hide, write' },
+  { id: 'games', name: 'Game day', help: 'Quick word games' },
   { id: 'story', name: 'Story day', help: 'Read, then write sentences' },
   { id: 'practice', name: 'Practice day', help: 'Hear it, then type it' },
   { id: 'test', name: 'Test', help: 'Spoken, no peeking' },

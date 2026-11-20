@@ -2,14 +2,13 @@
 // Run: node --test tests/
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import * as W from '../site/js/words-doc.js';
 import * as Ow from '../site/js/own-doc.js';
 import * as Su from '../site/js/setup-doc.js';
 import * as PR from '../site/js/progress-doc.js';
 import * as T from '../site/js/teach-doc.js';
-import * as A from '../site/js/adult-doc.js';
 import { RULES } from '../site/js/test-guard.js';
 
 const file = (p) => fileURLToPath(new URL('../' + p, import.meta.url));
@@ -110,26 +109,6 @@ test('weekFor: the newest live week whose every word is in the list; one word ou
   assert.equal(T.weekFor(d, WORDS).id, 'a', 'a deleted week is not live');
 });
 
-test('runningWeek and the Set card ticks: a week from this list starts unticked, another week keeps the child ticked', () => {
-  const fromList = res(ada, 'c3');
-  void fromList;
-  let d = W.createGroup(W.emptyDoc(), { id: 'g', name: 'Autumn 2', test: '2026-11-27', words: ['island', 'weight'], today: MON, now: 5 }).doc;
-  const r = T.runningWeek(d, WORDS);
-  assert.deepEqual(r, { from: true, name: 'Autumn 2', test: '2026-11-27' });
-  assert.equal(T.startsTicked(r), false);
-  assert.equal(T.runningLine('Wren', r), 'Wren already has a week from this list, with a test on Fri 27 Nov.');
-  const other = T.runningWeek(d, ['zebra', 'quay']);
-  assert.deepEqual(other, { from: false, name: 'Autumn 2', test: '2026-11-27' });
-  assert.equal(T.startsTicked(other), true);
-  assert.equal(T.runningLine('Wren', other), 'Wren already has a week running: Autumn 2. This adds another week.');
-  assert.equal(T.runningWeek(W.emptyDoc(), WORDS), null);
-  assert.equal(T.runningLine('Wren', null), '');
-  assert.equal(T.startsTicked(null), true);
-  // a week whose test is done is not "running"
-  const done = ada.d;
-  assert.equal(T.runningWeek(done, WORDS), null);
-});
-
 test('toPractise: list order, no repeats, case ignored, each source counts', () => {
   assert.deepEqual(T.toPractise({ words: WORDS, quizMiss: ['Island'], weekHelp: ['weight', 'island'], tricky: ['knife', 'zebra'] }), ['island', 'weight', 'knife']);
   assert.deepEqual(T.toPractise({ words: WORDS }), []);
@@ -172,7 +151,7 @@ const rowsOf = () => [['c1', 'Robin', 3, robin], ['c2', 'Wren', 1, wren], ['c3',
 test('reportText: the whole page names every child and the words; one child names that child only', () => {
   const all = T.reportText({ listName: MASTER.name, day: TODAY, rows: rowsOf(), words: WORDS });
   for (const n of ['Robin', 'Wren', 'Ada', 'Kofi']) assert.match(all, new RegExp('\\b' + n + '\\b'));
-  assert.match(all, /^Autumn 2 spellings\n21 Nov 2026\n12 words · shared with Robin, Wren, Ada and Kofi\n/);
+  assert.match(all, /^Autumn 2 spellings\n21 Nov 2026\n12 words · given for practice to Robin, Wren, Ada and Kofi\n/);
   assert.match(all, /island: To practise: Wren/);
   assert.match(all, /because: No one noted/);
   assert.match(all, /Not sent to Kofi yet\./);
@@ -189,39 +168,24 @@ test('reportText: the whole page names every child and the words; one child name
   assert.match(bad, /Zed \(Year 2\)\nWe can't reach Waystead just now/);
 });
 
-test('the small helpers: dates, plurals, buttons, plan checks', () => {
+test('the small helpers: dates, plurals, lines', () => {
   assert.equal(T.printedLine('2026-11-16'), 'Printed on 16 Nov 2026');
-  assert.equal(T.headLine(12, ['Robin', 'Wren', 'Ada', 'Kofi']), '12 words · shared with Robin, Wren, Ada and Kofi');
-  assert.equal(T.headLine(1, []), '1 word · not shared yet');
+  assert.equal(T.headLine(12, ['Robin', 'Wren', 'Ada', 'Kofi']), '12 words · given for practice to Robin, Wren, Ada and Kofi');
+  assert.equal(T.headLine(1, []), '1 word · not given for practice yet');
   assert.equal(T.printOneLine(12, 'Robin'), '12 words · Robin');
-  assert.equal(T.onePrintLine('Robin'), 'Only Robin’s results will print or copy. Use this when you share with one family.');
-  assert.equal(T.onePrintLine('Chris'), 'Only Chris’s results will print or copy. Use this when you share with one family.');
-  assert.equal(T.setButton(0), 'Set the test for 0 children');
-  assert.equal(T.setButton(1), 'Set the test for 1 child');
-  assert.equal(T.setButton(3), 'Set the test for 3 children');
-  assert.equal(T.pickLine(8), '8 of 10 ticked.');
-  assert.equal(T.pickLine(10), '10 of 10 ticked. Untick one to choose another.');
-  assert.equal(T.setDone('Robin'), 'Set for Robin.');
-  assert.equal(T.setFailed('Wren'), 'Not set for Wren yet.');
+  assert.equal(T.onePrintLine('Robin'), 'Only Robin’s results will print or copy. Use this when you hand it to one family.');
+  assert.equal(T.onePrintLine('Chris'), 'Only Chris’s results will print or copy. Use this when you hand it to one family.');
   assert.equal(T.notReachedLine(['Robin', 'Wren']), 'It hasn\'t reached Robin or Wren yet.');
-  assert.equal(T.sharedLine([]), 'Not shared yet');
-  assert.equal(T.sharedLine(['Robin', 'Wren']), 'Shared with Robin and Wren');
+  assert.equal(T.sharedLine([]), 'Not given for practice yet');
+  assert.equal(T.sharedLine(['Robin', 'Wren']), 'Given for practice to Robin and Wren');
   assert.equal(T.attemptsLine(2), 'Taken 2 times');
   assert.equal(T.attemptsLine(1), 'Taken 1 time');
-  assert.deepEqual(T.firstPick(WORDS), WORDS.slice(0, 10));
-  assert.equal(T.planProblem({ words: [], test: '2026-11-27', name: 'x', today: MON }), 'Tick at least one word.');
-  assert.equal(T.planProblem({ words: ['island'], test: MON, name: 'x', today: MON }), 'The test date needs to be after today.');
-  assert.equal(T.planProblem({ words: ['island'], test: '', name: 'x', today: MON }), 'Please choose a test date.');
-  assert.equal(T.planProblem({ words: ['island'], test: '2026-11-27', name: 'x', today: MON }), '');
-  assert.equal(T.isShort(MON, '2026-11-18'), true);
-  assert.equal(T.isShort(MON, '2026-11-27'), false);
-  assert.equal(T.isShort(MON, ''), false);
   assert.deepEqual(T.liveLists({ a: { name: 'B', words: ['x'], src: 'typed', at: 5, to: [] }, b: { name: 'A', words: ['x'], src: 'typed', at: 9, to: [] }, c: { name: 'C', words: ['x'], src: 'typed', at: 9, to: [], gone: 3 } }).map((x) => x.id), ['b', 'a']);
 });
 
 // ---- wording ---------------------------------------------------------------------------------------------------------------
 const strings = (src) => [...src.matchAll(/'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g)].map((m) => m[1] || m[2] || m[3] || '');
-const FILES = ['site/js/teach-doc.js', 'site/js/teach-views.js'];
+const FILES = ['site/js/teach-doc.js'];
 const lines = (f) => strings(read(f)).filter((s) => !/^\.{1,2}\//.test(s)).map((s) => s.replace(/<[^>]*>/g, ' ').replace(/\\'/g, '\'')).filter((s) => /\s/.test(s.trim()) || /^[A-Z]/.test(s.trim()));
 test('grown-up copy: no banned word, never "class" outside the one scope line, no "pupil", short sentences', () => {
   for (const f of FILES) {
@@ -234,15 +198,14 @@ test('grown-up copy: no banned word, never "class" outside the one scope line, n
       assert.doesNotMatch(s, /\b(?!(?:size|prize|seize|maize|autocapitalize)\b)\w+ize\b/, f + ': ' + s);
     }
   }
-  const sentences = [T.LEDE, T.SCOPE_LINE, T.PERMISSION_LINE, T.HELP_CAPTION, T.KEY_LINE, T.KEEP_SAFE, T.SET_LINE, T.TRICKY_LINE, T.OFFLINE, T.GONE, T.COPY_FAILED, T.WORDS_CAPTION,
-    T.onePrintLine('Robin'), T.hasWeekFromList('Wren', '2026-11-20'), T.hasOtherWeek('Wren', 'Autumn 2'), T.pickLine(10), ...T.STEPS.map((s) => s.text || s.title)];
+  const sentences = [T.SCOPE_LINE, T.PERMISSION_LINE, T.KEY_LINE, T.KEEP_SAFE, T.OFFLINE, T.GONE, T.COPY_FAILED, T.WORDS_CAPTION, T.onePrintLine('Robin')];
   for (const s of sentences) for (const p of s.split(/(?<=[.?!])\s+/)) assert.ok(p.split(/\s+/).length <= 20, p);
   assert.equal(T.SCOPE_LINE, 'Your account holds up to 5 children. Whole classes are not here yet.');
 });
 test('no inline style or script, no storage, and the rules file is pure', () => {
   for (const f of [...FILES, 'site/css/grownups.css']) assert.doesNotMatch(read(f), /style="|<script|\.style\./, f);
-  assert.doesNotMatch(read('site/js/teach-views.js'), /localStorage|sessionStorage|indexedDB/, 'the page keeps nothing about a child');
-  assert.doesNotMatch(read('site/js/teach-views.js'), /\.style\b|setAttribute\('style'/);
+  assert.doesNotMatch(read('site/js/results-views.js'), /localStorage|sessionStorage|indexedDB/, 'the page keeps nothing about a child');
+  assert.doesNotMatch(read('site/js/results-views.js'), /\.style\b|setAttribute\('style'/);
   assert.doesNotMatch(read('site/js/teach-doc.js'), /\b(document|window|fetch|localStorage|sessionStorage)\b|Date\.now|new Date\(\)|Math\.random/, 'no DOM, fetch, clock or random');
 });
 test('the new CSS is all under .gu and sits in its own section', () => {
@@ -258,45 +221,28 @@ test('the new CSS is all under .gu and sits in its own section', () => {
 test('both routes are adult-only, in the router with a parent, and the new files are in the shell', () => {
   assert.equal(RULES['grownups/teach'], 'adult');
   assert.equal(RULES['grownups/teach/:oid'], 'adult');
-  const app = read('site/js/app.js');
-  assert.match(app, /\['grownups\/teach', TV\.home\]/);
-  assert.match(app, /\['grownups\/teach\/:oid', TV\.chapter\]/);
-  assert.match(app, /SB4-WP11 routes/);
   assert.match(read('site/js/test-guard.js'), /SB4-WP11 rules/);
   const sw = read('site/sw.js');
   assert.match(sw, /SB4-WP11 files/);
-  for (const f of ['js/teach-doc.js', 'js/teach-views.js']) assert.ok(sw.includes("'" + f + "'"), f);
+  assert.ok(sw.includes("'js/teach-doc.js'"));
+  // SB5 (WP-E): teach-views.js is gone; its results page is results-views.js listResults (the routes and the shell list are WP-G's)
+  assert.ok(!existsSync(new URL('../site/js/teach-views.js', import.meta.url)));
+  assert.match(read('site/js/results-views.js'), /export function listResults/);
 });
-test('the Menu row, the quiet link, See results and the About sentence', () => {
-  const row = A.MENU_ROWS.find((r) => r.title === 'For teachers');
-  assert.deepEqual(row, { id: 'teach', title: 'For teachers', sub: 'One list for up to 5 children', href: '#/grownups/teach' });
-  assert.equal(A.MENU_ROWS.length, 8);
-  assert.equal(A.MENU_ROWS.findIndex((r) => r.title === 'For teachers'), A.MENU_ROWS.findIndex((r) => r.title === 'Your own chapters') + 1);
-  const gv = read('site/js/grownups-views.js');
-  assert.match(gv, /data-teachlink>For teachers and tutors</);
-  assert.equal((gv.match(/ownLink\b/g) || []).length, 3, 'defined once, used in both branches');
-  assert.match(read('site/js/own-views.js'), /SB4-WP11 \*\//);
-  assert.match(read('site/js/own-views.js'), /data-teach-link/);
-  assert.match(read('site/js/views.js'), /Teachers and tutors: a grown-up\\'s account can hold up to 5 children\. Make one list, share it with them, and see each child\\'s results on one page\./);
+test('See results and the About sentence', () => {
+  // SB5: the foot link "For teachers and tutors" is gone (B9 dropped); the library card says Results, and the About sentence stays
+  assert.match(read('site/js/own-views.js'), /data-results-link/);
+  // SB5 (R4, 06d): the About page has no "up to 5 children" and no sharing between grown-ups; see tests/views-about-sb5.test.js
+  assert.doesNotMatch(read('site/js/views.js'), /up to 5 children|share it with them/);
 });
 test('the overview caption fix is in, for phones', () => {
   assert.match(read('site/css/grownups.css'), /@media \(max-width: 700px\) \{ \.gu \.gu-table caption:not\(\.sr\) \{ display: block; width: auto; \} \}/);
 });
 
-test('runningWeek: a running week from the list stays "from this list" when a newer one is tested', () => {
-  let d = W.createGroup(W.emptyDoc(), { id: 'old', name: 'Running', test: '2026-11-27', words: ['island', 'weight'], today: MON, now: 1 }).doc;
-  d = W.createGroup(d, { id: 'new', name: 'Done one', test: '2026-11-18', words: ['knife'], today: MON, now: 2 }).doc;
-  d = W.addTry(d, { id: 't1', word: 'knife', day: '2026-11-18', group: 'new', kind: 't', tries: 0, peeks: 0, clean: true, now: 3 });
-  assert.deepEqual(T.runningWeek(d, WORDS), { from: true, name: 'Running', test: '2026-11-27' });
-  assert.equal(T.startsTicked(T.runningWeek(d, WORDS)), false);
-});
-
-test('a second press of Set keeps the same week id for a child (the page keeps one id for the visit)', () => {
-  const src = read('site/js/teach-views.js');
-  assert.ok(!/delete gids\[/.test(src), 'an id is never dropped after a save');
-  assert.ok(/refresh\(\{ children: true \}\)/.test(src), 'the Children boxes are drawn again after a save');
-  const mk = (d) => W.createGroup(d, { id: 'same', name: 'Autumn 2', test: '2026-11-27', words: ['island'], today: MON, now: 9 }).doc;
-  assert.equal(W.liveGroups(mk(mk(W.emptyDoc()))).length, 1);
+test('the results page has no Set form (a week is set from Set a week)', () => {
+  const src = read('site/js/results-views.js');
+  assert.ok(!/createPlan|changeWords|data-set-go/.test(src));
+  assert.match(src, /Print for the class/);
 });
 
 test('reportText: a child with no year has no "(Year undefined)"', () => {
@@ -304,7 +250,6 @@ test('reportText: a child with no year has no "(Year undefined)"', () => {
   assert.ok(!/undefined|\(Year/.test(t) && /Zed/.test(t));
 });
 
-test('wording: N-12, and N-10 joins names with "or"', () => {
-  assert.equal(T.SET_LINE, 'Each child practises these words in the game every day, then takes the test on the test date.');
+test('wording: N-10 joins names with "or"', () => {
   assert.equal(T.joinNames(['A', 'B', 'C'], 'or'), 'A, B or C');
 });

@@ -379,12 +379,12 @@ export default function (H) {
     const tray = R(document.querySelector('.keyboard--tray'));
     const boxes = R(document.querySelector('.tileboxes'));
     const all = [...tiles.map((t, i) => ['tile' + i, t]), ...Object.entries(ctl)].filter(([, r]) => r && r.w);
-    let gap = Infinity; let hit = '';
+    let gap = Infinity; let hit = ''; let gapPair = '';
     for (let i = 0; i < all.length; i += 1) for (let j = i + 1; j < all.length; j += 1) {
       const a = all[i][1], b = all[j][1];
       const dx = Math.max(a.x - b.r, b.x - a.r, 0), dy = Math.max(a.y - b.b, b.y - a.b, 0);
       const d = Math.hypot(dx, dy);
-      if (d < gap) gap = d;
+      if (d < gap) { gap = d; gapPair = all[i][0] + '/' + all[j][0]; }
       if (d === 0) hit = all[i][0] + '/' + all[j][0];
     }
     const named = ['.tileline', '.tileword', '.peekrow', '.keyboard--tray', '.testbtns', '.pagehead'].map((s) => [s, document.querySelector(s)]).filter(([, e]) => e);
@@ -394,8 +394,8 @@ export default function (H) {
       if (a.right - 1 > b.left && a.left < b.right - 1 && a.bottom - 1 > b.top && a.top < b.bottom - 1) overlap = named[i][0] + '/' + named[j][0];
     }
     return { vw: innerWidth, vh: innerHeight, sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth,
-      minTileW: Math.min(...tiles.map((t) => t.w)), minTileH: Math.min(...tiles.map((t) => t.h)), tiles: tiles.length, ctl, tray, boxes, gap, hit, overlap,
-      minCtlW: Math.min(...Object.values(ctl).filter(Boolean).map((r) => r.w)), minCtlH: Math.min(...Object.values(ctl).filter(Boolean).map((r) => r.h)) };
+      gapPair, minTileW: Math.min(...tiles.map((t) => t.w)), minTileH: Math.min(...tiles.map((t) => t.h)), tiles: tiles.length, ctl, tray, boxes, gap, hit, overlap,
+      minCtlW: Math.min(...Object.values(ctl).filter((r) => r && r.w).map((r) => r.w)), minCtlH: Math.min(...Object.values(ctl).filter((r) => r && r.w).map((r) => r.h)) };
   })()`;
 
   scene('SB4-WP4 the tray fits at every size, for a child and an adult, in garden and Night', async () => {
@@ -415,11 +415,11 @@ export default function (H) {
           ok(m.sw <= m.cw, id + ': scrolls sideways');
           ok(m.minTileW >= 48 && m.minTileH >= 56, id + ': tiles ' + m.minTileW + ' x ' + m.minTileH);
           ok(m.minCtlW >= 48 && m.minCtlH >= 48, id + ': controls ' + m.minCtlW + ' x ' + m.minCtlH);
-          ok(m.gap >= 7.5, id + ': targets ' + m.gap + ' px apart');
+          ok(m.gap >= 7.5, id + ': targets ' + m.gap + ' px apart ' + (m.gap < 7.5 ? m.gapPair : ''));
           ok(!m.hit, id + ': overlap ' + m.hit);
           ok(!m.overlap, id + ': blocks overlap ' + m.overlap);
           ok(m.ctl.check.y - m.ctl.back.b >= (w >= 820 && h <= 1000 ? 11.5 : 23.5) || m.ctl.check.x >= m.ctl.back.r, id + ': tray to Check ' + (m.ctl.check.y - m.ctl.back.b));
-          ok(m.ctl.peek.y - m.ctl.hear.b >= 23.5, id + ': Hear to Peek ' + (m.ctl.peek.y - m.ctl.hear.b));
+          ok(m.ctl.peek.y - m.ctl.hear.b >= (h <= 400 ? 7.5 : 23.5), id + ': Hear to Peek ' + (m.ctl.peek.y - m.ctl.hear.b)); // S3-D14: 8 px on a phone on its side, 24 elsewhere
           ok(m.ctl.check.x >= m.ctl.peek.r + 8 || m.ctl.peek.x >= m.ctl.check.r + 8 || m.ctl.check.y >= m.ctl.peek.b || m.ctl.peek.y >= m.ctl.check.b, id + ': Peek and Check overlap');
           if (w >= 820 && h <= 1000 && h > 400) {
             ok(m.tray.x >= m.boxes.r - 1, id + ': the tray is on the right (' + Math.round(m.tray.x) + ' vs ' + Math.round(m.boxes.r) + ')');
@@ -585,7 +585,7 @@ export default function (H) {
       ok(m.ctl.check.x >= m.tray.x - 1 && m.ctl.check.r <= m.tray.r + 1, word + ': Check is in the tray column');
       ok(m.ctl.check.y >= m.tray.b - 1 && m.ctl.check.y - m.tray.b <= 16, word + ': Check is ' + (m.ctl.check.y - m.tray.b) + ' px under the tray');
       ok(m.tray.x >= m.boxes.r - 1, word + ': the tray is beside the word');
-      ok(m.ctl.check.h >= 55.5 && m.ctl.skip.h >= 55.5, word + ': Check and Skip are 56 px tall');
+      ok(m.ctl.check.h >= 47.5 && m.ctl.skip.h >= 47.5, word + ': Check and Skip are 48 px tall on a phone on its side (SB5 D11: controls drop from 56 to 48 px there; child.css line 463)');
       ok(m.sw <= m.cw, word + ': sideways scroll');
     }
   });

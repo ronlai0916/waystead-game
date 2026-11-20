@@ -1,0 +1,149 @@
+{
+ "chapter": "y56-ch02",
+ "year": 5,
+ "words": {
+  "conscience": [
+   "What a relief to have a clear conscience after telling the truth!",
+   "Nobody saw him drop the litter, but his conscience made him pick it up!",
+   "Is it your conscience that makes you feel bad when you break a promise?"
+  ],
+  "conscious": [
+   "The sleepy kitten became conscious of the smell of fish.",
+   "He was conscious of the clock ticking during the spelling test.",
+   "Are you conscious of how loud you are being in the library?"
+  ],
+  "soldier": [
+   "The soldier in a smart uniform marched slowly in the parade.",
+   "The toy soldier on my shelf has a tall black hat.",
+   "We made a paper hat for the little tin soldier."
+  ],
+  "stomach": [
+   "My stomach rumbled loudly during the quiet maths lesson.",
+   "After pancakes and jam, my stomach was full and happy.",
+   "Lie on your stomach on the grass and look at the ants."
+  ],
+  "thorough": [
+   "Please be thorough and check every page for spelling mistakes.",
+   "Her search of the garden was so thorough that she found every egg.",
+   "Dad gave the kitchen a thorough clean before the party."
+  ],
+  "twelfth": [
+   "My sister is having her twelfth birthday party on Saturday.",
+   "Which child is standing twelfth in the queue?",
+   "The twelfth page of my book has a picture of a fox."
+  ],
+  "foreign": [
+   "Grandma showed us a coin from a foreign country.",
+   "We heard a foreign language on the beach on holiday.",
+   "Can you read the foreign words on this sweet wrapper?"
+  ],
+  "neighbour": [
+   "The neighbour next door has a fluffy black cat.",
+   "Our neighbour waters the plants when we go on holiday.",
+   "I waved to my neighbour over the garden fence."
+  ],
+  "lightning": [
+   "We counted the seconds between the lightning and the thunder.",
+   "Rain tapped the window, and lightning flashed far away.",
+   "The storm cloud rumbled, and then lightning flashed!"
+  ],
+  "leisure": [
+   "At the weekend I have plenty of leisure time for reading.",
+   "Swimming and cycling are our favourite leisure activities.",
+   "She sat in the garden and read at her leisure."
+  ]
+ },
+ "rounds": {
+  "conscience": 1,
+  "conscious": 0,
+  "soldier": 0,
+  "stomach": 0,
+  "thorough": 0,
+  "twelfth": 0,
+  "foreign": 0,
+  "neighbour": 0,
+  "lightning": 0,
+  "leisure": 0
+ },
+ "rejected": [
+  {
+   "word": "conscience",
+   "round": 0,
+   "s": "A guilty conscience made me tell Mum about the biscuits.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "conscience",
+   "round": 0,
+   "s": "Her conscience would not let her keep the pencil she found.",
+   "reason": "checker: Her neighbour could also stop her keeping the pencil, so the gap has two answers. (also fits: neighbour)"
+  },
+  {
+   "word": "conscience",
+   "round": 0,
+   "s": "Did your conscience nag you when you forgot to share the sweets?",
+   "reason": "checker: A neighbour could also nag you, so the target is not the only answer. (also fits: neighbour)"
+  },
+  {
+   "word": "conscience",
+   "round": 0,
+   "s": "Listen to your conscience and always give back what you borrow.",
+   "reason": "checker: 'Listen to your neighbour' also makes sense, so the gap is unclear. (also fits: neighbour)"
+  },
+  {
+   "word": "soldier",
+   "round": 0,
+   "s": "My grandad was a soldier before he became a baker.",
+   "reason": "machine rule 4: not on the word lists: grandad"
+  },
+  {
+   "word": "soldier",
+   "round": 0,
+   "s": "Did you see the soldier stand perfectly still by the gate?",
+   "reason": "checker: A neighbour could also stand still by the gate, so the clue is too weak. (also fits: neighbour)"
+  },
+  {
+   "word": "stomach",
+   "round": 0,
+   "s": "Which food goes into your stomach after you swallow it?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "lightning",
+   "round": 0,
+   "s": "Did you see that bright lightning flash over the park?",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "lightning",
+   "round": 0,
+   "s": "Lightning is a huge spark of electricity in a storm cloud.",
+   "reason": "checker: It almost repeats the meaning, so it is a definition and not a real practice sentence."
+  },
+  {
+   "word": "leisure",
+   "round": 0,
+   "s": "Grandad takes a walk by the sea in his leisure hours.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "conscience",
+   "round": 1,
+   "s": "With a clear conscience, he handed the lost purse to the teacher.",
+   "reason": "checker: The order is muddled because a clear conscience should come after handing the purse in, not before, so the clue is weak."
+  },
+  {
+   "word": "conscience",
+   "round": 1,
+   "s": "My conscience felt heavy until I owned up about the broken vase.",
+   "reason": "checker: 'My stomach felt heavy' also makes sense, so the target is not the only word that fits. (also fits: stomach)"
+  },
+  {
+   "word": "conscience",
+   "round": 1,
+   "s": "Why did your conscience whisper inside your head after you took the last biscuit?",
+   "reason": "checker: The question sounds unnatural and reads like an accusation, so it is harder for a child to follow."
+  }
+ ],
+ "sitOut": []
+}

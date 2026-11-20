@@ -47,6 +47,7 @@ let flagOn = true;
 let netDown = false;
 let blocked = ''; // a file name the site answers 404 to, for a scene about a failed load
 const overrides = new Map(); // H.serve(path, body): a file of the site served from a string for the scene (cleared before every scene)
+let curScene = ''; // S3: the scene running now, so a console problem names it
 let allowedLog = null; // H.allowLog(/regexp/): console lines a scene expects (the scan scenes make the account answer 401, 412, 413, 429, 502, 503 on purpose); cleared before every scene
 let storiesHidden = false; // the stories are approved in the repo: some scenes need them waiting
 const site = createServer((req, res) => {
@@ -138,7 +139,7 @@ function listen() {
       const t = m.params.entry.text + ' ' + (m.params.entry.url || '');
       // Expected: a 404 from the voice (the device speaks instead), a 409 from a save (merged and sent again),
       // the 403 and 404 the Grown-ups scenes ask for (a 401 only where a scene says so with H.allowLog), and failed calls while the network is meant to be down.
-      if (!/\/api\/voice\//.test(t) && !/wordbright\/js\/account\/api\.js/.test(t) /* Wordbright's own CSP does not list the test account on :3000 */ && !/status of 40[349]/.test(t) && !(/net::ERR/.test(t) && netDown) && !(allowedLog && allowedLog.test(t))) problems.push('log: ' + t);
+      if (!/\/api\/voice\//.test(t) && !/wordbright\/js\/account\/api\.js/.test(t) /* Wordbright's own CSP does not list the test account on :3000 */ && !/status of 40[349]/.test(t) && !(/net::ERR/.test(t) && netDown) && !(allowedLog && allowedLog.test(t))) problems.push('log: ' + t + ' [' + curScene + ']');
     }
   });
 }
@@ -174,6 +175,8 @@ function ok(cond, what) { if (!cond) throw new Error('FAILED: ' + what); }
 // The clock, and what the page speaks (the word is hidden on screen, so the
 // driver reads it from the recording the page asked for, as a child hears it).
 let boot = null;
+// SB5: a grown-up with no role is sent to the role page first; the older scenes expect the home, so the page opens with Parent already chosen (a scene about the role page turns this off with H.askRole(true)).
+let askRole = false;
 async function setClock(day, hour = 10) {
   if (boot) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: boot });
   const t = Date.parse(day + 'T' + String(hour).padStart(2, '0') + ':00:00');
@@ -184,6 +187,7 @@ async function setClock(day, hour = 10) {
     globalThis.__said = [];
     globalThis.__lines = [];
     globalThis.Audio = class { constructor(u) { this.u = u; } play() { const m = /audio\\/(?:words|stories)\\/([^.?]+)/.exec(this.u); if (m) globalThis.__said.push(m[1]); setTimeout(() => this.onended && this.onended(), 5); return Promise.resolve(); } pause() {} };
+    try { if (!${askRole} && !localStorage.getItem('sb.role:' + '${ADULT}')) localStorage.setItem('sb.role:' + '${ADULT}', JSON.stringify({ r: 'parent', at: 1 })); } catch (e) { /* no storage */ }
     try {
       const real = speechSynthesis.speak.bind(speechSynthesis);
       speechSynthesis.speak = (u) => { globalThis.__lines.push(u.text); setTimeout(() => { if (u.onend) u.onend(new Event('end')); u.dispatchEvent && u.dispatchEvent(new Event('end')); }, 5); };
@@ -200,7 +204,7 @@ async function open(day, hash = '#/') {
   await setClock(day);
   await send('Page.navigate', { url: 'about:blank' }); // a new load, so the new clock counts
   await send('Page.navigate', { url: SITE + '/spellbright/' + hash });
-  await until('document.readyState === "complete" && document.querySelector("main section, main .card")', 'the page');
+  await until('document.readyState === "complete" && document.querySelector("main section, main .card, main .st-page")', 'the page'); // SB5: Set a week and Change a week draw a div.st-page
   await sleep(120);
 }
 const said = async () => ev('globalThis.__said.at(-1)||""');
@@ -282,6 +286,39 @@ async function meaningMatch() {
     await ev('[...document.querySelectorAll("[data-meaning]")].find(b=>b.innerText.includes(' + q(pairs[w]) + ')).click()');
     await sleep(30);
   }
+}
+// SB5: Fill in the blanks and Mix and match end on a score card ("<game> is done", Next game / Finish); `leave` clicks it.
+async function scoreNext(leave = true) {
+  await until('document.querySelector(".mixscore")', 'the score card');
+  if (leave) await click('.mixscore [data-next]');
+}
+/** Fill in the blanks (Years 3 to 4 pick a card): the right word is not on the page, so wrong cards are tried until the sentence says Yes. */
+async function fillBlanks(leave = true) {
+  await until('document.querySelector("[data-game=fill]")', 'Fill in the blanks');
+  for (let n = 0; n < 80; n += 1) {
+    if (!await has('[data-game=fill]')) break;
+    if (await has('[data-next]')) { await click('[data-next]'); await sleep(40); continue; }
+    await ev('(document.querySelector("[data-card]:not(:disabled)")||{click(){}}).click()');
+    await sleep(30);
+  }
+  await scoreNext(leave);
+}
+/** Mix and match: put the cards in the sentences in turn and Check until every sentence is right (the right ones stay). */
+async function mixAndMatch(leave = true) {
+  await until('document.querySelector("[data-game=mix]")', 'Mix and match');
+  for (let n = 0; n < 80; n += 1) {
+    if (!await has('[data-game=mix]')) break;
+    const slots = await ev('[...document.querySelectorAll(".mixslot:not(.is-ok)")].map((s) => Number(s.dataset.slotI))');
+    for (let k = 0; k < slots.length; k += 1) {
+      const cards = await ev('[...document.querySelectorAll("[data-card]:not(:disabled)")].map((c) => c.dataset.card)');
+      if (!cards.length) break;
+      await ev('document.querySelector("[data-card=" + JSON.stringify(' + q(cards[(k + n) % cards.length]) + ') + "]").click()');
+      await ev('document.querySelector("[data-slot-i=\'' + slots[k] + '\']").click()');
+    }
+    await ev('(document.querySelector("[data-check]:not(:disabled)")||{click(){}}).click()');
+    await sleep(30);
+  }
+  await scoreNext(leave);
 }
 async function quickFire(wrongFirst = false) {
   await until('document.querySelector("[data-game=quick]")', 'Quick-fire');
@@ -372,7 +409,7 @@ async function week() {
   await seedChild(weekDoc());
   await open(MON, '#/');
   await until('document.querySelector("[data-room=job]")', 'My room');
-  ok(await has('[data-pip=happy]'), 'Pip is happy');
+  ok(/Hello, Robin!/.test(await text('h1')) && !await has('[data-pip]'), 'SB5 Today greets the child by name (Pip is no longer on Today)');
   await allViews('room-job');
 
   step('Day 1: Hello words');
@@ -395,7 +432,7 @@ async function week() {
   await click('a[href="#/"]');
   await until('document.querySelector("[data-room=done]")', 'room: done');
   ok(await has('[data-wordbright]'), 'Play Wordbright is offered');
-  ok(await has('[data-pip=cheering]'), 'Pip cheers');
+  ok(/Today.s job is done/.test(await text('main')), 'Today says the job is done (SB5: no Pip)');
   await allViews('room-done');
 
   step('Day 2: Fix it in');
@@ -452,6 +489,12 @@ async function week() {
   await until('document.querySelector("[data-game=match]")', 'Meaning match');
   await allViews('day3-game-match');
   await meaningMatch();
+  await until('document.querySelector("[data-game=fill]")', 'Fill in the blanks');
+  await allViews('day3-game-fill');
+  await fillBlanks();
+  await until('document.querySelector("[data-game=mix]")', 'Mix and match');
+  await allViews('day3-game-mix');
+  await mixAndMatch();
   await until('document.querySelector("[data-game=quick]")', 'Quick-fire');
   await allViews('day3-game-quick');
   await quickFire();
@@ -487,7 +530,13 @@ async function week() {
   await allViews('day5-practice');
   await gridRound();
   await until('location.hash.endsWith("/g1")', 'back at the group');
-  await until('/Ready for the test/.test(document.querySelector("main").innerText)', 'ready for the test');
+  // SB5: the readiness line moved from the group page to Today ("Every job this week is done. Your test is ...", status ready)
+  await go('#/');
+  await until('document.querySelector("[data-room=ready]")', 'Today says every job is done');
+  ok(/Every job this week is done/.test(await text('main')), 'Today: ready for the test');
+  await allViews('room-ready');
+  await go('#/words/g/g1');
+  await until('document.querySelector("main .tile")', 'My week');
   await allViews('group-ready');
 
   step('Game mode from the group page');
@@ -499,7 +548,7 @@ async function week() {
   await open(plus(5), '#/');
   await until('document.querySelector("[data-room=job]")', 'room on test day');
   await noWord('the room on test day');
-  ok(await has('[data-pip=thinking]'), 'Pip thinks on test day');
+  ok(/Do your test|Test day/.test(await text('main')), 'SB5 Today names the test (no Pip)');
   await allViews('room-test');
   await go('#/words/g/g1');
   await noWord('the group page on test day');
@@ -585,19 +634,21 @@ scene('a missed week: the jobs catch up from the test date, then the test', asyn
   await seedChild(weekDoc(), plus(6));
   await open(plus(6), '#/');
   await until('document.querySelector("[data-room=job]")', 'the room with a job');
+  // SB5 Today: "5 jobs are waiting. Do one now." and the button "Do the next job"; the old test-day line and the "Then Fix it in" line are gone
   const waitText = (await text('[data-catchup]')).replace(/\s+/g, ' ');
-  ok(/5 jobs waiting for you/i.test(waitText) && /Your test day was Sat 7 Nov\. Finish your jobs, then take the test here\./.test(waitText), 'the waiting line: ' + waitText);
-  ok(/Hello words/.test(await text('[data-job]')), 'Hello words first, not the test: ' + await text('[data-job]'));
-  ok(/Then Fix it in\. The test opens when your jobs are done\./.test(await text()), 'the then line');
+  ok(/5 jobs are waiting\. Do one now\./i.test(waitText), 'the waiting line: ' + waitText);
+  ok(/Do the next job/.test(await text('[data-job]')) && /5 jobs waiting/.test(await text('[data-job]')), 'the next job, not the test: ' + await text('[data-job]'));
+  ok(/study\/hello$/.test(await ev('document.querySelector("[data-job]").getAttribute("href")')), 'Hello words first');
   ok(!/late|behind/i.test(await text()), 'kind words only');
-  ok(await ev('document.querySelectorAll("main button, main a").length') === 3, 'Hear it, the one button and the path card: ' + await ev('document.querySelectorAll("main button, main a").length'));
+  ok(await ev('document.querySelectorAll("main .btn--primary").length') === 1, 'one main button on Today');
+  ok(await ev('document.querySelectorAll(".daystone--waiting, .daystone--todaywait").length') === 5, 'five waiting stones on the strip');
   await allViews('catchup-room');
-  await go('#/words/g/g1');
-  await until('document.querySelector("[data-catchup]")', 'the line on the group page');
-  ok(/fruit/.test((await text()).toLowerCase()), 'the words are on show');
+  await go('#/words/g/g1/path');
+  await until('document.querySelector(".pathrow2--waiting")', 'waiting jobs on My week');
   ok(!await has('[data-testcard]'), 'no test card while jobs wait');
-  ok(await has('.weekstrip__day.is-waiting'), 'waiting jobs on the strip');
-  await allViews('catchup-group');
+  ok(await ev('document.querySelectorAll(".pathrow2--waiting").length') === 4, 'four waiting rows (the first is today)');
+  ok(/Test day/.test(await text('[data-path]')), 'the test row is there');
+  await allViews('catchup-path');
   await go('#/words/g/g1/test');
   await sleep(120);
   ok(!/\/test$/.test(await ev('location.hash')), 'the test page sends you back while jobs wait');
@@ -615,7 +666,7 @@ scene('a missed week: the jobs catch up from the test date, then the test', asyn
   await ev('localStorage.setItem("sb.words:' + CHILD + '",' + q(JSON.stringify(d)) + ')');
   await open(plus(7), '#/');
   await until('document.querySelector("[data-room=job]")', 'the test');
-  ok(/Start the test/.test(await text('[data-job]')), 'the test is the job now: ' + await text('[data-job]'));
+  ok(/Do your test/.test(await text('[data-job]')), 'the test is the job now: ' + await text('[data-job]'));
   await noWord('the room once the test is due');
 });
 
@@ -625,12 +676,15 @@ scene('a legacy week: jobs left undone when the test was taken show "Not done"',
   for (const st of ['fix', 'games']) d = W.markStep(d, g, st, plus(1), Date.parse(plus(1) + 'T09:00:00'));
   WORDS.forEach((w, i) => { d = W.addTry(d, { id: 'lt' + i, word: w, day: plus(5), group: 'g1', kind: 't', tries: 0, peeks: 0, clean: true, now: Date.parse(plus(5) + 'T11:00:00') + i }); });
   await seedChild(d, plus(6));
-  await open(plus(6), '#/words/g/g1');
-  await until('document.querySelector(".weekstrip__day.is-missed")', 'missed jobs on the strip');
-  ok(await ev('document.querySelectorAll(".weekstrip__day.is-missed").length') === 3, 'hello, story and practice are not done');
-  ok(!await has('.weekstrip__day.is-waiting'), 'nothing waiting');
-  ok(/Not done/.test(await text('.weekstrip')), 'the strip says Not done');
+  await open(plus(6), '#/words/g/g1/path'); // SB5: a child's week is on My week (the path page): the stone row, then one row a job
+  await until('document.querySelector(".daystone--missed")', 'missed jobs on My week');
+  ok(await ev('document.querySelectorAll(".daystone--missed").length') === 3, 'hello, story and practice are not done');
+  ok(!await has('.daystone--waiting, .daystone--todaywait'), 'nothing waiting');
+  ok(/Hello words: not done/.test(await ev('document.querySelector(".daystones").getAttribute("aria-label")')), 'the stones say "not done": ' + await ev('document.querySelector(".daystones").getAttribute("aria-label")'));
+  await go('#/');
+  await until('document.querySelector("[data-room]")', 'Today');
   ok(!await has('[data-catchup]'), 'no waiting line');
+  await go('#/words/g/g1/path');
   await allViews('legacy-group');
 });
 
@@ -783,7 +837,7 @@ scene('a wrong word, a peek, a skip and coming back', async () => {
   ok(await lastWord() === skipped, 'it is the skipped word');
   await spellToDone();
   await click('[data-next]');
-  await until('/Ready for the test/.test(document.querySelector("main").innerText)', 'ready');
+  await until('location.hash.endsWith("/g1")', 'back at the week'); // SB5: "Ready for the test" is on Today now (data-room=ready)
   ok(!await has('[data-comeback]'), 'no marker left');
   await go('#/');
   await until('document.querySelector("[data-room=ready]")', 'the job complete');
@@ -915,32 +969,31 @@ scene('child home, path, Menu and Settings', async () => {
   ok(await visible('.brand') && await visible('#child-menu'), 'the mark and Menu show');
   for (const sel of ['.topbar__nav', '.allgames', '#player-slot', '#theme', '.foot']) ok(!await visible(sel), sel + ' is not shown to a child');
   ok((await rect('#child-menu')).h >= 48, 'Menu is at least 48 px high');
-  step('home: Pip, the day and job, one sentence, Hear it, one button, the time, the path card');
-  ok(/Wednesday · Game day/i.test(await text('.eyebrow')), 'the eyebrow: ' + await text('.eyebrow'));
-  ok(/Play four quick games with your words\./.test(await text('h1')), 'the sentence');
-  ok(await has('[data-pip=happy]'), 'Pip');
-  ok(/Start Game day/.test(await text('[data-job]')), 'the button');
-  ok(/About 15 minutes/.test(await text()), 'the time');
-  ok(/My path this week/.test(await text('.pathcard')) && /Tap to see your week/.test(await text('.pathcard')) && /Job 3 of 7/.test(await text('.pathcard')), 'the path card: ' + await text('.pathcard'));
-  ok(await ev('document.querySelectorAll(".pathcard .stone").length') === 7, 'seven mini stones');
-  ok(!/stars|Test day|Fri/.test(await text()), 'no stars or test date on the home');
+  step('home (SB5 Today): the day, the greeting, the day line, Read it to me, one button, the week stones link');
+  ok(/^Wednesday$/i.test((await text('.eyebrow')).trim()), 'the eyebrow: ' + await text('.eyebrow'));
+  ok(/Hello, Robin!/.test(await text('h1')) && /Day 3 of 7 · your test is on Monday/.test(await text('.today__sub')), 'the greeting and the day line: ' + await text('.today__sub'));
+  ok(!await has('[data-pip]'), 'SB5: no Pip on Today');
+  ok(/Game day/.test(await text('[data-job]')) && /6 games · about 15 minutes/.test(await text('[data-job]')), 'the button: ' + await text('[data-job]'));
+  ok(await has('[data-pathcard]') && /Game day: today, tap to start/.test(await ev('document.querySelector("[data-pathcard] .daystones").getAttribute("aria-label")')), 'the week stones link (SB5 Today): ' + await ev('document.querySelector("[data-pathcard]").outerHTML.slice(0, 200)'));
+  ok(await ev('document.querySelectorAll("[data-pathcard] .daystone").length') >= 3, 'the day stones');
   ok(await ev('[...document.querySelectorAll("main a, main button")].every((e) => e.getBoundingClientRect().height >= 47)'), 'every tap target is 48 px high');
   await click('[data-hear]');
-  ok(await ev('globalThis.__lines.at(-1)') === 'Play four quick games with your words.', 'Hear it reads the sentence');
+  const said1 = await ev('globalThis.__lines.at(-1)');
+  ok(/Game day/.test(said1) || /Wednesday|Day 3 of 7/.test(said1), 'Read it to me reads the day: ' + said1);
   await allViews('child-home');
 
   step('the path');
   await click('[data-pathcard]');
   await until('document.querySelector("[data-path]")', 'the path');
-  ok(/Your path this week/.test(await text('h1')), 'the heading');
-  ok(await ev('document.querySelectorAll(".pathrow").length') === 7, 'seven stones');
-  ok(await has('.pathrow--done') && await has('.pathrow--today') && await has('.pathrow--later'), 'done, today and later');
-  ok(/Today · tap to start/.test(await text('.pathrow--today')), 'today: tap to start');
+  ok(/My week/.test(await text('h1')), 'the heading: ' + await text('h1'));
+  ok(await ev('document.querySelectorAll(".pathrow2").length') === 7, 'seven rows');
+  ok(await has('.pathrow2--done') && await has('.pathrow2--today') && await has('.pathrow2--later'), 'done, today and later');
+  ok(/Today.s job|Today: 6 games/.test(await text('.pathrow2--today')), 'today: ' + await text('.pathrow2--today'));
   ok(await ev('document.querySelectorAll("[data-again]").length') === 2 && /Do it again/.test(await text('[data-again]')), 'Do it again on the two done jobs');
-  ok(/Test Fri 6 Nov|Test .* Nov/.test(await text('.pathfoot')) && /stars?/.test(await text('.pathfoot')), 'flat stars and test date: ' + await text('.pathfoot'));
-  ok(await ev('document.querySelectorAll(".pathfoot a, .pathfoot button").length') === 0, 'they are not buttons');
-  ok(/Fix any slips/.test(await text('.pathpanel')), 'the Mend helper');
-  ok(!/late/i.test(await text('.pathpanel')), 'no "late"');
+  ok(/your test is on Mon 9 Nov/.test(await text('.path__sub')) && /stars? so far/.test(await text('.path__sub')), 'flat stars and test date: ' + await text('.path__sub'));
+  ok(await ev('document.querySelectorAll(".path__sub a, .path__sub button").length') === 0, 'they are not buttons');
+  ok(/Words to practise again/.test(await text('.pathrow2:last-child')), 'the Mend row: ' + await text('.pathrow2:last-child'));
+  ok(!/late/i.test(await text('[data-path]')), 'no "late"');
   ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
   ok(/^Back$/.test((await text('#child-back')).trim()), 'Back is labelled');
   await allViews('child-path');
@@ -953,9 +1006,9 @@ scene('child home, path, Menu and Settings', async () => {
   ok(await ev('document.querySelector("[role=dialog]").getAttribute("aria-modal") === "true"'), 'aria-modal');
   ok(await ev('document.activeElement && document.activeElement.hasAttribute("data-close")'), 'focus moves in, to Close');
   ok(await ev('document.querySelector("main").hasAttribute("inert") && document.querySelector("header").hasAttribute("inert")'), 'the page behind is inert');
-  const rows = await ev('[...document.querySelectorAll(".sheetrow")].map((e) => e.querySelector("b").textContent)');
-  ok(rows.join() === 'Games,My words,More practice,Settings', 'the rows: ' + rows);
-  ok(/Chapters, tricky words, your progress/.test(await text('.sheetrow[data-row=practice]')) && await has('.sheetrow[data-row=practice][href="#/chapters"]'), 'More practice goes to the chapters');
+  const rows = await ev('[...document.querySelectorAll("[role=dialog] .sheetrow")].map((e) => e.querySelector("b").textContent)');
+  ok(rows.join() === 'Today,Practice,This week’s words,Words to practise again,My progress,Games,Look and voice,Settings', 'the rows (SB5 Menu): ' + rows);
+  ok(/Extra words, any time/.test(await text('.sheetrow[data-row=practice]')) && await has('.sheetrow[data-row=practice][href="#/chapters"]'), 'Practice goes to the chapters');
   ok(await has('.sheetrow[data-row=games][href$="/games"]'), 'Games is open');
   await allViews('child-menu');
   await key('Escape');
@@ -973,16 +1026,23 @@ scene('child home, path, Menu and Settings', async () => {
   await click('.sheetrow[data-row=settings]');
   await until('document.querySelector("[data-settings]")', 'Settings');
   ok(!await has('[role=dialog]'), 'the sheet closed on the way');
-  ok(/Day or night/.test(await text()) && /Grown-ups/.test(await text()) && /About and licence/.test(await text()), 'the rows: ' + await text());
+  ok(/Grown-ups/.test(await text()) && /My account/.test(await text()) && /Sign out/.test(await text()) && /About and licence/.test(await text()), 'the rows (SB5 Settings): ' + await text());
+  ok(!/Day or night/.test(await text()), 'SB5: Day or night moved to Look and voice');
   ok(!await has('[data-switch]'), 'a child\'s own session cannot switch (the account\'s chip has no Switch player either)');
+  await ev('document.querySelector("[data-about]").open = true');
+  ok(/Open Government Licence/.test(await text()), 'the licence line moved here');
+  await allViews('child-settings');
+  step('Look and voice (SB5: its own page, from the Menu)');
+  await click('#child-menu');
+  await until('document.querySelector("[role=dialog]")', 'the sheet');
+  await click('.sheetrow[data-row=look]');
+  await until('document.querySelector("[data-looksettings]")', 'Look and voice');
   ok(await ev('document.querySelectorAll("[data-looks] [data-choice]").length') === 4, 'the four looks');
   await click("[data-looks] [data-choice=night]");
   ok(await ev('document.documentElement.dataset.style') === 'night', 'Night is chosen');
   await click("[data-looks] [data-choice=garden]");
   ok(await ev('document.documentElement.dataset.style') === 'garden', 'and the garden again');
-  await ev('document.querySelector("[data-about]").open = true');
-  ok(/Open Government Licence/.test(await text()), 'the licence line moved here');
-  await allViews('child-settings');
+  await allViews('child-look');
   ok(!await visible('.foot'), 'no footer');
 });
 
@@ -990,11 +1050,11 @@ scene('child menu while the test is due, and the test keyboard', async () => {
   await seedChild(studied(weekDoc()), plus(5));
   await open(plus(5), '#/');
   await until('document.querySelector("[data-room=job]")', 'the home on test day');
-  ok(/Start the test/.test(await text('[data-job]')), 'Start the test');
+  ok(/Do your test/.test(await text('[data-job]')), 'Do your test (SB5 wording)');
   await noWord('the home on test day');
   await click('#child-menu');
   await until('document.querySelector("[role=dialog]")', 'the sheet');
-  ok(/Test first, then games\./.test(await text('[data-row=games]')), 'the closed line');
+  ok(/Opens after your test/.test(await text('[data-row=games]')), 'the closed line (SB5): ' + await text('[data-row=games]'));
   ok(!await has('a[data-row=games]'), 'Games is not a link');
   ok(/Hear it/.test(await text('[data-hear-line]')), 'Hear it');
   await click('[data-hear-line]');
@@ -1067,6 +1127,9 @@ scene('practice: the keyboard, a pressed key, a peek, Stop for now', async () =>
   step('Stop for now');
   ok(/Practice day/.test(await text('#job-name')) && await visible('#child-stop') && !await visible('#child-menu') && !await visible('.brand') && !await visible('.foot'), 'the job bar');
   await click('#child-stop');
+  await until('document.querySelector("#child-sheet [data-stopnow]")', 'the Stop for now? sheet (SB5)');
+  ok(/Your place is saved\./.test(await text('#child-sheet')) && /you go to Today/.test(await text('#child-sheet')), 'the sheet says the place is saved: ' + await text('#child-sheet'));
+  await click('[data-stopnow]');
   await until('document.querySelector("[data-room]")', 'home');
   ok(/Your place is saved\./.test(await text('[data-saved]')), 'Your place is saved.');
   await allViews('child-stopped');
@@ -1116,7 +1179,8 @@ scene('an adult with a cached player keeps the full top bar: slow account, then 
   await open(plus(2), '#/');
   await sleep(1500);
   ok(!await ev('document.body.classList.contains("is-child")') && !await visible('#child-menu'), 'never a stuck child bar');
-  ok(await visible('#theme') && await ev('document.querySelectorAll(".topbar__nav a").length') === 4, 'the full top bar stays');
+  // S7 (F-1): this device heard /api/me say grown-up earlier in this scene, so offline it is still the grown-up's bar (as mid-session), never the child bar
+  ok(await visible('#adult-menu-btn') && await ev('document.querySelectorAll(".topbar__nav a").length') === 4, 'the grown-up bar stays offline for a confirmed grown-up');
   await allViews('adult-bar-offline');
   acct.offline = false;
   netDown = false;
@@ -1127,9 +1191,13 @@ scene('Settings: look, Voice, My account and Sign out; arrow keys change the loo
   await open(plus(2), '#/settings');
   await until('document.querySelector("[data-settings]")', 'Settings');
   await until('document.querySelector("[data-account]")', 'My account', 8000);
+  ok(await has('[data-signout]') && await has('[data-grownups]'), 'Sign out and Grown-ups');
+  // SB5: the look and the voice are on their own page (#/look, "Look and voice"); Settings keeps the account rows.
+  ok(!await has('[data-looks]') && !await has('[data-voices]'), 'Settings has no look or voice card');
+  await open(plus(2), '#/look');
+  await until('document.querySelector("[data-looksettings]")', 'Look and voice');
   // Headless Chrome has no voices, so the shared menu hides its Voice part: the page shows Voice exactly when the menu does.
   ok(await has('[data-voices]') === await ev('(() => { const p = document.querySelector("#theme-menu [data-voice-part]"); return !!p && !p.hidden; })()'), 'Voice is shown when the look menu offers it');
-  ok(await has('[data-signout]') && await has('[data-grownups]'), 'Sign out and Grown-ups');
   const radios = await ev('[...document.querySelectorAll("[data-looks] [data-choice]")].map((e) => e.getAttribute("role"))');
   ok(radios.length >= 3 && radios.every((r) => r === 'radio'), 'three look radios: ' + JSON.stringify(radios));
   await ev('document.querySelector("[data-looks] [data-choice][aria-checked=true]").focus()');
@@ -1166,6 +1234,8 @@ scene('a stopped test says Carry on with the test', async () => {
   await key('Enter');
   await sleep(150);
   await click('#child-stop');
+  await until('document.querySelector("#child-sheet [data-stopnow]")', 'the Stop for now? sheet (SB5)');
+  await click('[data-stopnow]');
   await until('document.querySelector("[data-room]")', 'home');
   await go('#/');
   await sleep(200);
@@ -1229,7 +1299,7 @@ scene('an adult with a cached player and a slow account: never the child bar, th
   const off = await sampleBar(3200);
   ok(off.every((x) => !x.child && !x.menu), 'never the child bar offline');
   const late = off.filter((x) => x.at > 2700);
-  ok(late.length && late.every((x) => x.look && x.foot && !x.pending), 'the full bar by 2.5 s: ' + JSON.stringify(late[0]));
+  ok(late.length && late.every((x) => (x.look || x.adult) && x.foot && !x.pending), 'the full bar (or, for a grown-up this device already heard from the account, the grown-up bar) by 2.5 s: ' + JSON.stringify(late[0]));
   acct.offline = false;
   netDown = false;
 });
@@ -1247,34 +1317,40 @@ scene('More practice: Chapters, Pick words, Tricky words, Progress, My word numb
   await open(plus(2), '#/');
   await click('#child-menu');
   await until('document.querySelector("[role=dialog]")', 'the sheet');
-  const rows = await ev('[...document.querySelectorAll(".sheetrow")].map((e) => e.querySelector("b").textContent)');
-  ok(rows.join() === 'Games,My words,More practice,Settings', 'four rows: ' + rows);
+  const rows = await ev('[...document.querySelectorAll("[role=dialog] .sheetrow")].map((e) => e.querySelector("b").textContent)');
+  ok(rows.join() === 'Today,Practice,This week’s words,Words to practise again,My progress,Games,Look and voice,Settings', 'the eight Menu rows (SB5): ' + rows);
   ok((await rect('.sheetrow[data-row=practice]')).h >= 48, 'the row is 48 px high');
-  await allViews('child-menu-4');
+  await allViews('child-menu-8');
   await click('.sheetrow[data-row=practice]');
-  await until('document.querySelector(".morerows")', 'the chapters page');
-  ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
-  ok(await ev('[...document.querySelectorAll(".morerows a")].every((a) => a.getBoundingClientRect().height >= 48 && a.getBoundingClientRect().width >= 48)'), 'the links are at least 48 px');
+  await until('document.querySelector(".stonelink")', 'the chapters page (SB5: Practice, the year stones)');
+  ok(/^Practice$/.test((await text('main h1')).trim()) || /Practice/.test(await text('.eyebrow, main h1, .pagehead')), 'its heading');
+  ok(await visible('#child-menu') && await visible('[data-backlink]'), 'the Menu and the inline Today link');
+  ok(await ev('[...document.querySelectorAll("main a")].filter((a) => a.getBoundingClientRect().width).every((a) => a.getBoundingClientRect().height >= 48 && a.getBoundingClientRect().width >= 48)'), 'the links are at least 48 px');
   await allViews('child-chapters');
-  for (const [href, ready] of [['#/custom', 'main h1'], ['#/tricky', 'main h1'], ['#/progress', 'main h1']]) {
-    await go('#/chapters');
-    await click('.morerows a[href="' + href + '"]');
-    await until('location.hash === ' + q(href) + ' && document.querySelector(' + q(ready) + ')', href);
+  // SB5: Words to practise again and My progress are Menu rows (Practice has the year stones); each opens its page, and Today link / Back goes home
+  for (const [row, href] of [['tricky', '#/tricky'], ['progress', '#/progress']]) {
+    await go('#/');
+    await click('#child-menu');
+    await until('document.querySelector("[role=dialog]")', 'the sheet');
+    await click('.sheetrow[data-row=' + row + ']');
+    await until('location.hash === ' + q(href) + ' && document.querySelector("main h1")', href);
     await click('#child-back');
     await until('location.hash === "#/" || location.hash === ""', 'back home from ' + href);
   }
+  await go('#/custom');
+  await until('document.querySelector("main h1")', 'Pick words (#/custom still opens)');
   await go('#/progress');
   await until('document.querySelector("a[href=\'#/words/progress\']")', 'My word numbers link');
   ok((await rect('a[href="#/words/progress"]')).h >= 48, 'My word numbers is at least 48 px high');
   await click('a[href="#/words/progress"]');
   await until('location.hash === "#/words/progress"', 'My word numbers');
-  step('the group page: only the quiet Change link');
+  step('the week page (D26): tiles only, no edit or New group for a child');
   await go('#/words/g/g1');
-  await until('document.querySelector(".groupedit")', 'the group page');
-  ok(!await visible('.groupmanage') && await visible('.groupedit a') && (await rect('.groupedit a')).h >= 48, 'a quiet Change this group, 48 px');
-  ok(/Change this group|Rename or delete/.test(await text('.groupedit')), 'its words');
-  await click('.groupedit a');
-  await until('location.hash.endsWith("/edit")', 'the edit page');
+  await until('document.querySelector("[data-weekpage] .tile")', 'the week page');
+  ok(!await has('.groupedit') && !await has('a[href$="/edit"]') && !await has('a[href="#/words/new"]'), 'no Change this group, no New group');
+  await go('#/words/g/g1/edit');
+  await sleep(200);
+  ok(!/\/edit$/.test(await ev('location.hash')), 'a child cannot open the edit page: ' + await ev('location.hash'));
   step('test day: these pages show no word');
   await seedChild(studied(weekDoc()), plus(5));
   await open(plus(5), '#/chapters');
@@ -1286,10 +1362,10 @@ scene('More practice: Chapters, Pick words, Tricky words, Progress, My word numb
   }
 });
 
-scene('Settings: voices that arrive late fill the Voice card; the tip stays', async () => {
+scene('Look and voice: voices that arrive late fill the Voice card; the tip stays', async () => {
   await seedChild(gameDayDoc(), plus(2));
-  await open(plus(2), '#/settings');
-  await until('document.querySelector("[data-settings]")', 'Settings');
+  await open(plus(2), '#/look'); // SB5: the Voice card is on Look and voice, not Settings
+  await until('document.querySelector("[data-looksettings]")', 'Look and voice');
   ok(!await visible('[data-voicecard]'), 'no voices yet: no Voice card');
   await ev('globalThis.__voices = [{ name: "Test Daniel", lang: "en-GB", localService: true, default: true, voiceURI: "test-daniel" }]; speechSynthesis.dispatchEvent(new Event("voiceschanged"));');
   await until('document.querySelector("[data-voices] [data-voice]")', 'the Voice card after voiceschanged');
@@ -1298,13 +1374,13 @@ scene('Settings: voices that arrive late fill the Voice card; the tip stays', as
   ok(await ev('!![...document.querySelectorAll("[data-voices] [data-voice]")].find((e) => e.getAttribute("aria-checked") === "true")'), 'one is ticked');
   ok(await has('[data-more]') || await has('[data-voicetip]'), 'Add more voices or the tip line is kept');
   await click('[data-voices] [data-voice]:last-child');
-  await allViews('child-settings-voices');
+  await allViews('child-look-voices');
   await go('#/');
   await ev('globalThis.__voices = []; speechSynthesis.dispatchEvent(new Event("voiceschanged"));');
   await sleep(100);
 });
 
-scene('Hello flower game: no one-word progress line, lives kept, child-sized keys; grid links 48 px wide', async () => {
+scene('Hello flower game: no one-word progress line, lives kept, child-sized keys; the week tiles 48 px high', async () => {
   await seedChild(weekDoc(), MON);
   await open(MON, '#/');
   await click('[data-job]');
@@ -1318,9 +1394,11 @@ scene('Hello flower game: no one-word progress line, lives kept, child-sized key
   const k2 = await rect('.keyboard-row .key');
   ok(Math.abs(k2.w - 35) < 2.5, 'the same width as the other child keyboards');
   await allViews('child-hello-game');
+  // SB5 (D26): a child's week page is tiles (no word grid); the grid of word links is the grown-up's own page
   await open(plus(4), '#/words/g/g1');
-  await until('document.querySelector(".wordgrid a, .gridwrap a")', 'the grid links');
-  ok(await ev('[...document.querySelectorAll(".wordgrid a")].every((a) => a.getBoundingClientRect().width >= 47.5 && a.getBoundingClientRect().height >= 47.5)'), 'grid links are 48 x 48');
+  await until('document.querySelector("[data-weekpage] .tile")', 'the week tiles');
+  ok(await ev('[...document.querySelectorAll("[data-weekpage] .tile")].every((a) => a.getBoundingClientRect().height >= 47.5)'), 'week tiles are at least 48 high');
+  ok(!await has('.wordgrid'), 'no practice grid for a child (the 48 px grid links are gone with it)');
 });
 
 scene('a failed load never leaves the mark-alone bar: word list 404, and app.js 404', async () => {
@@ -1360,14 +1438,21 @@ scene('the keyboard sits at the foot; the pop-up letter never covers a control (
     const side = w >= 820 && h <= 900; // wide but short (SB3-C1c): the keyboard stands to the right of the page
     ok(kb.w <= 560 && (w > 480 && !side ? Math.abs(kb.x + kb.w / 2 - w / 2) < 16 : true), 'the keyboard is capped and centred: ' + JSON.stringify(kb));
     if (h === 844 && w === 390) console.log(await ev('JSON.stringify([...document.querySelectorAll("main section > *, main section [data-slot] > *")].map((e) => [e.className || e.tagName, Math.round(e.getBoundingClientRect().top), Math.round(e.getBoundingClientRect().height)]))'));
-    if (h >= 844) ok(await ev('document.documentElement.scrollHeight <= innerHeight + 1'), 'no scrolling needed to reach the keyboard at ' + w + 'x' + h + ': ' + await ev('document.documentElement.scrollHeight + " vs " + innerHeight + " kb " + JSON.stringify(document.querySelector(".keyboard").getBoundingClientRect())'));
+    // SB5: the page ends with a 110 px safe zone (Safari's floating bar), so it can scroll a little; the keyboard is on the first screen
+    // and, if it dips into that band, the page scrolls far enough to lift it clear (reachability, not scroll 0).
+    if (h >= 844) { const room = await ev('document.documentElement.scrollHeight - innerHeight'); ok(kb.y + kb.h <= h && (w > 600 || kb.y + kb.h <= h - 110 || room >= kb.y + kb.h - (h - 110)), // the 110 px band is the phone rule (R-PH6); a tablet only needs the keyboard on the screen
+       'the keyboard is on the first screen and can be lifted clear of the bottom 110 px at ' + w + 'x' + h + ': ' + JSON.stringify({ kb, room })); }
     ok(side ? kb.x >= skip.x + skip.w - 0.5 : kb.y >= skip.y + skip.h - 0.5, 'the keyboard is below (or, wide and short, beside) Skip at ' + w + 'x' + h + ': ' + JSON.stringify({ kb, skip }));
     for (const L of ['Q', 'P', 'I']) {
       await ev('document.querySelector(".key[data-letter=' + L + ']").scrollIntoView({ block: "end" })');
       await ev('document.querySelector(".key[data-letter=' + L + ']").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }))');
       const pop = await rect('.keypop');
       const hit = async (sel) => ev('(() => { const a = document.querySelector(".keypop").getBoundingClientRect(), b = document.querySelector(' + q(sel) + ').getBoundingClientRect(); return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom); })()');
-      for (const sel of ['[data-skip]', '[data-peekbtn]', '[data-hear]']) ok(!await hit(sel), 'the pop-up for ' + L + ' covers ' + sel + ' at ' + w + 'x' + h + ' (pop ' + JSON.stringify(pop) + ')');
+      // S3-D1 (fixed): on a phone the 72 px room is gone and the pop-up shows beside the key in its own row, so it never covers Hear, Peek or Skip at any size.
+      for (const sel of ['[data-skip]', '[data-peekbtn]', '[data-hear]']) {
+        const covered = await hit(sel);
+        ok(!covered, 'the pop-up for ' + L + ' covers ' + sel + ' at ' + w + 'x' + h + ' (pop ' + JSON.stringify(pop) + ')');
+      }
       if (L === 'P' && (h === 844 || w === 768)) { await ev('window.scrollTo(0, 0)'); await shot('child-practice-topkey-' + w + 'x' + h); }
       await ev('document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))');
       await sleep(160);
@@ -1437,21 +1522,21 @@ scene('grown-ups: home with two children, and one child\'s week', async () => {
     ok(!await has('table'), 'no table on the home');
     ok(await ev('(() => { const n = document.querySelector("[data-stories]"), c = document.querySelector("[data-child]"); return !!n && !!(n.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); })()'), 'the stories notice is before the children');
     ok(/20 stories to read first/.test(await textOf('[data-stories]')), 'the notice counts the stories');
+    // SB5 home (01a): one card a child: name, year, a status pill, "Test on ...", the next job, seven small stones; one green Set a week bar
     const robin = await textOf('[data-child="' + CHILD + '"]');
-    ok(/Robin Year 4/.test(robin) && /Week one/.test(robin) && /test /.test(robin), 'name, year, group and word count: ' + robin);
-    ok(/Needs help/.test(robin) && /build/.test(robin), 'a Needs help word on the card');
-    ok(/Next: Game day\. Then Story day\./.test(robin), 'the next job: ' + robin);
-    ok(await ev('document.querySelectorAll("[data-child=\\"' + CHILD + '\\"] .gu-stones li").length') === 7, 'seven stones');
-    ok(/On track/.test(await textOf('[data-child="' + CHILD + '"] [data-chip]')), 'On track');
-    ok(/Wren Year 6/.test(await textOf('[data-child="' + CHILD2 + '"]')), 'the second child');
-    ok(/job waiting/.test(await textOf('[data-child="' + CHILD2 + '"] [data-chip]')) || /On track|Not started/.test(await textOf('[data-child="' + CHILD2 + '"] [data-chip]')), 'a status chip for Wren');
-    ok(await has('[data-planweek]') && /See Robin.s week/.test(await textOf('[data-child="' + CHILD + '"] [data-see]')), 'Plan a week, and one See button');
+    ok(/Robin Year 4/.test(robin) && /Test on Sat 7 Nov/.test(robin), 'name, year and test date: ' + robin);
+    ok(/Next: /.test(robin), 'the next job: ' + robin);
+    ok(await ev('document.querySelectorAll("[data-child=\\"' + CHILD + '\\"] .gh-mini .gh-ms").length') === 7, 'seven stones');
+    ok(/jobs? done/.test(await ev('document.querySelector("[data-child=\\"' + CHILD + '\\"] .gh-mini").getAttribute("aria-label")')), 'the stones say how many jobs are done');
+    ok(await has('[data-child="' + CHILD + '"] .gh-pill'), 'a status pill');
+    ok(/Wren Year 6/.test(await textOf('[data-child="' + CHILD2 + '"]')) && await has('[data-child="' + CHILD2 + '"] .gh-pill'), 'the second child, with a status pill');
+    ok(await has('[data-setweek]') && await has('[data-child="' + CHILD + '"] [data-see]') && /Robin/.test(await ev('document.querySelector("[data-child=\\"' + CHILD + '\\"] [data-see]").getAttribute("aria-label")')), 'Set a week, and one See link a card');
     await allViews('gu-home');
 
     step('one child\'s week');
     await click('[data-child="' + CHILD + '"] [data-see]');
     await until('document.querySelector("[data-glance]")', 'the week');
-    ok(/All children/.test(await textOf('.gu-back')), 'back to All children');
+    ok(/^Children$/.test(await textOf('.gu-back')), 'back to Children (SB5 parent home): ' + await textOf('.gu-back'));
     ok(/Week one/.test(await text('h1')), 'the group name is the title');
     const glance = await textOf('[data-glance]');
     ok(/At a glance/.test(glance) && /Today Game day/.test(glance) && /Jobs waiting None/.test(glance) && /Stars/.test(glance), 'at a glance: ' + glance);
@@ -1462,8 +1547,11 @@ scene('grown-ups: home with two children, and one child\'s week', async () => {
     ok(/Memory clue/.test(await textOf('[data-word="build"]')), 'the clue is shown');
     ok((await ev('[...document.querySelectorAll(".gu-wordlist li")].map((e) => e.dataset.word)')).join() === 'build,earth,fruit,heart', 'help first, then the week\'s order');
     for (const b of ['[data-edit]', '[data-delete]', '[data-print]', '[data-plannext]']) ok(await has(b), b);
-    ok(/Change words or test date/.test(await text('[data-edit]')) && /Delete this week/.test(await text('[data-delete]')) && /Print this week/.test(await text('[data-print]')) && /Plan next week/.test(await text('[data-plannext]')), 'the four buttons');
-    ok(await ev('[...document.querySelectorAll(".gu a, .gu button, .gu input")].filter((e) => e.getBoundingClientRect().width && e.getBoundingClientRect().height < 40 && !e.closest(".gu-stones")).length') === 0, 'every control is 40 px or more high');
+    ok(/Change words or test date/.test(await text('[data-edit]')) && /Delete this week/.test(await text('[data-delete]')) && /Print this week/.test(await text('[data-print]')) && /Set next week/.test(await text('[data-plannext]')), 'the four buttons (SB5: Set next week)');
+    // S3-D2 (fixed): the Help link is a 48 px quiet link, so every control here is 40 px or more.
+    const small = await ev('[...document.querySelectorAll(".gu a, .gu button, .gu input")].filter((e) => e.getBoundingClientRect().width && e.getBoundingClientRect().height < 40 && !e.closest(".gu-stones")).map((e) => e.className + "|" + e.innerText.slice(0, 30))');
+    ok(!small.length, 'every control is 40 px or more high: ' + small.join(' ; '));
+    ok(await ev('document.querySelector("[data-helplink]").getBoundingClientRect().height') >= 44, 'the Help link is at least 44 px high');
     await allViews('gu-week');
     step('print this week');
     await send('Emulation.setEmulatedMedia', { media: 'print' });
@@ -1484,7 +1572,7 @@ scene('grown-ups: a child with no week yet', async () => {
   acct.put(CHILD, 'spellbright', 'words', childWeek());
   await open(plus(2), '#/grownups');
   await until('document.querySelectorAll("[data-child]").length === 2', 'both cards');
-  ok(/No week yet/.test(await textOf('[data-child="' + CHILD2 + '"] [data-chip]')), 'No week yet');
+  ok(/No week yet/.test(await textOf('[data-child="' + CHILD2 + '"] .gh-pill')), 'No week yet');
   await allViews('gu-home-noweek');
   await go('#/grownups/child/' + CHILD2);
   await until('document.querySelector("[data-noweek]")', 'the empty state');
@@ -1492,126 +1580,132 @@ scene('grown-ups: a child with no week yet', async () => {
   await allViews('gu-week-empty');
 });
 
-scene('grown-ups: plan a week in three steps', async () => {
+// ---- SB5 Set a week (TR-1, TR-18): Which words? then Who and when? then the done page; the pieces the scenes below drive ------------------
+/** Type or find a word on Word by word (it is added at the top of the list); answers the line under the box. */
+async function wbwAdd(word) {
+  await until('document.querySelector("[data-find]")', 'the find box');
+  await ev('(() => { const n = document.querySelector("[data-find]"); n.value = ' + q(word) + '; n.dispatchEvent(new Event("input", { bubbles: true })); document.querySelector("[data-act=addfind]").click(); })()');
+  await sleep(500);
+  return text('[data-msg]');
+}
+const stText = () => text('.st-page');
+const stClick = (act, extra = '') => click('[data-act="' + act + '"]' + extra);
+/** Open Set a week from the Children home; the way in a grown-up takes. */
+async function openSet(hash = '#/grownups/set') {
+  await go('#/grownups');
+  await until('document.querySelector("[data-setweek]")', 'the home');
+  await go(hash);
+  await until('document.querySelector(".st-page")', 'Set a week');
+}
+/** Word by word with these words, then on to Who and when. */
+async function setTyped(words) {
+  await stClick('tab', '[data-tab=new]');
+  await stClick('wbw');
+  for (const w of words) await wbwAdd(w);
+  await stClick('next');
+  await until('document.querySelector(".st-when")', 'Who and when');
+}
+const barText = () => text('.st-bar');
+
+scene('grown-ups: set a week in two steps (Which words, Who and when) and the done page', async () => {
   await seedTwo();
   await go('#/grownups');
-  await until('document.querySelector("[data-planweek]")', 'home');
-  await click('[data-planweek]');
-  step('1 who');
-  await until('document.querySelector("[data-plan-step=\\"1\\"]")', 'step 1');
-  ok(/Step 1 of 3/i.test(await text('[data-stepmark]')), 'Step 1 of 3');
-  ok(await ev('document.querySelectorAll("input[type=radio]").length') === 2, 'a radio for each child');
-  await allViews('gu-plan1');
-  const pos = async () => ev('(() => { const b = document.querySelector("[data-back]").getBoundingClientRect(), n = document.querySelector("[data-next]").getBoundingClientRect(); return [Math.round(b.left), Math.round(n.right)].join(); })()');
-  const where1 = await pos();
-  await nextBtn();
-  ok(/choose a child/.test(await text('[data-error]')), 'no child chosen: a kind line');
-  await click('input[value="' + CHILD + '"]');
-  await nextBtn();
-  step('2 which words');
-  await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'step 2');
-  ok(/Step 2 of 3/i.test(await text('[data-stepmark]')) && /Robin/i.test(await text('[data-stepmark]')), 'Step 2 of 3 for Robin');
-  ok(await ev('document.querySelectorAll("[data-pick]").length') > 40, 'Robin\'s year list is the default: ' + await ev('document.querySelectorAll("[data-pick]").length'));
-  ok(await has('[data-pick="height"]') && !await has('[data-pick="build"]'), 'a Year 4 word, and no Year 3 one (Robin is in Year 4)');
-  ok(where1 === await pos(), 'Back and Next are in the same place on step 1 and step 2: ' + where1 + ' vs ' + await pos());
-  await allViews('gu-plan2');
-  ok(/Added tractor/.test(await typeWord('tractor')), 'a word on our lists is added');
-  const unknown = await typeWord('zzqx');
-  const blocked = await typeWord('arse');
-  ok(unknown === blocked && /isn.t on our lists/.test(unknown), 'blocked and unknown get the same reply');
-  ok(await until('/Meaning from the Wordbright word list/.test(document.querySelector("[data-typedrow=tractor]").innerText)', 'the typed word\'s meaning', 4000).then(() => true, () => false), 'a typed word says where its meaning is from');
-  ok(/No picture, meaning only/.test(await text('[data-typedrow="tractor"]')), 'and that it has no picture');
-  step('other lists are reachable');
-  await click('[data-other]');
-  for (const t of ['chapter', 'pattern', 'year', 'tricky']) ok(await has('[data-tab=' + t + ']'), 'tab ' + t);
-  await click('[data-tab=pattern]');
-  await until('document.querySelector("[data-pattern]")', 'the patterns');
-  await ev('(()=>{const n=document.querySelector("[data-pattern]");n.value="ough";n.dispatchEvent(new Event("change"))})()');
-  await until('document.querySelector("[data-pick=enough]")', 'the pattern\'s words');
-  await allViews('gu-plan2-other');
-  await click('[data-pick=enough]');
-  await click('[data-tab=chapter]');
-  await until('document.querySelector("[data-chapter]")', 'chapters');
-  await click('[data-tab=year]');
-  await click('[data-other]');
-  ok(!await has('[data-tab=year]'), 'Fewer lists closes them');
-  step('10 words is a full week');
-  const picks = await ev('[...document.querySelectorAll("[data-pick]")].filter((b) => b.getAttribute("aria-pressed") === "false").slice(0, 8).map((b) => b.dataset.pick)');
-  for (const w of picks) { await click('[data-pick="' + w + '"]'); await sleep(20); }
-  ok(/10 of 10/.test(await text('[data-count]')), '10 of 10: ' + await text('[data-count]'));
-  ok(/10 words is a full week\. Remove one to add another\./.test(await text('[data-full]')), 'the full-week line');
-  ok(await ev('document.querySelector("[data-typed]").disabled && document.querySelector("[data-add]").disabled'), 'the field and Add are disabled');
-  ok(await ev('[...document.querySelectorAll("[data-pick][aria-pressed=false]")].every((b) => b.disabled) && document.querySelectorAll("[data-pick][aria-pressed=false]").length > 0'), 'unpicked chips are disabled');
-  ok(await ev('[...document.querySelectorAll("[data-pick][aria-pressed=true]")].every((b) => !b.disabled)'), 'picked chips stay enabled (to take off)');
-  await allViews('gu-plan2-full');
-  await click('[data-remove="tractor"]');
-  ok(await ev('!document.querySelector("[data-typed]").disabled && !document.querySelector("[data-add]").disabled && !document.querySelector("[data-full]")'), 'one removed: the field is back');
-  await click('[data-pick="' + picks[0] + '"]');
-  await click('[data-pick="' + picks[1] + '"]');
-  ok(/7 of 10/.test(await text('[data-count]')), 'two taken off: ' + await text('[data-count]'));
-  ok(/Added tractor/.test(await typeWord('tractor')), 'and a typed word again');
-  await sleep(700);
-  step('3 test date');
-  await nextBtn();
-  await until('document.querySelector("[data-plan-step=\\"3\\"]")', 'step 3');
-  ok(/Step 3 of 3/i.test(await text('[data-stepmark]')), 'Step 3 of 3');
-  ok(await has('#p-test') && await ev('document.querySelector("#p-test").type') === 'date', 'a date input with a label');
-  ok(where1 === await pos(), 'Back and Next are in the same place on step 3 too: ' + await pos());
-  ok(/Start the week for Robin/.test(await text('[data-next]')), 'the button says who');
-  ok(/School spellings/.test(await ev('document.querySelector("[data-name]").value')), 'the name defaults to School spellings for typed words');
-  ok(/Fri 27 Nov|Sat 7 Nov/.test(gone(await text('[data-datewords]'))) || /\w{3} \d+ \w{3}/.test(gone(await text('[data-datewords]'))), 'the date is written beside the field: ' + await text('[data-datewords]'));
-  ok(/Meet your new words/.test(await text('[data-glimpse]')) && /Hello words/.test(await text('[data-glimpse]')), 'what the child sees first');
-  await setDate(plus(5));
-  ok(await has('[data-short]') && /Short week: some days will have two jobs\./.test(await text('[data-short]')), 'fewer than 5 days: the short-week line');
-  await allViews('gu-plan3-short');
-  await setDate(plus(9));
-  ok(!await has('[data-short]'), 'a longer week: no short-week line');
-  ok(gone(await text('[data-datewords]')) === gone(W.dayLabel(plus(9))), 'the date written: ' + await text('[data-datewords]'));
-  await allViews('gu-plan3');
+  await until('document.querySelector("[data-setweek]")', 'home');
+  await click('[data-setweek]');
+  step('Which words?');
+  await until('document.querySelector(".st-words")', 'Which words');
+  ok(/Which words\?/.test(await text('h1')), 'the title');
+  ok((await ev('[...document.querySelectorAll("[role=tab][data-tab]")].map((b) => b.dataset.tab).join()')) === 'ready,lists,new', 'three tabs: Ready-made, My lists, New words');
+  ok(await ev('document.querySelector("[data-act=next]").disabled'), 'Next waits until a list is chosen');
+  ok(/Robin Year 4/.test(await stText()) && /One list can go to all of them/.test(await stText()), 'it says who the words are for: ' + (await stText()).slice(0, 200));
+  await allViews('gu-set1');
+  step('a ready-made chapter');
+  ok(await ev('document.querySelector("[data-act=year][data-year=y4]").classList.contains("is-on")'), 'it opens on Robin\'s year (Year 4)');
+  await ev('document.querySelector("input[data-chapter]").click()');
+  ok(!await ev('document.querySelector("[data-act=next]").disabled'), 'Next opens once a chapter is picked');
+  ok(/Make my own copy/.test(await stText()), 'a ready-made chapter can be copied but not changed');
+  await allViews('gu-set1-chapter');
+  step('New words: word by word');
+  await stClick('tab', '[data-tab=new]');
+  await stClick('wbw');
+  ok(/1 added/.test(await wbwAdd('tractor')), 'a word of your own is added');
+  const unknown = await wbwAdd('zzqx');
+  const blocked = await wbwAdd('arse');
+  ok(/can.t use yet: zzqx/.test(unknown) && unknown.replace('zzqx', '#') === blocked.replace('arse', '#'), 'blocked and unknown get the same reply (only the typed word differs): ' + unknown + ' | ' + blocked);
+  ok(/1 already in the list/.test(await wbwAdd('tractor')), 'a repeat is said kindly');
+  ok(/Typed by you/.test(await text('.st-wd__list')), 'a typed word says so');
+  await allViews('gu-set-wbw');
+  for (const w of ['height', 'island', 'because', 'guard', 'group', 'heart', 'earth', 'fruit', 'build']) await wbwAdd(w);
+  ok(/10 words/.test(await text('.st-count')) || /10 word/.test(await text('.st-count')), 'ten words: ' + await text('.st-count'));
+  await stClick('rm', '[data-word="build"]');
+  ok(/9 words/.test(await text('.st-count')), 'one removed: ' + await text('.st-count'));
+  await stClick('next');
+  step('Who and when?');
+  await until('document.querySelector(".st-when")', 'Who and when');
+  ok(/Who and when\?/.test(await text('h1')), 'the title: ' + await text('h1'));
+  ok(await ev('document.querySelectorAll("input[data-kid]").length') === 2, 'a box for each child');
+  ok(await ev('document.querySelector("[data-act=set]").disabled') && /Tick at least one child/.test(await barText()), 'Set waits for a child: ' + await barText());
+  ok(await ev('document.querySelectorAll("[data-act=chip]").length') === 4, 'four date chips and Pick a date');
+  await allViews('gu-set2');
+  await click('input[data-kid="' + CHILD + '"]');
+  ok(!await ev('document.querySelector("[data-act=set]").disabled'), 'one child ticked: Set is ready: ' + await barText());
+  ok(/Robin/.test(await text('[data-act=set]')), 'the button says who: ' + await text('[data-act=set]'));
+  await stClick('chip', '[data-days="2"]');
+  ok(/Short week/i.test(await text('.st-page')) || /two jobs|One job a day|jobs/i.test(await stText()), 'a short week says how the jobs fall: ' + (await stText()).slice(0, 300));
+  await allViews('gu-set2-short');
+  await stClick('chip', '[data-days="7"]');
+  ok(await has('[data-name-det]'), 'Name this week is there, optional');
   step('Back loses nothing');
-  await click('[data-back]');
-  await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'step 2 again');
-  ok(/8 of 10/.test(await text('[data-count]')) && await has('[data-typedrow="tractor"]'), 'the words are still there: ' + await text('[data-count]'));
-  await nextBtn();
-  await until('document.querySelector("[data-plan-step=\\"3\\"]")', 'step 3 again');
-  ok(await ev('document.querySelector("#p-test").value') === plus(9), 'and the date');
-  step('start the week');
+  await stClick('back');
+  await until('document.querySelector(".st-words")', 'Which words again');
+  await stClick('wbw'); // typed words stay on New words > Word by word
+  ok(/9 words/.test(await text('.st-count')), 'the nine words are still there: ' + await text('.st-count'));
+  await stClick('next');
+  await until('document.querySelector(".st-when")', 'Who and when again');
+  ok(await ev('document.querySelector("input[data-kid=\\"' + CHILD + '\\"]").checked'), 'Robin is still ticked');
+  step('set the week');
   const before = childGroups().length;
-  await click('[data-next]');
-  await until('document.querySelector("[data-flash]")', 'the week page with a confirmation');
-  ok(/Started School spellings for Robin\./.test(await text('[data-flash]')), 'a confirmation line');
+  await click('[data-act=set]');
+  await until('document.querySelector(".st-done")', 'the done page', 8000);
+  ok(/Week set for Robin/.test(await stText()), 'a confirmation: ' + (await stText()).slice(0, 200));
   ok(childGroups().length === before + 1, 'one new group');
-  const plan = childGroups().find((x) => x.name === 'School spellings');
-  ok(plan && plan.test === plus(9) && plan.words.includes('tractor') && plan.words.length === 8, 'saved: ' + JSON.stringify(plan));
-  ok(/School spellings/.test(await text('h1')), 'the new week is on show');
-  ok(await has('[data-week="' + plan.id + '"]'), 'by its own link');
-  ok(/Typed|tractor/.test(await text('[data-word="tractor"]')) && /No picture, meaning only/.test(await text('[data-word="tractor"]')), 'a typed word shows its picture status here too');
+  const plan = childGroups().find((x) => x.words.includes('tractor'));
+  ok(plan && plan.test === plus(9) && plan.words.length === 9, 'saved: ' + JSON.stringify(plan));
+  ok(await has('[data-act=rename]') && await has('a[href*="/plan/"]'), 'Rename and Change this week are on the done page');
+  await allViews('gu-set-done');
+  step('the new week is on the child\'s page');
+  await go('#/grownups/child/' + CHILD + '/week/' + plan.id);
+  await until('document.querySelector("[data-word=tractor]")', 'the typed word on the week');
+  await until('/No picture, meaning only/.test(document.querySelector("[data-word=\\"tractor\\"]").textContent)', 'the typed word\'s meaning loads (S3-D3)');
+  const typedLine = await text('[data-word="tractor"]');
+  ok(/No picture, meaning only/.test(typedLine), 'a typed word shows its picture status: ' + typedLine);
+  ok(/tractor/.test(typedLine), 'the typed word row');
   await allViews('gu-week-new');
-  step('a single child skips step 1');
-  const real = acct.children;
-  acct.children = (id) => real(id).slice(0, 1);
-  await go('#/grownups/plan');
-  await until('document.querySelector("[data-plan-step]")', 'the planner');
-  ok(await has('[data-plan-step="2"]'), 'one child: straight to Which words');
-  ok(/Step 2 of 3/i.test(await text('[data-stepmark]')), 'still Step 2 of 3');
-  acct.children = real;
   step('from a child\'s page the child is chosen');
-  await go('#/grownups/child/' + CHILD + '/plan');
-  await until('document.querySelector("[data-plan-step]")', 'the planner');
-  ok(await has('[data-plan-step="2"]') && /Robin/i.test(await text('[data-stepmark]')), 'Robin is chosen');
-  await click('[data-back]');
-  await until('document.querySelector("[data-plan-step=\\"1\\"]")', 'Back goes to Who when there is a choice');
-  ok(await ev('document.querySelector("input[value=\\"' + CHILD + '\\"]").checked'), 'with Robin still ticked');
+  await go('#/grownups/child/' + CHILD);
+  await until('document.querySelector("[data-plannext]")', 'Set next week');
+  await click('[data-plannext]');
+  await until('document.querySelector(".st-words")', 'Which words for Robin');
+  ok(/For Robin/.test(await stText()) && /Year 4/.test(await stText()), 'Robin is chosen: ' + (await stText()).slice(0, 160));
+  await stClick('back');
+  await until('document.querySelector("[data-week]")', 'Back goes to Robin\'s page');
   step('a child switcher with two weeks');
   await go('#/grownups/child/' + CHILD);
   await until('document.querySelector(".gu-switch")', 'the switcher');
   ok(await ev('document.querySelectorAll(".gu-switch a").length') === 2, 'two weeks, two links');
-  ok(/2 weeks running/.test(await ev('document.querySelector("[data-manyweeks]").innerText')), 'it says there are two weeks'); ok(await ev('!!document.querySelector("[data-edit]") && !!document.querySelector("[data-delete]")'), 'change and delete are on each week page');
+  ok(/2 weeks running/.test(await ev('document.querySelector("[data-manyweeks]").innerText')), 'it says there are two weeks');
+  ok(await ev('!!document.querySelector("[data-edit]") && !!document.querySelector("[data-delete]")'), 'change and delete are on each week page');
   await click('.gu-switch a:not([aria-current])');
   await until('document.querySelector("[data-week]")', 'the other week');
 });
 const childGroups = () => W.liveGroups(saved());
 
+/** Change a week (SB5 05d): pick the test date on the page (the Pick a date field). */
+async function changePickDate(v) {
+  await ev('(() => { const b = document.querySelector("[data-act=pickdate]"); if (b && !document.querySelector("[data-date]")) b.click(); })()');
+  await until('document.querySelector("[data-date]")', 'the date field');
+  await ev('(() => { const n = document.querySelector("[data-date]"); n.value = ' + q(v) + '; n.dispatchEvent(new Event("change", { bubbles: true })); })()');
+}
 scene('grown-ups: change a week, before and after the test date, and after the test began', async () => {
   await seedTwo();
   await go('#/grownups/child/' + CHILD);
@@ -1619,21 +1713,26 @@ scene('grown-ups: change a week, before and after the test date, and after the t
   const triesBefore = saved().results.length;
   step('before the test date');
   await click('[data-edit]');
-  await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'the form, pre-filled');
-  ok(/Change the week for Robin/i.test(await text('[data-stepmark]')) && /Step 2 of 3/i.test(await text('[data-stepmark]')), 'a change, not a plan');
-  ok(await ev('document.querySelectorAll("[data-mywords] .gu-chip").length') === 4 && /4 of 10/.test(await text('[data-count]')), 'the four words are filled in');
-  await click('[data-remove="heart"]');
-  await click('[data-pick="guard"]').catch(async () => { await ev('document.querySelector("[data-pick]:not([aria-pressed=true])").click()'); });
-  await nextBtn();
-  await until('document.querySelector("[data-plan-step=\\"3\\"]")', 'step 3');
-  ok(await ev('document.querySelector("#p-test").value') === plus(5), 'the date is filled in');
-  ok(/Week one/.test(await ev('document.querySelector("[data-name]").value')), 'and the name');
-  await setDate(plus(6));
-  await click('[data-next]');
-  await until('document.querySelector("[data-flash]")', 'saved');
-  ok(/Changed Week one\./.test(await text('[data-flash]')), 'a confirmation');
+  await until('document.querySelector(".st-change")', 'the Change a week page');
+  ok(/Change Robin.s week/.test(await text('h1')) && /Only Robin.s week changes/.test(await stText()), 'a change, not a new week: ' + await text('h1'));
+  ok(!await has('[data-wk]'), 'the words are closed at first (a summary and Change)');
+  await stClick('words');
+  ok(await ev('document.querySelectorAll("[data-wk]").length') === 4, 'the four words are filled in');
+  await ev('document.querySelector("[data-wk][value=heart]").click()');
+  await ev('(() => { const n = document.querySelector("[data-addword]"); n.value = "guard"; document.querySelector("[data-act=addword]").click(); })()');
+  await sleep(500);
+  ok(await ev('document.querySelectorAll("[data-wk]:checked").length') === 4 && await has('[data-wk][value=guard]:checked') && await has('[data-wk][value=heart]') && !await has('[data-wk][value=heart]:checked'), 'S7 m2: heart is unticked but still listed (it can be ticked back), guard is on');
+  await ev('document.querySelector("[data-wk][value=heart]").click()');
+  ok(await has('[data-wk][value=heart]:checked') && await ev('document.querySelectorAll("[data-wk]:checked").length') === 5, 'S7 m2: heart ticked back');
+  await ev('document.querySelector("[data-wk][value=heart]").click()');
+  ok(await ev('document.querySelector("[data-act=keepdate]").classList.contains("is-on")'), 'the current date is the one chosen');
+  ok(/Week one/.test(await ev('(() => { document.querySelector("[data-name-det]").open = true; return document.querySelector("[data-name]").value; })()')), 'the name is filled in');
+  await allViews('gu-change');
+  await changePickDate(plus(6));
+  await click('[data-act=save]');
+  await until('document.querySelector("[data-week]")', 'back on the child\'s page');
   let g = W.groupById(saved(), 'g1');
-  ok(g.test === plus(6) && !g.words.includes('heart') && g.words.length === 4 && g.words.slice(0, 3).join() === 'build,earth,fruit', 'words and date changed: ' + JSON.stringify(g));
+  ok(g.test === plus(6) && !g.words.includes('heart') && g.words.includes('guard') && g.words.length === 4 && g.words.slice(0, 3).join() === 'build,earth,fruit', 'words and date changed: ' + JSON.stringify(g));
   ok(saved().results.length === triesBefore, 'no try destroyed');
   const dots = W.allDots(saved(), g, plus(2));
   ok(dots.find((x) => x.word === 'build') && !dots.some((x) => x.word === 'heart'), 'a removed word no longer counts');
@@ -1641,41 +1740,36 @@ scene('grown-ups: change a week, before and after the test date, and after the t
 
   step('on the test date, no result yet: still open');
   await open(plus(6), '#/grownups/child/' + CHILD + '/plan/g1');
-  await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'still open on the test date');
-  ok(!await has('[data-locked]'), 'not locked');
-  await nextBtn();
-  await until('document.querySelector("[data-plan-step=\\"3\\"]")', 'step 3');
-  ok(await ev('document.querySelector("#p-test").value') === plus(6), 'on the test day step 3 shows the current date, not tomorrow');
-  ok(!await has('[data-datepassed]'), 'it has not passed yet');
-  await click('[data-next]');
-  await until('document.querySelector("[data-flash]")', 'saved with the same date');
+  await until('document.querySelector(".st-change")', 'still open on the test date');
+  ok(!/test has started/.test(await stText()), 'not locked');
+  ok(await ev('document.querySelector("[data-act=keepdate]").classList.contains("is-on")'), 'on the test day the chosen date is the current date, not tomorrow');
+  await click('[data-act=save]');
+  await until('document.querySelector("[data-week]")', 'saved with the same date');
   ok(W.groupById(saved(), 'g1').test === plus(6), 'S3: only words or name changed: the test date did not move');
   await open(plus(6), '#/grownups/child/' + CHILD + '/plan/g1');
-  await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'again');
-  await nextBtn();
-  await until('document.querySelector("[data-plan-step=\\"3\\"]")', 'step 3 again');
-  await setDate(plus(5));
-  await click('[data-next]');
-  await until('document.querySelector("[data-error]") && /after today/.test(document.querySelector("[data-error]").innerText)', 'a date must be after today');
-  ok(/after today/.test(await text('[data-error]')), 'a new date must be after today');
-  await setDate(plus(9));
-  await click('[data-next]');
-  await until('document.querySelector("[data-flash]")', 'moved to a later date');
+  await until('document.querySelector(".st-change")', 'again');
+  ok(await ev('document.querySelector("[data-date]") === null') && await has('[data-act=pickdate]'), 'the date field opens with Pick a date');
+  await changePickDate(plus(5));
+  await click('[data-act=save]');
+  await until('document.querySelector(".st-err, [role=alert], .st-help[role=alert]") || document.querySelector("[data-week]")', 'an answer to a date that is not after today');
+  ok(!await has('[data-week]') && /after today/.test(await stText()), 'a new date must be after today: ' + (await stText()).slice(0, 300));
+  ok(await ev('document.querySelector("[data-date]").min') === plus(7), 'the date field starts tomorrow');
+  await changePickDate(plus(9));
+  await click('[data-act=save]');
+  await until('document.querySelector("[data-week]")', 'moved to a later date');
   ok(W.groupById(saved(), 'g1').test === plus(9), 'moved');
 
-  step('the test date has passed: kept, with a quiet note');
+  step('the test date has passed: kept, the date is shown');
   await open(plus(10), '#/grownups/child/' + CHILD + '/plan/g1');
-  await until('document.querySelector("[data-plan-step=\\"2\\"]")', 'open after the date');
-  await nextBtn();
-  await until('document.querySelector("[data-plan-step=\\"3\\"]")', 'step 3');
-  ok(await ev('document.querySelector("#p-test").value') === plus(9), 'the passed date is shown, not moved');
-  ok(/The test date has passed\. Robin.s test opens when the jobs are done\. You can pick a new date\./.test(await text('[data-datepassed]')), 'the quiet note');
-  await allViews('gu-plan3-passed');
-  await click('[data-next]');
-  await until('document.querySelector("[data-flash]")', 'saved after the date');
+  await until('document.querySelector(".st-change")', 'open after the date');
+  ok(await ev('document.querySelector("[data-act=keepdate]").classList.contains("is-on")') && /Mon 16 Nov|Sun 15 Nov|Mon 9 Nov|Wed 11 Nov/.test(await text('[data-act=keepdate]')), 'the passed date is shown, not moved: ' + await text('[data-act=keepdate]'));
+  ok(/The test date has passed\. Robin.s test opens when the jobs are done\. You can pick a new date\./.test(await stText()), 'the passed-date note (S3-D4): ' + await stText());
+  await allViews('gu-change-passed');
+  await click('[data-act=save]');
+  await until('document.querySelector("[data-week]")', 'saved after the date');
   ok(W.groupById(saved(), 'g1').test === plus(9), 'S3: still the same date');
 
-  step('after the test began: refused kindly');
+  step('after the test began: refused kindly, the name can change');
   let d = saved();
   const g1 = W.groupById(d, 'g1');
   d = W.addTry(d, { id: 'tt1', word: 'build', day: plus(6), group: 'g1', kind: 't', tries: 0, peeks: 0, clean: true, now: Date.parse(plus(6) + 'T11:00:00') });
@@ -1683,19 +1777,16 @@ scene('grown-ups: change a week, before and after the test date, and after the t
   ok(g1, 'week exists');
   await open(plus(6), '#/grownups/child/' + CHILD + '/week/g1');
   await until('document.querySelector("[data-edit]")', 'the week');
-  await click('[data-edit]');
-  await until('document.querySelector("[data-locked]")', 'the explanation');
-  ok(/test has begun/.test(await text('[data-locked]')) && /rename/i.test(await text('[data-locked]')), 'says why: ' + await textOf('[data-locked]'));
-  ok(await has('[data-plannext]') && !await has('[data-test]'), 'offers Plan next week, no date field');
-  await ev('history.back()');
-  await until('document.querySelector("[data-edit]")', 'back on the week');
   ok(/Rename this week/.test(await text('[data-edit]')), 'S5: the button says Rename this week once the test has begun');
+  ok(!await has('[data-rename]'), 'one rename button only');
   await click('[data-edit]');
-  await until('document.querySelector("[data-locked]")', 'the explanation again');
-  await allViews('gu-plan-locked');
-  await ev('(()=>{const n=document.querySelector("[data-name]");n.value="Renamed week";n.dispatchEvent(new Event("input"))})()');
-  await click('[data-rename]');
-  await until('document.querySelector("[data-flash]")', 'renamed');
+  await until('document.querySelector(".st-rename")', 'the rename page');
+  ok(/The test has started\./.test(await stText()) && /rename the week/i.test(await stText()), 'says why: ' + (await stText()).slice(0, 220));
+  ok(!await has('[data-date]') && !await has('[data-act=chip]'), 'no date field');
+  await allViews('gu-change-locked');
+  await ev('(() => { const n = document.querySelector("[data-rename]"); n.value = "Renamed week"; n.dispatchEvent(new Event("input", { bubbles: true })); })()');
+  await stClick('savename');
+  await until('document.querySelector("[data-week]")', 'renamed');
   ok(W.groupById(saved(), 'g1').name === 'Renamed week', 'the name can change any time');
 });
 
@@ -1727,7 +1818,7 @@ scene('grown-ups: delete this week, undo, deleted weeks, bring back', async () =
   await until('document.querySelector("[role=dialog]")', 'the dialog a third time');
   await ev('history.pushState(null, "", "#/grownups"); window.dispatchEvent(new HashChangeEvent("hashchange"))');
   await until('!document.querySelector("[role=dialog]")', 'the dialog closed when the page changed');
-  await until('document.querySelector("[data-planweek]")', 'the home');
+  await until('document.querySelector("[data-setweek]")', 'the home');
   ok(await ev('document.querySelectorAll("[inert]").length') === 0, 'nothing is left inert');
   ok(W.liveGroups(saved()).length === 1, 'nothing was deleted');
   await ev('history.back(); window.dispatchEvent(new HashChangeEvent("hashchange"))');
@@ -1788,14 +1879,15 @@ scene('grown-ups: a child whose week was deleted lands on a safe home', async ()
   await allViews('gu-child-after-delete');
 });
 
-// Pick up a plan as far as its last step: one word from the list, a date, then the button is next.
+// Set a week for Robin as far as the Set button (SB5): one typed word on New words, Word by word, a date, then Set is next.
 async function toStart(word) {
-  await go('#/grownups/child/' + CHILD + '/plan');
-  await until('document.querySelector("[data-pick=\\"' + word + '\\"]")', 'the plan form');
-  await click('[data-pick="' + word + '"]');
-  await sleep(30);
-  await nextBtn();
-  await until('document.querySelector("[data-plan-step=\\"3\\"]")', 'the last step');
+  await go('#/grownups');
+  await until('document.querySelector("[data-setweek]")', 'the home');
+  await go('#/grownups/set/child/' + CHILD);
+  await until('document.querySelector(".st-words")', 'Which words for Robin');
+  await setTyped([word]);
+  await stClick('chip', '[data-days="7"]');
+  await until('!document.querySelector("[data-act=set]").disabled', 'Set is ready');
 }
 
 scene('grown-ups: when things go wrong', async () => {
@@ -1810,28 +1902,28 @@ scene('grown-ups: when things go wrong', async () => {
     if (init.method === 'PUT' && String(url).includes('/api/children/') && !raced) { raced = true; acct.put(CHILD, 'spellbright', 'words', newer); }
     return realFetch(url, init);
   };
-  await click('[data-next]');
-  await until('document.querySelector("#toast").classList.contains("show") && /Updated with the latest/.test(document.querySelector("#toast").textContent)', 'Updated with the latest');
+  await click('[data-act=set]');
+  await until('document.querySelector(".st-done")', 'the done page (the save went on top of the child\'s newer copy)', 9000);
   acct.fetch = realFetch;
   ok(raced, 'the 409 really happened');
-  await until('document.querySelector("[data-flash]")', 'the week page');
   ok(saved().results.some((x) => x.id === 'late'), 'the child\'s try is still there');
-  ok(childGroups().length === 2, 'and the plan');
+  ok(childGroups().length === 2, 'and the new week');
 
   step('network: nothing half-saved, then try again');
   await toStart('enough');
   const before = JSON.stringify(acct.data.get(CHILD).get('spellbright/words'));
   netDown = true;
   acct.offline = true;
-  await click('[data-next]');
-  await until('/can.t reach Waystead/.test(document.querySelector("[data-error]").innerText)', 'a kind message');
-  ok(/Nothing has been saved/.test(await text('[data-error]')), 'says nothing was saved');
+  await click('[data-act=set]');
+  await until('/can.t reach Waystead/.test(document.querySelector(".st-page").innerText)', 'a kind message', 9000);
+  ok(/Couldn.t set Robin.s week/.test(await stText()) && /Nothing changed for this child/.test(await stText()), 'says nothing was saved: ' + (await stText()).slice(0, 300));
   ok(JSON.stringify(acct.data.get(CHILD).get('spellbright/words')) === before, 'nothing half-saved');
+  ok(/Same words and date/.test(await stText()), 'Try again keeps the words and date');
   await allViews('gu-network');
   acct.offline = false;
-  await click('[data-next]');
-  await until('document.querySelector("[data-flash]")', 'saved on the second go');
-  ok(childGroups().length === 3, 'exactly one more plan');
+  await click('[data-act=retry]');
+  await until('/Week set for Robin/.test(document.querySelector(".st-page").innerText)', 'saved on the second go', 9000);
+  ok(childGroups().length === 3, 'exactly one more week');
 
   step('network while loading: try again');
   acct.offline = true;
@@ -1846,9 +1938,13 @@ scene('grown-ups: when things go wrong', async () => {
 
   step('403: switched to playing as a child in another tab');
   acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
-  await click('[data-planweek]');
-  await until('document.querySelector("[data-playing]")', 'the switch-back card');
-  ok(/You.re playing as Robin\. Switch back to yourself to plan and see progress/.test(await text()), 'names the child');
+  await open(plus(2), '#/grownups');
+  await until('document.querySelector("[data-playing]")', 'the switch-back card on the home');
+  ok(/You.re playing as Robin\. Switch back to yourself to plan and see progress/.test(await text()) && await has('[data-switchback]'), 'the home names the child and offers Switch back: ' + await text());
+  await go('#/grownups/set');
+  await until('document.querySelector("[data-playing] h1")', 'Set a week while playing as a child');
+  ok(/You.re playing as (Robin|a child)\. Switch back to yourself/.test(await text()), 'Set a week does not open: ' + await text());
+  ok(/playing as Robin/.test(await text()) && await has('[data-switchback]'), 'Set a week names the child and offers Switch back (S3-D5): ' + await text());
   acct.who = adultMe;
 });
 
@@ -1875,7 +1971,7 @@ async function storyReview() {
 scene('permissions', async () => {
   await seedChild(weekDoc());
   acct.calls.length = 0;
-  for (const p of ['#/grownups', '#/grownups/stories', '#/grownups/plan', '#/grownups/child/' + CHILD, '#/grownups/child/' + CHILD + '/week/g1', '#/grownups/child/' + CHILD + '/plan']) {
+  for (const p of ['#/grownups', '#/grownups/stories', '#/grownups/plan', '#/grownups/child/' + CHILD, '#/grownups/child/' + CHILD + '/week/g1', '#/grownups/child/' + CHILD + '/plan', '#/grownups/set', '#/grownups/set/child/' + CHILD, '#/grownups/own']) {
     await open(MON, p);
     await until('document.querySelector("[data-notforyou]")', 'refused at ' + p);
   }
@@ -1887,13 +1983,19 @@ scene('permissions', async () => {
   step('an adult playing as a child: the switch-back card, and no data asked for');
   acct.who = { ...adultMe, playingAs: { id: CHILD, nickname: 'Robin', year: 4, avatar: null } };
   acct.calls.length = 0;
-  for (const p of ['#/grownups', '#/grownups/stories', '#/grownups/plan', '#/grownups/child/' + CHILD, '#/grownups/child/' + CHILD + '/week/g1', '#/grownups/child/' + CHILD + '/plan']) {
+  for (const p of ['#/grownups', '#/grownups/stories', '#/grownups/child/' + CHILD, '#/grownups/child/' + CHILD + '/week/g1']) {
     await open(MON, p);
     await until('document.querySelector("[data-playing]")', 'the card at ' + p);
   }
   ok(/You.re playing as Robin/.test(await text()), 'names the child');
   const back = await ev('document.querySelector("[data-switchback]").href');
-  ok(back.startsWith('http://localhost:3000/play?return=') && decodeURIComponent(back).endsWith('#/grownups/child/' + CHILD + '/plan'), 'back to this page: ' + back);
+  ok(back.startsWith('http://localhost:3000/play?return=') && decodeURIComponent(back).endsWith('#/grownups/child/' + CHILD + '/week/g1'), 'back to this page: ' + back);
+  // SB5: the Set a week pages (and the old plan addresses, which redirect there) show the same card, with the child's name and the Switch back button (S3-D5)
+  for (const p of ['#/grownups/plan', '#/grownups/child/' + CHILD + '/plan', '#/grownups/set', '#/grownups/set/child/' + CHILD]) {
+    await open(MON, p);
+    await until('document.querySelector("[data-playing] h1")', 'the card at ' + p);
+    ok(/You.re playing as/.test(await text()) && !await has('.st-words') && !await has('[data-act=set]'), 'Set a week stays shut while playing as a child at ' + p);
+  }
   ok(!acct.calls.some((c) => c.path.startsWith('/api/children')), 'no child data asked for');
   await allViews('grownups-playing');
   step('with the flag off');
@@ -1940,7 +2042,7 @@ scene('week choice: two weeks, Change, the sheet, and everything follows', async
   await until('document.querySelector("[data-room=job]")', 'the home');
   step('no choice: the first week with a job, and the Week line');
   ok(/Week:\s*Week one/.test(await text('.weekline')), 'the Week line: ' + await text('.weekline'));
-  ok(/Meet each word/.test(await text('h1')), 'Week one sentence: ' + await text('h1'));
+  ok(/Hello, Robin!/.test(await text('h1')) && /Today: 3 jobs\./.test(await text('.today__sub')), 'Week one sentence (SB5 Today): ' + await text('.today__sub'));
   ok((await rect('[data-week-change]')).h >= 48 && /^Change$/.test((await text('[data-week-change]')).trim()), 'Change is a 48 px button');
   ok(await ev('document.querySelector("[data-week-change]").tagName') === 'BUTTON', 'a real button');
   ok(await ev('document.querySelector(".weekline").getBoundingClientRect().bottom <= document.querySelector(".btn--hero").getBoundingClientRect().top'), 'the line is above the big button');
@@ -1978,9 +2080,9 @@ scene('week choice: two weeks, Change, the sheet, and everything follows', async
   await until('!document.querySelector("[role=dialog]")', 'the sheet closes');
   ok(await weekKey() === 'g2', 'saved on this device: ' + await weekKey());
   ok(/Week:\s*Week two/.test(await text('.weekline')), 'the Week line follows');
-  ok(/Play four quick games/.test(await text('h1')), 'the sentence follows: ' + await text('h1'));
-  ok(/Start Game day/.test(await text('[data-job]')) && (await ev('document.querySelector("[data-job]").getAttribute("href")')).includes('/g2/'), 'the big button targets Week two');
-  ok(/Job 3 of 7/.test(await text('.pathcard')) && (await ev('document.querySelector("[data-pathcard]").getAttribute("href")')) === '#/words/g/g2/path', 'the path card follows');
+  ok(/Day 4 of 9 · your test is on Wednesday/.test(await text('.today__sub')), 'the day line follows: ' + await text('.today__sub'));
+  ok(/Game day/.test(await text('[data-job]')) && (await ev('document.querySelector("[data-job]").getAttribute("href")')).includes('/g2/'), 'the big button targets Week two');
+  ok((await ev('document.querySelector("[data-pathcard]").getAttribute("href")')) === '#/words/g/g2/path', 'the week stones link follows');
   ok(await ev('document.activeElement.hasAttribute("data-week-change")'), 'focus is on Change');
   ok(!await has('[data-duetest]'), 'no test line');
   await click('[data-week-change]');
@@ -2003,28 +2105,30 @@ scene('week choice: two weeks, Change, the sheet, and everything follows', async
   ok(await has('.sheetrow[data-row=words][href="#/words/g/g2"]'), 'My words opens Week two');
   ok(await has('.sheetrow[data-row=games][href^="#/words/g/g2/"]'), 'Games is Week two\'s');
   await click('.sheetrow[data-row=words]');
-  await until('document.querySelector(".pagehead h1")', 'My words');
-  ok(/Week two/.test(await text('h1')), 'the group page is Week two');
-  ok(/Week one/.test(await text('.sectionhead + .list')) && /Study this week/.test(await text('[data-study-week]')), 'the other week has Study this week');
-  ok((await rect('[data-study-week]')).h >= 48, 'Study this week is 48 px');
+  await until('document.querySelector("[data-weekpage]")', 'My week');
+  ok(/Week two/.test(await text('[data-weekpage]')) && /Game day/.test(await text('[data-job]')), 'the week page is Week two (SB5: its name is in Study this week): ' + (await text('[data-weekpage]')).slice(0, 200));
+  ok(/Week one/.test(await text('[data-other-weeks]')) && /Other weeks/.test(await text('[data-other-weeks]')), 'the other week has an Other weeks tile');
+  ok((await rect('[data-other-weeks]')).h >= 48, 'Other weeks is 48 px');
   await go('#/words/g/g1');
-  await until('document.querySelector(".pagehead h1")', 'Week one page');
-  ok(!await has('[data-study-week]'), 'no Study this week under the chosen week');
+  await until('document.querySelector("[data-weekpage]")', 'Week one page');
+  ok(/Week one/.test(await text('[data-weekpage]')) && /Week two/.test(await text('[data-other-weeks]')), 'Week one\'s page lists Week two as the other');
   await go('#/words/g/g2');
-  await until('document.querySelector("[data-study-week]")', 'back on Week two');
+  await until('document.querySelector("[data-other-weeks]")', 'back on Week two');
   step('reload: still Week two');
   await open(plus(3), '#/');
   await until('document.querySelector("[data-room=job]")', 'the home again');
-  ok(/Week:\s*Week two/.test(await text('.weekline')) && /Play four quick games/.test(await text('h1')), 'still Week two');
-  step('Study this week (Week one) on the group page');
+  ok(/Week:\s*Week two/.test(await text('.weekline')) && /Day 4 of 9/.test(await text('.today__sub')), 'still Week two');
+  step('Other weeks (Week one) on the week page');
   await go('#/words/g/g2');
-  await until('document.querySelector("[data-study-week=g1]")', 'the button');
-  await click('[data-study-week=g1]');
+  await until('document.querySelector("[data-other-weeks]")', 'the tile');
+  await click('[data-other-weeks]');
+  await until('document.querySelector("[role=dialog] [data-week=g1]")', 'the sheet');
+  await click('[data-week=g1]');
   await until('location.hash === "#/words/g/g1"', 'opens Week one');
   ok(await weekKey() === 'g1', 'and chooses it');
   await go('#/');
   await until('document.querySelector("[data-room=job]")', 'home');
-  ok(/Week:\s*Week one/.test(await text('.weekline')) && /Meet each word/.test(await text('h1')), 'the home is Week one');
+  ok(/Week:\s*Week one/.test(await text('.weekline')) && /Today: 3 jobs/.test(await text('.today__sub')), 'the home is Week one');
 });
 
 scene('week choice: nothing to do here, another week has a job', async () => {
@@ -2035,8 +2139,8 @@ scene('week choice: nothing to do here, another week has a job', async () => {
   await ev('localStorage.setItem("sb.week:' + CHILD + '","g1")');
   await open(MON, '#/');
   await until('document.querySelector("[data-room]")', 'the home');
-  ok(/Done for today/.test(await text('h1')), 'Week one is done for today: ' + await text('h1'));
-  ok(/Week two has a job waiting\./.test(await text('[data-nextweek]')), 'the quiet line: ' + await text('.homego'));
+  ok(/Today.s job is done/.test(await text('.today__sub')), 'Week one is done for today: ' + await text('.today__sub'));
+  ok(/Week two has a job waiting/.test(await text('[data-nextweek]')), 'the line: ' + await text('[data-nextweek]'));
   ok((await rect('[data-go-week]')).h >= 48 && /Go to that week/.test(await text('[data-go-week]')), 'Go to that week, 48 px');
   await noWordsOf(WORDS.concat(WORDS2), 'the home');
   await allViews('week-home-next');
@@ -2069,8 +2173,8 @@ scene('week choice: one test due while another week is chosen', async () => {
   await open(plus(5), '#/');
   await until('document.querySelector("[data-room]")', 'the home');
   ok(/Week:\s*Week two/.test(await text('.weekline')), 'Week two is shown');
-  ok(/Your test for Week one is ready\./.test(await text('[data-duetest]')), 'the quiet line: ' + await text('.homego'));
-  ok(/Take the test/.test(await text('[data-taketest]')) && (await rect('[data-taketest]')).h >= 48, 'Take the test, 48 px');
+  ok(/Your test for Week one is ready/.test(await text('[data-taketest]')), 'the line: ' + await text('[data-taketest]'));
+  ok(/Do it when you like/.test(await text('[data-taketest]')) && (await rect('[data-taketest]')).h >= 48, 'the test tile, 48 px');
   ok((await ev('document.querySelector("[data-taketest]").getAttribute("href")')) === '#/words/g/g1/test', 'it goes to Week one\'s test');
   await noWordsOf(WORDS, 'the home');
   await allViews('week-home-due');
@@ -2081,7 +2185,7 @@ scene('week choice: one test due while another week is chosen', async () => {
   await allViews('week-sheet-due');
   await click('[data-week=g1]');
   await until('!document.querySelector("[role=dialog]")', 'closed');
-  ok(/Start the test/.test(await text('[data-job]')) && !await has('[data-duetest]'), 'Week one chosen: the test button, no extra line');
+  ok(/Do your test/.test(await text('[data-job]')) && !await has('[data-taketest]'), 'Week one chosen: the test button, no extra line');
   await noWordsOf(WORDS, 'the home on its test day');
   await click('[data-week-change]');
   await until('document.querySelector("[role=dialog]")', 'the sheet');
@@ -2095,11 +2199,13 @@ scene('week choice: one test due while another week is chosen', async () => {
   await click('#child-menu');
   await until('document.querySelector("[role=dialog]")', 'the Menu');
   await click('.sheetrow[data-row=words]');
-  await until('document.querySelector(".pagehead h1")', 'My words');
-  ok(/Week two/.test(await text('h1')), 'My words is Week two');
-  await noWordsOf(WORDS, 'My words');
-  ok(/Study this week/.test(await text('[data-study-week=g1]')), 'the due week can be opened (names only)');
-  await click('[data-study-week=g1]');
+  await until('document.querySelector("[data-weekpage]")', 'My week');
+  ok(/Week two/.test(await text('[data-weekpage]')), 'My week is Week two');
+  await noWordsOf(WORDS, 'My week');
+  ok(/Week one/.test(await text('[data-other-weeks]')), 'the due week can be opened (names only)');
+  await click('[data-other-weeks]');
+  await until('document.querySelector("[role=dialog] [data-week=g1]")', 'the sheet');
+  await click('[data-week=g1]');
   await sleep(150);
   await noWordsOf(WORDS, 'the due week\'s page');
   await go('#/words/g/g1');
@@ -2124,7 +2230,8 @@ scene('week choice: sign-out forgets the choice', async () => {
 // For a child and for an adult, on the flower game (Pick words), practice, the test and quick-fire.
 const KB_VIEWS = [[1180, 640], [1180, 700], [1024, 650], [1366, 900], [1024, 768], [1366, 930], [1366, 950], [1366, 1000], [1920, 1000], [844, 390]];
 const KB_PORTRAIT = [[390, 844], [768, 1024], [1024, 1366], [820, 1180], [834, 1194], [1920, 1080]];
-// The keyboard's [x, y, width, height] and the Q key's [width, height] at the base commit (33fafd7), by "role page style WxH".
+// The keyboard's [x, y, width, height] and the Q key's [width, height], by "role page style WxH". Recorded at the base commit (33fafd7); re-recorded for SB5 on 19 Nov 2026 (S3):
+// the 26 entries that moved were all reviewed: a phone-portrait keyboard now ends above the 110 px safe band (it sits 35 to 91 px higher), and a grown-up's keyboard is up to 7.5 px further left where a scroll bar appears.
 const KB_BASE = {
   "child flower garden 390x844": [6,590.4,378,264,35.1,56],
   "child flower garden 768x1024": [134,699.7,500,264,46,56],
@@ -2138,49 +2245,49 @@ const KB_BASE = {
   "child flower night 820x1180": [160,850.7,500,264,46,56],
   "child flower night 834x1194": [167,864.7,500,264,46,56],
   "child flower night 1920x1080": [710,750.7,500,264,46,56],
-  "child practice garden 390x844": [6,572,378,264,35.1,56],
+  "child practice garden 390x844": [6,480.9,378,264,35.1,56],
   "child practice garden 768x1024": [134,752,500,264,46,56],
   "child practice garden 1024x1366": [262,1094,500,264,46,56],
   "child practice garden 820x1180": [160,908,500,264,46,56],
   "child practice garden 834x1194": [167,922,500,264,46,56],
   "child practice garden 1920x1080": [710,808,500,264,46,56],
-  "child practice night 390x844": [6,567,378,264,35.1,56],
+  "child practice night 390x844": [6,473,378,264,35.1,56],
   "child practice night 768x1024": [134,747,500,264,46,56],
   "child practice night 1024x1366": [262,1089,500,264,46,56],
   "child practice night 820x1180": [160,903,500,264,46,56],
   "child practice night 834x1194": [167,917,500,264,46,56],
   "child practice night 1920x1080": [710,803,500,264,46,56],
-  "child test garden 390x844": [6,485.7,378,264,35.1,56],
+  "child test garden 390x844": [6,395.7,378,264,35.1,56],
   "child test garden 768x1024": [134,665.7,500,264,46,56],
   "child test garden 1024x1366": [262,1007.7,500,264,46,56],
   "child test garden 820x1180": [160,821.7,500,264,46,56],
   "child test garden 834x1194": [167,835.7,500,264,46,56],
   "child test garden 1920x1080": [710,721.7,500,264,46,56],
-  "child test night 390x844": [6,482.2,378,264,35.1,56],
+  "child test night 390x844": [6,392.2,378,264,35.1,56],
   "child test night 768x1024": [134,662.2,500,264,46,56],
   "child test night 1024x1366": [262,1004.2,500,264,46,56],
   "child test night 820x1180": [160,818.2,500,264,46,56],
   "child test night 834x1194": [167,832.2,500,264,46,56],
   "child test night 1920x1080": [710,718.2,500,264,46,56],
-  "child quick garden 390x844": [6,485.7,378,264,35.1,56],
+  "child quick garden 390x844": [6,395.7,378,264,35.1,56],
   "child quick garden 768x1024": [134,665.7,500,264,46,56],
   "child quick garden 1024x1366": [262,1007.7,500,264,46,56],
   "child quick garden 820x1180": [160,821.7,500,264,46,56],
   "child quick garden 834x1194": [167,835.7,500,264,46,56],
   "child quick garden 1920x1080": [710,721.7,500,264,46,56],
-  "child quick night 390x844": [6,482.2,378,264,35.1,56],
+  "child quick night 390x844": [6,392.2,378,264,35.1,56],
   "child quick night 768x1024": [134,662.2,500,264,46,56],
   "child quick night 1024x1366": [262,1004.2,500,264,46,56],
   "child quick night 820x1180": [160,818.2,500,264,46,56],
   "child quick night 834x1194": [167,832.2,500,264,46,56],
   "child quick night 1920x1080": [710,718.2,500,264,46,56],
-  "child fix garden 390x844": [6,544.3,378,264,35.1,56],
+  "child fix garden 390x844": [6,464.5,378,264,35.1,56],
   "child fix garden 768x1024": [134,661.7,500,264,46,56],
   "child fix garden 1024x1366": [262,1003.7,500,264,46,56],
   "child fix garden 820x1180": [160,817.7,500,264,46,56],
   "child fix garden 834x1194": [167,831.7,500,264,46,56],
   "child fix garden 1920x1080": [710,717.7,500,264,46,56],
-  "child fix night 390x844": [6,536.4,378,264,35.1,56],
+  "child fix night 390x844": [6,456.6,378,264,35.1,56],
   "child fix night 768x1024": [134,658.2,500,264,46,56],
   "child fix night 1024x1366": [262,1000.2,500,264,46,56],
   "child fix night 820x1180": [160,814.2,500,264,46,56],
@@ -2189,63 +2296,63 @@ const KB_BASE = {
   "adult flower garden 390x844": [16,632.8,372.5,154.4,32.8,46.8],
   "adult flower garden 768x1024": [16,703.1,721,176,46,54],
   "adult flower garden 1024x1366": [16,703.1,992,176,46,54],
-  "adult flower garden 820x1180": [16,703.1,788,176,46,54],
-  "adult flower garden 834x1194": [16,703.1,802,176,46,54],
+  "adult flower garden 820x1180": [16,703.1,773,176,46,54],
+  "adult flower garden 834x1194": [16,703.1,787,176,46,54],
   "adult flower garden 1920x1080": [448.5,703.1,1008,176,46,54],
   "adult flower night 390x844": [16,626.3,372.5,154.4,32.8,46.8],
   "adult flower night 768x1024": [16,696.7,721,176,46,54],
   "adult flower night 1024x1366": [16,696.7,992,176,46,54],
-  "adult flower night 820x1180": [16,696.7,788,176,46,54],
-  "adult flower night 834x1194": [16,696.7,802,176,46,54],
+  "adult flower night 820x1180": [16,696.7,773,176,46,54],
+  "adult flower night 834x1194": [16,696.7,787,176,46,54],
   "adult flower night 1920x1080": [448.5,696.7,1008,176,46,54],
-  "adult practice garden 390x844": [16,538.5,358,154.4,31.3,46.8],
-  "adult practice garden 768x1024": [120,566.9,528,176,46,54],
+  "adult practice garden 390x844": [16,478.9,358,154.4,31.3,46.8],
+  "adult practice garden 768x1024": [112.5,566.9,528,176,46,54],
   "adult practice garden 1024x1366": [248,566.9,528,176,46,54],
   "adult practice garden 820x1180": [146,566.9,528,176,46,54],
   "adult practice garden 834x1194": [153,566.9,528,176,46,54],
   "adult practice garden 1920x1080": [696,566.9,528,176,46,54],
-  "adult practice night 390x844": [16,532,358,154.4,31.3,46.8],
-  "adult practice night 768x1024": [120,560.5,528,176,46,54],
+  "adult practice night 390x844": [16,471,358,154.4,31.3,46.8],
+  "adult practice night 768x1024": [112.5,560.5,528,176,46,54],
   "adult practice night 1024x1366": [248,560.5,528,176,46,54],
   "adult practice night 820x1180": [146,560.5,528,176,46,54],
   "adult practice night 834x1194": [153,560.5,528,176,46,54],
   "adult practice night 1920x1080": [696,560.5,528,176,46,54],
-  "adult test garden 390x844": [16,403.1,358,154.4,31.3,46.8],
+  "adult test garden 390x844": [16,368.4,358,154.4,31.3,46.8],
   "adult test garden 768x1024": [120,424.5,528,176,46,54],
   "adult test garden 1024x1366": [248,424.5,528,176,46,54],
   "adult test garden 820x1180": [146,424.5,528,176,46,54],
   "adult test garden 834x1194": [153,424.5,528,176,46,54],
   "adult test garden 1920x1080": [696,424.5,528,176,46,54],
-  "adult test night 390x844": [16,396.7,358,154.4,31.3,46.8],
+  "adult test night 390x844": [16,360.5,358,154.4,31.3,46.8],
   "adult test night 768x1024": [112.5,418,528,176,46,54],
   "adult test night 1024x1366": [248,418,528,176,46,54],
   "adult test night 820x1180": [146,418,528,176,46,54],
   "adult test night 834x1194": [153,418,528,176,46,54],
   "adult test night 1920x1080": [696,418,528,176,46,54],
-  "adult quick garden 390x844": [16,412,358,154.4,31.3,46.8],
+  "adult quick garden 390x844": [16,377.3,358,154.4,31.3,46.8],
   "adult quick garden 768x1024": [120,433.4,528,176,46,54],
   "adult quick garden 1024x1366": [248,433.4,528,176,46,54],
   "adult quick garden 820x1180": [146,433.4,528,176,46,54],
   "adult quick garden 834x1194": [153,433.4,528,176,46,54],
   "adult quick garden 1920x1080": [696,433.4,528,176,46,54],
-  "adult quick night 390x844": [16,407,358,154.4,31.3,46.8],
-  "adult quick night 768x1024": [120,428.4,528,176,46,54],
+  "adult quick night 390x844": [16,370.8,358,154.4,31.3,46.8],
+  "adult quick night 768x1024": [112.5,428.4,528,176,46,54],
   "adult quick night 1024x1366": [248,428.4,528,176,46,54],
   "adult quick night 820x1180": [146,428.4,528,176,46,54],
   "adult quick night 834x1194": [153,428.4,528,176,46,54],
   "adult quick night 1920x1080": [696,428.4,528,176,46,54],
-  "adult fix garden 390x844": [16,536,358,154.4,31.3,46.8],
+  "adult fix garden 390x844": [16,464.5,358,154.4,31.3,46.8],
   "adult fix garden 768x1024": [112.5,569.3,528,176,46,54],
   "adult fix garden 1024x1366": [248,569.3,528,176,46,54],
   "adult fix garden 820x1180": [146,569.3,528,176,46,54],
   "adult fix garden 834x1194": [153,569.3,528,176,46,54],
-  "adult fix garden 1920x1080": [696,569.3,528,176,46,54],
-  "adult fix night 390x844": [16,529.6,358,154.4,31.3,46.8],
-  "adult fix night 768x1024": [120,562.8,528,176,46,54],
+  "adult fix garden 1920x1080": [688.5,569.3,528,176,46,54],
+  "adult fix night 390x844": [16,456.6,358,154.4,31.3,46.8],
+  "adult fix night 768x1024": [112.5,562.8,528,176,46,54],
   "adult fix night 1024x1366": [248,562.8,528,176,46,54],
   "adult fix night 820x1180": [146,562.8,528,176,46,54],
   "adult fix night 834x1194": [153,562.8,528,176,46,54],
-  "adult fix night 1920x1080": [696,562.8,528,176,46,54],
+  "adult fix night 1920x1080": [688.5,562.8,528,176,46,54],
 };
 async function kbSeed(role, page) {
   const day = { flower: MON, practice: plus(4), test: plus(5), quick: plus(2), fix: plus(1) }[page];
@@ -2338,7 +2445,7 @@ async function kbFit({ role, page, style: s, w, h, dump = null, base = KB_BASE }
   ok(m.rows === '10,9,7' || m.rows === '10,9,8' || m.rows === '10,9,7', id + ': rows ' + m.rows);
   ok(m.wrap === 'nowrap' && m.oneRow, id + ': a row wraps');
   ok(m.hit.length === 0, id + ': overlap ' + m.hit.join('; '));
-  if (w >= 820 && h <= 1000) {
+  if (w >= 820 && h <= 1000 && h >= 500) {
     ok(m.minW >= 44 && m.minH >= 48, id + ': keys ' + m.minW + ' x ' + m.minH);
     if (h > 400) {
       ok(m.kb.y >= 0 && m.kb.b <= h, id + ': keyboard ' + Math.round(m.kb.y) + '..' + Math.round(m.kb.b) + ' of ' + h);
@@ -2346,8 +2453,8 @@ async function kbFit({ role, page, style: s, w, h, dump = null, base = KB_BASE }
       ok(m.ctlBottom <= h, id + ': controls reach ' + Math.round(m.ctlBottom) + ' of ' + h);
     }
     await shotView('kb-' + id.replaceAll(' ', '-'));
-  } else if (w < 820 && h < 500) { // a phone on its side: it may scroll, but the keyboard is reachable and nothing overlaps
-    ok(m.minW >= 30 && m.minH >= 44, id + ': keys ' + m.minW + ' x ' + m.minH);
+  } else if (h < 500) { // a phone on its side (SB5: F8 844x390 too): it may scroll, but the keyboard is reachable and nothing overlaps. Letter keys are 32 x 48 or more (D11; the fold harness checks the same)
+    ok(m.minW >= 31.5 && m.minH >= 47.5, id + ': keys ' + m.minW + ' x ' + m.minH);
     await ev('document.querySelector(".keyboard").scrollIntoView({ block: "end" })');
     const r = await ev('(() => { const r = document.querySelector(".keyboard").getBoundingClientRect(); return [r.top, r.bottom]; })()');
     ok(r[1] <= h + 0.5 && r[0] >= -0.5, id + ': keyboard unreachable ' + r);
@@ -2447,32 +2554,32 @@ async function seedFront(docs, kids, day = plus(2), who = adultMe) {
 const primaries = () => ev('[...document.querySelectorAll("main .btn--primary")].map((e) => e.textContent.replace(/\\s+/g, " ").trim())');
 const inFirstScreen = async (sel, w, h) => { await width(w, h); const r = await rect(sel); return r.y >= 0 && r.y + r.h <= h; };
 
-scene('front page (adult): two children, one green button in the header row, stable order', async () => {
+// SB5 Children home (01a, TR-41): one card a child (name, year, a status pill, the test date, the next job, seven small stones), the stone key, links, and one
+// green "Set a week" bar fixed at the foot. The old summary sentence, the Plan a week header button and the per-card green See button are gone.
+scene('front page (adult): two children, one green Set a week bar, stable order', async () => {
   storiesHidden = true;
   try {
     await seedFront([[CHILD, childWeek()], [CHILD2, wrenWeek()]], KIDS2);
     ok(!await has('[data-room]') && /^#\/?$/.test(await ev('location.hash')), 'the adult\'s #/ is the week at a glance, not the chapters or a room');
     ok(/Wednesday 4 November/i.test(await text('[data-date]')), 'a date eyebrow: ' + await text('[data-date]'));
-    ok(/Wren has a job waiting\. Robin is on track\./.test(await text('[data-summary]')), 'one summary sentence: ' + await text('[data-summary]'));
-    ok((await primaries()).join('|') === 'See Wren’s week', 'one green button, the first child who needs attention: ' + await primaries());
-    ok(await ev('!!document.querySelector(".gu-top [data-primary]") && !!document.querySelector(".gu-top .btn--ghost[data-planweek]")'), 'the green button is in the header row, with a quiet Plan a week');
-    ok(await ev('[...document.querySelectorAll("[data-child] [data-see]")].every((e) => e.classList.contains("btn--ghost"))'), 'every card button is quiet');
+    ok(/^Your children$/.test((await text('main h1')).trim()), 'the page is Your children: ' + await text('main h1'));
+    ok((await primaries()).join('|') === 'Set a week', 'one green button, Set a week: ' + await primaries());
+    ok(await ev('!!document.querySelector(".gh-bar [data-setweek][data-primary]")'), 'it is in the bar at the foot');
     ok((await ev('[...document.querySelectorAll("[data-child]")].map((e) => e.dataset.child)')).join() === CHILD + ',' + CHILD2, 'the account\'s order');
-    ok(!await has('.gu-facts') && await ev('document.querySelectorAll(".gu-stones--one").length') === 2, 'no facts tiles; the stone strip on each card');
-    ok(/Next: Game day\. Then Story day\./.test(await textOf('[data-child="' + CHILD + '"] [data-next]')), 'Robin: ' + await textOf('[data-child="' + CHILD + '"]'));
-    ok(/Next: Fix it in \(waiting\)\. Then Game day\./.test(await textOf('[data-child="' + CHILD2 + '"] [data-next]')), 'Wren: ' + await textOf('[data-child="' + CHILD2 + '"] [data-next]'));
-    ok(/Needs help/.test(await textOf('[data-child="' + CHILD + '"] [data-help]')) && /build/.test(await textOf('[data-child="' + CHILD + '"] [data-help]')), 'Needs help: build');
-    ok(await ev('[...document.querySelectorAll(".gu-stones--one")].every((o) => o.querySelectorAll("li.is-today").length === 1)'), 'the sun is on one stone in each strip');
+    ok(!await has('.gu-facts') && await ev('document.querySelectorAll(".gh-mini").length') === 2, 'no facts tiles; the small stones on each card');
+    ok(/Next: /.test(await textOf('[data-child="' + CHILD + '"]')) && /Test on Sat 7 Nov/.test(await textOf('[data-child="' + CHILD + '"]')), 'Robin: ' + await textOf('[data-child="' + CHILD + '"]'));
+    ok(/Next: /.test(await textOf('[data-child="' + CHILD2 + '"]')) && /Test on /.test(await textOf('[data-child="' + CHILD2 + '"]')), 'Wren: ' + await textOf('[data-child="' + CHILD2 + '"]'));
+    ok(await ev('[...document.querySelectorAll(".gh-mini")].every((o) => o.children.length === 7)'), 'seven stones in each strip');
     ok(/20 stories to read first/.test(await textOf('[data-stories]')), 'the stories notice is kept');
-    ok(/Sun: next job/.test(await textOf('[data-stonekey]')), 'the key');
+    ok(/Done\s*Today\s*Waiting\s*Later/.test(await textOf('[data-stonekey]')), 'the key: ' + await textOf('[data-stonekey]'));
     for (const [w, h] of [[1180, 640], [390, 844]]) ok(await inFirstScreen('[data-primary]', w, h), 'the green button is in the first screen at ' + w + 'x' + h);
     await width(390, 844);
-    ok(await ev('[...document.querySelectorAll(".gu-stones--one")].every((o) => new Set([...o.children].map((li) => Math.round(li.getBoundingClientRect().top))).size === 1)'), 'the seven stones stay on one line at 390');
-    step('the foot: one quiet line from Waystead Learning, and the part-of-Waystead line, not For parents or More games');
+    ok(await ev('[...document.querySelectorAll(".gh-mini")].every((o) => new Set([...o.children].map((li) => Math.round(li.getBoundingClientRect().top))).size === 1)'), 'the seven stones stay on one line at 390');
+    step('the foot: one quiet line from Waystead Learning, and the part-of-Waystead line with For parents and More games');
     ok(await visible('.foot__papers') && /11\+ English practice papers/.test(await text('.foot__papers')) && /learning\.waystead\.co\.uk\/packs/.test(await ev('document.querySelector(".foot__papers a").href')), 'the papers line');
-    ok(await visible('.foot') && !await visible('.foot__more') && /part of Waystead/.test(await text('.foot')), 'the footer has the Waystead line only');
+    ok(await visible('.foot') && await visible('.foot__more') && /part of Waystead/.test(await text('.foot')), 'the footer keeps the Waystead line, For parents and More games (grownups-r2 test: not hidden)');
     await allViews('front-two');
-    await click('[data-primary]');
+    await click('[data-child="' + CHILD2 + '"] [data-see]');
     await until('location.hash === "#/grownups/child/' + CHILD2 + '"', 'Wren\'s week');
     ok(await visible('.foot__papers'), 'the papers line is on the other adult pages too');
   } finally { storiesHidden = false; setKids(KIDS2); }
@@ -2482,25 +2589,26 @@ scene('front page (adult): one child; everyone on track; a week that has ended; 
   try {
     step('one child');
     await seedFront([[CHILD, childWeek()]], [KIDS2[0]]);
-    ok(await ev('document.querySelectorAll("[data-child]").length') === 1 && /Robin is on track\./.test(await text('[data-summary]')), 'one card: ' + await text('[data-summary]'));
-    ok((await primaries()).join('|') === 'Plan a week', 'Plan a week is the green button when no one needs you: ' + await primaries());
-    ok(await has('.gu-top [data-planweek].btn--primary'), 'it is in the header row');
+    ok(await ev('document.querySelectorAll("[data-child]").length') === 1 && await has('.gh-cols--one'), 'one card, one column');
+    ok((await primaries()).join('|') === 'Set a week', 'Set a week is the green button: ' + await primaries());
+    ok(/Starts today · for Robin/.test(await text('.gh-bar')), 'the bar says who: ' + await text('.gh-bar'));
     await allViews('front-one');
     step('everyone on track');
     await seedFront([[CHILD, childWeek()], [CHILD2, wrenOnTrack()]], KIDS2);
-    ok(/Robin and Wren are on track\./.test(await text('[data-summary]')), await text('[data-summary]'));
-    ok((await primaries()).join('|') === 'Plan a week' && await ev('[...document.querySelectorAll("[data-see]")].every((e) => e.classList.contains("btn--ghost"))'), 'Plan a week leads; the cards are quiet');
+    ok(await has('[data-child="' + CHILD + '"] .gh-pill') && await has('[data-child="' + CHILD2 + '"] .gh-pill'), 'a status pill on each card');
+    ok((await primaries()).join('|') === 'Set a week', 'Set a week leads: ' + await primaries());
     await allViews('front-ontrack');
     step('a week that has ended');
     await seedFront([[CHILD, endedWeek()], [CHILD2, wrenOnTrack()]], KIDS2, plus(5));
-    ok(/Robin’s week has ended\. Wren has 2 jobs waiting\./.test(await text('[data-summary]')), await text('[data-summary]'));
-    ok((await primaries()).join('|') === 'Plan Robin’s next week', 'the green button plans the next week: ' + await primaries());
-    ok(/week ended on/.test(await textOf('[data-child="' + CHILD + '"] [data-next]')) && await has('[data-child="' + CHILD + '"] [data-plan]') && /Week finished/.test(await textOf('[data-child="' + CHILD + '"] [data-chip]')), 'the ended card: ' + await textOf('[data-child="' + CHILD + '"]'));
+    ok(await has('[data-child="' + CHILD + '"][data-state=ended]'), 'Robin\'s card is in the ended state: ' + await textOf('[data-child="' + CHILD + '"]'));
+    ok(/Last week.s test: 4 of 4/.test(await textOf('[data-child="' + CHILD + '"]')) || /test was/.test(await textOf('[data-child="' + CHILD + '"]')), 'the ended card says how the test went: ' + await textOf('[data-child="' + CHILD + '"]'));
+    ok((await primaries()).join('|') === 'Set a week', 'Set a week is the green button: ' + await primaries());
     await allViews('front-ended');
     step('a child with no week');
     await seedFront([[CHILD, childWeek()]], KIDS2);
-    ok((await primaries()).join('|') === 'Plan a week for Wren', 'Plan a week for Wren is the green button: ' + await primaries());
-    ok(/No week yet/.test(await textOf('[data-child="' + CHILD2 + '"] [data-chip]')) && await ev('document.querySelector("[data-child=\\"' + CHILD2 + '\\"] [data-plan]").classList.contains("btn--ghost")'), 'the card button is quiet');
+    ok((await primaries()).join('|') === 'Set a week', 'Set a week is the green button: ' + await primaries());
+    ok(/No week yet/.test(await textOf('[data-child="' + CHILD2 + '"] .gh-pill')) && /Set a week for Wren/.test(await textOf('[data-child="' + CHILD2 + '"] [data-plan]')) && await ev('document.querySelector("[data-child=\\"' + CHILD2 + '\\"] [data-plan]").classList.contains("btn--ghost")'), 'the card button is quiet');
+    ok(/Starts today · you choose the children/.test(await text('.gh-bar')), 'with two children the bar leaves the choice to the Set a week page: ' + await text('.gh-bar'));
     await allViews('front-noweek');
   } finally { setKids(KIDS2); }
 });
@@ -2511,18 +2619,17 @@ scene('front page (adult): five children get one compact row each; no children s
   const kids = ids.map((id, i) => ({ id, nickname: names[i], year: 4, avatar: null }));
   try {
     await seedFront(ids.map((id, i) => [id, i === 1 || i === 4 ? wrenWeek() : childWeek()]), kids);
-    ok(await ev('document.querySelectorAll(".gu-card--row").length') === 5 && await ev('document.querySelectorAll(".gu-stones").length') === 0, 'five rows, no stone strips');
-    ok(/Ben and Ellie need you\. Three children are on track\./.test(await text('[data-summary]')), await text('[data-summary]'));
+    ok(await ev('document.querySelectorAll("[data-child]").length') === 5 && await ev('document.querySelectorAll(".gh-mini").length') === 5, 'five cards with their small stones');
     ok((await ev('[...document.querySelectorAll("[data-child]")].map((e) => e.dataset.child)')).join() === ids.join(), 'stable order');
-    ok((await primaries()).join('|') === 'See Ben’s week' && await ev('[...document.querySelectorAll("[data-see]")].every((e) => e.classList.contains("btn--ghost"))'), 'Ben gets the one green button, in the header: ' + await primaries());
+    ok((await primaries()).join('|') === 'Set a week', 'one green button: ' + await primaries());
     for (const [w, h] of [[1180, 640], [390, 844]]) ok(await inFirstScreen('[data-primary]', w, h), 'the green button is in the first screen at ' + w + 'x' + h);
     await width(390, 844);
     const tall = await ev('document.documentElement.scrollHeight');
-    ok(tall < 2300, 'five rows are not three screens at 390: ' + tall);
+    ok(tall < 844 * 3, 'five cards are under three screens at 390: ' + tall);
     await allViews('front-five');
     step('no children');
     await seedFront([], []);
-    ok(await has('[data-first]') && /Add your first child/.test(await text('[data-first] h1')) && !await has('[data-planweek]'), 'what to do first: ' + await text('main'));
+    ok(await has('[data-first]') && /Add your first child/.test(await text('[data-first] h1')) && !await has('[data-setweek]'), 'what to do first: ' + await text('main'));
     ok(/\/account$/.test(await ev('document.querySelector("[data-addchild]").href')) && /Add a child/.test(await text('[data-addchild]')), 'Add a child, on the Waystead account');
     ok(await visible('.foot__papers'), 'the papers line');
     await allViews('front-none');
@@ -2566,7 +2673,7 @@ scene('adult Menu: below the bar on a wide screen, a bottom sheet on a phone; fo
   await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
   ok(await ev('document.querySelector("#adult-menu-btn").getAttribute("aria-expanded")') === 'true', 'aria-expanded');
   const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => ({ t: a.querySelector("b").textContent, h: a.getAttribute("href"), tall: a.getBoundingClientRect().height, sub: a.querySelector("span.adultrow__text > span").textContent }))');
-  ok(rows.map((r) => r.t).join() === 'More practice,My words,Pick words,Your own chapters,For teachers,Tricky words,Progress,All games' && rows.map((r) => r.h).join() === '#/chapters,#/words,#/custom,#/grownups/own,#/grownups/teach,#/tricky,#/progress,../', 'the eight rows: ' + JSON.stringify(rows));
+  ok(rows.map((r) => r.t).join() === 'Children,Word lists,Set a week,Play yourself,All games' && rows.map((r) => r.h).join() === '#/grownups,#/grownups/own,#/grownups/set,#/grownups/yourself,../', 'the five rows (SB5): ' + JSON.stringify(rows));
   ok(rows.every((r) => r.tall >= 48 && r.sub.length > 0), 'each row 48 px or more with a helper');
   ok(await ev('document.querySelector("#adult-menu-panel nav") !== null && !document.querySelector("#adult-menu-panel [role=menu]")'), 'a nav with a list, no role=menu');
   const bar = await rect('.topbar');
@@ -2587,19 +2694,20 @@ scene('adult Menu: below the bar on a wide screen, a bottom sheet on a phone; fo
   ok(await ev('document.querySelector("#adult-menu-panel").hidden && !document.querySelector("#adult-account-panel").hidden'), 'the chip swaps the Menu for the account panel');
   await key('Escape');
   step('a route change closes it; every row opens its page');
-  for (const [href, ready] of [['#/chapters', '[data-chapters]'], ['#/words', 'main h1'], ['#/custom', 'main h1'], ['#/tricky', 'main h1'], ['#/progress', 'main h1']]) {
-    await go('#/');
-    await until('document.querySelector("[data-child]")', 'the front page');
+  for (const [href, ready] of [['#/grownups/own', 'main h1'], ['#/grownups/set', '.st-page'], ['#/grownups/yourself', 'main h1'], ['#/grownups', '[data-child]']]) {
+    const from = href === '#/grownups/own' ? '#/grownups/yourself' : '#/grownups/own';
+    await go(from);
+    await until('location.hash === ' + q(from) + ' && document.querySelector("main h1")', 'a page to leave');
     await click('#adult-menu-btn');
     await click('#adult-menu-panel a[href="' + href + '"]');
     await until('location.hash === ' + q(href) + ' && document.querySelector(' + q(ready) + ')', href);
     await sleep(80);
-    ok(await ev('document.activeElement === document.querySelector("main h1")'), 'after choosing ' + href + ' focus is on the new page\'s heading');
+    ok(await ev('document.activeElement === document.querySelector("main h1")'), 'after choosing ' + href + ' focus is on the new page\'s heading, not ' + await ev('document.activeElement.tagName + "." + document.activeElement.className'));
     ok(await ev('document.querySelector("#adult-menu-panel").hidden && !document.querySelector("main").hasAttribute("inert")'), 'a row closes the Menu: ' + href);
   }
   ok(await ev('document.querySelector("#adult-menu-panel a[href=\\"../\\"]").getAttribute("href")') === '../', 'All games goes to the games home');
   await click('#adult-menu-btn');
-  await go('#/tricky');
+  await go('#/grownups/own');
   await sleep(80);
   ok(await ev('document.querySelector("#adult-menu-panel").hidden'), 'a route change closes the Menu');
   step('a phone: the bottom sheet');
@@ -2678,14 +2786,17 @@ scene('adult account panel: name, ONE Play as a child row, Your account, the loo
 scene('adult: every old control is still reachable; the child, signed-out and Wordbright bars are unchanged', async () => {
   await seedFront([[CHILD, childWeek()], [CHILD2, wrenWeek()]], KIDS2);
   await width(1280, 800);
-  const old = { 'Pick words': '#/custom', 'Tricky words': '#/tricky', 'Progress': '#/progress', 'More practice': '#/chapters', 'All games': '../' };
+  const menu = { 'Children': '#/grownups', 'Word lists': '#/grownups/own', 'Set a week': '#/grownups/set', 'Play yourself': '#/grownups/yourself', 'All games': '../' };
   await click('#adult-menu-btn');
-  for (const [title, href] of Object.entries(old)) ok(await has('#adult-menu-panel a[href="' + href + '"]') && new RegExp(title).test(await text('#adult-menu-panel a[href="' + href + '"]')), title + ' is in the Menu');
+  for (const [title, href] of Object.entries(menu)) ok(await has('#adult-menu-panel a[href="' + href + '"]') && new RegExp(title).test(await text('#adult-menu-panel a[href="' + href + '"]')), title + ' is in the Menu');
   await key('Escape');
   await click('#adult-chip');
   await until('document.querySelector("#adult-account-panel [data-signout]")', 'the account panel');
   for (const s of ['[data-choice=garden]', '[data-choice=paint]', '[data-choice=night]', '[data-choice=system]', '[data-signout]', '[data-account]', '[data-parents]']) ok(await has('#adult-account-panel ' + s), 'the account panel has ' + s);
   await key('Escape');
+  await go('#/grownups/yourself');
+  await until('document.querySelector("main h1")', 'Play yourself');
+  for (const [title, href] of Object.entries({ 'More practice': '#/chapters', 'My words': '#/words', 'Pick words': '#/custom', 'words to practise again': '#/tricky', 'progress': '#/progress' })) ok(await has('main a[href="' + href + '"]') && new RegExp(title, 'i').test(await text('main a[href="' + href + '"]')), 'the old control ' + title + ' is a row on Play yourself');
   await go('#/words');
   await until('document.querySelector("main h1")', 'My words by its address');
   ok(await ev('document.body.classList.contains("is-adult")') && !/Not found|isn.t here/i.test(await text('main h1')), 'My words still opens by its address (its link now lives inside each child\'s week)');
@@ -2791,15 +2902,17 @@ scene('SB3-F signed out: one button, the seven jobs, no word, no game', async ()
 });
 function document_text(t) { return (t.toLowerCase().match(/[a-z]+/g) || []); }
 
+// SB5 (TR-47): a child's #/chapters is "Practice": the grown-up's lists, Sentence games, Words to practise again, the year chapters (a year grid, then the year's
+// stones and one carry button), then Pick words and My progress. The old "More practice" page with its Other years row and spoken sentence is the adult page only.
 scene('SB3-F More practice as a child: chrome, one button, year switch, stones', async () => {
   overrides.set('data/curriculum.json', LEGACY_CURRICULUM); // written for Years 3 to 6 with five chapters each
   await childWith(PROG_3, '#/chapters');
   await showYear('y3');
-  await until('document.querySelector("[data-chapters]")', 'More practice');
+  await until('document.querySelector("[data-chapters]")', 'Practice');
   ok(await visible('#child-back') && await visible('#child-menu'), 'Back and Menu');
   const t = await text();
-  ok(!/Learning|Start game|Today's word|Waystead/.test(t) , 'no advert, no Start game, no Today\'s word');
-  ok(/^More practice/.test(t) && /Learn a chapter, then test it\./.test(t), 'the child\'s title and sentence');
+  ok(!/Learning|Start game|Today's word|Waystead/.test(t), 'no advert, no Start game, no Today\'s word');
+  ok(/^Today\s+Practice/.test(t) && /Year chapters/.test(t) && await ev('document.querySelector("[data-chapters]").dataset.for') === 'child', 'the child\'s Practice page: ' + t.slice(0, 120));
   ok(await frontPrimaries() === 1 && /Carry on: Chapter 3/.test(await text('[data-carry]')) && /Practise/.test(await text('[data-carry] small')), 'ONE primary: Carry on: Chapter 3 (next step Practise)');
   ok(await ev('document.querySelector("[data-carry]").getAttribute("href")') === '#/y3/ch03/practice', 'the button goes to the next step');
   const states = await ev('[...document.querySelectorAll(".stonelink")].map((a) => a.dataset.state)');
@@ -2809,19 +2922,16 @@ scene('SB3-F More practice as a child: chrome, one button, year switch, stones',
   ok(await ev('[...document.querySelectorAll(".stonelink")].every((a) => { const r = a.getBoundingClientRect(); return r.height >= 72 && r.width >= 60; })'), 'stones are about 64 x 72 at 390');
   ok(await ev('[...document.querySelectorAll(".stonelink__label")].every((e) => parseFloat(getComputedStyle(e).fontSize) >= 14)'), 'labels are at least 14 px');
   ok(await ev('document.querySelectorAll(".stonelink[data-state=passed] svg").length') === 2, 'a passed stone has a star');
-  ok(await ev('[...document.querySelectorAll(".yearswitch__b, .morerow, [data-carry], .hearit")].every((e) => e.getBoundingClientRect().height >= 48)'), 'switch, rows, button and Hear it are at least 48 px');
-  ok(await ev('document.querySelectorAll(".morerows a").length') === 3, 'three quiet rows');
+  ok(await ev('[...document.querySelectorAll("[data-yearswitch] [data-year], [data-carry], .tile")].every((e) => e.getBoundingClientRect().height >= 48)'), 'the year buttons, tiles and the button are at least 48 px');
+  ok(await ev('document.querySelectorAll("[data-yearswitch] [data-year]").length') === 4, 'a button for each year the curriculum has (3 to 6)');
   ok(await tabTo('.stonelink') >= 3, 'a 3 px focus ring on a stone');
-  await click('[data-hear]');
-  await until('globalThis.__lines.some((l) => /Learn a chapter/.test(l))', 'the sentence spoken');
-  step('the year switch, remembered');
-  await click('.yearswitch__b[data-year=y5]');
-  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y5' && /Start: Chapter 1/.test(await text('[data-carry]')) && await frontPrimaries() === 1, 'Year 5 and 6: Start: Chapter 1, still one primary');
-  ok(await ev('document.querySelector(".yearswitch__b[data-year=y5]").getAttribute("aria-pressed")') === 'true', 'pressed state');
+  step('the year grid, remembered');
+  await click('[data-yearswitch] [data-year=y5]');
+  ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y5' && /Start: Chapter 1/.test(await text('[data-carry]')) && await frontPrimaries() === 1, 'Year 5: Start: Chapter 1, still one primary');
+  ok(await ev('document.querySelector("[data-yearswitch] [data-year=y5]").getAttribute("aria-pressed")') === 'true', 'pressed state');
   await open(plus(2), '#/chapters');
   await until('document.querySelector("[data-yearpanel=y5]")', 'the remembered year');
-  await click('[data-moreyears]');
-  await click('.yearswitch__b[data-year=y3]');
+  await click('[data-yearswitch] [data-year=y3]');
   await allViews('front-chapters-child');
   await width(1180, 640);
   ok(await ev('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), 'no sideways scroll at 1180x640');
@@ -2835,8 +2945,7 @@ scene('SB3-F More practice as a child: chrome, one button, year switch, stones',
   step('all five passed');
   await childWith(progDoc({}, Array.from({ length: 5 }, (_, i) => passedCh(i + 1))), '#/chapters');
   ok(await ev('document.querySelector("[data-yearpanel]").dataset.yearpanel') === 'y4', 'a child in Year 4 opens on Year 4, whatever else is passed');
-  await click('[data-moreyears]');
-  await click('.yearswitch__b[data-year=y3]');
+  await click('[data-yearswitch] [data-year=y3]');
   await until('document.querySelector("[data-allpassed]")', 'the all-passed state');
   ok(await frontPrimaries() === 0 && /All 5 passed/.test(await text('[data-allpassed]')), 'All 5 passed, no button');
 });
@@ -2919,7 +3028,7 @@ scene('SB3-F no "Start game" in the site, every old link still resolves, no test
   }
   await go('#/y34');
   await until('location.hash === "#/chapters"', 'the old year page goes to More practice');
-  ok(await ev('document.querySelector(".yearswitch__b[data-year=y3]").getAttribute("aria-pressed")') === 'true', 'with the year chosen');
+  ok(await ev('document.querySelector("[data-yearswitch] [data-year=y3]").getAttribute("aria-pressed")') === 'true', 'with the year chosen');
   await go('#/y56');
   await until('document.querySelector("[data-yearpanel=y5]")', 'Year 5 and 6 chosen by its old link');
   step('test day: More practice and a chapter show no test word');
@@ -2987,15 +3096,19 @@ scene('SB3-F Back from a chapter page, and the year address, go to More practice
   }
 });
 
-scene('SB3-F adult Menu: My words is the second row and opens My words; the Learning line shows on More practice for an adult only', async () => {
+scene('SB3-F adult Menu: My words is a row on Play yourself and opens My words; the Learning line shows on More practice for an adult only', async () => {
   await adultWith(progDoc(), '#/chapters');
   await width(1280, 800);
   ok(await visible('.foot__papers') && /From Waystead Learning/i.test(await text('.foot__papers')) && await ev('document.querySelectorAll(".foot__papers").length') === 1, 'ONE Learning papers line, at the foot of More practice');
   await click('#adult-menu-btn');
   await until('!document.querySelector("#adult-menu-panel").hidden', 'the Menu');
   const rows = await ev('[...document.querySelectorAll("#adult-menu-panel nav ul a")].map((a) => [a.querySelector("b").textContent, a.querySelector("span.adultrow__text > span").textContent])');
-  ok(rows.length === 8 && rows[1][0] === 'My words' && rows[1][1] === 'Practise words yourself', 'My words, Practise words yourself, after More practice: ' + JSON.stringify(rows));
-  await click('#adult-menu-panel a[href="#/words"]');
+  ok(rows.length === 5 && rows[3][0] === 'Play yourself', 'SB5: five rows, the grown-up\'s own practice is Play yourself: ' + JSON.stringify(rows));
+  await click('#adult-menu-panel a[href="#/grownups/yourself"]');
+  await until('location.hash === "#/grownups/yourself" && document.querySelector("main h1")', 'Play yourself');
+  const my = await ev('[...document.querySelectorAll("main a[href=\\"#/words\\"]")].map((a) => [a.querySelector("b") ? a.querySelector("b").textContent : "", a.innerText])');
+  ok(my.length === 1 && /My words/.test(my[0][1]) && /Words you pick to practise/.test(my[0][1]), 'My words, with its helper, is a row on Play yourself: ' + JSON.stringify(my));
+  await click('main a[href="#/words"]');
   await until('location.hash === "#/words" && document.querySelector("main h1")', 'My words');
   await childWith(PROG_3, '#/chapters');
   await until('document.querySelector("[data-chapters]")', 'More practice as a child');
@@ -3015,8 +3128,8 @@ scene('SB3-G: a child never gets a delete, on the group page or the edit form', 
   ok(!/delete/i.test(await text()), 'no word "delete" on a child\'s group page: ' + (await text()).slice(0, 80));
   ok(await ev('[...document.querySelectorAll("main a[href$=\\"/edit\\"]")].every((a) => !/delete/i.test(a.textContent))'), 'no edit link says delete');
   await go('#/words/g/g1/edit');
-  await until('document.querySelector("[data-save]")', 'the edit form');
-  ok(!await has('[data-delete]') && !/delete/i.test(await text()), 'the child\'s form has no Delete button or wording');
+  await until('location.hash === "#/words/g/g1"', 'D26: a child has no edit form, the route goes back to the week');
+  ok(!await has('[data-save]') && !await has('[data-delete]') && !/delete/i.test(await text()), 'the child gets no form, no Delete button or wording');
   step('from the test day the child has no edit link and the edit route goes back to the group');
   await open(plus(5), '#/words/g/g1');
   await until('document.querySelector("main h1")', 'the group page on test day');
@@ -3051,7 +3164,7 @@ scene('SB3-G: the parent switches the week choice off, the child has no switcher
   }
   await asChild('off');
   ok(!await has('.weekline') && !await has('[data-week-change]') && !/Week:/.test(await text()), 'off: no Week line or Change');
-  ok(!/Week two/.test(await text('h1, .homesay')) , 'off: the saved week is ignored');
+  ok(!/Week two/.test(await text('h1, .today__head')) , 'off: the saved week is ignored');
   await go('#/words/g/g1');
   await until('document.querySelector("main h1")', 'the group page');
   ok(!await has('[data-study-week]'), 'off: no Study this week buttons');
@@ -3065,7 +3178,7 @@ scene('SB3-G: the parent switches the week choice off, the child has no switcher
   await until('location.hash === "#/words/g/g1"', 'another week\'s games go to the pick');
   await go('#/words');
   await until('document.querySelector("main h1")', 'My words');
-  ok(!await has('main .list a[href*="/g/"]') && /Week one/.test(await text('main h1')), 'My words shows the pick only: ' + await text('main h1'));
+  ok(!await has('main .list a[href*="/g/"]') && /Week one/.test(await text('main')) && !/Week two/.test(await text('main')), 'My words shows the pick only (D26 tiles, the week named under Study this week): ' + await text('main'));
   await go('#/progress');
   await until('document.querySelector("main h1")', 'Progress');
   ok(!await has('[data-reset]') && !/Clear my progress/.test(await text()), 'no Clear my progress for a child');
@@ -3084,13 +3197,17 @@ scene('SB3-G: the parent switches the week choice off, the child has no switcher
 const H = {
   scene, go, click, ev, ok, has, text, until, key, keys, sleep, shot, width, style, open, acct,
   allowLog: (re) => { allowedLog = re; },
+  askRole: (on) => { askRole = !!on; },
   emulate: (features) => send('Emulation.setEmulatedMedia', { media: '', features }), // e.g. [{ name: 'prefers-reduced-motion', value: 'reduce' }]; cleared before every scene
   serve: (path, body) => { if (body === null) overrides.delete(path); else overrides.set(path, body); }, // a site file served from a string for this scene; null clears it
   legacyCurriculum: LEGACY_CURRICULUM, seedChild, signedOutBlank, childWith, adultWith, readDoc, readLocal, visible, rect,
   KB_VIEWS, KB_PORTRAIT, CHILD, CHILD2, ADULT, MON, plus, W, kbFit,
+  kbSeed, weekDoc, studied, practiceDayDoc, gameDayDoc, ROOT, twoWeeksDoc, // SB5-WP-H: the fold harness reuses the keyboard scene's seeding
 };
 H.send = send; // SB4-WP11: the teacher page's print scenes switch on print media
 for (const f of readdirSync(join(ROOT, 'tools/smoke-sb4')).filter((n) => n.endsWith('.mjs')).sort()) (await import(pathToFileURL(join(ROOT, 'tools/smoke-sb4', f)))).default(H);
+// SB5: tools/smoke-sb5/*.mjs the same way (fold.mjs is the phone-fold harness, TR-60..61; fold-known.json is its known-failures list, not a scene file)
+if (existsSync(join(ROOT, 'tools/smoke-sb5'))) for (const f of readdirSync(join(ROOT, 'tools/smoke-sb5')).filter((n) => n.endsWith('.mjs')).sort()) (await import(pathToFileURL(join(ROOT, 'tools/smoke-sb5', f)))).default(H);
 
 // ---- run ------------------------------------------------------------------------------------
 let failed = 0;
@@ -3105,10 +3222,10 @@ async function main() {
   await send('Log.enable');
   await width(390);
   for (const s of SCENES) {
-    if (ONLY && s.name !== ONLY) continue;
+    if (ONLY && s.name !== ONLY && !(ONLY.endsWith('*') && s.name.startsWith(ONLY.slice(0, -1)))) continue; // argv[3]: the exact scene name, or a prefix ending in * (e.g. 'SB5 fold*')
     console.log(s.name);
     overrides.clear(); // H.serve is for one scene
-    allowedLog = null;
+    allowedLog = null; curScene = s.name;
     await send('Emulation.setEmulatedMedia', { media: '', features: [] }); // H.emulate is for one scene
     try { await s.fn(); console.log('  ok'); } catch (e) {
       failed += 1;

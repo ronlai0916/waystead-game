@@ -1,0 +1,137 @@
+{
+ "chapter": "y34-ch06",
+ "year": 4,
+ "words": {
+  "eighth": [
+   "Our team came eighth in the sack race on sports day.",
+   "I am eighth in the queue for the ice cream van.",
+   "Hooray, I got a new bike on my eighth birthday!"
+  ],
+  "height": [
+   "Mum marked my height on the wall with a pencil.",
+   "Wow, look at the height of that tall tree!",
+   "Birds flew over the hill at a great height."
+  ],
+  "possess": [
+   "Do you possess a bike, or do you share one?",
+   "I would love to possess a big box of paints!",
+   "Every pupil should possess a bag for their books."
+  ],
+  "though": [
+   "Though it was raining, we played in the park.",
+   "I like apples, though pears are my favourite.",
+   "It was late, though I was not tired at all!"
+  ],
+  "weight": [
+   "Put the watermelon on the scales to check its weight.",
+   "I lifted the bag, but its weight surprised me.",
+   "Put a stone on the paper as a weight."
+  ],
+  "arrive": [
+   "When will the post arrive at our house?",
+   "Grandma will arrive by train for the holiday.",
+   "We waited at the gate for the guests to arrive."
+  ],
+  "calendar": [
+   "Which month comes next on the calendar?",
+   "Mum hung a new calendar on the kitchen wall.",
+   "Each page of the calendar has a picture of a puppy."
+  ],
+  "complete": [
+   "The jigsaw is complete, with no pieces missing!",
+   "Please read the complete story, not just one page.",
+   "A complete rainbow has seven colours."
+  ],
+  "consider": [
+   "Let us consider carefully if we should get a puppy.",
+   "Please consider which colour to paint the shed.",
+   "Consider the weather before you pack for the seaside!"
+  ],
+  "continue": [
+   "Do not stop now, continue digging in the garden!",
+   "Please continue to read from the next page.",
+   "If the rain stops, we will continue our picnic."
+  ],
+  "describe": [
+   "Use good words to describe the taste of the soup.",
+   "Can you describe your pet to the class?",
+   "I will describe my new coat so you can find it."
+  ]
+ },
+ "rounds": {
+  "eighth": 0,
+  "height": 0,
+  "possess": 0,
+  "though": 0,
+  "weight": 0,
+  "arrive": 0,
+  "calendar": 0,
+  "complete": 0,
+  "consider": 0,
+  "continue": 0,
+  "describe": 0
+ },
+ "rejected": [
+  {
+   "word": "height",
+   "round": 0,
+   "s": "The door frame shows how my height has grown.",
+   "reason": "checker: 'How my weight has grown' also works, and the wording is a little awkward. (also fits: weight)"
+  },
+  {
+   "word": "possess",
+   "round": 0,
+   "s": "The library will possess the new book next week.",
+   "reason": "checker: This is unnatural English; a library would 'have' or 'get' a book."
+  },
+  {
+   "word": "though",
+   "round": 0,
+   "s": "The soup was hot, though it tasted lovely.",
+   "reason": "checker: There is no real contrast between hot soup and a lovely taste, so it reads oddly."
+  },
+  {
+   "word": "weight",
+   "round": 0,
+   "s": "Wow, the weight of this bag of sand is huge!",
+   "reason": "checker: 'The height of this bag of sand is huge' also makes sense. (also fits: height)"
+  },
+  {
+   "word": "weight",
+   "round": 0,
+   "s": "The baby rabbit grew in weight each week.",
+   "reason": "checker: 'Grew in height' fits just as well. (also fits: height)"
+  },
+  {
+   "word": "complete",
+   "round": 0,
+   "s": "Do you have the complete set of football stickers?",
+   "reason": "checker: 'The eighth set of football stickers' also makes sense. (also fits: eighth)"
+  },
+  {
+   "word": "complete",
+   "round": 0,
+   "s": "We need one more block to complete the tower.",
+   "reason": "checker: This uses complete as a verb, and 'continue the tower' could also fit. (also fits: continue)"
+  },
+  {
+   "word": "consider",
+   "round": 0,
+   "s": "I will consider the menu before I choose lunch.",
+   "reason": "checker: 'I will describe the menu' is also grammatical, so the answer is not certain. (also fits: describe)"
+  },
+  {
+   "word": "continue",
+   "round": 0,
+   "s": "The band will continue to play until the end.",
+   "reason": "machine rule 5: word overlap with the example is 50%"
+  },
+  {
+   "word": "continue",
+   "round": 0,
+   "s": "May I continue my game after tea?",
+   "reason": "checker: 'May I complete my game' also makes sense. (also fits: complete)"
+  }
+ ],
+ "sitOut": []
+}

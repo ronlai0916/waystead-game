@@ -1,0 +1,161 @@
+{
+ "chapter": "y2-ch01",
+ "year": 2,
+ "words": {
+  "find": [
+   "Can you find my lost sock under the bed?",
+   "Please help me find the library book.",
+   "I hope we find some conkers in autumn!"
+  ],
+  "kind": [
+   "A kind friend gave me half her sandwich.",
+   "Thank you for being so kind to me.",
+   "Our teacher is always kind and smiles a lot."
+  ],
+  "mind": [
+   "A good idea came into my mind.",
+   "Close your eyes and let your mind rest.",
+   "I changed my mind and chose the red kite."
+  ],
+  "behind": [
+   "The sun went behind a grey cloud.",
+   "We stood in a line, one behind the other.",
+   "Who is hiding behind the garden shed?"
+  ],
+  "child": [
+   "My little sister is the youngest child in our family.",
+   "Is this coat for a child or a grown-up?",
+   "The teacher asked a child to give out the pencils."
+  ],
+  "children": [
+   "Two children built a sandcastle on the beach!",
+   "Lots of children came to the library today.",
+   "All the children put on their wellies."
+  ],
+  "wild": [
+   "Lions and tigers are wild animals, not pets.",
+   "A wild deer ran across the green hill.",
+   "Do wild rabbits live in the woods?"
+  ],
+  "badge": [
+   "Can you pin this badge on my coat, please?",
+   "Our team captain wears a shiny badge on her shirt.",
+   "I pin my school badge on my jumper."
+  ],
+  "bridge": [
+   "We stood on the bridge and watched the river.",
+   "The ducks swam under the bridge.",
+   "The train went over the bridge slowly."
+  ],
+  "page": [
+   "The wind blew and turned the page of my book.",
+   "Can you read the next page to me?",
+   "The story ends at the bottom of this page."
+  ]
+ },
+ "rounds": {
+  "find": 0,
+  "kind": 0,
+  "mind": 0,
+  "behind": 0,
+  "child": 1,
+  "children": 0,
+  "wild": 0,
+  "badge": 1,
+  "bridge": 0,
+  "page": 1
+ },
+ "rejected": [
+  {
+   "word": "kind",
+   "round": 0,
+   "s": "What a kind thing to do for my nan!",
+   "reason": "machine rule 4: not on the word lists: nan"
+  },
+  {
+   "word": "kind",
+   "round": 0,
+   "s": "Mum was kind and baked me a cake.",
+   "reason": "checker: Showing Mum doing the baking leans on the stereotype of who cooks."
+  },
+  {
+   "word": "child",
+   "round": 0,
+   "s": "A young child fed the ducks some bread.",
+   "reason": "checker: UK advice now says not to feed ducks bread, so it is best dropped."
+  },
+  {
+   "word": "child",
+   "round": 0,
+   "s": "The little child waved from the bus.",
+   "reason": "checker: The little children waved from the bus also works. (also fits: children)"
+  },
+  {
+   "word": "child",
+   "round": 0,
+   "s": "Mum read a story to the sleepy child.",
+   "reason": "checker: The sleepy children also works. (also fits: children)"
+  },
+  {
+   "word": "children",
+   "round": 0,
+   "s": "The children sang songs at the birthday party.",
+   "reason": "checker: The child sang songs also works. (also fits: child)"
+  },
+  {
+   "word": "children",
+   "round": 0,
+   "s": "Do the children want jam or honey?",
+   "reason": "checker: Child fits if do becomes does, a change a child might not notice. (also fits: child)"
+  },
+  {
+   "word": "wild",
+   "round": 0,
+   "s": "The wind was wild and the rain was loud.",
+   "reason": "checker: This is the stormy sense, not the meaning, and the wind was kind could also be read. (also fits: kind)"
+  },
+  {
+   "word": "badge",
+   "round": 0,
+   "s": "My badge says I read ten books.",
+   "reason": "checker: A page on a reading chart could also say this. (also fits: page)"
+  },
+  {
+   "word": "badge",
+   "round": 0,
+   "s": "Mum sewed a badge on my backpack.",
+   "reason": "checker: Backpack is more American, and Mum sewing leans on a stereotype."
+  },
+  {
+   "word": "badge",
+   "round": 0,
+   "s": "What a lovely badge, with a yellow star!",
+   "reason": "checker: What a lovely page, with a yellow star also works. (also fits: page)"
+  },
+  {
+   "word": "page",
+   "round": 0,
+   "s": "Mum showed me a page with funny pictures.",
+   "reason": "checker: A badge with funny pictures also works. (also fits: badge)"
+  },
+  {
+   "word": "page",
+   "round": 0,
+   "s": "Which page has the picture of the whale?",
+   "reason": "checker: Which badge has the picture of the whale also works. (also fits: badge)"
+  },
+  {
+   "word": "page",
+   "round": 0,
+   "s": "Write your name at the top of the page.",
+   "reason": "checker: You can write your name on a name badge, so badge also fits. (also fits: badge)"
+  },
+  {
+   "word": "page",
+   "round": 1,
+   "s": "There is a big blot on this page!",
+   "reason": "checker: A blot could just as well be on a badge, so the gap is not clear. (also fits: badge)"
+  }
+ ],
+ "sitOut": []
+}

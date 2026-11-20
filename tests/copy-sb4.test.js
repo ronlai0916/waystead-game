@@ -71,7 +71,7 @@ const KNOWN = {
 };
 const known = (f, s) => (KNOWN[f] || []).some((k) => s.includes(k));
 
-const ALL = ['assess-doc.js', 'assess-views.js', 'tray.js', 'tiles-doc.js', 'child-doc.js', 'play.js', 'views.js', 'study-views.js', 'games-views.js', 'words-views.js', 'scan-doc.js', 'scan-views.js', 'teach-doc.js', 'teach-views.js']; // scan-*: SB4-WP8, teach-*: SB4-WP11
+const ALL = ['assess-doc.js', 'assess-views.js', 'tray.js', 'tiles-doc.js', 'child-doc.js', 'play.js', 'views.js', 'study-views.js', 'games-views.js', 'words-views.js', 'scan-doc.js', 'scan-views.js', 'teach-doc.js', 'role-doc.js', 'info-doc.js', 'set-doc.js', 'practice-doc.js', 'own-views.js', 'results-views.js', 'lists-doc.js', 'set-views.js', 'child-views.js', 'front-views.js', 'grownups-views.js']; // R4: child-views, front-views; own, results, lists: SB5 WP-E; set-views: SB5 WP-D; scan-*: SB4-WP8, teach-*: SB4-WP11, role, info, set, practice: SB5 WP-A2
 const STRICT = ['assess-views.js', 'tray.js', 'assess-doc.js', 'scan-doc.js', 'scan-views.js'];
 
 test('the literal scanner reads quotes, templates and skips comments and regular expressions', () => {

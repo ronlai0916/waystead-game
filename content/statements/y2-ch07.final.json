@@ -1,0 +1,131 @@
+{
+ "chapter": "y2-ch07",
+ "year": 2,
+ "words": {
+  "move": [
+   "The snail will move slowly across the leaf.",
+   "Can you move your chair closer to the table?",
+   "Stay still and do not move at all."
+  ],
+  "prove": [
+   "A photo can prove that we went to the beach.",
+   "Can you prove that the box is empty?",
+   "Look at the map to prove you are right."
+  ],
+  "improve": [
+   "Reading every night helps me improve at spelling.",
+   "Daily practice will improve your football.",
+   "Painting more will improve my pictures!"
+  ],
+  "sure": [
+   "Are you sure this is the right bus?",
+   "Dad felt sure the shop was open on Sunday.",
+   "Check twice to be sure the door is shut."
+  ],
+  "sugar": [
+   "Stir the sugar into your hot tea.",
+   "Do the biscuits have sugar on top?",
+   "The sweet white sugar melted in the cup."
+  ],
+  "water": [
+   "Turn the tap and water will pour out.",
+   "Pour some water on the thirsty plant.",
+   "The fish swim in clean water."
+  ],
+  "money": [
+   "How much money is in the piggy bank?",
+   "We need money to buy bread at the shop.",
+   "Gran gave me money for my birthday."
+  ],
+  "want": [
+   "Do you want jam or honey on toast?",
+   "I want to play on the swings!",
+   "The puppy will want a walk after tea."
+  ],
+  "squash": [
+   "I squash the clay flat with my hand.",
+   "Hold the grapes gently so you do not squash them.",
+   "Jump on the empty box to squash it flat!"
+  ],
+  "brother": [
+   "Is that boy your brother or your cousin?",
+   "My little brother is learning to walk.",
+   "I share my bedroom with my big brother."
+  ]
+ },
+ "rounds": {
+  "move": 0,
+  "prove": 0,
+  "improve": 0,
+  "sure": 0,
+  "sugar": 0,
+  "water": 0,
+  "money": 0,
+  "want": 0,
+  "squash": 1,
+  "brother": 0
+ },
+ "rejected": [
+  {
+   "word": "prove",
+   "round": 0,
+   "s": "Use a ruler to prove the table is long.",
+   "reason": "checker: Proving a table is 'long' with a ruler is odd logic and may confuse a child."
+  },
+  {
+   "word": "improve",
+   "round": 0,
+   "s": "How can we improve our garden this spring?",
+   "reason": "checker: 'How can we water our garden this spring?' also makes sense. (also fits: water)"
+  },
+  {
+   "word": "sure",
+   "round": 0,
+   "s": "Are you sure it is Tuesday today?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "sugar",
+   "round": 0,
+   "s": "Ants like the sugar spilled on the floor!",
+   "reason": "machine rule 4: not on the word lists: spilled"
+  },
+  {
+   "word": "sugar",
+   "round": 0,
+   "s": "Too much sugar is bad for your teeth.",
+   "reason": "checker: It moralises about food and health, which is too close to diet talk."
+  },
+  {
+   "word": "sugar",
+   "round": 0,
+   "s": "We need flour, eggs and sugar to bake.",
+   "reason": "checker: 'Flour, eggs and water' could also make sense for some baking. (also fits: water)"
+  },
+  {
+   "word": "want",
+   "round": 0,
+   "s": "Would you want to come to my party?",
+   "reason": "checker: 'Would you want to come' is less natural than 'would you like to come'."
+  },
+  {
+   "word": "squash",
+   "round": 0,
+   "s": "Press down hard to squash the empty can.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "squash",
+   "round": 0,
+   "s": "Please do not squash my ripe plums!",
+   "reason": "checker: 'Please do not move my ripe plums!' also makes sense. (also fits: move)"
+  },
+  {
+   "word": "squash",
+   "round": 0,
+   "s": "Big books will squash the bread at the bottom.",
+   "reason": "checker: Without saying 'in the bag', the scene is unclear for a child."
+  }
+ ],
+ "sitOut": []
+}

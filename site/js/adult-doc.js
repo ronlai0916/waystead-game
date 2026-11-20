@@ -23,20 +23,30 @@ export function morePracticeSub(years) {
   return lo === 6 ? 'Year 6 chapters' : 'Year ' + lo + ' to Year 6 chapters';
 }
 
-/** The Menu's rows, in order. `id` picks the icon. */
+/** The Menu's rows, in order (SB5): about the children, then the grown-up's own practice. `id` picks the icon. */
 export const MENU_ROWS = [
-  { id: 'chapters', title: 'More practice', sub: morePracticeSub([1, 2, 3, 4, 5, 6]), href: '#/chapters' },
-  { id: 'words', title: 'My words', sub: 'Practise words yourself', href: '#/words' },
-  { id: 'custom', title: 'Pick words', sub: 'Choose your own words', href: '#/custom' },
-  { id: 'own', title: 'Your own chapters', sub: 'Make a list from school spellings', href: '#/grownups/own' }, // SB4-WP7
-  { id: 'teach', title: 'For teachers', sub: 'One list for up to 5 children', href: '#/grownups/teach' }, // SB4-WP11
-  { id: 'tricky', title: 'Tricky words', sub: 'Words that need another go', href: '#/tricky' },
-  { id: 'progress', title: 'Progress', sub: 'Chapters you have passed', href: '#/progress' },
+  { id: 'children', title: 'Children', sub: 'Their weeks and results', href: '#/grownups' },
+  { id: 'lists', title: 'Word lists', sub: 'Type or scan school spellings', href: '#/grownups/own' },
+  { id: 'set', title: 'Set a week', sub: 'Words, children and a test date', href: '#/grownups/set' },
+  { id: 'yourself', title: 'Play yourself', sub: 'Your own practice', href: '#/grownups/yourself' },
   { id: 'games', title: 'All games', sub: 'Waystead’s other games', href: '../' },
 ];
 
-/** The Menu's rows for the live years (`D.liveYears()` ids or numbers). */
-export const menuRows = (years) => MENU_ROWS.map((r) => (r.id === 'chapters' ? { ...r, sub: morePracticeSub(years) } : r));
+/** The Play yourself page's rows (the adult's own practice; the years sub is filled by `yourselfRows`). */
+export const YOURSELF_ROWS = [
+  { id: 'chapters', title: 'More practice', sub: morePracticeSub([1, 2, 3, 4, 5, 6]), href: '#/chapters' },
+  { id: 'words', title: 'My words', sub: 'Practise words yourself', href: '#/words' },
+  { id: 'custom', title: 'Pick words', sub: 'Choose your own words', href: '#/custom' },
+  { id: 'tricky', title: 'Your own tricky words', sub: 'Words that need another go', href: '#/tricky' },
+  { id: 'progress', title: 'Your own progress', sub: 'Chapters you have passed', href: '#/progress' },
+];
+export const YOURSELF_TITLE = 'Play yourself';
+export const YOURSELF_LEDE = 'Your own practice. Your children’s work is under Children.';
+
+/** The Menu's rows (the same list for every set of years: the years line moved to Play yourself). */
+export const menuRows = (years) => { void years; return MENU_ROWS; };
+/** The Play yourself rows for the live years (`D.liveYears()` ids or numbers). */
+export const yourselfRows = (years) => YOURSELF_ROWS.map((r) => (r.id === 'chapters' ? { ...r, sub: morePracticeSub(years) } : r));
 
 /** The ONE "Play as a child" row's helper: "Play as Robin", "Robin or Wren", "Robin, Wren or Ada", "Robin, Wren, Ada and 2 more". */
 export function playAsLine(children) {

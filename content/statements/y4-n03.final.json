@@ -1,0 +1,167 @@
+{
+ "chapter": "y4-n03",
+ "year": 4,
+ "words": {
+  "vision": [
+   "Owls have very good vision in the dark.",
+   "Do you wear glasses to help your vision?",
+   "Thick fog made our vision blurry on the hill walk."
+  ],
+  "decision": [
+   "It was a hard decision, but I chose the red coat.",
+   "Have you made your decision about which ice cream to have?",
+   "Choosing between a kitten and a puppy was a tough decision."
+  ],
+  "division": [
+   "Division is how we share twenty biscuits between four friends.",
+   "Can you do this division sum on the board?",
+   "Sharing nine grapes between three plates is easy division!"
+  ],
+  "television": [
+   "Please turn the television down, it is too loud!",
+   "My favourite cartoon is on television after tea.",
+   "My gran turned on the television to watch the weather."
+  ],
+  "confusion": [
+   "The map was upside down, which caused lots of confusion.",
+   "Why is there such confusion about whose turn it is?",
+   "A look of confusion crossed his face as he read the puzzle."
+  ],
+  "explosion": [
+   "The volcano in our science model made a fizzy explosion!",
+   "Did you hear that explosion when the party balloon popped?",
+   "An explosion of laughter filled the room at the party."
+  ],
+  "conclusion": [
+   "At the conclusion of the film, everyone clapped.",
+   "Our test led to the conclusion that ice melts in the sun.",
+   "What is the conclusion of your story?"
+  ],
+  "collision": [
+   "Did you see the collision of the two toy trains?",
+   "Our paper boats had a collision in the pond.",
+   "The marbles rolled across the floor, and a collision made a click."
+  ],
+  "supervision": [
+   "Little children need adult supervision at the park.",
+   "We can only use the oven with a grown-up's supervision.",
+   "Under supervision from my gran, I stirred the cake mix."
+  ],
+  "revision": [
+   "I did some revision for my spelling test tonight.",
+   "Going over every page twice was good revision for the quiz!",
+   "Do you do revision by reading your notes once more?"
+  ]
+ },
+ "rounds": {
+  "vision": 0,
+  "decision": 0,
+  "division": 0,
+  "television": 0,
+  "confusion": 0,
+  "explosion": 0,
+  "conclusion": 0,
+  "collision": 0,
+  "supervision": 0,
+  "revision": 1
+ },
+ "rejected": [
+  {
+   "word": "vision",
+   "round": 0,
+   "s": "Glasses help my nan's vision when she reads small print.",
+   "reason": "machine rule 4: not on the word lists: nan's"
+  },
+  {
+   "word": "decision",
+   "round": 0,
+   "s": "Which pet will you pick? It is your decision.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: It"
+  },
+  {
+   "word": "decision",
+   "round": 0,
+   "s": "What a quick decision! She picked the blue bike at once.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: She"
+  },
+  {
+   "word": "explosion",
+   "round": 0,
+   "s": "A loud explosion of thunder shook the windows.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "explosion",
+   "round": 0,
+   "s": "There was an explosion of colour when I opened the paint pots.",
+   "reason": "checker: Figurative and odd for opening paint pots, and 'a confusion of colour' could also fit. (also fits: confusion)"
+  },
+  {
+   "word": "conclusion",
+   "round": 0,
+   "s": "I read all the clues and came to one conclusion.",
+   "reason": "checker: 'Came to one decision' also makes sense. (also fits: decision)"
+  },
+  {
+   "word": "conclusion",
+   "round": 0,
+   "s": "In the conclusion of our school play, we all bowed.",
+   "reason": "checker: 'In the conclusion' is unnatural; it should be 'at the conclusion'."
+  },
+  {
+   "word": "collision",
+   "round": 0,
+   "s": "The two toy cars had a collision on the carpet.",
+   "reason": "machine rule 5: word overlap with the example is 50%"
+  },
+  {
+   "word": "collision",
+   "round": 0,
+   "s": "Two shopping trolleys met in a collision by the bread.",
+   "reason": "checker: 'Met in a collision' is awkward, unnatural English."
+  },
+  {
+   "word": "supervision",
+   "round": 0,
+   "s": "The teacher's supervision kept the class safe on the trip.",
+   "reason": "checker: 'The teacher's decision kept the class safe' also makes sense. (also fits: decision)"
+  },
+  {
+   "word": "supervision",
+   "round": 0,
+   "s": "Is there supervision at the library club for little ones?",
+   "reason": "checker: 'Is there television/revision at the library club' also works grammatically. (also fits: television, revision)"
+  },
+  {
+   "word": "revision",
+   "round": 0,
+   "s": "Revision each evening helps me remember my times tables.",
+   "reason": "checker: Division practice could also help with times tables. (also fits: division)"
+  },
+  {
+   "word": "revision",
+   "round": 0,
+   "s": "Is it time for revision before the maths test?",
+   "reason": "checker: 'Time for division' or 'time for television' also make sense. (also fits: division, television)"
+  },
+  {
+   "word": "revision",
+   "round": 0,
+   "s": "Our teacher gave us a revision sheet to practise old work.",
+   "reason": "checker: 'A division sheet' could also be given to practise old work. (also fits: division)"
+  },
+  {
+   "word": "revision",
+   "round": 1,
+   "s": "I read my notes again as revision for Friday's test.",
+   "reason": "machine rule 4: capital word not allowed: Friday's"
+  },
+  {
+   "word": "revision",
+   "round": 1,
+   "s": "Mum said revision means looking over last term's work once more.",
+   "reason": "checker: It only restates the meaning as a definition, so it is not a real practice sentence."
+  }
+ ],
+ "sitOut": []
+}

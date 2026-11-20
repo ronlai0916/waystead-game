@@ -1,0 +1,281 @@
+{
+ "chapter": "y5-n02",
+ "year": 5,
+ "words": {
+  "social": [
+   "Penguins are very social animals and live together in big groups.",
+   "Does your cat like to be social, or does it prefer to sit alone?",
+   "I love the social side of school, like chatting at lunch!"
+  ],
+  "commercial": [
+   "A commercial farm grows thousands of apples to sell to big shops.",
+   "Our town has a commercial centre where businesses buy and sell goods.",
+   "Lorries drive to the commercial estate to load goods for the shops."
+  ],
+  "facial": [
+   "Smiling, winking and frowning are all quick facial movements.",
+   "Dad shaved off his moustache, so he has less facial hair now.",
+   "Mum bought a gentle facial wash that smells of lemons."
+  ],
+  "crucial": [
+   "We had one crucial chance to score, and the result depended on it.",
+   "The quiz is tied, so the crucial last question will pick the winner.",
+   "Was the crucial turning point of the story when the dog found the key?"
+  ],
+  "official": [
+   "Is this the official team shirt, or just a copy?",
+   "Only the official timekeeper may press the button to start the race.",
+   "Hooray, it is official, we are going to the seaside on Saturday!"
+  ],
+  "initial": [
+   "Her initial idea was a red cake, but she changed it to blue.",
+   "Our initial try at building the den fell down, so we started again!",
+   "Don't worry about your initial attempt, as you will get better with practice."
+  ],
+  "partial": [
+   "Only a partial list was ready, with half the names still missing.",
+   "A partial rainbow showed in the sky, just one small curve.",
+   "Gran is partial to a ginger biscuit with her tea."
+  ],
+  "essential": [
+   "The little shop only sold essential items, like bread, milk and eggs.",
+   "The bag is tiny, so pack only the essential clothes and leave the rest.",
+   "Our little cabin has only the essential furniture, a bed and a table."
+  ],
+  "potential": [
+   "This tiny seed has the potential to grow into a tall tree.",
+   "Her speed shows she has real potential as a runner.",
+   "The garden is small, but it has great potential for growing vegetables."
+  ],
+  "artificial": [
+   "The toy dog has artificial fur that feels soft but is not real.",
+   "Is the Christmas tree real, or is it artificial?",
+   "Wow, this artificial snow is made in a factory, not from clouds!"
+  ]
+ },
+ "rounds": {
+  "social": 0,
+  "commercial": 0,
+  "facial": 2,
+  "crucial": 1,
+  "official": 0,
+  "initial": 0,
+  "partial": 0,
+  "essential": 2,
+  "potential": 0,
+  "artificial": 0
+ },
+ "rejected": [
+  {
+   "word": "commercial",
+   "round": 0,
+   "s": "Mum works in a commercial kitchen that bakes cakes for cafes.",
+   "reason": "machine rule 4: not on the word lists: cafes"
+  },
+  {
+   "word": "commercial",
+   "round": 0,
+   "s": "Did you see the funny commercial on television before the film?",
+   "reason": "checker: This uses commercial as a noun for a TV advert, which is American usage and not the adjective."
+  },
+  {
+   "word": "facial",
+   "round": 0,
+   "s": "The artist drew every facial detail, from the eyes to the chin.",
+   "reason": "checker: 'Drew every essential detail' also works, so the gap is not clear enough. (also fits: essential)"
+  },
+  {
+   "word": "facial",
+   "round": 0,
+   "s": "At the fair, we had facial painting, and I became a tiger!",
+   "reason": "checker: British English says 'face painting', so 'facial painting' sounds wrong."
+  },
+  {
+   "word": "facial",
+   "round": 0,
+   "s": "Can you spot the facial feature that is missing from this drawing?",
+   "reason": "checker: Nothing points to the face, so essential or crucial would fit just as well. (also fits: essential, crucial)"
+  },
+  {
+   "word": "crucial",
+   "round": 0,
+   "s": "The goal in the last minute was crucial, and it won us the match.",
+   "reason": "checker: 'Was essential' fits, and 'was official' could too, so the answer is not clear. (also fits: essential, official)"
+  },
+  {
+   "word": "crucial",
+   "round": 0,
+   "s": "Was the crucial clue hidden under the old clock in the library?",
+   "reason": "checker: Many chapter words could describe the clue. (also fits: essential, initial, official, partial)"
+  },
+  {
+   "word": "crucial",
+   "round": 0,
+   "s": "The last piece of the puzzle was crucial to finishing the picture.",
+   "reason": "checker: 'Essential to finishing' fits just as well. (also fits: essential)"
+  },
+  {
+   "word": "official",
+   "round": 0,
+   "s": "The official rules of the game are on the back of the box.",
+   "reason": "checker: 'The essential rules' also works, so the gap is not clear. (also fits: essential)"
+  },
+  {
+   "word": "initial",
+   "round": 0,
+   "s": "The initial stage of baking is mixing flour and butter in a bowl.",
+   "reason": "checker: 'The essential stage' or 'the crucial stage' would also fit. (also fits: essential, crucial)"
+  },
+  {
+   "word": "partial",
+   "round": 0,
+   "s": "The painting was only partial, because we ran out of time.",
+   "reason": "checker: It sounds unnatural, as people would say the painting was unfinished."
+  },
+  {
+   "word": "partial",
+   "round": 0,
+   "s": "My drawing is partial, since I have only coloured half the picture.",
+   "reason": "checker: 'My drawing is partial' is not natural English for something unfinished."
+  },
+  {
+   "word": "essential",
+   "round": 0,
+   "s": "Warm coats are essential on a winter walk, so pack them first.",
+   "reason": "checker: 'Crucial on a winter walk' would also be accepted. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 0,
+   "s": "Is a map essential for the journey, or can we use signs?",
+   "reason": "checker: 'Is a map crucial for the journey' fits just as well. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 0,
+   "s": "Pack the essential items for camp first, like a torch and sleeping bag.",
+   "reason": "checker: 'The crucial items' would also fit. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 0,
+   "s": "A library card is essential if you want to borrow books!",
+   "reason": "checker: 'Crucial if you want to borrow books' works too. (also fits: crucial)"
+  },
+  {
+   "word": "artificial",
+   "round": 0,
+   "s": "Dad switched on the artificial light because the sky was dark.",
+   "reason": "checker: People would just say 'switched on the light', so this sounds unnatural."
+  },
+  {
+   "word": "facial",
+   "round": 1,
+   "s": "Grandad grew a beard, and now his facial hair is white.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "facial",
+   "round": 1,
+   "s": "Which facial feature do you use to smell flowers, your nose or your toes?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "facial",
+   "round": 1,
+   "s": "Eyes, nose and mouth are all facial features, so draw them on the snowman!",
+   "reason": "checker: 'Essential features' also makes good sense for drawing a snowman, so the gap has two answers. (also fits: essential)"
+  },
+  {
+   "word": "facial",
+   "round": 1,
+   "s": "Freckles made a pretty facial pattern across my nose and cheeks.",
+   "reason": "checker: It comments on how someone looks, and 'facial pattern across my nose' says the same thing twice."
+  },
+  {
+   "word": "facial",
+   "round": 1,
+   "s": "Which facial feature do we use to smell, our nose or our toes?",
+   "reason": "reader flag two_fit (Facial fits (nose is a facial feature), but 'essential feature' and 'crucial feature' also read as sensible, so I could not be sure which word was meant.); re-judge: The flag is right. 'Which essential feature do we use to smell' and 'Which crucial feature do we use to smell' both make sense. The nose-or-toes contrast hints at 'facial', but it doesn't rule the other words out, so a child can't be sure which word fits."
+  },
+  {
+   "word": "crucial",
+   "round": 1,
+   "s": "Everyone held their breath at the crucial moment of the penalty shoot-out.",
+   "reason": "machine rule 4: banned topic word: shoot"
+  },
+  {
+   "word": "essential",
+   "round": 1,
+   "s": "Flour is an essential ingredient for making bread.",
+   "reason": "checker: 'A crucial ingredient' also sounds natural, so the gap is not unique. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 1,
+   "s": "Food, water and a cosy bed are essential things for every pet.",
+   "reason": "checker: 'Crucial things for every pet' could also work, so it is too doubtful to keep. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 1,
+   "s": "Is a bed an essential part of a bedroom, or just a nice extra?",
+   "reason": "checker: 'A crucial part of a bedroom' also works, so the gap has two answers. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 1,
+   "s": "Which essential things does a hamster need, apart from treats and toys?",
+   "reason": "reader flag two_fit ('Essential things' fits, but 'crucial things' also reads naturally in 'Which ___ things does a hamster need', so both words could go in the gap.); re-judge: The flag is right. 'Which crucial things does a hamster need' reads just as naturally and means the same here. 'Potential things' could also fit. Nothing in the sentence picks out 'essential' as the only answer."
+  },
+  {
+   "word": "facial",
+   "round": 2,
+   "s": "The robot's facial screen can show a smile or a wink.",
+   "reason": "checker: 'The robot's initial screen' also makes sense, and 'facial screen' is a slightly odd phrase. (also fits: initial)"
+  },
+  {
+   "word": "facial",
+   "round": 2,
+   "s": "My little brother pulled a funny facial expression when he tasted the lemon.",
+   "reason": "checker: We say someone pulls a funny face, not a funny facial expression, so the sentence sounds wrong."
+  },
+  {
+   "word": "facial",
+   "round": 2,
+   "s": "Wow, the mask has every facial detail, from the eyebrows to the chin!",
+   "reason": "checker: 'Every essential detail' also works, so the gap does not point to one word. (also fits: essential)"
+  },
+  {
+   "word": "facial",
+   "round": 2,
+   "s": "Do you wear a soft facial cloth to wipe your cheeks and chin?",
+   "reason": "checker: You use a cloth rather than wear one, so the sentence is not natural."
+  },
+  {
+   "word": "essential",
+   "round": 2,
+   "s": "Pack the essential things first, like a coat, a hat and a drink.",
+   "reason": "checker: 'Pack the crucial things first' also makes sense, so the answer is not clear. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 2,
+   "s": "Is a torch essential for the camping trip, or can we leave it?",
+   "reason": "checker: 'Is a torch crucial for the trip' fits just as well. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 2,
+   "s": "It is not essential to bring a toy, but you may if you like.",
+   "reason": "checker: 'It is not crucial to bring a toy' fits just as well. (also fits: crucial)"
+  },
+  {
+   "word": "essential",
+   "round": 2,
+   "s": "Good boots and a warm coat are essential for a winter walk!",
+   "reason": "checker: 'Are crucial for a winter walk' also makes sense. (also fits: crucial)"
+  }
+ ],
+ "sitOut": []
+}

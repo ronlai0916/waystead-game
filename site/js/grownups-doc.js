@@ -11,6 +11,7 @@ import * as A from './assess-doc.js';
 import * as F from './front-doc.js';
 import { switchUrl, accountUrl } from './account/config.js';
 import { stoneView } from './child-doc.js';
+import * as SD from './set-doc.js';
 
 /** Only an adult playing as themselves. A child, or an adult playing as one, never. */
 export const canSeeGrownups = (kind) => kind === 'adult';
@@ -237,12 +238,10 @@ export function childOverview(d, today, now) {
 export const weekOf = (d, id, today) => { const g = W.groupById(d, id); return g ? weekCard(d, g, today) : null; };
 
 // ---- planning a week -----------------------------------------------------------------
-export const FULL_WEEK_LINE = W.MAX_WORDS + ' words is a full week. Remove one to add another.';
 export const passedLine = (nick) => 'The test date has passed. ' + nick + '\'s test opens when the jobs are done. You can pick a new date.';
 export const STONE_KEY = 'Plum star: done. Sun: today. Dashed with a clock: waiting. Dashed: later.';
 export const SHORT_WEEK_LINE = 'Short week: some days will have two jobs.';
 export const FULL_WEEK_DAYS = St.BEFORE_TEST.length;
-export const atCap = (words) => words.length >= W.MAX_WORDS;
 /** Fewer than 5 days from the start to the test: some days hold two jobs. */
 export const isShortWeek = (start, test) => W.daysBetween(start, test) < FULL_WEEK_DAYS;
 /** "Fri 27 Nov", for the date written beside the date field. '' for no date. */
@@ -255,23 +254,13 @@ export function yearListFor(year, live = ['y3', 'y4', 'y5', 'y6']) {
   for (const id of live) if (Math.abs(Number(id.slice(1)) - n) < Math.abs(Number(best.slice(1)) - n)) best = id;
   return best;
 }
-/** The week's name: "School spellings" once a typed word is in, else the list's name, else the date's. */
-export function suggestName({ typedCount = 0, listName = '', test }) {
-  if (typedCount > 0) return 'School spellings';
-  return listName || W.defaultName(test || '1970-01-01');
-}
-/** Where a plan starts: step 1 (who) only when there's a choice to make and nobody is chosen yet. */
-export const firstStep = ({ children, chosen, editing }) => (editing || chosen || children < 2 ? 2 : 1);
-/** The step before this one, or 0 (leave the form). Step 1 is skipped when it was never shown. */
-export const stepBack = (step, { children, editing }) => (step === 3 ? 2 : step === 2 && firstStep({ children, chosen: null, editing }) === 1 ? 1 : 0);
 /** What the child will see first, today: the first job. */
 export const firstSight = (start) => ({ day: start, title: St.STEP_TEXT.hello.title, line: St.STEP_TEXT.hello.line, kind: 'hello' });
-export const confirmLine = (name, child) => 'Started ' + name + ' for ' + child + '.';
 export const editedLine = (name) => 'Changed ' + name + '.';
 export const deletedLine = 'Deleted.';
 export const deleteQuestion = (name, child) => 'Delete ' + name + ' for ' + child + '?';
 export const deleteBody = (child) => child + '\'s practice on these words is kept and still counts towards remembered words.';
-export const LOCKED_LINE = 'The test has begun, so the words and date can\'t change now. You can still rename the week, or plan next week.';
+export const LOCKED_LINE = 'The test has begun, so the words and date can\'t change now. You can still rename the week, or set next week.';
 
 /* ===================================================================================
    SB3-F: the adult's front page ("This week at a glance"). Pure, like the rest.
@@ -323,8 +312,8 @@ export function glanceKey(overview, problem = '') {
 export const needsYou = (key) => key === 'waiting' || key === 'ended' || key === 'noweek';
 /** The first card that needs the grown-up (its one button is the green one), or -1. Order is the account's. */
 export const primaryIndex = (items) => items.findIndex((x) => needsYou(x.key));
-/** "Plan a week" leads only when no child needs attention. */
-export const planIsPrimary = (items) => primaryIndex(items) < 0;
+/** "Set a week" leads only when no child needs attention. */
+export const setIsPrimary = (items) => primaryIndex(items) < 0;
 
 const COUNTS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 const cap = (s) => s.replace(/^./, (c) => c.toUpperCase());
@@ -374,10 +363,10 @@ export function glanceSummary(items) {
 /** The one green button in the header row. items: [{ name, key }] in the account's order. */
 export function primaryAction(items) {
   const i = primaryIndex(items);
-  if (i < 0) return { kind: 'plan', index: -1, label: 'Plan a week' };
+  if (i < 0) return { kind: 'set', index: -1, label: 'Set a week' };
   const x = items[i];
-  if (x.key === 'noweek') return { kind: 'plan-child', index: i, label: 'Plan a week for ' + x.name };
-  if (x.key === 'ended') return { kind: 'plan-child', index: i, label: 'Plan ' + possessive(x.name) + ' next week' };
+  if (x.key === 'noweek') return { kind: 'set-child', index: i, label: 'Set a week for ' + x.name };
+  if (x.key === 'ended') return { kind: 'set-child', index: i, label: 'Set ' + possessive(x.name) + ' next week' };
   return { kind: 'see', index: i, label: 'See ' + possessive(x.name) + ' week' };
 }
 /** One or two children keep the full cards with stones; from three, one compact row each. */
@@ -441,11 +430,9 @@ export function levelHint(d, today, setup, year, name) {
   return { next: lv + 1, line: name + ' is ready for fewer letters. Try \'' + A.LEVEL_NAME[lv + 1] + '\'?' };
 }
 export const SPELL_TILES_NOTE = 'Words spelled with letter tiles count as remembered only at \'All the letters\' and \'Keyboard\'.';
-export const examOfferText = (name, year, pf) => (A.kindName('exam', pf, year) === 'Exam'
-  ? 'You set these yourself, with a date. ' + name + ' sees \'Exam\'.'
-  : 'You set these yourself, with a date. ' + name + ' sees \'Big test\'.');
+export const examOfferText = (name) => 'A longer test you set yourself, with a date. ' + name + ' sees \'Big test\'.';
 export const QUIZ_OFFER_TEXT = 'A short practice check. Nothing is marked.';
-export const TEST_OFFER_TEXT = 'The weekly test and chapter tests are always on.';
+export const TEST_OFFER_TEXT = 'The weekly test and each year chapter\'s test are always on.';
 export const spellSub = (name, year) => (year ? name + ' is in Year ' + year + '. ' : '') + 'Each choice saves as soon as you tap it.';
 export const stretchNote = (lv) => 'Stretch is keyboard only in quizzes and tests. Practice still uses \'' + A.LEVEL_NAME[lv] + '\'.';
 
@@ -457,7 +444,7 @@ export const chapterLabel = (ch) => 'Year ' + yearNum(ch) + ', Chapter ' + ch.n;
  * test is done. Anything else is listed (the child's own year, and every week) but not ready: it never shows a word.
  * chapters: [{ id, yearId, n, words: [{ word }] }]; progress: the child's progress; d: their words.
  */
-export function examSources({ chapters, progress, d, year, today }) {
+export function examSources({ chapters, progress, d, year, today, setup = null }) {
   const out = [];
   const yid = 'y' + year;
   for (const ch of chapters || []) {
@@ -467,6 +454,12 @@ export function examSources({ chapters, progress, d, year, today }) {
     out.push({ key: ch.id, kind: 'chapter', label: chapterLabel(ch), ready, at: cp.lastAt ? Date.parse(cp.lastAt) : 0, words: ch.words.map((w) => w.word), yearId: ch.yearId, n: ch.n });
   }
   out.sort((a, b) => (a.yearId < b.yearId ? -1 : a.yearId > b.yearId ? 1 : a.n - b.n));
+  // SB5: the child's copies of the grown-up's Word lists. Ready once the child has tried the list, or a week from it has been tested.
+  for (const o of Su.liveOwn(setup || {})) {
+    const cp = PR.chapterProgress(progress, 'own-' + o.id);
+    const tested = W.liveGroups(d).some((g) => SD.weekListOid(g.id) === o.id && W.testDone(d, g));
+    out.push({ key: 'o-' + o.id, kind: 'list', label: o.name, ready: !!(cp.passed || cp.attempts > 0 || tested), at: cp.lastAt ? Date.parse(cp.lastAt) : 0, words: o.words.slice(), yearId: '', n: 0 });
+  }
   for (const g of W.liveGroups(d)) {
     out.push({ key: 'g-' + g.id, kind: 'week', label: g.name, ready: W.testDone(d, g), at: g.at || 0, words: g.words.slice(), yearId: '', n: 0 });
   }
@@ -482,6 +475,7 @@ export function examPlan(sources, keys, pf) {
   return {
     n: Math.min(cap, distinct.size),
     chapters: pick.filter((s) => s.kind === 'chapter').length,
+    lists: pick.filter((s) => s.kind === 'list').length,
     weeks: pick.filter((s) => s.kind === 'week').length,
     keys: pick.map((s) => s.key),
     pools: pick.map((s) => ({ src: s.key, words: s.words, at: s.at })),
@@ -490,14 +484,15 @@ export function examPlan(sources, keys, pf) {
 export function examSummary(plan) {
   const parts = [];
   if (plan.chapters) parts.push(plural2(plan.chapters, 'chapter'));
+  if (plan.lists) parts.push(plural2(plan.lists, 'list'));
   if (plan.weeks) parts.push(plural2(plan.weeks, 'week'));
-  return parts.length ? plural2(plan.n, 'word') + ' from ' + parts.join(' and ') : 'Nothing chosen yet.';
+  return parts.length ? plural2(plan.n, 'word') + ' from ' + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1] : parts[0]) : 'Nothing chosen yet.';
 }
 export const EXAM_NOT_DONE = 'Test not done yet';
 export const examDefaultName = (date) => ('Big test, ' + W.dayLabel(date).replace(/^\w+ /, '')).slice(0, Su.MAX_NAME);
-export const examPlanLimit = () => 'You already have ' + Su.MAX_EXAMS + ' exams. Delete one first.';
+export const examPlanLimit = () => 'You already have ' + Su.MAX_EXAMS + ' Big tests. Delete one first.';
 export function examProblem({ keys, date, today, liveCount }) {
-  if (!keys || !keys.length) return 'Choose at least one chapter or week.';
+  if (!keys || !keys.length) return 'Choose at least one chapter, list or week.';
   if (!isDayText(date) || date < today) return 'Choose today or a later date.';
   if (liveCount >= Su.MAX_EXAMS) return examPlanLimit();
   return '';
@@ -602,6 +597,16 @@ export function nextExam(setup, progress, today) {
   }
   return null;
 }
+/** The newest finished week: { lastWeek, score, practise } for the overview (01e); empty strings when none. */
+export function lastWeekFacts(d) {
+  const done = W.liveGroups(d).filter((g) => W.testDone(d, g)).reverse();
+  if (!done.length) return { lastWeek: '', score: '–', practise: '' };
+  const g = done[0];
+  const rs = W.testResults(d, g);
+  return { lastWeek: g.name, score: rs.filter((x) => x.result && x.result.right).length + ' of ' + rs.length, practise: W.slipped(d, g).join(', ') };
+}
+/** Which week an overview row shows: a finished one is "Last week"; one not yet finished (set or running) is "This week"; none is "Week". */
+export const weekKey = (r) => (r && r.lastWeek ? 'Last week' : r && r.week && r.week !== 'No week planned' ? 'This week' : 'Week');
 export function overviewRow({ name, words, progress, setup, chapters, today, now }) {
   const o = childOverview(words, today, now);
   const exam = nextExam(setup, progress, today);
@@ -609,7 +614,27 @@ export function overviewRow({ name, words, progress, setup, chapters, today, now
     name,
     week: o.current ? o.current.name : 'No week planned',
     test: lastTestLine(words, progress, chapters) || 'No test yet',
+    ...lastWeekFacts(words),
     passed: (chapters || []).filter((c) => PR.chapterProgress(progress, c.id).passed).length,
     exam: exam ? exam.name + ', ' + W.dayLabel(exam.date) : 'None',
   };
+}
+
+// ---- SB5: the weeks on a child's page, each with who set it -------------------------------------------------
+// What the grown-up reads about a week (final design 05a: "You set this"). A week set by any of the three roles is the grown-up's; the child sees
+// the NAME ("Set by Mum", child-doc setByLine), not this line.
+export const SET_BY_LINE = { 'grown-up': 'You set this', parent: 'You set this', tutor: 'You set this', teacher: 'You set this', app: 'Started by Spellbright' };
+/** The line for who set a week: "You set this", "Started by Spellbright", "Robin’s own week, from before" (a week a child made on an older version, D26). */
+export const setByLine = (by, childName) => SET_BY_LINE[by] || childName + '’s own week, from before';
+/**
+ * The child page's rows, soonest test first: { id, name, testLine, setBy }. lists = the adult's live Word lists [{ id, words }]
+ * (an older teacher-set week is told apart from a child's own by them).
+ */
+export function childPageWeeks(d, today, lists = []) {
+  return W.liveGroups(d).map((g) => ({
+    id: g.id,
+    name: g.name,
+    testLine: W.testDone(d, g) ? (weekTestLine(d, g) || g.name + ' test done') : 'Test on ' + W.dayLabel(g.test),
+    setBy: SD.setBy(g.id, g, lists),
+  }));
 }

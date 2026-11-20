@@ -1,0 +1,107 @@
+{
+ "chapter": "y56-ch01",
+ "year": 5,
+ "words": {
+  "awkward": [
+   "The box was an awkward shape, so it would not fit in the boot.",
+   "Mum said the narrow stairs were awkward for carrying a big sofa.",
+   "I felt awkward when I forgot the words of the song at the party."
+  ],
+  "forty": [
+   "Mum baked thirty biscuits and ten more, which makes forty.",
+   "Our bus ride to the seaside took forty minutes.",
+   "Twenty and twenty make forty altogether."
+  ],
+  "symbol": [
+   "On the map, a little tree is the symbol for a wood.",
+   "What does this symbol on the washing label mean?",
+   "The plus sign is a symbol we use in sums."
+  ],
+  "system": [
+   "The library uses a computer system to keep track of borrowed books.",
+   "Is there a good system for sorting the washing?",
+   "The train system is very busy on Monday mornings!"
+  ],
+  "rhyme": [
+   "Moon and spoon make a perfect rhyme!",
+   "Mum sang a nursery rhyme to the baby at bedtime.",
+   "I made up a short rhyme for my sister's birthday card."
+  ],
+  "rhythm": [
+   "Can you clap the rhythm of your own name?",
+   "The train wheels clacked in a regular rhythm along the track.",
+   "The dancers moved with a steady rhythm."
+  ],
+  "yacht": [
+   "A large white sail on the yacht caught the wind.",
+   "Which yacht will cross the finish line first?",
+   "The yacht rocked gently beside the jetty in the harbour."
+  ],
+  "queue": [
+   "We waited in a long queue to buy tickets for the show.",
+   "Nobody should push in front when you stand in a queue.",
+   "Is the queue for the slide very long today?"
+  ],
+  "muscle": [
+   "A cat uses every muscle when it jumps onto a high shelf.",
+   "Which muscle in your arm do you use to lift a bag?",
+   "Opening a stiff jar takes a bit of muscle."
+  ],
+  "bruise": [
+   "The peach had a soft bruise where it fell from the basket.",
+   "Mum cut the brown bruise off the apple before lunch.",
+   "A bruise on a pear turns dark after a few days."
+  ]
+ },
+ "rounds": {
+  "awkward": 0,
+  "forty": 0,
+  "symbol": 0,
+  "system": 0,
+  "rhyme": 0,
+  "rhythm": 0,
+  "yacht": 0,
+  "queue": 0,
+  "muscle": 0,
+  "bruise": 0
+ },
+ "rejected": [
+  {
+   "word": "forty",
+   "round": 0,
+   "s": "Count in tens: ten, twenty, thirty, forty, then fifty.",
+   "reason": "machine rule 2: has a character outside letters, spaces and , . ! ? ' -"
+  },
+  {
+   "word": "system",
+   "round": 0,
+   "s": "Our class has a tidy system for handing out books.",
+   "reason": "checker: 'A tidy queue for handing out books' could also make sense to a child. (also fits: queue)"
+  },
+  {
+   "word": "system",
+   "round": 0,
+   "s": "Dad fitted a new heating system before the winter.",
+   "reason": "checker: Dad doing the fitting repeats the stereotype of who fixes things."
+  },
+  {
+   "word": "rhyme",
+   "round": 0,
+   "s": "The poem had a funny rhyme in every second line.",
+   "reason": "checker: A poem can also have a funny rhythm, so the gap is not clear. (also fits: rhythm)"
+  },
+  {
+   "word": "rhythm",
+   "round": 0,
+   "s": "Tap your feet to keep the rhythm of the drum.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "muscle",
+   "round": 0,
+   "s": "The gym teacher showed us how to stretch each muscle.",
+   "reason": "checker: 'Gym teacher' is American; a UK school would say 'PE teacher'."
+  }
+ ],
+ "sitOut": []
+}

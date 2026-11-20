@@ -1,0 +1,120 @@
+{
+ "chapter": "y6-n04",
+ "year": 6,
+ "words": {
+  "talent": [
+   "The boy's talent for drawing horses made everyone smile.",
+   "Do you think you have a talent for baking cakes?",
+   "Winning the school talent show was the best day ever!"
+  ],
+  "silent": [
+   "Please stay silent while the others finish the test.",
+   "The cat crept across the lawn, silent as a shadow.",
+   "Why is the classroom so silent today?"
+  ],
+  "parent": [
+   "Ask a parent to sign the form and bring it back.",
+   "Every parent was invited to the school concert on Friday.",
+   "Which parent will help us bake the cakes?"
+  ],
+  "urgent": [
+   "Is it urgent, or can the homework wait until tomorrow?",
+   "I must post this letter today because it is urgent.",
+   "The plumber came at once because the leak was urgent."
+  ],
+  "silence": [
+   "The room fell into silence when the music stopped.",
+   "Can we have some silence while I read my book?",
+   "The clock ticked loudly in the silence of the library."
+  ],
+  "absence": [
+   "Please bring a note to explain your absence from school.",
+   "In the absence of the teacher, a helper read us a story.",
+   "During my absence on holiday, the plants grew very tall."
+  ],
+  "difference": [
+   "What is the difference between a rabbit and a hare?",
+   "The difference between nine and four is five.",
+   "A little paint made a big difference to the old chair."
+  ],
+  "evidence": [
+   "The empty plate was evidence that someone had eaten the last biscuit.",
+   "Our experiment gave us evidence that warm water melts ice faster.",
+   "What evidence do you have that the dog dug the hole?"
+  ],
+  "urgency": [
+   "With great urgency, we ran to bring the washing in before the rain.",
+   "Why is there such urgency to finish the model today?",
+   "Nobody saw the urgency of getting the tent up before dark."
+  ],
+  "frequency": [
+   "The bus runs with a frequency of one every ten minutes.",
+   "We counted the frequency of red cars passing the school gate.",
+   "We made a chart of the frequency of rainy days in May."
+  ]
+ },
+ "rounds": {
+  "talent": 0,
+  "silent": 0,
+  "parent": 0,
+  "urgent": 0,
+  "silence": 0,
+  "absence": 0,
+  "difference": 0,
+  "evidence": 0,
+  "urgency": 0,
+  "frequency": 0
+ },
+ "rejected": [
+  {
+   "word": "talent",
+   "round": 0,
+   "s": "My little brother has a talent for solving puzzles quickly.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "parent",
+   "round": 0,
+   "s": "A parent duck led her ducklings across the pond.",
+   "reason": "checker: 'Parent duck' is awkward; a child would expect 'mother duck'."
+  },
+  {
+   "word": "parent",
+   "round": 0,
+   "s": "What a lovely cake my parent made for my birthday!",
+   "reason": "checker: 'My parent' is unnatural in everyday British English."
+  },
+  {
+   "word": "silence",
+   "round": 0,
+   "s": "After the loud party, the quiet house felt full of silence.",
+   "reason": "checker: 'Full of silence' after 'quiet' is awkward and says the same thing twice."
+  },
+  {
+   "word": "absence",
+   "round": 0,
+   "s": "Dinner was ready, but we noticed the cat's absence.",
+   "reason": "checker: 'We noticed the cat's silence' also makes sense. (also fits: silence)"
+  },
+  {
+   "word": "urgency",
+   "round": 0,
+   "s": "The bus was leaving, so she ran with real urgency.",
+   "reason": "checker: Running to catch a bus is a road setting, so it is dropped to be safe."
+  },
+  {
+   "word": "frequency",
+   "round": 0,
+   "s": "What is the frequency of our spelling tests, weekly or monthly?",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "frequency",
+   "round": 0,
+   "s": "Brushing the dog with more frequency keeps its coat soft.",
+   "reason": "checker: 'With more frequency' is awkward; a child would say 'more often'."
+  }
+ ],
+ "sitOut": [],
+ "manualEdits": "19 Nov 2026: Opus spot-check fixes (OPUS-SPOTCHECK.md), machine-checked with statements-check rules"
+}

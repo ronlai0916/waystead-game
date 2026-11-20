@@ -64,9 +64,9 @@ export default function (H) {
     H.serve('data/curriculum.json', null);
   });
 
-  scene('SB4-WP9 More practice opens on Year 1; a noMatch chapter offers no Meaning match; busy has separate progress', async () => {
+  scene('SB4-WP9 Practice opens on Year 1; a noMatch chapter offers no Meaning match; busy has separate progress', async () => {
     H.serve('data/curriculum.json', FIXTURE);
-    const stateOf = async (yr, i) => { await click('[data-moreyears]').catch(() => {}); await click('.yearswitch__b[data-year=' + yr + ']'); return ev('document.querySelectorAll("[data-yearpanel=' + yr + '] .stonelink")[' + i + '].dataset.state'); };
+    const stateOf = async (yr, i) => { await click('[data-yearswitch] [data-year=' + yr + ']'); return ev('document.querySelectorAll("[data-yearpanel=' + yr + '] .stonelink")[' + i + '].dataset.state'); };
     // a Year 2 child with no data at all: the state of the Year 3 chapter that also holds busy
     await H.childWith(progDoc(), '#/chapters');
     acct.who = me(2);
@@ -96,11 +96,10 @@ export default function (H) {
     })()`);
     ok(verdict.noMatch && !verdict.one, 'the noMatch chapter offers no Meaning match');
     ok(verdict.two, 'a chapter without noMatch still does');
-    await click('.yearswitch__b[data-year=y2]');
+    await click('[data-yearswitch] [data-year=y2]');
     const y2 = await ev('[...document.querySelectorAll("[data-yearpanel=y2] .stonelink")].map((a) => a.dataset.state)');
     ok(y2[0] === 'passed', 'busy\'s Year 2 chapter is passed: ' + y2);
-    await click('[data-moreyears]');
-    await click('.yearswitch__b[data-year=y3]');
+    await click('[data-yearswitch] [data-year=y3]');
     const y3 = await ev('[...document.querySelectorAll("[data-yearpanel=y3] .stonelink")].map((a) => a.dataset.state)');
     ok(y3[1] !== 'passed', 'the Year 3 chapter that also has busy is not passed: ' + y3);
     H.serve('data/curriculum.json', null);

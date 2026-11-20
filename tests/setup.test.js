@@ -153,3 +153,55 @@ test('the worst case stays small enough to live in a words value', () => {
   // ceiling is about 19.6 KB (well under the 48 KB trim line). Pinned here so a growth in the shape is noticed.
   assert.ok(size < 20 * 1024, 'worst case is ' + size + ' bytes');
 });
+
+// ---- SB5 (WP-A2): the name the child sees, setup.by (TR-100) -------------------------------------------------
+test('setup.by: kept only with a clean name and an at; the same rules as cleanName', () => {
+  assert.deepEqual(Su.normalise({ by: { n: 'Mum', at: 5 } }), { by: { n: 'Mum', at: 5 } });
+  assert.deepEqual(Su.normalise({ by: { n: '  Ms   Patel ', at: 5 } }), { by: { n: 'Ms Patel', at: 5 } });
+  assert.deepEqual(Su.normalise({ by: { n: 'Zoë', at: 1 } }), { by: { n: 'Zoë', at: 1 } });
+  for (const bad of [{ n: 'a@b.com', at: 5 }, { n: 'Mum1', at: 5 }, { n: '', at: 5 }, { n: 'Mum' }, { n: 'Mum', at: 0 }, { n: 'Mum', at: -1 }, { n: 5, at: 5 }, { n: 'w'.repeat(25), at: 5 }, 'Mum', null, []]) assert.deepEqual(Su.normalise({ by: bad }), {}, JSON.stringify(bad));
+  assert.equal(Su.isEmpty({ by: { n: 'Mum', at: 5 } }), false, 'a name is something');
+  assert.equal(Su.isEmpty({ by: { n: '', at: 5 } }), true);
+});
+test('setup.by: merge keeps the later at (a tie: the larger JSON); absent loses to present; trim never drops it', () => {
+  const a = { by: { n: 'Mum', at: 5 } };
+  const b = { by: { n: 'Dad', at: 9 } };
+  assert.deepEqual(Su.merge(a, b).by, { n: 'Dad', at: 9 });
+  assert.deepEqual(Su.merge(b, a).by, { n: 'Dad', at: 9 });
+  assert.deepEqual(Su.merge(a, {}).by, { n: 'Mum', at: 5 });
+  assert.deepEqual(Su.merge({}, a).by, { n: 'Mum', at: 5 });
+  assert.deepEqual(Su.merge({ by: { n: 'Dad', at: 5 } }, { by: { n: 'Mum', at: 5 } }).by, { n: 'Mum', at: 5 }, 'a tie: the larger JSON');
+  assert.deepEqual(Su.trim(a, 1e15), a);
+  assert.deepEqual(Su.trim({ ...a, own: {} }, 1e15), a);
+  assert.deepEqual(Su.merge({ help: { lv: 2, at: 3 }, by: { n: 'Mum', at: 5 } }, { help: { lv: 3, at: 4 } }), { help: { lv: 3, at: 4 }, by: { n: 'Mum', at: 5 } }, 'by does not disturb the other parts');
+});
+test('setBy: sets, changes and removes the name; the same name changes nothing; the stamp always moves on', () => {
+  const s1 = Su.setBy({}, 'Mum', 100);
+  assert.deepEqual(s1, { by: { n: 'Mum', at: 100 } });
+  assert.equal(Su.setBy(s1, 'Mum', 200), s1, 'the very same value: no write needed');
+  const s2 = Su.setBy(s1, 'Dad', 50);
+  assert.deepEqual(s2.by, { n: 'Dad', at: 101 }, 'at moves past the old one even on a slow clock');
+  assert.deepEqual(Su.setBy(s2, '', 300), {}, 'no name removes it');
+  assert.deepEqual(Su.setBy({}, '', 300), {});
+  assert.deepEqual(Su.setBy(s2, 'a@b.com', 300), {}, 'a refused name removes the old one, never sets it');
+  assert.deepEqual(Su.setBy({ help: { lv: 2, at: 3 } }, 'Mum', 10), { help: { lv: 2, at: 3 }, by: { n: 'Mum', at: 10 } });
+  assert.deepEqual(Su.setBy({ help: { lv: 2, at: 3 }, by: { n: 'Mum', at: 10 } }, '', 20), { help: { lv: 2, at: 3 } });
+  assert.deepEqual(Su.byOf(s2), { n: 'Dad', at: 101 });
+  assert.equal(Su.byOf({}), null);
+  assert.equal(Su.byOf(undefined), null);
+  assert.deepEqual(Su.setBy(undefined, 'Mum', 10), { by: { n: 'Mum', at: 10 } });
+});
+test('cleanName limits: 24 characters, 3 words, no web address', () => {
+  assert.equal(Su.cleanName('Mum'), 'Mum');
+  assert.equal(Su.cleanName('a b c d'), '');
+  assert.equal(Su.cleanName('abcdefgh ijklmnop qrstuv'), 'abcdefgh ijklmnop qrstuv', '24 characters');
+  assert.equal(Su.cleanName('abcdefgh ijklmnop qrstuvw'), '');
+  assert.equal(Su.cleanName('www.name'), '');
+  assert.equal(Su.cleanName('see://x'), '');
+  assert.equal(Su.NAME_LINE, 'Please use a name only, like Mum or Ms Patel.');
+});
+test('a copy of a list and the name travel together in one setup value', () => {
+  const r = Su.setOwnCopy(Su.setBy({}, 'Mum', 10), 'o1', { name: 'Sea', words: ['boat'], src: 'typed' }, 20);
+  assert.deepEqual(Object.keys(Su.normalise(r.setup)).sort(), ['by', 'own']);
+  assert.deepEqual(Su.liveOwn(r.setup).map((e) => e.id), ['o1']);
+});

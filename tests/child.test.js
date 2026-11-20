@@ -34,7 +34,7 @@ test('home, first group: a calm welcome and one button to My words', () => {
   assert.equal(v.status, 'none');
   assert.equal(v.button.href, 'words');
   assert.equal(v.path, false);
-  assert.match(v.headline, /first word group/);
+  assert.match(v.headline, /first week/);
 });
 
 test('home, a job: the day and the job, one sentence, one button, the time', () => {
@@ -43,7 +43,7 @@ test('home, a job: the day and the job, one sentence, one button, the time', () 
   const { v } = view(d, plus(2));
   assert.equal(v.status, 'job');
   assert.equal(v.eyebrow, 'Wednesday · Game day');
-  assert.equal(v.headline, 'Play four quick games with your words.');
+  assert.equal(v.headline, 'Play quick games with your words.', 'no fixed count: the caller passes games (child-copy-sb5.test.js)');
   assert.deepEqual(v.button, { label: 'Start Game day', href: 'job' });
   assert.equal(v.note, 'About 15 minutes');
   assert.equal(v.say, v.headline);
@@ -71,7 +71,8 @@ test('home, done / rest / ready / finished: the same calm layout, one button', (
     assert.ok(fake.headline && fake.button, s);
     assert.doesNotMatch(fake.headline + fake.line, /late|behind/i, s);
   }
-  assert.equal(C.homeView({ status: 'finished', group: { id: 'g1' }, comeBack: [] }, MON).button.href, 'new');
+  assert.equal(C.homeView({ status: 'finished', group: { id: 'g1' }, comeBack: [] }, MON).button.href, 'wordbright', 'D26: no Make my own week by default');
+  assert.equal(C.homeView({ status: 'finished', group: { id: 'g1' }, comeBack: [] }, MON, { mayMake: true }).button.href, 'new');
 });
 
 test('home, the test is due: "Start the test", and no word on the screen', () => {
@@ -153,12 +154,12 @@ test('stones: done, today, today and waiting, waiting, later, the test, Mend and
   assert.equal(C.stoneView({ id: 'mend', n: 7, title: 'Mend and keep', date: plus(6), state: 'today' }, plus(6)).helper, 'Fix any slips');
 });
 
-test('the menu: Games, My words, More practice, a quiet Settings; Games closes while the test is due', () => {
+test('the menu: Games, This week\'s words, Practice, a quiet Settings; Games closes while the test is due', () => {
   const open = C.menuRows({ gid: 'g 1', hasGroup: true, gamesOpen: true });
   assert.deepEqual(open.map((r) => r.id), ['games', 'words', 'practice', 'settings']);
   assert.equal(open[0].href, '#/words/g/g%201/games');
   assert.equal(open[2].href, '#/chapters');
-  assert.equal(open[2].sub, 'Chapters, tricky words, your progress');
+  assert.equal(open[2].sub, 'Lists from your grown-up, chapters, tricky words');
   assert.equal(open[3].quiet, true);
   const closed = C.menuRows({ gid: 'g1', hasGroup: true, gamesOpen: false });
   assert.equal(closed[0].closed, true);
@@ -208,7 +209,7 @@ test('constraints: no inline style attribute or script in the child views, and t
   assert.match(index, /css\/child\.css/);
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   for (const f of ['css/child.css', 'js/child-doc.js', 'js/child-views.js']) assert.ok(sw.includes("'" + f + "'"), f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-16c'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-19f'/);
 });
 
 test('the keyboard stays three rows that never wrap; Delete is at least 48 px wide', () => {
@@ -281,4 +282,37 @@ test('SB3-C1 final: the mark-alone bar cannot stick; the keyboard sits at the fo
   assert.match(app, /function releaseBar\(\)/);
   assert.match(app, /waitedOut = true;\s*releaseBar\(\); \/\/ the full bar/);
   assert.match(app, /waitedOut = true; releaseBar\(\); if \(drawn\) chrome\(\)/);
+});
+
+// ---- SB5 (WP-A2): who set the week, in the child's words (TR-83, TR-100, D26) ----------------------------------
+test('setByLine: the grown-up\'s name when it has arrived, else the role from the week id', () => {
+  const by = { by: { n: 'Ms Patel', at: 5 } };
+  assert.equal(C.setByLine('r0123456789ab.tabc12', by), 'Set by Ms Patel');
+  assert.equal(C.setByLine('a.pabc12', { by: { n: 'Mum', at: 1 } }), 'Set by Mum');
+  assert.equal(C.setByLine('r0123456789ab.tabc12', {}), 'Set by your teacher');
+  assert.equal(C.setByLine('r0123456789ab.uabc12', undefined), 'Set by your tutor');
+  assert.equal(C.setByLine('a.pabc12', null), 'Set by your grown-up');
+  assert.equal(C.setByLine('p0123456789ab', {}), 'Set by your grown-up', 'the older plan id');
+  assert.equal(C.setByLine('p0123456789ab', by), 'Set by Ms Patel');
+  assert.equal(C.setByLine('r0123456789ab.abc123', {}), 'Set by your grown-up', 'a dotted id with no role letter');
+  assert.equal(C.setByLine('r0123456789ab', by), '', 'a week the child made before SB5: nothing');
+  assert.equal(C.setByLine('starter', by), '', 'the starter week: nothing');
+  assert.equal(C.setByLine('', by), '');
+  assert.equal(C.setByLine(undefined, by), '');
+  assert.equal(C.setByLine('a.pabc12', { by: { n: 'a@b.com', at: 5 } }), 'Set by your grown-up', 'a bad name is not shown');
+});
+test('setByLine and fromLine stay short and kind: at most 8 words, no grown-up words', () => {
+  for (const s of [C.setByLine('a.tabc12', {}), C.setByLine('a.uabc12', {}), C.setByLine('a.pabc12', {}), C.setByLine('a.pabc12', { by: { n: 'One Two Three', at: 1 } }), C.fromLine({}), C.fromLine({ by: { n: 'Ms Patel', at: 1 } })]) {
+    assert.ok(s.split(/\s+/).length <= 8, s);
+    assert.doesNotMatch(s, /\bgroup\b|word list|own chapter/i, s);
+  }
+  assert.equal(C.fromLine({ by: { n: 'Mum', at: 1 } }), 'From Mum');
+  assert.equal(C.fromLine({}), 'From your grown-up');
+  assert.equal(C.fromLine(undefined), 'From your grown-up');
+});
+test('D26: no child is ever offered a week of their own', () => {
+  assert.equal(C.mayMakeOwnWeek(W.emptyDoc(), '2026-11-16'), false);
+  const finished = C.homeView({ status: 'finished', group: { id: 'g1' }, comeBack: [] }, '2026-11-16');
+  assert.notEqual(finished.button.href, 'new');
+  assert.equal(C.homeView({ status: 'finished', group: { id: 'g1' }, comeBack: [] }, '2026-11-16', { mayMake: true }).button.href, 'new', 'only a caller that asks');
 });

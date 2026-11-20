@@ -1,0 +1,167 @@
+{
+ "chapter": "y4-n05",
+ "year": 4,
+ "words": {
+  "chemist": [
+   "The chemist sells soap, toothpaste and sun cream.",
+   "Can the chemist help me find some shampoo for my hair?",
+   "The chemist gave us a little bag with our sun cream inside."
+  ],
+  "chorus": [
+   "The school chorus stood on the stage in bright red jumpers.",
+   "Can you learn the words to the chorus by Friday?",
+   "We all sang along to the chorus of the happy song."
+  ],
+  "chef": [
+   "I want to be a chef and cook meals in a restaurant.",
+   "The chef wore a tall white hat in the busy kitchen.",
+   "What a tasty pizza the chef made for our birthday!"
+  ],
+  "machine": [
+   "A digger is a big machine that scoops up the soil.",
+   "Press the button on the ticket machine at the station.",
+   "What a loud rattle that old machine makes in the shed!"
+  ],
+  "tongue": [
+   "The lemon tasted sour on my tongue!",
+   "Which animal has a long tongue for catching flies?",
+   "I stuck out my tongue to catch a snowflake."
+  ],
+  "unique": [
+   "No two fingerprints are the same, so each one is unique.",
+   "Gran knitted me a unique jumper that nobody else has.",
+   "What a unique hat, with feathers and tiny bells on it!"
+  ],
+  "science": [
+   "I love science because we test ideas and look closely.",
+   "We wore goggles in science to watch the vinegar fizz.",
+   "The science book explains why the moon changes shape."
+  ],
+  "scissors": [
+   "Hold the paper still and cut along the line with scissors.",
+   "Gran used her scissors to snip the ribbon for my present.",
+   "Where did I leave my blue scissors?"
+  ],
+  "character": [
+   "Which character in the story makes you laugh the most?",
+   "The main character in my book has a pet owl.",
+   "What a funny character the old tortoise is in this tale!"
+  ],
+  "technique": [
+   "I practised my piano technique before the school concert.",
+   "Your skipping technique is getting better every day!",
+   "Did my drawing technique improve after all that practice?"
+  ]
+ },
+ "rounds": {
+  "chemist": 0,
+  "chorus": 0,
+  "chef": 0,
+  "machine": 0,
+  "tongue": 0,
+  "unique": 0,
+  "science": 0,
+  "scissors": 0,
+  "character": 0,
+  "technique": 1
+ },
+ "rejected": [
+  {
+   "word": "chemist",
+   "round": 0,
+   "s": "After school we went to the chemist for a new toothbrush.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "chorus",
+   "round": 0,
+   "s": "What a lovely sound the chorus made in the hall!",
+   "reason": "checker: A machine could also make a sound in the hall, so the gap has two answers. (also fits: machine)"
+  },
+  {
+   "word": "chef",
+   "round": 0,
+   "s": "Does the chef at the cafe make fresh soup every day?",
+   "reason": "machine rule 4: not on the word lists: cafe"
+  },
+  {
+   "word": "chef",
+   "round": 0,
+   "s": "Our chef stirred the sauce while the pasta boiled.",
+   "reason": "checker: A kitchen machine can also stir sauce, so the gap is not clear. (also fits: machine)"
+  },
+  {
+   "word": "machine",
+   "round": 0,
+   "s": "Does the machine in the cafe make hot chocolate?",
+   "reason": "machine rule 4: not on the word lists: cafe"
+  },
+  {
+   "word": "machine",
+   "round": 0,
+   "s": "Dad fixed the sewing machine so I could mend my bag.",
+   "reason": "checker: Shows the 'Dad fixes things' stereotype, so it should be dropped."
+  },
+  {
+   "word": "unique",
+   "round": 0,
+   "s": "My sister painted a unique picture that looks like no other.",
+   "reason": "checker: It repeats the meaning word for word ('like no other'), so it reads awkwardly and gives the answer away."
+  },
+  {
+   "word": "scissors",
+   "round": 0,
+   "s": "The two blades of the scissors go snip, snip, snip!",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "character",
+   "round": 0,
+   "s": "At the party I dressed up as my favourite character.",
+   "reason": "checker: A child could also dress up as a chef, so the gap has two answers. (also fits: chef)"
+  },
+  {
+   "word": "technique",
+   "round": 0,
+   "s": "Is there a better technique for tying shoelaces quickly?",
+   "reason": "checker: 'A better machine for tying shoelaces' also makes sense, so the gap is not clear. (also fits: machine)"
+  },
+  {
+   "word": "technique",
+   "round": 0,
+   "s": "Gran has a special technique for making fluffy pancakes.",
+   "reason": "checker: Gran could have a special machine for making pancakes, so two words fit. (also fits: machine)"
+  },
+  {
+   "word": "technique",
+   "round": 0,
+   "s": "What a neat technique for drawing straight lines without a ruler!",
+   "reason": "checker: A neat machine for drawing straight lines also makes sense. (also fits: machine)"
+  },
+  {
+   "word": "technique",
+   "round": 1,
+   "s": "I practised my kicking technique in the garden until tea.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "technique",
+   "round": 1,
+   "s": "Our coach taught us a clever technique for catching the ball.",
+   "reason": "checker: 'A clever machine for catching the ball' also makes sense, so the gap has two answers. (also fits: machine)"
+  },
+  {
+   "word": "technique",
+   "round": 1,
+   "s": "My piano teacher is helping me improve my technique.",
+   "reason": "checker: 'Improve my character' also makes sense, so a child could pick the wrong word. (also fits: character)"
+  },
+  {
+   "word": "technique",
+   "round": 1,
+   "s": "Her breathing technique helped her swim a whole length.",
+   "reason": "checker: 'Breathing machine' also fits, and it hints at illness. (also fits: machine)"
+  }
+ ],
+ "sitOut": []
+}

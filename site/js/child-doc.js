@@ -9,6 +9,7 @@ import * as St from './study-doc.js';
 import * as Su from './setup-doc.js';
 import * as P from './progress-doc.js';
 import * as A from './assess-doc.js';
+import * as SD from './set-doc.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 export const CHILD_TIME = 'About 15 minutes';
@@ -29,15 +30,25 @@ export const weekdayName = (day) => WEEKDAYS[new Date(day + 'T00:00:00Z').getUTC
 /** One sentence for each job, in a child's words. */
 export const JOB_SENTENCE = {
   hello: 'Meet each word, then play the flower game.',
-  fix: 'Look, say, cover and write each word.',
-  games: 'Play four quick games with your words.',
-  story: 'Read about your words. Write three sentences.',
+  fix: 'Look, say, hide and write each word.',
+  games: 'Play quick games with your words.',
+  story: 'Read about your words. Write sentences.',
   practice: 'Spell each word three times in a row.',
   test: 'Spell each word once. Do your best.',
   mend: 'Mend any words that slipped.',
   mendQuick: 'One quick-fire round of all your words.',
 };
 const BUTTON = { test: 'Start the test' };
+
+/**
+ * The sentence for a job, with its count when the caller knows it: Game day "Play 4 quick games with your words." (G.dayGames) and Story day
+ * "Read about your words. Write 3 sentences." (St.storySentences). Without a count the plain sentence in JOB_SENTENCE.
+ */
+export function jobSentence(id, { games = 0, sentences = 0 } = {}) {
+  if (id === 'games' && games) return 'Play ' + games + ' quick ' + (games === 1 ? 'game' : 'games') + ' with your words.';
+  if (id === 'story' && sentences) return 'Read about your words. Write ' + sentences + (sentences === 1 ? ' sentence.' : ' sentences.');
+  return JOB_SENTENCE[id];
+}
 
 /** "11 stars". */
 export const starsText = (n) => n + (n === 1 ? ' star' : ' stars');
@@ -73,16 +84,16 @@ export function jobNumber(steps, jobId) {
  *   button { label, href: 'job' | 'wordbright' | 'words' | 'new' }, note (the quiet line under it),
  *   catchUp (true: the headline and line are the catch-up pair), path (show the path card).
  */
-export function homeView(r, day, { waiting = 0, mendPart = 'quick', testStarted = false } = {}) {
+export function homeView(r, day, { waiting = 0, mendPart = 'quick', testStarted = false, mayMake = false, games = 0, sentences = 0 } = {}) {
   const g = r.group;
   const comeBack = g && !r.hideWords ? r.comeBack : [];
   const v = { status: r.status, pip: r.pip, path: !!g, comeBack, catchUp: false, line: '', note: '' };
   if (r.status === 'none') {
-    return { ...v, eyebrow: 'Welcome', headline: 'Let\'s make your first word group.', say: 'Let\'s make your first word group.', button: { label: 'My words', href: 'words' } };
+    return { ...v, eyebrow: 'Welcome', headline: 'Let\'s make your first week.', say: 'Let\'s make your first week.', button: { label: 'My words', href: 'words' } };
   }
   if (r.status === 'job') {
     const id = r.step.id;
-    const sentence = id === 'mend' ? (mendPart === 'fixups' ? 'Fix the words that slipped.' : JOB_SENTENCE.mendQuick) : JOB_SENTENCE[id];
+    const sentence = id === 'mend' ? (mendPart === 'fixups' ? 'Fix the words that slipped.' : JOB_SENTENCE.mendQuick) : jobSentence(id, { games, sentences });
     const button = { label: id === 'test' && testStarted ? 'Carry on with the test' : BUTTON[id] || 'Start ' + r.step.title, href: 'job' };
     if (r.catchUp) {
       const [headline, line] = catchUpParts(g, day);
@@ -97,9 +108,36 @@ export function homeView(r, day, { waiting = 0, mendPart = 'quick', testStarted 
     ready: ['Every job is done.', 'You\'re ready for the test.'],
     finished: ['This week is finished.', 'Well done!'],
   }[r.status];
-  const button = r.status === 'finished' ? { label: 'New word group', href: 'new' } : WB;
+  const button = r.status === 'finished' && mayMake ? { label: 'Make my own week', href: 'new' } : WB;
   return { ...v, eyebrow: weekdayName(day), headline: text[0], line: text[1], say: text.join(' '), button };
 }
+
+/**
+ * SB5 (D26): a child never makes a week; only a grown-up does. Always false (the child's home and My words show no "Make my own week";
+ * `words/new` sends a child back). `d` and `today` are kept for callers that still pass them.
+ */
+export function mayMakeOwnWeek(d, today) {
+  void d;
+  void today;
+  return false;
+}
+
+/**
+ * Who set a week, in a child's words (TR-83, TR-100, <= 8 words): "Set by Mum" when the grown-up's chosen name has arrived
+ * (setup.by.n) and the week is a grown-up's; else the role: "Set by your teacher" (from the id's role letter), "Set by your grown-up"
+ * (an older plan id, or a dotted id with no role letter); '' for a week a child made or the starter. `setup` is the child's words.setup.
+ */
+export function setByLine(gid, setup) {
+  const id = String(gid || '');
+  if (!SD.isGrownupWeek(id)) return '';
+  const by = setup && setup.by && typeof setup.by.n === 'string' ? Su.cleanName(setup.by.n) : '';
+  return SD.setByWords(SD.weekRole(id) || 'parent', by);
+}
+/** "From Mum" on a Practice list card, else "From your grown-up" (today's wording). */
+export const fromLine = (setup) => {
+  const n = setup && setup.by && typeof setup.by.n === 'string' ? Su.cleanName(setup.by.n) : '';
+  return n ? 'From ' + n : 'From your grown-up';
+};
 
 // ---- the path ---------------------------------------------------------------------
 /**
@@ -157,8 +195,8 @@ export function menuRows({ gid, gamesOpen, hasGroup, canSwitch = false, wordsGid
       ? { id: 'games', title: 'Games', sub: 'Quick games with your words', href: '#/words/g/' + encodeURIComponent(gid) + '/games' }
       : { id: 'games', title: 'Games', sub: GAMES_CLOSED, closed: true });
   }
-  rows.push({ id: 'words', title: 'My words', sub: 'See your words', href: wordsGid ? '#/words/g/' + encodeURIComponent(wordsGid) : '#/words' });
-  rows.push({ id: 'practice', title: 'More practice', sub: 'Chapters, tricky words, your progress', href: '#/chapters' });
+  rows.push({ id: 'words', title: 'This week\'s words', sub: 'See your words', href: wordsGid ? '#/words/g/' + encodeURIComponent(wordsGid) : '#/words' });
+  rows.push({ id: 'practice', title: 'Practice', sub: 'Lists from your grown-up, chapters, tricky words', href: '#/chapters' });
   rows.push({ id: 'settings', title: 'Settings', sub: canSwitch ? 'Day or night, switch player' : 'Day or night', href: '#/settings', quiet: true });
   return rows;
 }

@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import * as P from '../site/js/grownups-doc.js';
 import * as A from '../site/js/adult-doc.js';
+import * as RDoc from '../site/js/role-doc.js';
 
 const file = (p) => fileURLToPath(new URL('../' + p, import.meta.url));
 const read = (p) => readFileSync(file(p), 'utf8');
@@ -39,15 +40,15 @@ test('the summary sentence', () => {
   assert.equal(P.glanceSummary(five.map((n) => kid(n, 'ontrack'))), 'All five children are on track.');
   assert.equal(P.glanceSummary(['A', 'B', 'C', 'D'].map((n, i) => kid(n, i ? 'ontrack' : 'waiting', 1))), 'A needs you. Three children are on track.');
 });
-test('who gets the green button: the first child who needs attention, else Plan a week', () => {
+test('who gets the green button: the first child who needs attention, else Set a week', () => {
   const items = [kid('Amara', 'ontrack'), kid('Ben', 'waiting', 1), kid('Ellie', 'waiting', 2)];
   assert.deepEqual(P.primaryAction(items), { kind: 'see', index: 1, label: 'See Ben’s week' });
-  assert.equal(P.primaryAction([kid('Robin', 'ontrack'), kid('Wren', 'notstarted')]).label, 'Plan a week');
-  assert.equal(P.planIsPrimary([kid('Robin', 'ontrack')]), true);
-  assert.equal(P.planIsPrimary([kid('Robin', 'ended')]), false);
-  assert.equal(P.primaryAction([kid('Robin', 'ended')]).label, 'Plan Robin’s next week');
-  assert.equal(P.primaryAction([kid('Robin', 'noweek')]).label, 'Plan a week for Robin');
-  assert.equal(P.primaryAction([kid('Robin', 'problem')]).kind, 'plan');
+  assert.equal(P.primaryAction([kid('Robin', 'ontrack'), kid('Wren', 'notstarted')]).label, 'Set a week');
+  assert.equal(P.setIsPrimary([kid('Robin', 'ontrack')]), true);
+  assert.equal(P.setIsPrimary([kid('Robin', 'ended')]), false);
+  assert.equal(P.primaryAction([kid('Robin', 'ended')]).label, 'Set Robin’s next week');
+  assert.equal(P.primaryAction([kid('Robin', 'noweek')]).label, 'Set a week for Robin');
+  assert.equal(P.primaryAction([kid('Robin', 'problem')]).kind, 'set');
 });
 test('one or two children get cards, three or more get rows', () => {
   assert.deepEqual([1, 2, 3, 5].map(P.isCompact), [false, false, true, true]);
@@ -66,9 +67,12 @@ test('the adult chip never shows "Grown-up" as a name', () => {
   assert.match(read('shared/account/player.js'), new RegExp("cleanName\\(me\\.displayName, '" + A.SHARED_FALLBACK + "'\\)"));
 });
 test('the Menu rows and the switch rows', () => {
-  assert.deepEqual(A.MENU_ROWS.map((r) => r.title), ['More practice', 'My words', 'Pick words', 'Your own chapters', 'For teachers', 'Tricky words', 'Progress', 'All games']);
-  assert.deepEqual(A.MENU_ROWS.map((r) => r.href), ['#/chapters', '#/words', '#/custom', '#/grownups/own', '#/grownups/teach', '#/tricky', '#/progress', '../']);
-  assert.equal(A.MENU_ROWS.find((r) => r.id === 'progress').sub, 'Chapters you have passed');
+  assert.deepEqual(A.MENU_ROWS.map((r) => r.title), ['Children', 'Word lists', 'Set a week', 'Play yourself', 'All games']);
+  assert.deepEqual(A.MENU_ROWS.map((r) => r.href), ['#/grownups', '#/grownups/own', '#/grownups/set', '#/grownups/yourself', '../']);
+  assert.deepEqual(A.MENU_ROWS.map((r) => r.id), ['children', 'lists', 'set', 'yourself', 'games']);
+  assert.deepEqual(A.YOURSELF_ROWS.map((r) => r.title), ['More practice', 'My words', 'Pick words', 'Your own tricky words', 'Your own progress']);
+  assert.deepEqual(A.YOURSELF_ROWS.map((r) => r.href), ['#/chapters', '#/words', '#/custom', '#/tricky', '#/progress']);
+  assert.equal(A.YOURSELF_ROWS.find((r) => r.id === 'progress').sub, 'Chapters you have passed');
   const kid = (n) => ({ id: n, nickname: n, year: 4 });
   assert.equal(A.playAsLine([kid('Robin')]), 'Play as Robin');
   assert.equal(A.playAsLine([kid('Robin'), kid('Wren')]), 'Robin or Wren');
@@ -77,21 +81,21 @@ test('the Menu rows and the switch rows', () => {
   assert.equal(A.playAsLine([]), '');
 });
 test('the Menu says which years have chapters, and every row has its own icon (SB4-E/F)', () => {
-  const sub = (years) => A.menuRows(years).find((r) => r.id === 'chapters').sub;
+  const sub = (years) => A.yourselfRows(years).find((r) => r.id === 'chapters').sub;
   assert.equal(sub(['y1', 'y2', 'y3', 'y4', 'y5', 'y6']), 'Year 1 to Year 6 chapters');
   assert.equal(sub(['y3', 'y4', 'y5', 'y6']), 'Year 3 to Year 6 chapters');
   assert.equal(sub([2, 3]), 'Year 2 to Year 6 chapters');
   assert.equal(sub(['y6']), 'Year 6 chapters');
   assert.equal(sub([]), 'Year 3 to Year 6 chapters', 'nothing loaded yet: the old line');
-  assert.equal(A.MENU_ROWS.find((r) => r.id === 'chapters').sub, 'Year 1 to Year 6 chapters', 'the plain list matches the real one');
-  assert.deepEqual(A.menuRows(['y1']).filter((r) => r.id !== 'chapters'), A.MENU_ROWS.filter((r) => r.id !== 'chapters'));
+  assert.equal(A.YOURSELF_ROWS.find((r) => r.id === 'chapters').sub, 'Year 1 to Year 6 chapters', 'the plain list matches the real one');
+  assert.deepEqual(A.menuRows(['y1']), A.MENU_ROWS, 'the Menu no longer carries the years line');
   // the page draws the live years, and each row id has an icon of its own
   const src = read('site/js/adult-chrome.js');
-  assert.match(src, /D\.menuRows\(liveYears\(\)\)/);
+  assert.match(src, /RD\.menuRows\(role\)/, 'SB5: the Menu rows come from role-doc, one list per role');
   assert.equal(new Set(A.MENU_ROWS.map((r) => r.id)).size, A.MENU_ROWS.length, 'no two rows share an id (and so an icon)');
   for (const r of A.MENU_ROWS) assert.match(src, new RegExp('\\n  ' + r.id + ': svg\\('), 'icon for ' + r.id);
-  assert.equal(A.MENU_ROWS.find((r) => r.title === 'Your own chapters').id, 'own');
-  assert.equal(A.MENU_ROWS.find((r) => r.title === 'For teachers').id, 'teach');
+  for (const role of ['parent', 'tutor', 'teacher']) for (const r of RDoc.menuRows(role)) assert.match(src, new RegExp('\\n  ' + r.id + ': svg\\('), 'icon for ' + role + ' row ' + r.id);
+  assert.equal(A.MENU_ROWS.find((r) => r.title === 'Word lists').id, 'lists');
 });
 test('the files: no inline style, the bar is a Spellbright-only mode, the shared nav is not changed', () => {
   for (const f of ['site/js/adult-chrome.js', 'site/js/adult-doc.js', 'site/js/grownups-views.js']) assert.doesNotMatch(read(f), /\sstyle="/, f);
@@ -103,5 +107,5 @@ test('the files: no inline style, the bar is a Spellbright-only mode, the shared
   assert.equal(read('shared/topbar/nav.js'), read('site/js/nav/nav.js'));
   const sw = read('site/sw.js');
   for (const f of ['css/adult.css', 'js/adult-doc.js', 'js/adult-chrome.js']) assert.ok(sw.includes("'" + f + "'"), f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-16c'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-19f'/);
 });

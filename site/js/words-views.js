@@ -11,7 +11,9 @@ import { burstHtml, placeBursts } from './celebrate.js';
 import { esc, ICON, keyboard, shuffle, toast, dotsHtml, rowCountHtml, inARowHtml, RETRY_LINE } from './ui.js';
 import * as C from './child-doc.js';
 import * as St from './study-doc.js';
-import { stepHref, stripHtml, comeBackHref, comeBackHtml } from './study-views.js';
+import { stepHref, stripHtml, comeBackHref, comeBackHtml, markFold } from './study-views.js';
+import * as G from './games-doc.js';
+import { tileHtml, openSheet, todayJobs, jobLabel } from './child-views.js';
 import { findEntry, entryFor } from './word-info.js';
 import { getWeek, setWeek } from './week-choice.js';
 import { childYear } from './who.js';
@@ -180,6 +182,70 @@ function quizRow(d, g, day, job) {
   if (job === 'test' || !St.doneDay(d, g, 'practice') || !S.helpNow(childYear()).offer.quiz) return '';
   return '<p class="quizrow"><a class="linkbtn" href="' + groupHref(g.id) + '/quiz" data-quizrow>' + C.QUIZ_ROW + '</a></p>';
 }
+// ---- a child's "This week's words" (09b): tiles, not a manage page --------------------------------
+const WEEK_ICON = {
+  job: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10.2 8.8l5 3.2-5 3.2z"/></svg>',
+  game: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="5"/><path d="M8 10.5v4M6 12.5h4M15.5 11.5h.01M17.5 13.5h.01"/></svg>',
+  type: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M12 6v13M9 19h6"/></svg>',
+  list: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>',
+  star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>',
+  tick: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  words: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/></svg>',
+  cal: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+};
+/** The six games on a week's page, in the order of 08d, with their one-line sub (the five a day plays are chosen by Game day, not here). */
+export const WEEK_GAMES = [
+  ['missing', 'Fill in the letters'], ['unjumble', 'Put the letters in order'], ['match', 'Words and their meanings'],
+  ['fill', 'Put the word in the sentence'], ['mix', 'Put each word in its sentence'], ['quick', 'Spell fast'],
+];
+/** What a child's "This week's words" holds: [{ id, title, sub, href?, lock?, first? }] in the order of 09b. */
+export function weekTiles(d, g, day, { year = 0, others = [], quizOn = false, setBy = '' } = {}) {
+  const st = St.studyState(d, g, day);
+  const job = W.jobFor(d, g, day);
+  const open = St.gamesOpen(d, g, day);
+  const tiles = [];
+  const jobs = todayJobs(d, g, day, st);
+  if (jobs.length) {
+    const kind = St.weekKind(g);
+    const label = jobs.length > 1 ? jobs.map((x) => x.title).join(', ') : jobLabel(jobs[0], { games: G.dayGames(year, kind).length, sentences: St.storySentences(kind) });
+    tiles.push({ id: 'job', icon: 'job', title: job === 'test' ? 'Today’s test' : jobs.length > 1 ? 'Today’s jobs' : 'Today’s job', sub: label, href: stepHref(d, g, jobs[0].id, day), first: true, attr: ' data-job' });
+  }
+  for (const [id, sub] of WEEK_GAMES) tiles.push({ id: 'game-' + id, icon: id === 'fill' ? 'type' : id === 'mix' || id === 'match' ? 'list' : 'game', title: G.GAMES[id].title, sub: open ? sub : 'Opens after your test', href: groupHref(g.id) + '/game/' + id, lock: !open });
+  if (W.testDone(d, g)) {
+    const res = W.testResults(d, g);
+    tiles.push({ id: 'results', icon: 'star', title: 'Test results', sub: 'Last test: ' + res.filter((x) => x.result.right).length + ' of ' + res.length, still: true });
+  }
+  if (quizOn && job !== 'test' && St.doneDay(d, g, 'practice')) tiles.push({ id: 'quiz', icon: 'tick', title: 'Quiz', sub: '5 quick questions', href: groupHref(g.id) + '/quiz', attr: ' data-quizrow' });
+  tiles.push({ id: 'study', icon: 'words', title: 'Study this week', sub: g.name + ' · ' + plural(g.words.length, 'word'), href: groupHref(g.id) + '/path' });
+  if (others.length) tiles.push({ id: 'others', icon: 'cal', title: 'Other weeks', sub: others[0].name + (others.length > 1 ? ' · ' + (others.length - 1) + ' more' : ''), button: true, attr: ' data-other-weeks' });
+  tiles.push({ id: 'progress', icon: 'eye', title: 'How I’m doing with each word', sub: 'How often each word went right', href: '#/words/progress' });
+  void setBy;
+  return tiles;
+}
+
+function drawChildWeek(main, g, others) {
+  const d = S.readWords();
+  const day = today();
+  const job = W.jobFor(d, g, day);
+  const year = childYear();
+  const setBy = C.setByLine(g.id, S.readSetup());
+  const switchable = W.weekPickOn(d) ? new Set(C.weekChoice(d, day, '').weeks.map((w) => w.id)) : new Set();
+  const more = W.weekPickOn(d) ? others.filter((o) => switchable.has(o.id)) : [];
+  const tiles = weekTiles(d, g, day, { year, others: more, quizOn: S.helpNow(year).offer.quiz, setBy });
+  const after = ['wait', 'fixups', 'fixed-today', 'finished'].includes(job);
+  main.innerHTML = '<section class="wrap page weekpage" data-weekpage>'
+    + '<div class="pagehead"><h1>This week’s words</h1>' + (setBy ? '<p class="path__sub" data-setby>' + esc(setBy) + '</p>' : '') + '</div>'
+    + '<ul class="tilelist">' + tiles.map((t) => '<li>' + tileHtml({ ...t, icon: WEEK_ICON[t.icon] }) + '</li>').join('') + '</ul>'
+    + (job === 'fixups' || job === 'fixed-today' ? fixupList(d, g, day) : '')
+    + (job === 'test' ? '' : comeBackHtml(g, W.comeBack(d, g, day)))
+    + (after ? resultsCard(d, g) : '') + '</section>';
+  const ow = main.querySelector('[data-other-weeks]');
+  if (ow) ow.addEventListener('click', () => openSheet(ow, { title: 'Other weeks', cls: 'weeksheet', body: more.map((o) => '<button type="button" class="sheetrow weekrow" data-week="' + esc(o.id) + '"><span class="sheetrow__text"><b>' + esc(o.name) + '</b><span>Test ' + esc(W.dayLabel(o.test)) + '</span></span><span class="pill">Study this week</span></button>').join(''),
+    onPick: (el) => { setWeek(el.dataset.week); location.hash = groupHref(el.dataset.week); } }));
+  placeBursts(main);
+}
+
 function drawGroup(main, g, others = []) {
   const d = S.readWords();
   const day = today();
@@ -187,6 +253,7 @@ function drawGroup(main, g, others = []) {
   const testing = job === 'test'; // no word on show on test day
   const after = ['wait', 'fixups', 'fixed-today', 'finished'].includes(job);
   const child = document.body.classList.contains('is-child');
+  if (child) { drawChildWeek(main, g, others); return; } // D26: a child's page is tiles; no New group, no Change this week
   const editLabel = W.editLinkLabel(d, g, day, roleNow());
   if (child && !W.weekPickOn(d)) others = []; // switch off: a child's My words shows only the app's pick
   const switchable = child && W.weekPickOn(d) ? new Set(C.weekChoice(d, day, '').weeks.map((w) => w.id)) : new Set(); // a child can make another week the one the home shows
@@ -216,7 +283,7 @@ function drawGroup(main, g, others = []) {
 }
 
 export function myWords(main) {
-  ensureStarter();
+  if (roleNow() === 'adult') ensureStarter(); // D26: a child never gets a week of their own; only a grown-up makes one
   const d = S.readWords();
   const current = W.currentGroup(d, today());
   // Another group sharing a word with a test that's due: the test's own page instead.
@@ -224,6 +291,11 @@ export function myWords(main) {
   // Switch off: a child or unknown player's My words is the app's pick (the due-test branch above stays first).
   if (roleNow() !== 'adult' && !W.weekPickOn(d) && !(g && St.dueGroups(d, today()).some((x) => x.id === g.id))) { const pick = C.weekChoice(d, today(), '').group; if (pick) g = pick; }
   if (!g) {
+    if (roleNow() !== 'adult') {
+      main.innerHTML = '<section class="wrap page weekpage" data-weekpage data-none><div class="pagehead"><h1>This week’s words</h1></div>'
+        + '<div class="card empty"><p>Your grown-up will set your next week.</p><p class="muted">You can still practise.</p><a class="btn btn--primary btn--wide" href="#/chapters">Practice</a></div></section>';
+      return;
+    }
     main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>Your words for the week</h1></div>'
       + '<div class="card empty"><p class="muted">Make a group of up to ' + W.MAX_WORDS + ' words and pick a test date.</p><a class="btn btn--primary" href="#/words/new">New group</a></div></section>';
     return;
@@ -264,10 +336,10 @@ function groupForm(main, existing) {
 
   function picker() {
     const list = source();
-    return '<div class="tabs" role="tablist">' + tabBtn('chapter', 'A chapter') + tabBtn('tricky', 'Tricky words (' + tricky.length + ')') + tabBtn('year', 'A year list') + tabBtn('typed', 'Type a word') + '</div>'
+    return '<div class="tabs" role="tablist">' + tabBtn('chapter', 'A chapter') + tabBtn('tricky', 'Practise again (' + tricky.length + ')') + tabBtn('year', 'A year list') + tabBtn('typed', 'Type a word') + '</div>'
       + (tab === 'chapter' ? '<select class="field" aria-label="Chapter" data-chapter>' + chapterOpts() + '</select>' : '')
       + (tab === 'year' ? '<select class="field" aria-label="Year list" data-year>' + D.liveYears().map((y) => '<option value="' + y + '"' + (y === yearId ? ' selected' : '') + '>' + esc(D.years()[y].label) + '</option>').join('') + '</select>' : '')
-      + (tab === 'tricky' && !tricky.length ? '<div class="card empty"><p>No tricky words yet.</p></div>' : '')
+      + (tab === 'tricky' && !tricky.length ? '<div class="card empty"><p>No words to practise again yet.</p></div>' : '')
       + (tab === 'typed' ? '<form class="btnrow" data-typeform><input class="field typedword" aria-label="Type a word" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="20" value="' + esc(typed) + '" data-typed>'
         + '<button type="submit" class="btn btn--quiet">Add</button></form>' + (note ? '<p class="small" role="status">' + esc(note) + '</p>' : '') : '')
       + (list.length ? '<div class="picker">' + list.map((w) => '<label><input type="checkbox" value="' + esc(w) + '"' + (chosen.includes(w) ? ' checked' : '') + '>' + esc(w) + '</label>').join('') + '</div>' : '');
@@ -343,12 +415,16 @@ function groupForm(main, existing) {
   draw();
 }
 
-export function newGroup(main) { groupForm(main, null); }
+export function newGroup(main) {
+  if (roleNow() !== 'adult') { location.replace('#/words'); return; } // D26: a child never makes a week (an old link goes to My words)
+  groupForm(main, null);
+}
 export function editGroupPage(main, { gid }) {
   const g = W.groupById(S.readWords(), safeDecode(gid));
   if (!g) { location.replace('#/'); return; }
   // A child may open the form only where their own rules let them change something; never to delete (SB3-G).
   if (roleNow() !== 'adult' && !W.canEditAsChild(S.readWords(), g, today())) { location.replace(groupHref(g.id)); return; }
+  if (roleNow() !== 'adult') { location.replace(groupHref(g.id)); return; } // D26: a child never changes a week (the line above is the 16c rule, kept for the test)
   groupForm(main, g);
 }
 
@@ -408,6 +484,7 @@ export function spellWord(main, { gid, n }) {
       + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>' + keyboard() + '</div></section>';
   }
 
+  markFold(main);
   const line = (s) => { main.querySelector('[data-line]').textContent = s; };
   const showRow = (n2) => { main.querySelector('[data-row]').innerHTML = inARowHtml(n2); };
   const clearBoxes = () => main.querySelectorAll('[data-box]').forEach((b) => { b.textContent = ''; b.classList.remove('is-filled', 'is-next'); });
@@ -428,7 +505,7 @@ export function spellWord(main, { gid, n }) {
     main.querySelector('[data-slot]').innerHTML = '<div class="card result result--good"><div class="result__head"><span class="celebrate"><span class="result__badge">' + (star ? '★' : '✓') + '</span>' + burstHtml(12, 1.3) + '</span>'
       + '<h2>' + (star ? 'A star for today' : '3 in a row!') + '</h2></div>'
       + (fixing ? '' : '<p class="muted">' + W.starsOn(d, g, day) + ' of ' + W.rows(g).length + ' stars today</p>')
-      + '<div class="btnrow"><a class="btn btn--primary" href="' + (next || groupHref(id)) + '" data-next>' + (next ? 'Next word' : 'Back to my words') + ICON.arrow + '</a>'
+      + '<div class="btnrow"><a class="btn btn--primary" href="' + (next || groupHref(id)) + '" data-next data-fold="next">' + (next ? 'Next word' : 'Back to my words') + ICON.arrow + '</a>'
       + (next ? '<a class="btn btn--ghost" href="' + groupHref(id) + '">Back to my words</a>' : '') + '</div></div>';
     placeBursts(main);
     if (spec) { const pr = main.querySelector('.peekrow'); if (pr) pr.remove(); } else line('');
@@ -587,7 +664,10 @@ export function testDay(main, { gid }) {
       const res = W.testResults(S.readWords(), g);
       return {
         right: res.filter((x) => x.result && x.result.right).length, of: total, miss: res.filter((x) => x.result && !x.result.right).map((x) => x.word),
-        buttons: [{ label: 'Back to my words', href: groupHref(id), primary: true }],
+        // 11g: the words that slipped go to Words to practise again; then Today (a week's own page is one tap further).
+        buttons: res.some((x) => x.result && !x.result.right)
+          ? [{ label: 'Practise the ' + plural(res.filter((x) => x.result && !x.result.right).length, 'test word'), href: '#/tricky', primary: true }, { label: 'Go to Today', href: '#/' }]
+          : [{ label: 'Go to Today', href: '#/', primary: true }],
       };
     },
   });

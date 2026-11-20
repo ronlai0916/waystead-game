@@ -69,7 +69,9 @@ export function startAccount({ win = window, doc = document, slot = null, game =
     prefs = null;
     usePlayer(player, (key) => { if (sync) sync.changed(key); });
     if (!player) return;
-    prefs = createPrefsSync({ api, storage: local, playerId: player.id, applyLook, onExpired: expired });
+    prefs = createPrefsSync({ api, storage: local, playerId: player.id, applyLook, onExpired: expired,
+      onRead: () => { try { win.dispatchEvent(new win.Event('wa:prefs')); } catch (e) { /* no event: the page reads on its next draw */ } },
+      onRefused: () => { try { win.dispatchEvent(new win.Event('wa:prefs-refused')); } catch (e) { /* no event: the choices stay on this device */ } } });
     if (game && docs) sync = createSync({ api, game, storage: local, playerId: player.id, docs: docs(player.id), onExpired: expired, onUpdated: () => { if (!busy()) redraw(); } });
   }
 
@@ -140,7 +142,7 @@ export function startAccount({ win = window, doc = document, slot = null, game =
   const ready = session.refresh().then((r) => {
     if (leftNow && !r.offline && !r.player) leftNow = false; // confirmed: plainly signed out now
     if (signedOut && !r.offline) {
-      if (!r.player && leaving) forgetPlayer(local, leaving.id);
+      if (!r.player && leaving) forgetPlayer(local, leaving.id, (() => { try { return win.sessionStorage; } catch (e) { return null; } })());
       try { if (win.history && win.history.replaceState) win.history.replaceState(win.history.state, '', withoutSignedOut(win.location.href)); } catch (e) { /* keep the URL */ }
     }
     return r;

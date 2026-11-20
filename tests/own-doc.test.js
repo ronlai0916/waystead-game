@@ -24,10 +24,11 @@ test('limits: 15 words, 30 live lists, a name, words', () => {
 test('edit keeps the oid, bumps at, and de-duplicates words case-insensitively', () => {
   let own = Ow.set({}, 'a', mk({ words: ['Cat', 'cat', 'CAT', 'dog'] }), 1000).own;
   assert.deepEqual(own.a.words, ['Cat', 'dog']);
-  own = Ow.set(own, 'a', mk({ name: 'Renamed', to: ['k1', 'k2', 'k3', 'k4', 'k5', 'k6'] }), 10).own;
+  own = Ow.set(own, 'a', mk({ name: 'Renamed', to: Array.from({ length: 16 }, (_, i) => 'k' + i) }), 10).own;
   assert.deepEqual(Object.keys(own), ['a']);
   assert.equal(own.a.at, 1001);
-  assert.equal(own.a.to.length, 5);
+  assert.equal(own.a.to.length, 15, 'SB5: MAX_TO is 15');
+  assert.equal(Ow.MAX_TO, 15);
   assert.equal(own.a.name, 'Renamed');
 });
 

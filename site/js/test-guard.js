@@ -23,14 +23,14 @@ export const RULES = {
   ':yearId/:slug': 'chapter', ':yearId/:slug/study': 'chapter', ':yearId/:slug/study/:word': 'chapter',
   ':yearId/:slug/quick': 'chapter', ':yearId/:slug/quick/:word': 'chapter', ':yearId/:slug/practice': 'chapter', ':yearId/:slug/test': 'chapter',
   'words/new': 'any', 'words/progress': 'any', 'words/g/:gid/edit': 'any',
-  'words/g/:gid': 'first', 'words/g/:gid/test': 'safe', 'words/g/:gid/path': 'safe', settings: 'safe',
+  'words/g/:gid': 'first', 'words/g/:gid/test': 'safe', 'words/g/:gid/path': 'safe', settings: 'safe', look: 'safe',
   'words/g/:gid/spell/:n': 'group', 'words/g/:gid/study/:step': 'group', 'words/g/:gid/study/:step/:n': 'group', 'words/g/:gid/games': 'group', 'words/g/:gid/game/:game': 'group',
   grownups: 'adult', 'grownups/stories': 'adult', 'grownups/plan': 'adult', 'grownups/child/:cid/week/:gid': 'adult', 'grownups/child/:cid': 'adult', 'grownups/child/:cid/plan': 'adult', 'grownups/child/:cid/plan/:gid': 'adult',
   // SB4-WP5 rules
   'words/exam/:eid': 'any', 'words/g/:gid/quiz': 'group', ':yearId/:slug/quiz': 'chapter',
 
   // SB4-WP6 rules
-  'grownups/overview': 'adult', 'grownups/child/:cid/spelling': 'adult', 'grownups/child/:cid/exam': 'adult', 'grownups/child/:cid/exam/:eid': 'adult',
+  'grownups/overview': 'adult', 'grownups/class': 'adult', 'grownups/child/:cid/spelling': 'adult', 'grownups/child/:cid/exam': 'adult', 'grownups/child/:cid/exam/:eid': 'adult',
 
   // SB4-WP7 rules
   'grownups/own': 'adult', 'grownups/own/new': 'adult', 'grownups/own/:oid': 'adult',
@@ -41,7 +41,13 @@ export const RULES = {
   'grownups/scan': 'adult',
 
   // SB4-WP11 rules
-  'grownups/teach': 'adult', 'grownups/teach/:oid': 'adult',
+  'grownups/teach': 'adult', 'grownups/teach/:oid': 'adult', // SB5: redirects now (TR-2), the rules stay
+
+  // SB5 rules (TR-3, TR-82)
+  'grownups/set': 'adult', 'grownups/set/list/:oid': 'adult', 'grownups/set/child/:cid': 'adult', 'grownups/own/:oid/results': 'adult', 'grownups/yourself': 'adult',
+  'grownups/role': 'adult', 'grownups/help': 'adult', 'grownups/more': 'adult', 'grownups/child/:cid/rename/:gid': 'adult',
+  'grownups/own/ready': 'adult', 'grownups/own/ready/:id': 'adult', 'grownups/own/ready/:id/copy': 'adult', 'grownups/own/:oid/copy': 'adult', 'grownups/own/:oid/sentences': 'adult', 'grownups/own/:oid/edit': 'adult', 'grownups/own/:oid/give': 'adult',
+  'grownups/child/:cid/weeks': 'adult', 'grownups/child/:cid/print/:gid': 'adult',
 };
 
 // SB4-E/F: an example sentence on a study page must not show a word whose group's test is due.

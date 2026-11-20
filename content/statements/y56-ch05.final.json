@@ -1,0 +1,191 @@
+{
+ "chapter": "y56-ch05",
+ "year": 5,
+ "words": {
+  "convenience": [
+   "The shop on our corner is a real convenience because it opens late.",
+   "We love the convenience of having a bus stop right outside our house.",
+   "For your convenience, the library has put a bench by the door."
+  ],
+  "existence": [
+   "Nobody knew of the island's existence until someone found an old map.",
+   "Our teacher showed us a photo that proved the badger's existence.",
+   "Do you believe in the existence of life on other planets?"
+  ],
+  "excellent": [
+   "Well done, that was an excellent goal in the match!",
+   "She got full marks, which is an excellent result for a spelling test.",
+   "The weather was excellent, so we had a picnic on the beach."
+  ],
+  "frequently": [
+   "We visit the library frequently, nearly every Saturday.",
+   "It rains frequently in autumn, so I always pack my coat.",
+   "My cat frequently sleeps on the warm windowsill after lunch."
+  ],
+  "sufficient": [
+   "Is one blanket sufficient, or will you need another tonight?",
+   "Two scoops of flour were sufficient to make the small cake.",
+   "Do we have sufficient chairs for everyone at the party?"
+  ],
+  "ancient": [
+   "Is this crumbly old coin really from ancient times?",
+   "That ancient oak tree in the park is older than the town.",
+   "The ancient castle wall has stood on the hill for ages."
+  ],
+  "apparent": [
+   "It is apparent from the droopy leaves that the plant needs water.",
+   "Her happiness was apparent from the big smile on her face.",
+   "The crack in the old mug was apparent as soon as I lifted it."
+  ],
+  "relevant": [
+   "A picture of a robot is not relevant to our topic on butterflies.",
+   "Please keep your answer relevant to the question the teacher asked.",
+   "Which of these facts is relevant to our project about the seaside?"
+  ],
+  "hindrance": [
+   "Please move your bike so the post van can pass without hindrance.",
+   "With no hindrance at all, the kite rose high into the sky!",
+   "The ducks swam across the pond without any hindrance."
+  ],
+  "nuisance": [
+   "What a nuisance, the sticky tape has run out again!",
+   "Is that squeaky gate a nuisance every time you open it?",
+   "The noisy leaf blower next door is such a nuisance on Sunday morning."
+  ]
+ },
+ "rounds": {
+  "convenience": 0,
+  "existence": 0,
+  "excellent": 0,
+  "frequently": 0,
+  "sufficient": 0,
+  "ancient": 0,
+  "apparent": 0,
+  "relevant": 0,
+  "hindrance": 2,
+  "nuisance": 0
+ },
+ "rejected": [
+  {
+   "word": "convenience",
+   "round": 0,
+   "s": "Our new kettle with a timer is such a convenience in the morning!",
+   "reason": "checker: 'Such a nuisance in the morning' also makes sense, so the gap is ambiguous. (also fits: nuisance)"
+  },
+  {
+   "word": "existence",
+   "round": 0,
+   "s": "The tiny frog's existence was a secret from everyone in the garden.",
+   "reason": "checker: 'A secret from everyone in the garden' reads oddly and is unclear for a child."
+  },
+  {
+   "word": "excellent",
+   "round": 0,
+   "s": "The cake was so tasty that Dad said it was excellent.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "excellent",
+   "round": 0,
+   "s": "What an excellent book to borrow from the library!",
+   "reason": "checker: 'What an ancient book' also makes sense, and the 'an' fits both words. (also fits: ancient)"
+  },
+  {
+   "word": "sufficient",
+   "round": 0,
+   "s": "Mum packed sufficient sandwiches so nobody went hungry on the journey.",
+   "reason": "checker: 'Excellent sandwiches' also makes sense, and the sentence leans on 'Mum makes the food'. (also fits: excellent)"
+  },
+  {
+   "word": "ancient",
+   "round": 0,
+   "s": "The museum has an ancient clay pot from thousands of years ago.",
+   "reason": "checker: 'An excellent clay pot' also makes sense, and the 'an' fits both words. (also fits: excellent)"
+  },
+  {
+   "word": "relevant",
+   "round": 0,
+   "s": "Only put relevant pictures on the poster about pets.",
+   "reason": "checker: 'Only put excellent pictures' also makes sense. (also fits: excellent)"
+  },
+  {
+   "word": "hindrance",
+   "round": 0,
+   "s": "The puppy's long lead was a hindrance, as it tangled round the bench.",
+   "reason": "checker: 'Was a nuisance' fits just as well. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 0,
+   "s": "Does a loose shoelace slow you down and become a hindrance?",
+   "reason": "checker: 'Become a nuisance' also makes sense. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 0,
+   "s": "Too many boxes in the hall were a hindrance when we carried the sofa.",
+   "reason": "checker: 'Were a nuisance' also fits. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 0,
+   "s": "A tight coat can be a hindrance when you try to play catch!",
+   "reason": "checker: 'Can be a nuisance' also fits. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 0,
+   "s": "Thick snow was no hindrance to us, because we wore our boots.",
+   "reason": "reader flag two_fit (Both 'hindrance' and 'nuisance' fit 'Thick snow was no ___ to us'.); re-judge: The flag is correct. 'Thick snow was no nuisance to us, because we wore our boots' is also natural English. The boots clause hints at being slowed down, but that hint is not strong enough to rule out 'nuisance', so a child could fairly pick either word."
+  },
+  {
+   "word": "nuisance",
+   "round": 0,
+   "s": "Losing my pencil case again was a real nuisance this morning.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "hindrance",
+   "round": 1,
+   "s": "Will the parcel reach Gran by Friday without any hindrance?",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "hindrance",
+   "round": 1,
+   "s": "Thick fog was a hindrance to our progress up the hill.",
+   "reason": "checker: 'Thick fog was a nuisance' reads naturally enough that a child could put nuisance here. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 1,
+   "s": "The long queue was a hindrance to getting home before tea time.",
+   "reason": "checker: 'The long queue was a nuisance' is very natural, so nuisance competes for the gap. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 2,
+   "s": "The ducks walked across the path without hindrance, so nobody had to stop.",
+   "reason": "checker: The reasoning is muddled, because people usually stop to let ducks cross, so a child may be confused; it is also too close to the pond sentence."
+  },
+  {
+   "word": "hindrance",
+   "round": 2,
+   "s": "The tall hedge was a hindrance to the sunshine reaching our garden.",
+   "reason": "checker: A child could read 'The tall hedge was a nuisance' and choose 'nuisance', so the gap is not clear enough. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 2,
+   "s": "What a hindrance the deep snow was to the buses reaching school!",
+   "reason": "checker: 'What a nuisance the deep snow was' fits just as naturally, so 'hindrance' is not the only answer. (also fits: nuisance)"
+  },
+  {
+   "word": "hindrance",
+   "round": 2,
+   "s": "Is a loose shoelace a hindrance to a fast runner in the race?",
+   "reason": "checker: 'A nuisance to a fast runner' also makes good sense, so the target is not the only fit. (also fits: nuisance)"
+  }
+ ],
+ "sitOut": []
+}

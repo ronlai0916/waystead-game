@@ -1,0 +1,227 @@
+{
+ "chapter": "y1-ch09",
+ "year": 1,
+ "words": {
+  "friend": [
+   "Who is your best friend in class?",
+   "I told my friend a joke and we laughed!",
+   "We sat together, and my friend shared her snack."
+  ],
+  "school": [
+   "We eat lunch and sing at school.",
+   "Which bag do you take to school?",
+   "Our teacher is at school all day."
+  ],
+  "put": [
+   "Where did you put your red hat?",
+   "I put a stamp on the letter.",
+   "Put on your boots, it is raining!"
+  ],
+  "push": [
+   "Do not pull the door, push it!",
+   "We must push hard to move the heavy box.",
+   "Give the swing a big push!"
+  ],
+  "wheel": [
+   "Hamsters run round and round on a wheel.",
+   "The wheel on my scooter spins fast!",
+   "The toy car lost a wheel."
+  ],
+  "phone": [
+   "Ring me on the phone after tea.",
+   "I heard the phone ring in the hall.",
+   "Mum's phone buzzed on the kitchen table."
+  ],
+  "dolphin": [
+   "A dolphin has a fin and a long nose.",
+   "Look, a grey dolphin is playing in the waves!",
+   "We watched a dolphin splash from the boat."
+  ],
+  "kitten": [
+   "Our cat had one tiny kitten.",
+   "The kitten chased the ball of wool.",
+   "A kitten says mew and licks its paw."
+  ],
+  "king": [
+   "The king and queen live in a castle.",
+   "Long ago, a king made laws for the land.",
+   "The king sat on his big throne."
+  ]
+ },
+ "rounds": {
+  "friend": 1,
+  "school": 0,
+  "put": 0,
+  "push": 1,
+  "wheel": 0,
+  "phone": 0,
+  "dolphin": 1,
+  "kitten": 0,
+  "king": 2
+ },
+ "rejected": [
+  {
+   "word": "friend",
+   "round": 0,
+   "s": "A good friend says sorry and smiles.",
+   "reason": "checker: 'A good king says sorry and smiles' also makes sense. (also fits: king)"
+  },
+  {
+   "word": "friend",
+   "round": 0,
+   "s": "She gave her friend a birthday card.",
+   "reason": "checker: A child could easily picture giving a kitten a birthday card. (also fits: kitten)"
+  },
+  {
+   "word": "friend",
+   "round": 0,
+   "s": "Come and sit with me, my friend!",
+   "reason": "checker: 'My kitten' and 'my king' fit just as well. (also fits: kitten, king)"
+  },
+  {
+   "word": "school",
+   "round": 0,
+   "s": "On Monday, I walk to school with Mum.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "put",
+   "round": 0,
+   "s": "Please put the milk in the fridge.",
+   "reason": "checker: 'Push the milk in the fridge' also makes sense. (also fits: push)"
+  },
+  {
+   "word": "put",
+   "round": 0,
+   "s": "Put the toys back in the box.",
+   "reason": "checker: 'Push the toys back in the box' also works. (also fits: push)"
+  },
+  {
+   "word": "push",
+   "round": 0,
+   "s": "Can you push my trolley round the shop?",
+   "reason": "reader flag two_fit (Both push and wheel could go in the gap: 'Can you wheel my trolley round the shop?' also makes sense.); re-judge: The flag is right. 'Wheel' is also a verb, and 'Can you wheel my trolley round the shop?' is natural and correct. Both push and wheel are in the word bank, so the gap has two answers."
+  },
+  {
+   "word": "wheel",
+   "round": 0,
+   "s": "Round and round goes the wheel!",
+   "reason": "checker: A kitten chasing its tail could also go round and round, so the clue is too weak. (also fits: kitten)"
+  },
+  {
+   "word": "phone",
+   "round": 0,
+   "s": "Dad took a photo with his phone.",
+   "reason": "checker: 'Took a photo with his friend' also makes sense. (also fits: friend)"
+  },
+  {
+   "word": "dolphin",
+   "round": 0,
+   "s": "The dolphin swims fast in the sea.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "dolphin",
+   "round": 0,
+   "s": "Did you see a dolphin at the seaside?",
+   "reason": "checker: You could also see a kitten at the seaside. (also fits: kitten)"
+  },
+  {
+   "word": "dolphin",
+   "round": 0,
+   "s": "I drew a dolphin with a blue pen.",
+   "reason": "checker: Almost any noun in the bank could be drawn. (also fits: kitten, king, wheel, phone, friend)"
+  },
+  {
+   "word": "king",
+   "round": 0,
+   "s": "I wore a paper crown, like a king.",
+   "reason": "machine rule 5: word overlap with the example is 50%"
+  },
+  {
+   "word": "king",
+   "round": 0,
+   "s": "A king lives in a castle.",
+   "reason": "reader flag two_fit (Kitten could also fit: a kitten could live in a castle as a pet, so I could not be sure which word goes in the gap.); re-judge: The flag is right. The sentence only gives the clue 'lives in a castle', and 'A kitten lives in a castle.' is grammatical and makes sense for a child, because a pet kitten can live in a castle. Nothing in the sentence rules out kitten, so the gap has two answers."
+  },
+  {
+   "word": "push",
+   "round": 1,
+   "s": "Can you push me on the swing, Dad?",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "push",
+   "round": 1,
+   "s": "I push the button and the lift comes.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "push",
+   "round": 1,
+   "s": "Don't pull the door, push it!",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "push",
+   "round": 1,
+   "s": "Give the swing a big push!",
+   "reason": "machine rule 6: duplicate"
+  },
+  {
+   "word": "push",
+   "round": 1,
+   "s": "I push the buggy up the hill.",
+   "reason": "checker: 'I wheel the buggy up the hill' also makes sense. (also fits: wheel)"
+  },
+  {
+   "word": "push",
+   "round": 1,
+   "s": "The sign on the door says to push.",
+   "reason": "checker: A sign could just as well say to phone. (also fits: phone)"
+  },
+  {
+   "word": "dolphin",
+   "round": 1,
+   "s": "In my story, a dolphin whistled and clicked.",
+   "reason": "checker: In a story a king or a kitten could also whistle. (also fits: king, kitten)"
+  },
+  {
+   "word": "king",
+   "round": 1,
+   "s": "The king waved to us from his balcony.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "king",
+   "round": 1,
+   "s": "Who sits on the throne? The king!",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: The"
+  },
+  {
+   "word": "king",
+   "round": 1,
+   "s": "The play has a king in a red robe.",
+   "reason": "checker: A play could have a kitten in a red robe, so the clue is too weak. (also fits: kitten)"
+  },
+  {
+   "word": "king",
+   "round": 1,
+   "s": "The king waved to the crowd from his carriage.",
+   "reason": "reader flag cant_read (The word 'carriage' is hard to read: it has a soft 'g' and the '-age' ending, which I am not yet confident with.); re-judge: The flag is valid. The word bank (friend, school, put, push) is Year 1-2 level. 'Carriage' is hard for that reader: the 'ia' says /ɪ/ and the '-age' ending has a soft 'g', both of which are irregular for a beginner. I can't find a reason the flag is wrong. A simpler word like 'castle' or 'horse' would avoid the problem, so drop this sentence."
+  },
+  {
+   "word": "king",
+   "round": 2,
+   "s": "I wore a paper crown to be the king!",
+   "reason": "machine rule 5: word overlap with the example is 67%"
+  },
+  {
+   "word": "king",
+   "round": 2,
+   "s": "Is that man with the crown a king?",
+   "reason": "checker: 'Is that man a friend?' also makes sense, so the gap is not unique. (also fits: friend)"
+  }
+ ],
+ "sitOut": []
+}

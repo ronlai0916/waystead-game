@@ -100,10 +100,10 @@ test('exam pools come only from tested sources; the summary line', () => {
   assert.equal(P.examPlan(big, ['a'], 'sen').n, 10);
 });
 test('exam messages and default name', () => {
-  assert.equal(P.examProblem({ keys: [], date: MON, today: MON, liveCount: 0 }), 'Choose at least one chapter or week.');
+  assert.equal(P.examProblem({ keys: [], date: MON, today: MON, liveCount: 0 }), 'Choose at least one chapter, list or week.');
   assert.equal(P.examProblem({ keys: ['a'], date: '2026-11-01', today: MON, liveCount: 0 }), 'Choose today or a later date.');
   assert.equal(P.examProblem({ keys: ['a'], date: '', today: MON, liveCount: 0 }), 'Choose today or a later date.');
-  assert.equal(P.examProblem({ keys: ['a'], date: MON, today: MON, liveCount: 10 }), 'You already have 10 exams. Delete one first.');
+  assert.equal(P.examProblem({ keys: ['a'], date: MON, today: MON, liveCount: 10 }), 'You already have 10 Big tests. Delete one first.');
   assert.equal(P.examProblem({ keys: ['a'], date: MON, today: MON, liveCount: 3 }), '');
   assert.equal(P.examDefaultName('2026-11-21'), 'Big test, 21 Nov');
 });

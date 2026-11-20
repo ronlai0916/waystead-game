@@ -1,0 +1,167 @@
+{
+ "chapter": "y4-n01",
+ "year": 4,
+ "words": {
+  "invisible": [
+   "Wind is invisible, but we can see the leaves move.",
+   "Thick fog made the hills behind school invisible.",
+   "In hide and seek, I wished I was invisible!"
+  ],
+  "impolite": [
+   "I forgot to say please, which was impolite of me.",
+   "Interrupting someone who is talking is impolite.",
+   "Is it impolite to leave without saying goodbye?"
+  ],
+  "inactive": [
+   "After the big lunch, the dog lay inactive on the rug.",
+   "The hamster stays inactive in the day and runs at night.",
+   "Don't stay inactive, come and play football with us!"
+  ],
+  "impatient": [
+   "I was impatient for my birthday to come.",
+   "Waiting for the cake to bake made us all impatient!",
+   "Are you impatient to open your present?"
+  ],
+  "illegal": [
+   "Keeping a pet badger is illegal, because the law protects wild animals.",
+   "Did you know that the law makes picking some wild flowers illegal?",
+   "Because the law forbids it, dumping rubbish here is illegal."
+  ],
+  "imperfect": [
+   "This apple has a tiny mark on it, so it is imperfect.",
+   "Is the vase imperfect because of the chip on its rim?",
+   "The cake sank in the middle, so it was imperfect but tasty."
+  ],
+  "impossible": [
+   "It is impossible to count every star in the sky.",
+   "The jar lid was stuck so tight that opening it seemed impossible.",
+   "Mum said it was impossible to be in two places at once."
+  ],
+  "irregular": [
+   "The tiles on the path are irregular, some big and some small.",
+   "The bus comes at irregular times, so we never know when.",
+   "The rocks on the beach are irregular, not round like balls."
+  ],
+  "illogical": [
+   "Putting your shoes on before your socks is illogical.",
+   "Watering the garden during a downpour is illogical!",
+   "The story was illogical, because the cat flew and nobody was surprised."
+  ],
+  "irresponsible": [
+   "It was irresponsible of me to forget to feed the rabbit.",
+   "Leaving the tap running all day is irresponsible.",
+   "Why was it irresponsible to leave the paint tin open?"
+  ]
+ },
+ "rounds": {
+  "invisible": 0,
+  "impolite": 0,
+  "inactive": 0,
+  "impatient": 0,
+  "illegal": 1,
+  "imperfect": 0,
+  "impossible": 0,
+  "irregular": 0,
+  "illogical": 0,
+  "irresponsible": 0
+ },
+ "rejected": [
+  {
+   "word": "impolite",
+   "round": 0,
+   "s": "Walking away while Gran is speaking to you is impolite.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "inactive",
+   "round": 0,
+   "s": "Sitting on the sofa all day makes you inactive.",
+   "reason": "checker: It says the same thing twice and edges towards lecturing children about health."
+  },
+  {
+   "word": "inactive",
+   "round": 0,
+   "s": "In winter the garden looks inactive, with no flowers growing.",
+   "reason": "checker: Imperfect could also fit, and 'inactive' is an odd word for a garden. (also fits: imperfect)"
+  },
+  {
+   "word": "impatient",
+   "round": 0,
+   "s": "The queue at the shop was long, so Dad got impatient.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "impatient",
+   "round": 0,
+   "s": "The impatient puppy jumped up while I filled its bowl.",
+   "reason": "checker: A puppy jumping up is often called rude, so impolite could also fit. (also fits: impolite)"
+  },
+  {
+   "word": "illegal",
+   "round": 0,
+   "s": "Fishing in this river without a licence is illegal.",
+   "reason": "machine rule 5: word overlap with the example is 50%"
+  },
+  {
+   "word": "illegal",
+   "round": 0,
+   "s": "Dad said it was illegal to keep a wild bird as a pet.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "illegal",
+   "round": 0,
+   "s": "Is it illegal to park on the zigzag lines outside school?",
+   "reason": "checker: Irresponsible and impolite both make sense in the gap too. (also fits: irresponsible, impolite)"
+  },
+  {
+   "word": "illegal",
+   "round": 0,
+   "s": "It is illegal for a child to drive a car.",
+   "reason": "checker: Other words fit, and a child driving is a road-danger idea. (also fits: irresponsible, impossible)"
+  },
+  {
+   "word": "imperfect",
+   "round": 0,
+   "s": "The sandcastle was lopsided and imperfect, but we loved it!",
+   "reason": "checker: 'Lopsided' is about shape, so irregular fits just as well. (also fits: irregular)"
+  },
+  {
+   "word": "irregular",
+   "round": 0,
+   "s": "The word ran is an irregular verb because it has no ed.",
+   "reason": "machine rule 4: not on the word lists: ed"
+  },
+  {
+   "word": "illogical",
+   "round": 0,
+   "s": "Is it illogical to eat soup with a fork?",
+   "reason": "checker: Eating soup with a fork could also be called impossible. (also fits: impossible)"
+  },
+  {
+   "word": "illogical",
+   "round": 0,
+   "s": "His plan to dry the washing in the rain was illogical.",
+   "reason": "checker: A child could just as well say the plan was impossible. (also fits: impossible)"
+  },
+  {
+   "word": "irresponsible",
+   "round": 0,
+   "s": "Taking a pet home but never feeding it is irresponsible.",
+   "reason": "checker: Neglecting a pet is not a kind idea, and illogical could also fit. (also fits: illogical)"
+  },
+  {
+   "word": "illegal",
+   "round": 1,
+   "s": "The sign said camping here is illegal, so we went home.",
+   "reason": "checker: Nothing mentions the law, so 'camping here is impossible' fits the gap just as well. (also fits: impossible)"
+  },
+  {
+   "word": "illegal",
+   "round": 1,
+   "s": "Look, the sign says camping on this beach is illegal!",
+   "reason": "checker: With no clue about the law, 'impossible' also fits what the sign might say. (also fits: impossible)"
+  }
+ ],
+ "sitOut": []
+}

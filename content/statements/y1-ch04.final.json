@@ -1,0 +1,191 @@
+{
+ "chapter": "y1-ch04",
+ "year": 1,
+ "words": {
+  "love": [
+   "I love my new red trainers so much!",
+   "Dogs love their owners and wag their tails.",
+   "I love it when the sun shines!"
+  ],
+  "come": [
+   "Will you come to my party on Saturday?",
+   "The bus will come to the stop soon.",
+   "Here come the ducks, waddling to the pond!"
+  ],
+  "some": [
+   "I would like some milk with my cereal.",
+   "Please pour some water into the cup.",
+   "There is some sand in my shoe."
+  ],
+  "one": [
+   "Count down, three, two, one, go!",
+   "Each hand has just one thumb.",
+   "The number after zero is one."
+  ],
+  "once": [
+   "Our cat jumped on the shelf just once.",
+   "Press the bell once, then wait at the door.",
+   "Once upon a time, a little frog lived here."
+  ],
+  "have": [
+   "Do you have a pet rabbit at home?",
+   "Birds have wings and feathers.",
+   "I have a red bag for school."
+  ],
+  "give": [
+   "Please give the teacher your homework book.",
+   "Can you give the dog a bowl of water?",
+   "Mum will give me a hug when I wake."
+  ],
+  "five": [
+   "Three, four, five, six, seven!",
+   "The number after four is five.",
+   "School is open five days, Monday to Friday."
+  ],
+  "glove": [
+   "My hand is cold, so I need a glove.",
+   "I lost my left glove at the park.",
+   "Dad wears a thick glove to pick prickly weeds."
+  ],
+  "dive": [
+   "The duck will dive under the water for food.",
+   "Can you dive deep to touch the sand?",
+   "The penguin will dive deep under the waves."
+  ]
+ },
+ "rounds": {
+  "love": 1,
+  "come": 0,
+  "some": 0,
+  "one": 0,
+  "once": 0,
+  "have": 0,
+  "give": 0,
+  "five": 0,
+  "glove": 0,
+  "dive": 1
+ },
+ "rejected": [
+  {
+   "word": "love",
+   "round": 0,
+   "s": "We hug Nan because we love her so much.",
+   "reason": "machine rule 4: capital word not allowed: Nan; not on the word lists: Nan"
+  },
+  {
+   "word": "love",
+   "round": 0,
+   "s": "Grandad and I love each other very much.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "love",
+   "round": 0,
+   "s": "How much I love my warm, soft blanket!",
+   "reason": "checker: The exclamation 'How much I love' sounds old-fashioned and is hard for a Year 1 child to read."
+  },
+  {
+   "word": "some",
+   "round": 0,
+   "s": "Mum put some jam on my toast.",
+   "reason": "checker: It is fine to read, but it leans on the mum-makes-food stereotype, so it is dropped as a doubtful one."
+  },
+  {
+   "word": "once",
+   "round": 0,
+   "s": "We visit Gran once a week, on Sundays.",
+   "reason": "machine rule 4: capital word not allowed: Gran; capital word not allowed: Sundays; not on the word lists: Sundays"
+  },
+  {
+   "word": "give",
+   "round": 0,
+   "s": "I will give Gran a card on her birthday.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "give",
+   "round": 0,
+   "s": "Shall we give the ducks bread at the pond?",
+   "reason": "checker: UK advice is not to feed ducks bread, so it teaches a poor habit."
+  },
+  {
+   "word": "five",
+   "round": 0,
+   "s": "A common starfish has five arms.",
+   "reason": "checker: 'Has some arms' could be guessed, and 'common starfish' is hard wording for Year 1. (also fits: some)"
+  },
+  {
+   "word": "glove",
+   "round": 0,
+   "s": "Use an oven glove to hold the hot tray.",
+   "reason": "checker: It puts a child near a hot oven, and an oven glove is not the warm-hand sense."
+  },
+  {
+   "word": "glove",
+   "round": 0,
+   "s": "Mum is mending a hole in my glove.",
+   "reason": "checker: It leans on the stereotype of mum doing the mending, so it is dropped as doubtful."
+  },
+  {
+   "word": "dive",
+   "round": 0,
+   "s": "Mum watches me dive into the pool.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "dive",
+   "round": 0,
+   "s": "Can you dive head first into the pool?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "dive",
+   "round": 0,
+   "s": "Seals dive down to catch fish.",
+   "reason": "checker: 'Seals come down to catch fish' also makes sense, so a child cannot be sure which word goes in. (also fits: come)"
+  },
+  {
+   "word": "dive",
+   "round": 0,
+   "s": "The bird will dive from the sky for fish.",
+   "reason": "checker: 'The bird will come from the sky' also makes sense, so the gap is not clear. (also fits: come)"
+  },
+  {
+   "word": "love",
+   "round": 1,
+   "s": "Do you love your pet rabbit very much?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "love",
+   "round": 1,
+   "s": "Mum and Dad love me very much.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "love",
+   "round": 1,
+   "s": "Do you love rainy days as much as I do?",
+   "reason": "machine rule 3: 10 words (needs 4-9)"
+  },
+  {
+   "word": "dive",
+   "round": 1,
+   "s": "Stretch your arms up and dive head first!",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "dive",
+   "round": 1,
+   "s": "Watch the ducks dive under the water for food.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "dive",
+   "round": 1,
+   "s": "Swimmers dive off the high board with a splash!",
+   "reason": "checker: 'Swimmers come off the high board with a splash' also makes sense, so the gap is not clear. (also fits: come)"
+  }
+ ],
+ "sitOut": []
+}

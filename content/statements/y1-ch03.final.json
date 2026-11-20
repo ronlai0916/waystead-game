@@ -1,0 +1,191 @@
+{
+ "chapter": "y1-ch03",
+ "year": 1,
+ "words": {
+  "has": [
+   "The dog has four muddy paws.",
+   "She has two brothers and one sister.",
+   "Look, he has a big ice cream!"
+  ],
+  "was": [
+   "Yesterday the sky was grey and cloudy.",
+   "I was at the park last week.",
+   "The cake was yummy, so I ate it all."
+  ],
+  "of": [
+   "I ate a slice of toast.",
+   "We saw a flock of sheep.",
+   "A bunch of flowers sat on the table."
+  ],
+  "to": [
+   "We go to school on Monday.",
+   "Give the book to your friend.",
+   "Are we going to the library today?"
+  ],
+  "do": [
+   "Can you do a puzzle with me?",
+   "Do you like jam on toast?",
+   "I do like fish and chips!"
+  ],
+  "catch": [
+   "Open your hands and catch the leaf.",
+   "Dad will catch me when I jump.",
+   "I run fast so I can catch the bus."
+  ],
+  "match": [
+   "Our team plays a football match on Saturday.",
+   "Who won the tennis match today?",
+   "The match starts when the whistle blows."
+  ],
+  "patch": [
+   "A square patch covers the hole in my coat.",
+   "Dad grows carrots in a vegetable patch.",
+   "Look at the cabbage patch in the garden!"
+  ],
+  "fetch": [
+   "Please go and fetch a towel from upstairs.",
+   "Can you fetch my coat from the hall?",
+   "I will fetch the milk from the fridge."
+  ],
+  "stitch": [
+   "My needle makes one small stitch at a time.",
+   "A tiny stitch holds the button on my coat.",
+   "Pull the thread tight after every stitch."
+  ]
+ },
+ "rounds": {
+  "has": 0,
+  "was": 0,
+  "of": 0,
+  "to": 0,
+  "do": 0,
+  "catch": 0,
+  "match": 0,
+  "patch": 0,
+  "fetch": 0,
+  "stitch": 2
+ },
+ "rejected": [
+  {
+   "word": "has",
+   "round": 0,
+   "s": "Who has my red pencil?",
+   "reason": "checker: 'Who fetched my red pencil?' also works with a small change of grammar. (also fits: fetch, catch)"
+  },
+  {
+   "word": "was",
+   "round": 0,
+   "s": "Where was my hat this morning?",
+   "reason": "checker: This question sounds odd, because people usually ask where something is now."
+  },
+  {
+   "word": "do",
+   "round": 0,
+   "s": "What shall we do at the park?",
+   "reason": "checker: 'What shall we catch at the park?' also makes sense. (also fits: catch)"
+  },
+  {
+   "word": "do",
+   "round": 0,
+   "s": "Wipe the table, then do the dishes.",
+   "reason": "checker: 'Then fetch the dishes' also makes sense. (also fits: fetch)"
+  },
+  {
+   "word": "catch",
+   "round": 0,
+   "s": "Throw the ball and I will catch it.",
+   "reason": "checker: 'I will fetch it' also makes sense after a throw. (also fits: fetch)"
+  },
+  {
+   "word": "catch",
+   "round": 0,
+   "s": "Quick, catch the bean bag!",
+   "reason": "checker: 'Quick, fetch the bean bag!' also makes sense. (also fits: fetch)"
+  },
+  {
+   "word": "patch",
+   "round": 0,
+   "s": "I like the star patch on my bag.",
+   "reason": "checker: 'Star stitch on my bag' could also make sense. (also fits: stitch)"
+  },
+  {
+   "word": "patch",
+   "round": 0,
+   "s": "Sew a red patch over the hole.",
+   "reason": "checker: 'Sew a red stitch over the hole' also makes sense. (also fits: stitch)"
+  },
+  {
+   "word": "fetch",
+   "round": 0,
+   "s": "Fetch the stick and bring it back!",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "fetch",
+   "round": 0,
+   "s": "Throw the stick and the dog will fetch it.",
+   "reason": "checker: 'The dog will catch it' also makes sense. (also fits: catch)"
+  },
+  {
+   "word": "stitch",
+   "round": 0,
+   "s": "Each tiny stitch is a loop in the thread.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "stitch",
+   "round": 0,
+   "s": "I made one neat stitch with my needle.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "stitch",
+   "round": 0,
+   "s": "The needle and thread make a stitch.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "stitch",
+   "round": 0,
+   "s": "Look how small each stitch is!",
+   "reason": "checker: 'Look how small each patch is!' also makes sense. (also fits: patch)"
+  },
+  {
+   "word": "stitch",
+   "round": 1,
+   "s": "Gran showed me how to knit a stitch.",
+   "reason": "machine rule 7: holds another word of the chapter: to"
+  },
+  {
+   "word": "stitch",
+   "round": 1,
+   "s": "Which stitch does Gran use for knitting a scarf?",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "stitch",
+   "round": 1,
+   "s": "Wow, Mum can stitch with bright red wool!",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "stitch",
+   "round": 1,
+   "s": "Gran will stitch a star on my bag.",
+   "reason": "checker: This uses stitch as a verb, and 'do' or 'patch' could also fill the gap, so a child cannot tell which word belongs. (also fits: do, patch)"
+  },
+  {
+   "word": "stitch",
+   "round": 2,
+   "s": "Can you see the thread in each stitch?",
+   "reason": "checker: A patch also has thread in it, so patch fits the gap too. (also fits: patch)"
+  },
+  {
+   "word": "stitch",
+   "round": 2,
+   "s": "Oh no, a loose thread is undoing my stitch!",
+   "reason": "checker: A loose thread could just as well be undoing a patch. (also fits: patch)"
+  }
+ ],
+ "sitOut": []
+}

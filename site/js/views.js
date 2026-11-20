@@ -7,11 +7,11 @@ import { speak, spellOut, stop } from './speech.js';
 import { hasSentenceCard, sentenceCard, wireSentence } from './study-views.js'; // SB4-WP9
 import { runSession, summaryHtml } from './play.js';
 import { esc, ICON, picture, chunked, chunkText, boldWord, shuffle, toast, meter, applyMeters } from './ui.js';
-import { dayStyleHtml, wireDayStyle } from './daystyle.js';
 import { backAgainFor, hiddenToday } from './words-views.js';
 import { isUnlocked, notFound, chapters } from './front-views.js';
+import { backLink, lookHtml, wireLook } from './child-views.js';
 import { playable } from './games-doc.js';
-import { withoutHidden, DAILY_TIME, DAILY_TIME_CAP, ROW_LINE } from './study-doc.js';
+import { withoutHidden, DAILY_TIME, ROW_LINE } from './study-doc.js';
 import * as A from './assess-doc.js';
 import { runCheck } from './assess-views.js';
 import { childYear, isKnownChild } from './who.js';
@@ -229,14 +229,14 @@ export function custom(main) {
         + esc(D.chapterTitle(c).n + '. ' + D.chapterTitle(c).name) + '</option>').join('') + '</optgroup>').join('');
     main.innerHTML = '<section class="wrap page">'
       + '<div class="pagehead"><span class="eyebrow">Pick words</span><h1>Choose the words to play</h1>'
-      + '<p class="muted">Up to ' + MAX_PICK + ' words. You play a quick game with them; any you miss go into your tricky words.</p></div>'
+      + '<p class="muted">Up to ' + MAX_PICK + ' words. You play a quick game with them; any you miss go into Words to practise again.</p></div>'
       + '<div class="tabs" role="tablist">'
-      + tabBtn('all', 'All words') + tabBtn('tricky', 'Tricky words (' + tricky.length + ')') + tabBtn('chapter', 'A chapter') + '</div>'
+      + tabBtn('all', 'All words') + tabBtn('tricky', 'Practise again (' + tricky.length + ')') + tabBtn('chapter', 'A chapter') + '</div>'
       + '<div class="stack">'
       + (tab === 'all' ? '<div class="btnrow"><input class="field" type="search" placeholder="Find a word" aria-label="Find a word" value="' + esc(filter) + '" data-filter>'
         + '<button type="button" class="btn btn--quiet btn--small" data-random>Pick 10 at random</button></div>' : '')
       + (tab === 'chapter' ? '<select class="field" aria-label="Chapter" data-chapter>' + chapterOpts + '</select>' : '')
-      + (tab === 'tricky' && !tricky.length ? '<div class="card empty"><p>No tricky words yet. Words you miss in a test land here.</p></div>' : '')
+      + (tab === 'tricky' && !tricky.length ? '<div class="card empty"><p>No words to practise again yet. Words you miss in a test land here.</p></div>' : '')
       + (list.length ? '<div class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-allon>Select all shown</button>'
         + '<button type="button" class="btn btn--quiet btn--small" data-clear>Clear</button></div>' : '')
       + '<div class="picker">' + list.map((w) => '<label><input type="checkbox" value="' + esc(w.word) + '"' + (chosen.has(w.word) ? ' checked' : '') + '>' + esc(w.word) + '</label>').join('') + '</div>'
@@ -307,7 +307,7 @@ export function customPlay(main) {
       }
       const missed = results.filter((r) => !r.won).map((r) => r.entry.word);
       main.innerHTML = '<section class="wrap page">' + summaryHtml(results, 'All done')
-        + (missed.length ? '<p class="muted">Missed words are now in your tricky words.</p>' : '')
+        + (missed.length ? '<p class="muted">Missed words are now in Words to practise again.</p>' : '')
         + '<div class="btnrow">'
         + (missed.length ? '<button type="button" class="btn btn--primary" data-missed>Play the missed words</button>' : '')
         + '<button type="button" class="btn ' + (missed.length ? 'btn--ghost' : 'btn--primary') + '" data-again>Play these again</button>'
@@ -324,10 +324,10 @@ export function customPlay(main) {
 export function tricky(main) {
   const list = withoutHidden(S.trickyWords().filter((t) => D.entry(t.word)), hiddenToday());
   main.innerHTML = '<section class="wrap page">'
-    + '<div class="pagehead"><span class="eyebrow">Tricky words</span><h1>Words to go back to</h1>'
-    + '<p class="muted">Each miss adds one. Each time you get it right in a test or quick game, it drops by one.</p></div>'
+    + '<div class="pagehead">' + backLink() + '<h1>Words to practise again</h1>'
+    + '<p class="muted">Words you missed in tests and practice. Practise them until you get them right.</p></div>'
     + (list.length
-      ? '<div class="btnrow"><button type="button" class="btn btn--primary" data-playall>Play all ' + Math.min(list.length, MAX_PICK) + '</button></div>'
+      ? '<div class="btnrow"><button type="button" class="btn btn--primary" data-playall>Practise ' + (list.length === 1 ? 'this word' : 'these ' + Math.min(list.length, MAX_PICK) + ' words') + '</button></div>'
         + '<div class="list">' + list.map((t) => {
           const w = D.entry(t.word);
           const ch = D.chapterById(w.chapterId);
@@ -336,7 +336,7 @@ export function tricky(main) {
             + '<span class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-hear="' + esc(w.word) + '">' + ICON.play + '<span class="sr">Hear</span></button>'
             + '<button type="button" class="btn btn--ghost btn--small" data-remove="' + esc(w.word) + '">Remove</button></span></div>';
         }).join('') + '</div>'
-      : '<div class="card empty"><h2>Nothing here yet</h2><p class="muted">Words you miss in a test or in “Pick words” land here, so you can practise them again.</p><a class="btn btn--primary" href="#/chapters">Choose a chapter</a></div>')
+      : '<div class="card empty"><p class="empty__line">No words to practise again. Well done!</p><a class="btn btn--primary" href="#/chapters">Go to Practice</a></div>')
     + '</section>';
   main.querySelectorAll('[data-hear]').forEach((b) => b.addEventListener('click', () => speak(b.dataset.hear)));
   main.querySelectorAll('[data-remove]').forEach((b) => b.addEventListener('click', () => { S.removeTricky(b.dataset.remove); tricky(main); toast('Removed ' + b.dataset.remove); }));
@@ -381,37 +381,44 @@ export function progress(main) {
 }
 
 /* --------------------------------------------------------------- About --- */
+/**
+ * What the About page says (06d): "How Spellbright works". Grown-ups only act on it, but a child or a signed-out visitor may read it.
+ * Each is [heading, text]. No count of children, no sharing between grown-ups (lists stay with the one who made them), no "Game mode".
+ */
+export const ABOUT = {
+  title: 'How Spellbright works',
+  sub: 'For parents, teachers and tutors.',
+  sections: [
+    ['Set a week', 'Pick a word list, pick your children and pick a test date. Each child sees the words on their Today page. A week holds 10 words.'],
+    ['Word lists', 'Add words word by word or paste a whole list. If scanning is switched on for you, you can scan a paper too. Ready-made lists for Years 1 to 6 are there too. Your word lists are saved for any child, any week.'],
+    ['How a day goes', 'A full week gives each day one job, ' + DAILY_TIME + '. A shorter week puts more than one job on some days. ' + ROW_LINE],
+    ['See how it is going', 'Each child’s page shows test scores and each word, with the words to practise again first.'],
+    ['Three ways to use Spellbright', 'As a parent (My own children), as a tutor (My learners) or as a teacher (My class). Pick one when you start, and change it any time in your Account. Nothing you made will change.'],
+    ['Lists stay with you', 'A word list belongs to the grown-up who made it. Lists are not shared between grown-ups.'],
+    ['The name your children see', 'Your children see the name you choose (for example “Set by Mum”), never your email. Change it in your Account.'],
+    ['Sentences and AI', 'Spellbright uses AI to help write practice sentences. Each one is checked before your child sees it. We never send your child’s name or work to an AI.'],
+  ],
+  scan: 'Scanning a school paper is for grown-ups only. When it is switched on, the photo goes to an AI service to read the words. Waystead does not keep the photo, and we save only the words you tick. Cover any names first.',
+  licence: 'Word lists from the DfE English Appendix 1 and the spelling patterns use public sector information licensed under the Open Government Licence v3.0.',
+  privacy: 'There are no adverts, no tracking and no analytics. A child signs in with a Waystead account, so their progress, saved games, look and voice follow them to other devices. This page needs no account.',
+  fonts: 'Fredoka, Andika, Baloo 2, Nunito, Lexend and Atkinson Hyperlegible, under the SIL Open Font License 1.1 (copies in assets/fonts/licences/). The Waystead name uses Sora.',
+};
+
 export function about(main) {
-  main.innerHTML = '<section class="wrap page prose">'
-    + '<span class="eyebrow">For parents</span><h1>About Spellbright</h1>'
-    + '<p>Years 3 to 6 use the statutory word lists for Years 3 and 4 and for Years 5 and 6. The official lists cover two years each; we split each list into two years ourselves.</p>'
-    + '<p>Word lists and spelling rules: Department for Education, English Appendix 1: Spelling. Contains public sector information licensed under the Open Government Licence v3.0.</p>'
-    + '<h2>How a chapter works</h2>'
-    + '<p>Each chapter has about ten words. Your child studies them (meaning, example, British pronunciation and the word split into spelling parts), plays a quick letter game where a flower loses a petal for each wrong guess, then a full practice game, then a test where they hear the word and type it. Every word right opens the next chapter.</p>'
-    + '<p>Years 3 and 4 chapters go from easier to harder. Years 5 and 6 chapters group words by spelling pattern, such as silent letters or double consonants. Each official list covers two years, so we split each one into two years of five chapters ourselves.</p>'
-    + '<p>Every word has a British recording that comes with the game. If one cannot play, a signed-in player hears the Waystead voice instead: a recording made once by the Waystead account service with Google Cloud Text-to-Speech, which is sent only the word, never anything about your child. Signed out or offline, this device’s own voice says it.</p>'
-    + '<h2>My words</h2>'
-    + '<p>My words is a weekly list. Your child picks up to ten words and a test date, then practises a little each day: the word is spoken and hidden, and they spell it letter by letter. The day before the test is the last practice day. On test day there is no help and no checking until the end, and the day after, any words that slipped come back as fix-ups.</p>'
-    + '<p>A word counts as remembered once it is spelled with no help, at the first go of the day, on three different days at least a week apart from first to last. Words not yet remembered come back in later lists. The numbers are for your child and you only: there are no leagues and no comparing with anyone else.</p>'
-    + '<h2>Study mode and Game mode</h2>'
-    + '<p>Each word group comes with a guided week, one job each day, ' + DAILY_TIME + ': meet the words, fix them in with look, say, cover, write and check, play four games, see the words at work and write sentences, a round of the practice grid, the test, then mend anything that slipped. A missed day simply waits, and a short week fits the jobs into the days there are. In Fix it in, the practice grid and Mend and keep, a word comes straight back after a mistake or a peek, and is done once it has been spelled 3 times in a row. A word can be skipped for now, but the day\'s job stays open until it\'s done. ' + ROW_LINE + ' The three dots show those three spellings. The games don\'t earn dots; a wrong answer there simply comes back until it\'s right. Game mode has the same four games with the same words at any time, except while a test is due: until it\'s done, its words are kept off every page.</p>'
-    + '<h2>Grown-ups</h2>'
-    + '<p>Signed in as yourself, you\'ll find Grown-ups on the first page. There you can plan a week for your child and see how it\'s going, word by word. What a child writes (sentences and memory clues) can be seen only by that child and their own parent. The spelling patterns follow English Appendix 1, under the Open Government Licence v3.0.</p>'
-    + (isKnownChild() ? '' : '<p>Scanning a school paper is for grown-ups only. When it is switched on, the photo goes to an AI service to read the words. Waystead does not keep the photo, and we save only the words you tick. Cover any names first.</p>') // SB4-WP8
-    + '<p>Teachers and tutors: a grown-up\'s account can hold up to 5 children. Make one list, share it with them, and see each child\'s results on one page.</p>' // SB4-WP11
-    + '<h2>Little and often</h2>'
-    + '<p>' + DAILY_TIME_CAP + ' works better than one long session. Start each session with a few tricky words before moving on.</p>'
-    + '<h2>How it looks</h2>'
-    + '<p>The look menu at the top (the sun or moon button) switches between Day · Sunny garden, Day · Paint box, Night and Match device (which follows this device\'s light or dark setting). The choice is shared with Wordbright, our word-tile game, which uses the same three styles. You can also pick the day style here:</p>'
-    + dayStyleHtml({ tag: 'div', id: 'about-daystyle' })
-    + '<h2>Privacy</h2>'
-    + '<p>There are no adverts, no tracking and no analytics. To play, a child signs in with a Waystead account: their progress, saved games, look and voice are saved to that account, so they follow them to other devices, and play goes on offline on a device they have signed in on before. The home page and this page need no account. Each page asks account.waystead.co.uk whether someone is signed in; signed out, nothing else is sent.</p>'
-    + '<h2>Who makes it</h2>'
-    + '<p>Spellbright is made by <a href="https://waystead.co.uk">Waystead</a>. It is an independent project and is not affiliated with the Department for Education or any exam board.</p>'
-    + '<h2>Fonts</h2>'
-    + '<p class="small">Fredoka, Andika, Baloo 2, Nunito, Lexend and Atkinson Hyperlegible, under the SIL Open Font License 1.1 (copies in assets/fonts/licences/). The Waystead name uses Sora.</p>'
+  const adult = document.body.classList.contains('is-adult');
+  const child = document.body.classList.contains('is-child');
+  const back = adult ? backLink('Children', '#/grownups') : child ? backLink() : '';
+  main.innerHTML = '<section class="wrap page prose about" data-about-page>'
+    + back + '<h1>' + ABOUT.title + '</h1><p class="muted about__sub">' + ABOUT.sub + '</p>'
+    + ABOUT.sections.map(([h, t]) => '<h2>' + h + '</h2><p>' + t + '</p>').join('')
+    + (isKnownChild() ? '' : '<p class="about__scan" data-scan-note>' + ABOUT.scan + '</p>') // SB4-WP8
+    + '<h2 id="about-look-h">Look</h2>' + lookHtml('about-look-h')
+    + '<p class="small muted about__licence">' + ABOUT.licence + '</p>'
+    + '<h2>Privacy</h2><p>' + ABOUT.privacy + '</p>'
+    + '<h2>Who makes it</h2><p>Spellbright is made by <a href="https://waystead.co.uk">Waystead</a>. It is an independent project and is not affiliated with the Department for Education or any exam board.</p>'
+    + '<p class="small">' + ABOUT.fonts + '</p>'
     + '</section>';
-  return wireDayStyle(main);
+  return wireLook(main);
 }
 
 export { notFound };

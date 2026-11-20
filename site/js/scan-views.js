@@ -14,7 +14,6 @@ import * as Sc from './scan-doc.js';
 import * as SD from './scan-data.js';
 import * as Dt from './data.js';
 import { adultOnly } from './grownups-views.js';
-import { useForWeek } from './own-views.js';
 import { checkTyped, NEEDS_LIST } from './wordcheck.js';
 import { findEntry } from './word-info.js';
 import { recheckWho, isKnownChild } from './who.js';
@@ -31,6 +30,8 @@ const I = {
   cam: ic('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
   img: ic('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 18l5-5 4 4 3-3 4 4"/>'),
 };
+// SB5 (WP-E, TR-36): the Done screen's words (scan-doc.js keeps its own T until its owner changes it)
+const DONE = { set: 'Set a week with this list', more: Sc.MORE_BUTTON };
 const today = () => W.localDay(Date.now());
 const status = (w) => { const e = findEntry(w); return e && e.meaning && e.meaning.definition && Dt.hasImage(e) ? T.picOk : T.picNo; };
 const laptop = () => {
@@ -545,7 +546,7 @@ export function scan(main) {
     if (btns) btns.outerHTML = '<p class="s-st" role="status">' + esc(T.checking) + '</p>';
     const r = await checkTyped(v, findEntry);
     if (stopped) return;
-    if (r.error === NEEDS_LIST) { edit = { ...e, checking: false, note: D.OWN_OFFLINE }; drawCheck(); focusEl(q('[data-edit-input]')); return; }
+    if (r.error === NEEDS_LIST) { edit = { ...e, checking: false, note: D.OWN_WORD_OFFLINE }; drawCheck(); focusEl(q('[data-edit-input]')); return; }
     const taken = (id) => rows.some((x) => x.id !== id && !x.bad && x.word.toLowerCase() === (r.word || v).toLowerCase());
     edit = null;
     if (e.kind === 'row') {
@@ -591,7 +592,7 @@ export function scan(main) {
     const r = await D.addTyped(text, [], (raw) => (have.has(raw.trim().toLowerCase()) ? Promise.resolve({ error: 'repeat' }) : checkTyped(raw, findEntry)));
     busy = false;
     if (stopped) return;
-    if (r.offline) { addNote = D.OWN_OFFLINE; addText = text; drawCheck(); focusEl(q('[data-add-input]')); return; }
+    if (r.offline) { addNote = D.OWN_WORD_OFFLINE; addText = text; drawCheck(); focusEl(q('[data-add-input]')); return; }
     let added = 0;
     let dup = r.repeats.length;
     let count = ticked().length;
@@ -695,9 +696,9 @@ export function scan(main) {
       body: '<section class="card gu-panel s-step" aria-label="Saved"><p class="gu-line" role="status" tabindex="-1" data-saved>' + esc(Sc.savedLineFor(sharedKids.length, reached, D.savedLine)) + '</p>'
         + (sv.offline ? '<p class="gu-line gu-line--warn" data-saved-offline>' + esc(D.OWN_SAVED_OFFLINE) + '</p>' : '')
         + late.map((id) => '<p class="gu-line gu-line--warn" data-notsent>' + esc(D.notSentLine(nick(id))) + btn('Try again', ' data-resend') + '</p>').join('')
-        + '<div class="s-btns">' + (sv.offer ? primary(esc(Sc.moreButton(made, sv.m)), ' data-more') + btn(esc(T.useWeek), ' data-use') : primary(esc(T.useWeek), ' data-use')) + '</div>'
-        + '<div class="s-btns"><a class="btn btn--plain" href="' + LIST + '" data-list>' + esc(T.backList) + '</a>' + plain(esc(T.another), ' data-another')
-        + (sharedKids.length >= 2 ? '<a class="btn btn--plain" href="#/grownups/teach/' + encodeURIComponent(sv.oid) + '" data-results>' + esc(T.results) + '</a>' : '') + '</div></section>',
+        + '<div class="s-btns"><a class="btn btn--primary btn--big" href="#/grownups/set/list/' + encodeURIComponent(sv.oid) + '" data-use>' + esc(DONE.set) + '</a></div>'
+        + '<div class="s-btns">' + (sv.offer ? btn(esc(DONE.more), ' data-more') : '') + '<a class="btn btn--plain" href="' + LIST + '" data-list>' + esc(T.backList) + '</a>' + plain(esc(T.another), ' data-another')
+        + (sharedKids.length >= 1 ? '<a class="btn btn--plain" href="' + LIST + '/' + encodeURIComponent(sv.oid) + '/results" data-results>' + esc(T.results) + '</a>' : '') + '</div></section>',
     });
     const re = q('[data-resend]');
     if (re) re.addEventListener('click', async () => {
@@ -707,16 +708,6 @@ export function scan(main) {
       if (r.ok) saved = { ...sv, notSent: r.notSent };
       doneStep();
       if (!r.ok) focusEl(q('[data-resend]'));
-    });
-    q('[data-use]').addEventListener('click', async () => {
-      const here = location.hash;
-      const went = await useForWeek({ words: sv.words, kids: sharedKids });
-      if (!went || stopped) return;
-      await new Promise((r) => setTimeout(r, 400));
-      // Never silent: if the plan page did not open, say so (the button stays, so Try again is the same tap).
-      if (!stopped && step === 'done' && location.hash === here && !q('[data-use-problem]')) {
-        q('[data-saved]').insertAdjacentHTML('afterend', '<p class="gu-line gu-line--warn" role="alert" data-use-problem>' + esc(P.PROBLEM_TEXT.other) + '</p>');
-      }
     });
     q('[data-another]').addEventListener('click', () => { clearAll(); saved = null; made = 0; pass = 1; photoStep(); });
     const more = q('[data-more]');

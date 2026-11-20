@@ -1,0 +1,286 @@
+{
+ "chapter": "y6-n05",
+ "year": 6,
+ "words": {
+  "edible": [
+   "Which of these garden plants are edible, and which are only for looking at?",
+   "Is this glitter on the cupcake edible, or is it only for crafts?",
+   "The cookery book showed which wild plants are edible."
+  ],
+  "terrible": [
+   "It is a terrible shame that the picnic was cancelled by the rain.",
+   "I am terrible at catching, but I am good at kicking!",
+   "I felt terrible when I forgot my friend's birthday."
+  ],
+  "visible": [
+   "The tiny star was only visible through the telescope.",
+   "Is the lighthouse visible from the beach today, or is it too foggy?",
+   "Stand on the stage so you are visible to everyone in the hall!"
+  ],
+  "sensible": [
+   "It was sensible of my dad to pack spare socks for the muddy walk.",
+   "Choosing a sturdy pair of shoes for the hike was a sensible idea.",
+   "Leaving your homework on the bus is not a sensible plan!"
+  ],
+  "possibly": [
+   "We might possibly see seals if we walk along the beach.",
+   "It will possibly rain later, so take an umbrella.",
+   "How could the cat possibly fit into that tiny box?"
+  ],
+  "terribly": [
+   "The little puppy was terribly muddy after its walk.",
+   "I played the recorder terribly at first, but I kept practising.",
+   "The cake was terribly sweet, and I could not finish it."
+  ],
+  "horrible": [],
+  "flexible": [
+   "A rubber ruler is flexible, but a wooden one will snap.",
+   "Is the wire flexible enough to bend into a star shape?",
+   "Willow sticks are flexible, so we could weave them into a basket!"
+  ],
+  "incredible": [
+   "It is incredible that a tiny seed can grow into a tall tree.",
+   "Nobody believed my incredible story about the talking parrot.",
+   "The birthday cake was incredible, with five tall layers!"
+  ],
+  "responsible": [
+   "My dad let me be responsible for walking the dog to the park.",
+   "Who is responsible for turning off the lights at school?",
+   "Our class monitor is responsible for giving out the library books."
+  ]
+ },
+ "rounds": {
+  "edible": 0,
+  "terrible": 2,
+  "visible": 0,
+  "sensible": 0,
+  "possibly": 0,
+  "terribly": 0,
+  "horrible": 2,
+  "flexible": 0,
+  "incredible": 0,
+  "responsible": 0
+ },
+ "rejected": [
+  {
+   "word": "edible",
+   "round": 0,
+   "s": "My grandad grows edible flowers in his greenhouse for salads.",
+   "reason": "machine rule 4: not on the word lists: grandad"
+  },
+  {
+   "word": "edible",
+   "round": 0,
+   "s": "The packet says the paper wrapper is edible, so I ate it!",
+   "reason": "checker: It shows a child eating a wrapper, which is not a safe example to copy."
+  },
+  {
+   "word": "terrible",
+   "round": 0,
+   "s": "The storm last night was terrible, and it blew our shed door off.",
+   "reason": "checker: Horrible and incredible both fit, and the storm damage could scare a child. (also fits: horrible, incredible)"
+  },
+  {
+   "word": "terrible",
+   "round": 0,
+   "s": "I felt terrible when I broke my friend's favourite mug.",
+   "reason": "checker: 'I felt horrible' fits just as well. (also fits: horrible)"
+  },
+  {
+   "word": "terrible",
+   "round": 0,
+   "s": "My drawing of a horse is terrible, and it looks like a sausage.",
+   "reason": "checker: Horrible fits too, and the child puts down their own work. (also fits: horrible)"
+  },
+  {
+   "word": "terrible",
+   "round": 0,
+   "s": "What a terrible film, because it was far too long and dull!",
+   "reason": "checker: Horrible fits, and 'What a ... film, because' reads awkwardly. (also fits: horrible)"
+  },
+  {
+   "word": "terrible",
+   "round": 0,
+   "s": "The traffic on the journey home was terrible, so we were late.",
+   "reason": "checker: 'The traffic was horrible' is just as natural. (also fits: horrible)"
+  },
+  {
+   "word": "sensible",
+   "round": 0,
+   "s": "Is it sensible to eat a big dinner just before swimming?",
+   "reason": "checker: Responsible could fit, and it brings up a health worry about swimming. (also fits: responsible)"
+  },
+  {
+   "word": "sensible",
+   "round": 0,
+   "s": "A sensible person checks the weather before going to the park.",
+   "reason": "checker: 'A responsible person checks' fits just as well. (also fits: responsible)"
+  },
+  {
+   "word": "terribly",
+   "round": 0,
+   "s": "I am terribly late, so I must run to catch the bus!",
+   "reason": "checker: 'I am possibly late' also works, and running for a bus is not a great example. (also fits: possibly)"
+  },
+  {
+   "word": "horrible",
+   "round": 0,
+   "s": "The milk had gone off and smelt horrible.",
+   "reason": "checker: 'Smelt terrible' fits just as well. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 0,
+   "s": "What a horrible grey day for a picnic!",
+   "reason": "checker: 'What a terrible grey day' fits just as well. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 0,
+   "s": "Why does the bin smell so horrible after a hot week?",
+   "reason": "checker: 'Smell so terrible' fits just as well. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 0,
+   "s": "The weather at the seaside was horrible, with wind and sleet.",
+   "reason": "checker: 'The weather was terrible' fits just as well. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 0,
+   "s": "The slimy green pond water looked horrible.",
+   "reason": "checker: 'Looked terrible' fits just as well. (also fits: terrible)"
+  },
+  {
+   "word": "incredible",
+   "round": 0,
+   "s": "The view from the top of the hill was incredible!",
+   "reason": "checker: A view could also be terrible or horrible. (also fits: terrible, horrible)"
+  },
+  {
+   "word": "incredible",
+   "round": 0,
+   "s": "Did you see the incredible sandcastle they built at the seaside?",
+   "reason": "checker: A terrible or horrible sandcastle also makes sense. (also fits: terrible, horrible)"
+  },
+  {
+   "word": "responsible",
+   "round": 0,
+   "s": "A responsible pet owner feeds the rabbit every single day.",
+   "reason": "checker: 'A sensible pet owner' fits just as well. (also fits: sensible)"
+  },
+  {
+   "word": "terrible",
+   "round": 1,
+   "s": "Putting salt in the tea instead of sugar was a terrible mistake.",
+   "reason": "checker: 'A horrible mistake' also sounds natural, so the gap does not point to only one word. (also fits: horrible)"
+  },
+  {
+   "word": "terrible",
+   "round": 1,
+   "s": "Wearing sandals in deep snow would be a terrible idea.",
+   "reason": "checker: 'A horrible idea' is also common, so a child could fairly put horrible here. (also fits: horrible)"
+  },
+  {
+   "word": "terrible",
+   "round": 1,
+   "s": "The bus left just as we reached the stop, which was terrible timing!",
+   "reason": "checker: 'Horrible timing' fits too, and 'incredible timing' could be read as a joke, so the answer is not clear. (also fits: horrible, incredible)"
+  },
+  {
+   "word": "terrible",
+   "round": 1,
+   "s": "I am terrible at catching, but I keep practising every day.",
+   "reason": "reader flag two_fit (Both \"horrible\" and \"terrible\" could go in the gap (\"I am horrible at catching\" is odd but possible), so I could not tell which word was meant.); re-judge: The flag is correct. 'I am horrible at catching' is common, everyday English for being bad at something. A child could fairly put 'horrible' in the gap, so the sentence does not have just one answer."
+  },
+  {
+   "word": "horrible",
+   "round": 1,
+   "s": "Ew, the horrible, gloopy green slime stuck to my fingers!",
+   "reason": "machine rule 4: not on the word lists: Ew; not on the word lists: gloopy"
+  },
+  {
+   "word": "horrible",
+   "round": 1,
+   "s": "Yuck, what a horrible, sticky mess on the kitchen floor!",
+   "reason": "checker: 'What a terrible, sticky mess' fits just as well. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 1,
+   "s": "The horrible, mouldy cheese at the back of the fridge went in the bin.",
+   "reason": "checker: 'Terrible, mouldy cheese' could also be accepted, so the gap is unclear. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 1,
+   "s": "Why is the washing up water so horrible and greasy?",
+   "reason": "checker: 'So terrible and greasy' could also fit, and in British English 'washing-up water' needs a hyphen. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 1,
+   "s": "I found a horrible, slimy slug in the lettuce.",
+   "reason": "reader flag two_fit (Both \"horrible\" and \"terrible\" could go in the gap (\"a terrible, slimy slug\" also makes sense), so I could not tell which word was meant.); re-judge: The flag is correct. 'A terrible, slimy slug in the lettuce' is natural and makes sense. Nothing in the sentence rules out 'terrible', so both words fit the gap."
+  },
+  {
+   "word": "terrible",
+   "round": 2,
+   "s": "It is a terrible shame that the rain spoiled our picnic.",
+   "reason": "machine rule 4: not on the word lists: spoiled"
+  },
+  {
+   "word": "terrible",
+   "round": 2,
+   "s": "Missing the school trip was a terrible disappointment for the whole class.",
+   "reason": "checker: 'A horrible disappointment' and 'an incredible disappointment' both work, so the gap has more than one answer. (also fits: horrible, incredible)"
+  },
+  {
+   "word": "terrible",
+   "round": 2,
+   "s": "The gale did terrible damage to the beach huts last night.",
+   "reason": "checker: 'Incredible damage' and 'horrible damage' are both natural, so the child cannot tell which word belongs. (also fits: horrible, incredible)"
+  },
+  {
+   "word": "terrible",
+   "round": 2,
+   "s": "After the long walk in the sun, I had a terrible thirst.",
+   "reason": "checker: 'An incredible thirst' fits just as well, and 'horrible' is possible too. (also fits: incredible, horrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 2,
+   "s": "The horrible, itchy jumper made me scratch all day.",
+   "reason": "checker: 'The terrible, itchy jumper' works equally well. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 2,
+   "s": "We painted the wall a horrible shade of orange, so we did it again.",
+   "reason": "checker: 'A terrible shade' is just as natural, and 'an incredible shade' is possible too. (also fits: terrible, incredible)"
+  },
+  {
+   "word": "horrible",
+   "round": 2,
+   "s": "Wet socks inside my trainers are such a horrible feeling!",
+   "reason": "checker: 'Such a terrible feeling' fits the gap just as well. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 2,
+   "s": "That horrible little pebble keeps getting inside my shoe!",
+   "reason": "checker: 'That terrible little pebble' is also acceptable, so the gap has two answers. (also fits: terrible)"
+  },
+  {
+   "word": "horrible",
+   "round": 2,
+   "s": "Mum, I picked the horrible little lumps out of my custard.",
+   "reason": "checker: 'The terrible little lumps' could also fill the gap, so the target is not the only answer. (also fits: terrible)"
+  }
+ ],
+ "sitOut": [
+  "horrible"
+ ],
+ "manualEdits": "19 Nov 2026: Opus spot-check fixes (OPUS-SPOTCHECK.md), machine-checked with statements-check rules"
+}

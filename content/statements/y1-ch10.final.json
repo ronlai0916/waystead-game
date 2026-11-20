@@ -1,0 +1,285 @@
+{
+ "chapter": "y1-ch10",
+ "year": 1,
+ "words": {
+  "Monday": [
+   "After the weekend, school starts on Monday.",
+   "The weekend is over, so it must be Monday.",
+   "Now the weekend has gone, it is Monday again!"
+  ],
+  "Tuesday": [
+   "The second day of the school week is Tuesday.",
+   "Is Tuesday the day after the first school day?",
+   "Hooray for the second school day, Tuesday!"
+  ],
+  "Wednesday": [
+   "The middle day of the school week is Wednesday.",
+   "Two school days come before Wednesday.",
+   "Wednesday is halfway through the school week."
+  ],
+  "Thursday": [
+   "The day before the last school day is Thursday.",
+   "Only one school day is left after Thursday.",
+   "Is it Thursday, the fourth day of school?"
+  ],
+  "Friday": [
+   "The last day of the school week is Friday.",
+   "The weekend starts after school on Friday.",
+   "Four school days are done and it is Friday."
+  ],
+  "Saturday": [],
+  "Sunday": [
+   "School starts again tomorrow, so it is Sunday.",
+   "The weekend ends on Sunday.",
+   "Is Sunday the end of the weekend?"
+  ],
+  "today": [
+   "Yesterday it rained, but it is sunny today.",
+   "Not tomorrow, we are going to the beach today!",
+   "I will do my reading today, not tomorrow."
+  ],
+  "pull": [
+   "The sign on the door says pull, not push.",
+   "Can you pull the weeds out of the garden?",
+   "The dog likes to pull on his lead."
+  ],
+  "full": [
+   "The box is full, so it will not close.",
+   "The bus is full, so we wait for another.",
+   "Is your cup full or is it empty?"
+  ]
+ },
+ "rounds": {
+  "Monday": 1,
+  "Tuesday": 0,
+  "Wednesday": 0,
+  "Thursday": 0,
+  "Friday": 0,
+  "Saturday": 2,
+  "Sunday": 0,
+  "today": 1,
+  "pull": 0,
+  "full": 0
+ },
+ "rejected": [
+  {
+   "word": "Monday",
+   "round": 0,
+   "s": "The school week begins on Monday.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "Monday",
+   "round": 0,
+   "s": "Is Monday the first school day after the weekend?",
+   "reason": "machine rule 5: word overlap with the meaning is 75%"
+  },
+  {
+   "word": "Monday",
+   "round": 0,
+   "s": "I pack my bag after the weekend for Monday.",
+   "reason": "checker: Packing after the weekend for Monday does not make sense, and 'for today' could also fill the gap. (also fits: today)"
+  },
+  {
+   "word": "Tuesday",
+   "round": 0,
+   "s": "Tuesday comes after the first day of school.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "Tuesday",
+   "round": 0,
+   "s": "One school day is over, so it is Tuesday.",
+   "reason": "checker: One day could be over by Monday afternoon, so the clue is not clear enough. (also fits: Monday)"
+  },
+  {
+   "word": "Wednesday",
+   "round": 0,
+   "s": "Is Wednesday the middle of the week?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "Wednesday",
+   "round": 0,
+   "s": "We are halfway through the week on Wednesday.",
+   "reason": "checker: For a full seven-day week, Thursday could also be called halfway. (also fits: Thursday)"
+  },
+  {
+   "word": "Thursday",
+   "round": 0,
+   "s": "Thursday comes after the middle of the week.",
+   "reason": "checker: Friday, Saturday and Sunday also come after the middle of the week. (also fits: Friday, Saturday, Sunday)"
+  },
+  {
+   "word": "Friday",
+   "round": 0,
+   "s": "Is Friday our last school day this week?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "Friday",
+   "round": 0,
+   "s": "Friday ends our school week with a happy song.",
+   "reason": "checker: 'Today ends our school week with a happy song' also works. (also fits: today)"
+  },
+  {
+   "word": "Saturday",
+   "round": 0,
+   "s": "Can we bake on Saturday, the first weekend day?",
+   "reason": "machine rule 5: word overlap with the meaning is 75%"
+  },
+  {
+   "word": "Saturday",
+   "round": 0,
+   "s": "School is over and the weekend starts with Saturday.",
+   "reason": "machine rule 3: 52 characters (max 50)"
+  },
+  {
+   "word": "Saturday",
+   "round": 0,
+   "s": "The weekend begins on Saturday.",
+   "reason": "checker: Another sentence in this chapter says the weekend starts on Friday after school, so Friday could fit. (also fits: Friday)"
+  },
+  {
+   "word": "Saturday",
+   "round": 0,
+   "s": "Is it Saturday, the start of the weekend?",
+   "reason": "reader flag two_fit (Friday and Saturday could both fit: the weekend can be seen as starting on Friday after school, or on Saturday.); re-judge: The flag is valid. Strictly, the weekend is Saturday and Sunday, but in everyday UK speech Friday is often called the start of the weekend (Friday after school, the 'Friday feeling'). A child could reasonably choose Friday from the word bank, so the gap does not have one clear answer."
+  },
+  {
+   "word": "Sunday",
+   "round": 0,
+   "s": "We rest on the last weekend day, Sunday.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "Sunday",
+   "round": 0,
+   "s": "Is it Sunday, the last day before school again?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "today",
+   "round": 0,
+   "s": "I did not see you yesterday, but I see you today!",
+   "reason": "machine rule 3: 11 words (needs 4-9)"
+  },
+  {
+   "word": "today",
+   "round": 0,
+   "s": "Can we go to the shops today?",
+   "reason": "checker: Any day word fits in casual speech, as in 'go to the shops Saturday'. (also fits: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)"
+  },
+  {
+   "word": "today",
+   "round": 0,
+   "s": "Mum says we can have cake today.",
+   "reason": "checker: Any day word fits, as in 'we can have cake Sunday'. (also fits: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)"
+  },
+  {
+   "word": "today",
+   "round": 0,
+   "s": "It is my birthday today!",
+   "reason": "checker: 'It is my birthday Saturday!' also works in casual speech. (also fits: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)"
+  },
+  {
+   "word": "Monday",
+   "round": 1,
+   "s": "Back to class after the weekend, it is Monday!",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "Monday",
+   "round": 1,
+   "s": "The weekend is done, so is it Monday now?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "Monday",
+   "round": 1,
+   "s": "We see our teacher after the weekend, on Monday.",
+   "reason": "checker: The word order is awkward, and children also see their teacher on other weekdays, so the clue is weak."
+  },
+  {
+   "word": "Saturday",
+   "round": 1,
+   "s": "My first lie-in of the weekend is on Saturday.",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "Saturday",
+   "round": 1,
+   "s": "Is it Saturday, our first weekend morning?",
+   "reason": "machine rule 5: word overlap with the meaning is 67%"
+  },
+  {
+   "word": "Saturday",
+   "round": 1,
+   "s": "Hooray, our first weekend park trip is on Saturday!",
+   "reason": "machine rule 3: 51 characters (max 50)"
+  },
+  {
+   "word": "Saturday",
+   "round": 1,
+   "s": "Hooray, Saturday is our first weekend day to play!",
+   "reason": "machine rule 5: word overlap with the meaning is 60%"
+  },
+  {
+   "word": "Saturday",
+   "round": 1,
+   "s": "Gran comes on the first weekend morning, Saturday.",
+   "reason": "checker: Adding the day on the end after a comma is unnatural and hard for a young reader to follow."
+  },
+  {
+   "word": "Saturday",
+   "round": 1,
+   "s": "After the last school day comes Saturday.",
+   "reason": "reader flag two_fit (Monday and Saturday both fit: Saturday is the day right after Friday, but Monday also comes after the last school day.); re-judge: The flag is partly right. To get Saturday, a child has to know that 'the last school day' means Friday and that 'comes after' means 'comes straight after'. Young readers may not know either. Read loosely, Sunday or Monday also fits the gap. I cannot give a solid reason why the flag is wrong, so this sentence is dropped."
+  },
+  {
+   "word": "today",
+   "round": 1,
+   "s": "Yesterday it rained, but the sun is out today.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "today",
+   "round": 1,
+   "s": "I made a card yesterday and post it today.",
+   "reason": "checker: The tenses do not match ('made' then 'post'), so the sentence is not natural English."
+  },
+  {
+   "word": "Saturday",
+   "round": 2,
+   "s": "My football match is on Saturday morning.",
+   "reason": "checker: Any other day of the week fits the gap, so nothing tells the child it must be Saturday. (also fits: Monday, Tuesday, Wednesday, Thursday, Friday, Sunday)"
+  },
+  {
+   "word": "Saturday",
+   "round": 2,
+   "s": "Do you go to the shops on Saturday?",
+   "reason": "checker: People shop on any day, so every other day in the bank fits too. (also fits: Monday, Tuesday, Wednesday, Thursday, Friday, Sunday)"
+  },
+  {
+   "word": "Saturday",
+   "round": 2,
+   "s": "Hooray, there is no school on Saturday!",
+   "reason": "checker: Sunday is also a day with no school, so a child cannot tell which weekend day belongs. (also fits: Sunday)"
+  },
+  {
+   "word": "Saturday",
+   "round": 2,
+   "s": "Gran bakes cakes with me every Saturday.",
+   "reason": "checker: Every other day of the week fits after 'every' just as well. (also fits: Monday, Tuesday, Wednesday, Thursday, Friday, Sunday)"
+  },
+  {
+   "word": "Saturday",
+   "round": 2,
+   "s": "We swim at the pool on Saturday afternoon.",
+   "reason": "checker: Nothing in the sentence points to Saturday over any other day. (also fits: Monday, Tuesday, Wednesday, Thursday, Friday, Sunday)"
+  }
+ ],
+ "sitOut": [
+  "Saturday"
+ ]
+}

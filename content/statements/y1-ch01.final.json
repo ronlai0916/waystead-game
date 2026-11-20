@@ -1,0 +1,203 @@
+{
+ "chapter": "y1-ch01",
+ "year": 1,
+ "words": {
+  "the": [
+   "Can you see the moon tonight?",
+   "Wow, the sun feels hot today!",
+   "Birds fly high in the sky."
+  ],
+  "a": [
+   "What a lovely day for football!",
+   "Have a nice day at school!",
+   "Once upon a time, frogs could sing."
+  ],
+  "I": [
+   "Mum and I bake cakes on Sunday.",
+   "Can I have more milk, please?",
+   "Now I can tie my shoes!"
+  ],
+  "is": [
+   "Our cat is asleep on my bed.",
+   "It is sunny and warm outside!",
+   "Where is my red hat?"
+  ],
+  "his": [
+   "Can my brother tie his own laces?",
+   "My brother tidied his own room.",
+   "Look, my uncle baked his own cake!"
+  ],
+  "puff": [
+   "One puff of wind lifted my kite.",
+   "Our train let out one puff of steam.",
+   "Look at that tiny puff of cloud!"
+  ],
+  "bell": [
+   "Our kitten wears one tiny bell.",
+   "Ding dong went our front door bell!",
+   "Ring our door bell and wait, please."
+  ],
+  "kiss": [
+   "Our puppy gave my cheek one wet kiss.",
+   "Dad blew me one soft kiss goodbye.",
+   "Please give baby one gentle kiss."
+  ],
+  "buzz": [
+   "Bees fly past, then their buzz fades.",
+   "Can you hear that bee buzz?",
+   "Bees go buzz as they visit flowers."
+  ],
+  "duck": [
+   "Our pet duck loves to swim.",
+   "Baby duck swam after its mum.",
+   "Our toy duck floats in my bath."
+  ]
+ },
+ "rounds": {
+  "the": 1,
+  "a": 0,
+  "I": 0,
+  "is": 0,
+  "his": 2,
+  "puff": 0,
+  "bell": 0,
+  "kiss": 0,
+  "buzz": 0,
+  "duck": 0
+ },
+ "rejected": [
+  {
+   "word": "the",
+   "round": 0,
+   "s": "Please pass me the salt.",
+   "reason": "checker: 'Please pass me his salt' also makes sense. (also fits: his)"
+  },
+  {
+   "word": "the",
+   "round": 0,
+   "s": "We build sandcastles by the sea.",
+   "reason": "reader flag two_fit (Both \"a\" and \"the\" fit the gap in \"We build sandcastles by ___ sea.\" \"a\" reads correctly, so I could not tell which word was meant.); re-judge: 'By the sea' is the usual phrase, but 'We build sandcastles by a sea' is still correct and makes sense, because there are many seas. A child could fairly pick 'a', so two words fit the gap and the flag stands."
+  },
+  {
+   "word": "I",
+   "round": 0,
+   "s": "After tea, I read with Gran.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "his",
+   "round": 0,
+   "s": "Grandad waved to us with his hand.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "his",
+   "round": 0,
+   "s": "Dad cannot find his keys.",
+   "reason": "checker: 'Dad cannot find the keys' also makes sense. (also fits: the)"
+  },
+  {
+   "word": "his",
+   "round": 0,
+   "s": "Which boy lost his shoe?",
+   "reason": "checker: 'Which boy lost a shoe?' and 'the shoe' also make sense. (also fits: a, the)"
+  },
+  {
+   "word": "his",
+   "round": 0,
+   "s": "My brother ate his toast quickly.",
+   "reason": "checker: 'My brother ate the toast quickly' also makes sense. (also fits: the)"
+  },
+  {
+   "word": "his",
+   "round": 0,
+   "s": "Dad cleans his glasses every morning.",
+   "reason": "checker: 'Dad cleans the glasses' also makes sense. (also fits: the)"
+  },
+  {
+   "word": "puff",
+   "round": 0,
+   "s": "Pop! Out came one puff of flour.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: Out"
+  },
+  {
+   "word": "bell",
+   "round": 0,
+   "s": "Ring your bike bell, then wave to Gran.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "bell",
+   "round": 0,
+   "s": "Lunch starts when our school bell rings.",
+   "reason": "machine rule 5: word overlap with the example is 50%"
+  },
+  {
+   "word": "kiss",
+   "round": 0,
+   "s": "Do you want one last kiss, Mum?",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "kiss",
+   "round": 0,
+   "s": "Wave to Gran and blow her one kiss!",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "buzz",
+   "round": 0,
+   "s": "Our garden hums with one soft buzz.",
+   "reason": "checker: 'Hums with one soft buzz' sounds unnatural and has no clear bee clue."
+  },
+  {
+   "word": "buzz",
+   "round": 0,
+   "s": "Hear that busy buzz near our roses?",
+   "reason": "checker: 'Hear that busy duck near our roses?' also makes sense. (also fits: duck)"
+  },
+  {
+   "word": "duck",
+   "round": 0,
+   "s": "Quack! Look at that fluffy yellow duck!",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: Look"
+  },
+  {
+   "word": "duck",
+   "round": 0,
+   "s": "Which bird says quack? Duck!",
+   "reason": "machine rule 2,1,4: more than one sentence; the word is missing or spelled differently; capital word not allowed: Duck"
+  },
+  {
+   "word": "the",
+   "round": 1,
+   "s": "Birds fly high up in the sky.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "the",
+   "round": 1,
+   "s": "We sailed over the sea to France.",
+   "reason": "machine rule 4: capital word not allowed: France; not on the word lists: France"
+  },
+  {
+   "word": "his",
+   "round": 1,
+   "s": "My dad rang his mum today.",
+   "reason": "checker: 'My dad rang a mum today' also makes sense, so the gap is not clear. (also fits: a)"
+  },
+  {
+   "word": "his",
+   "round": 1,
+   "s": "He waved to his mum at school!",
+   "reason": "checker: 'He waved to a mum at school' also makes sense, so the gap is not clear. (also fits: a)"
+  },
+  {
+   "word": "his",
+   "round": 1,
+   "s": "Does he hug his mum and dad?",
+   "reason": "reader flag two_fit (Both \"his\" and \"the\" are in the bank and either could go in the gap (\"the mum and dad\" is a little less natural, but it still works), so I could not be sure which was right.); re-judge: The flag is real. 'Does he hug the mum and dad?' is less natural, but it is still a correct sentence (for example, about a friend's parents). Nothing else in the sentence rules out 'the', and the child reader really wasn't sure which word to pick. 'Mum and dad' with no 'his' usually reads as his own parents, but that hint is too weak for a 5 to 11 year old. Since I can't give a specific reason why only 'his' fits, the sentence is dropped."
+  }
+ ],
+ "sitOut": []
+}

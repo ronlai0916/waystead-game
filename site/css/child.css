@@ -183,6 +183,7 @@ body.is-child .keyboard .key.is-pressed { transform: translateY(3px); filter: br
   font-family: var(--f-display); font-weight: 600; font-size: 2rem;
 }
 .keypop.is-on { display: grid; }
+.keypop--side { height: 48px; font-size: 1.8rem; } /* S3-D1: in the key's own row, no taller than a key */
 @media (max-width: 480px) { body.is-child .spellpage .keyboard, body.is-child .play .keyboard { width: calc(100% + 20px); margin-inline: -10px; } }
 /* The keyboard sits at the foot of the screen (a flexible space above it on a tall screen). The 80 px above its first row is where
    the pop-up letter shows, so it never covers Hear, Peek or Skip. On a wide screen the board is capped and centred. */
@@ -221,6 +222,7 @@ body.is-child .play .keyboard .key { height: 56px; }
 .sheetback { position: absolute; inset: 0; background: rgba(27, 26, 32, 0.55); }
 .sheet {
   position: absolute; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto; padding: 10px 16px calc(18px + env(safe-area-inset-bottom));
+  max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; box-sizing: border-box;
   background: var(--bg); color: var(--text); border-radius: 28px 28px 0 0; box-shadow: 0 -12px 40px -16px rgba(0, 0, 0, 0.5);
 }
 .sheet__grip { display: block; width: 44px; height: 5px; margin: 0 auto 8px; border-radius: 999px; background: var(--line); }
@@ -268,7 +270,7 @@ button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer;
 /* ---- A wide but short screen (SB3-C1c): the child's screens with the keyboard beside them ----------------------------
    The same two columns as app.css. This undoes what the "keyboard at the foot" rules above do for a tall screen (a full-height
    flex column, a flexible space above the keyboard) and keeps the 72 px above its first row for the pop-up letter. */
-@media (min-width: 820px) and (max-height: 1000px) {
+@media (min-width: 820px) and (max-height: 1000px), (min-width: 640px) and (max-height: 520px) {
   body.is-child main > section.wrap.page:is(.play, .spellpage) { display: grid; min-height: 0; padding-top: 8px; padding-bottom: 8px; gap: 0; }
   body.is-child main > section.wrap.page:is(.play, .spellpage) > [data-slot] { display: contents; }
   body.is-child main > section.wrap.page:is(.play, .spellpage) .keyboard { margin: 0 0 0 24px; max-width: none; width: min(520px, 58vw); }
@@ -326,3 +328,202 @@ button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer;
 .assess__mean { margin: 4px 0; text-align: center; }
 .assess__cardhead { margin: 4px 0 0; font-family: var(--f-display); font-size: 1.2rem; text-align: left; }
 @media (max-width: 480px) { .exampaper { border: 0; background: none; } .exampaper .assess__card { border: 0; background: none; padding-inline: 0; } }
+
+/* WP-S: a sheet's last row rises above the phone browser's floating bar; a tall sheet scrolls inside itself. */
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .sheet { padding-bottom: calc(18px + var(--safe-zone)); } }
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { body.is-child main:not(:has(> section.spellpage, > section.play, > section.game, > section .keyboard)) { padding-bottom: var(--safe-zone); } }
+/* WP-S: the Settings page's own padding (its last links stood in the zone). */
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .childsettings { padding-bottom: var(--safe-zone); } }
+
+/* ==========================================================================
+   SB5 (WP-F2): Today, My week, the tiles, Practice and the fold rules for a child.
+   Colours are the three looks' own tokens (the pairs the contrast test holds). No inline styles. Everything to tap is at least 48 px high.
+   The main button and the tiles end above the bottom safe zone (--safe-zone, about 112 px: a phone browser's floating bar covers it).
+   ========================================================================== */
+.today { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; padding-bottom: 0; min-height: calc(100vh - 72px); min-height: calc(100svh - 72px); }
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .today { min-height: calc(100vh - 72px - var(--safe-zone)); min-height: calc(100svh - 72px - var(--safe-zone)); } }
+.today__l { display: grid; gap: 8px; align-content: start; }
+.today__head { display: grid; gap: 0; }
+.today__head .eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; font-size: 0.85rem; }
+.today__hello { margin: 0; font-size: clamp(1.7rem, 7.5vw, 2.2rem); line-height: 1.15; }
+.today__week { margin: 0; color: var(--text); }
+.today__subrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.today__sub { margin: 0; flex: 1; min-width: 0; color: var(--text); overflow-wrap: anywhere; }
+.hearit--icon { flex: none; min-width: 48px; padding-inline: 12px; gap: 8px; }
+@media (max-width: 420px), (max-height: 699px) and (max-width: 600px) { .hearit--icon { width: 48px; padding: 0; } .hearit--icon .hearit__t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+.seeweek { display: block; min-height: 48px; color: var(--text); text-decoration: none; border-radius: 16px; }
+.today__things { display: grid; gap: 8px; }
+.today__r { margin-top: auto; display: grid; gap: 10px; padding-top: 8px; }
+.today__big { display: flex; justify-content: flex-start; align-items: center; gap: 14px; min-height: 72px; text-align: left; padding: 8px 18px; font-size: 1rem; }
+.today__big svg.hero__ico { width: 36px; height: 36px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.today__bigtext { display: grid; gap: 2px; min-width: 0; }
+.today__bigtext b { font-family: var(--f-display); font-weight: 700; font-size: 1.3rem; line-height: 1.2; }
+.today__bigtext small { font-size: 1rem; font-weight: 600; line-height: 1.25; opacity: 0.95; }
+@media (max-height: 699px) { .today__big { min-height: 64px; } .today .tile__sub { display: none; } .today .tile { min-height: 56px; } .today__l { gap: 6px; } }
+
+/* The 7 stones: grouped by the day they open. A label under each group only in a short week. */
+.daystones { display: flex; gap: 6px; width: 100%; box-sizing: border-box; }
+.daygroup { display: grid; gap: 6px; min-width: 0; align-content: start; flex: 1 1 0; }
+.daygroup--2 { flex-grow: 2; } .daygroup--3 { flex-grow: 3; } .daygroup--4 { flex-grow: 4; } .daygroup--5 { flex-grow: 5; } .daygroup--6 { flex-grow: 6; } .daygroup--7 { flex-grow: 7; }
+.daygroup__stones { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; }
+.daygroup__label { padding-top: 4px; border-top: 3px solid var(--stone-edge); text-align: center; font-family: var(--f-display); font-weight: 600; font-size: 0.95rem; color: var(--text); }
+.daystone {
+  height: 44px; min-width: 0; box-sizing: border-box; display: grid; place-items: center; border-radius: 50%; border: 2px solid var(--stone-edge);
+  background: var(--stone-wait-bg); color: var(--text); font-family: var(--f-display); font-weight: 700; font-size: 1.1rem;
+}
+.daystone svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.daystone--done { background: var(--accent-soft); border-color: var(--sb); }
+.daystone--today, .daystone--todaywait { background: var(--stone-today); color: var(--stone-today-fg); border: 3px solid var(--sb); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.22); }
+.daystone--waiting { border-style: dashed; }
+.daystone--missed { background: var(--surface); border-color: var(--line); color: var(--muted); }
+
+/* Tiles: Practice, Words to practise again, a week's pages (the same rows as the Menu sheet). */
+.tile { min-height: 64px; }
+/* app.css keeps a small .tile for the spelling tiles (flex: none; width: 38-48px): a row tile (Today, Practice, a week's pages) takes the whole row. Found in a real browser. */
+.sheetrow.tile { flex: 0 0 auto; width: 100%; box-sizing: border-box; }
+.tile__sub { display: block; }
+.tile--first { background: var(--accent-soft); border-color: var(--sb); }
+.tile--lock { border-style: dashed; box-shadow: none; color: var(--text); }
+.tile--lock .sheetrow__go { color: var(--muted); }
+.tile--still { box-shadow: none; }
+.tile b { overflow-wrap: anywhere; }
+.pathlist, .tilelist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.path__top { display: grid; gap: 8px; margin: 4px 0 12px; }
+.path__sub { margin: 0; color: var(--text); }
+.pathrow2--later .tile, .pathrow2--waiting .tile--first { box-shadow: none; }
+@media (min-width: 820px) { .today { max-width: 880px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; align-content: start; min-height: 0; } .today__r { margin-top: 0; align-self: start; } }
+.childhome.today, .childpath { max-width: 560px; }
+@media (min-width: 820px) { .childhome.today { max-width: 880px; } }
+
+/* Practice (TR-47): the lists from the grown-up first, then the tiles, then the year grid. On 375x667 the first list's bottom edge is above the fold. */
+.practice { display: grid; gap: 10px; align-content: start; padding-top: 4px; }
+.practice .pagehead { margin: 0; gap: 0; }
+.practice h1 { margin: 0; font-size: clamp(1.5rem, 6vw, 2rem); line-height: 1.15; }
+.practice__sec { margin: 6px 0 0; font-size: 1.05rem; font-family: var(--f-display); font-weight: 700; }
+.practice__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.yeargrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.yeargrid a, .yeargrid button { min-height: 48px; display: grid; place-items: center; padding: 0 6px; font: inherit; font-weight: 700; text-decoration: none; color: var(--text); background: var(--surface); border: 2px solid var(--muted); border-radius: 14px; cursor: pointer; }
+.yeargrid [aria-pressed="true"], .yeargrid .is-on { background: var(--stone-today); color: var(--stone-today-fg); border-color: var(--stone-edge); }
+.practice .tile__sub { overflow-wrap: anywhere; }
+@media (max-height: 699px) { .practice .tile { min-height: 56px; padding-block: 4px; } .practice { gap: 8px; } }
+
+/* The sentence games sheet and the things-waiting sheet: the rows scroll inside the sheet on a short phone. */
+.menusheet .sheet__rows, .thingssheet .sheet__rows, .gamesheet .sheet__rows { max-height: calc(100vh - 150px); max-height: calc(100dvh - 150px - var(--safe-zone)); overflow-y: auto; overscroll-behavior: contain; }
+
+/* ---- Fold rules for the practice pages (TR-61 to TR-63): Check, Next, Hear, Peek and the keys stay in the first screen on a phone ---- */
+/* Under 700 px high the page header tightens first: the lede and eyebrow go, the gaps drop to 8 px. Keys stay 48 px or more; letter keys are at least 32 x 48. */
+@media (max-height: 699px) {
+  body.is-child .spellpage .pagehead .eyebrow, body.is-child .spellpage .pagehead .muted, body.is-child .tilepage .pagehead .eyebrow { display: none; }
+  body.is-child .spellpage .spellline:empty { display: none; }
+  body.is-child .spellpage .pagehead { margin-bottom: 0; }
+}
+/* On a phone the in-job pages keep the keyboard board at least 32 px per letter even at 130% text. */
+body.is-child .keyboard .key { min-width: 32px; min-height: 48px; }
+
+/* ==========================================================================
+   SB5 (R4): the inline back link, the About page and the Look picker, the four footer links under Today, the Stop for now? sheet.
+   Selectors without the has-pseudo, no inline styles. Everything to tap is 48 px high at least; the Today footer sits below the bottom --safe-zone.
+   ========================================================================== */
+.backlink { display: inline-flex; align-items: center; gap: 2px; min-height: 48px; margin-left: -6px; padding-right: 12px; color: var(--sb); font-weight: 700; text-decoration: none; justify-self: start; }
+.backlink svg { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.backlink:focus-visible { outline: 3px solid var(--focus, currentColor); outline-offset: 2px; border-radius: 8px; }
+.pagehead .backlink { margin-bottom: -6px; }
+.empty__line { margin: 0 0 12px; font-family: var(--f-display); font-weight: 600; font-size: 1.2rem; }
+
+/* The Look picker (06d, 10d): the four looks in one rounded row; two rows on a narrow phone or at large text. */
+.choices--look { grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr)); gap: 4px; padding: 4px; border: 2px solid var(--muted); border-radius: 18px; background: var(--surface); }
+.choices--look .choice { justify-content: center; min-height: 48px; padding: 4px 8px; text-align: center; border: 2px solid transparent; border-radius: 14px; background: transparent; font-size: 0.95rem; line-height: 1.15; }
+.choices--look .choice[aria-checked="true"] { background: var(--surface); border-color: var(--sb); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18); }
+.choices--look .choice[aria-checked="true"]::after { content: none; }
+.about { overflow-wrap: anywhere; }
+.about h1 { margin: 0; }
+.about__sub { margin: 0 0 4px; }
+.about__scan, .about__licence { margin-top: 14px; }
+.about .choices--look { margin-top: 8px; }
+.childlook .btn[data-sample] { width: 100%; min-height: 48px; margin-top: 10px; }
+
+/* Today's footer (07a): Waystead Learning papers, part of Waystead, For parents, More games. On a phone it starts below the bottom safe zone (a browser's floating bar covers
+   it), so the main button and the tiles end above it and the links are one scroll away; main's own bottom room is taken back so there is no empty strip under them. */
+.today__foot { max-width: 560px; display: grid; justify-items: center; gap: 0; margin-top: 8px; padding-top: 0; padding-bottom: 16px; }
+@media (min-width: 820px) { .today__foot { max-width: 880px; } }
+.today__foot a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 12px; color: var(--sb); font-weight: 700; text-align: center; text-decoration: none; }
+.today__foot a:focus-visible { outline: 3px solid var(--focus, currentColor); outline-offset: 2px; border-radius: 8px; }
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .today__foot { margin-top: var(--safe-zone); margin-bottom: 0; } }
+
+/* Stop for now? (11d) */
+.stopsheet .sheet__rows { display: grid; gap: 14px; }
+.stop__line { margin: 0; font-size: 1.1rem; line-height: 1.4; }
+.stop__btns { display: grid; gap: 10px; }
+.stop__btns .btn { min-height: 56px; }
+/* A Menu row that is shut (a test is due): dashed, like a locked tile. */
+.sheetrow--closed { border-style: dashed; box-shadow: none; }
+.sheetrow--closed .sheetrow__go { color: var(--muted); }
+
+/* ==========================================================================
+   SB5 S1 (round 4): FOLD. Check, Next and Go never need a scroll on a phone (Ron's rule, R-PH2). Order of compaction (TR-63): the 72 px pop-up room above the keys
+   goes, the keys drop to 48 px high (letter keys stay 32 px wide or more, D11), the gaps tighten, the top bar and the header shrink, the reserved lines close, and
+   Hear/Peek/Skip share rows. Phones only (up to 600 px wide and 820 px high, or 640 px wide and 520 px high on their side); a tall screen keeps its roomier keyboard. Child and grown-up pages alike
+   (:is(body.is-child, body) ties the specificity of the child rules above; this block is later). No :has.
+   ========================================================================== */
+@media (max-width: 600px) and (max-height: 820px) {
+  :is(body.is-child, body) .keyboard { width: calc(100% + 20px); max-width: none; margin-inline: -10px; }
+}
+@media (max-width: 600px) and (max-height: 820px), (min-width: 640px) and (max-height: 520px) {
+  :is(body.is-child, body) .keyboard { container-type: inline-size; gap: 4px; }
+  :is(body.is-child, body) .keyboard::before { display: none; }
+  :is(body.is-child, body) .keyboard-row { gap: 3px; }
+  :is(body.is-child, body) .spellpage .keyboard .key, :is(body.is-child, body) .game .keyboard .key, :is(body.is-child, body) .play .keyboard .key, :is(body.is-child, body) .keyboard .key {
+    width: min(46px, calc((100cqw - 27px) / 10)); min-width: 32px; height: 48px; min-height: 48px; flex: none; font-size: 1.15rem;
+  }
+  :is(body.is-child, body) .keyboard .key--del { width: calc(2 * min(46px, calc((100cqw - 27px) / 10)) + 3px); }
+}
+@media (max-width: 600px) and (max-height: 700px) {
+  /* the top bar and the page's own padding */
+  html body.is-child .topbar__inner, html body.is-adult .topbar__inner, html body .topbar__inner { padding-block: 2px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) { padding-top: 2px; }
+  /* the header on one row: the title, the count and Read it to me; the small lines are gone */
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead { display: flex; flex-wrap: wrap; align-items: center; gap: 0 12px; margin-bottom: 0; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead > h1 { flex: 1 1 6em; min-width: 0; margin: 0; font-size: 1.1rem; line-height: 1.2; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .rowcount { margin: 0; flex: none; font-size: 0.85rem; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .linkbtn { flex: none; white-space: nowrap; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .assess__prog { flex: 1 1 100%; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .eyebrow, html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .muted { display: none; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .peek { min-height: 24px; margin: 0; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .spellline { min-height: 0; margin: 0; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .spellline:empty { display: none; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .answerline, html body main > section.wrap.page.spellpage:not(.tilepage) .spellboxes { margin: 0 auto; min-height: 40px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .peekrow__hint { display: none; }
+  /* a grid of two columns: Hear next to Peek (or Skip), Peek next to Skip; everything else spans both */
+  html body main > section.wrap.page.spellpage:not(.tilepage), html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px; align-content: start; align-items: start; min-height: 0; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) > *, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > * { grid-column: 1 / -1; justify-self: stretch; width: auto; margin: 0; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) > .keyboard, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .keyboard { margin-inline: -10px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .peekrow, html body main > section.wrap.page.spellpage:not(.tilepage) .skiprow, html body main > section.wrap.page.spellpage:not(.tilepage) .assess__tools, html body main > section.wrap.page.spellpage:not(.tilepage).game .btnrow--center:not(.testbtns), html body main > section.wrap.page.spellpage:not(.tilepage).assess .btnrow--center:not(.testbtns) { grid-column: auto; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .peekrow .btn, html body main > section.wrap.page.spellpage:not(.tilepage) .skiprow .linkbtn, html body main > section.wrap.page.spellpage:not(.tilepage) .assess__tools .btn { width: 100%; min-height: 48px; height: 48px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .skiprow .linkbtn { font-size: 0.78rem; line-height: 1.15; padding-inline: 6px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .btnrow--center .btn, html body main > section.wrap.page.spellpage:not(.tilepage) .btnrow--center .btn--wide { min-height: 48px; height: 48px; margin: 0; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .btnrow--center .btn, html body main > section.wrap.page.spellpage:not(.tilepage) .assess__tools .btn { font-size: 0.9rem; padding-inline: 8px; gap: 4px; }
+}
+
+/* A phone on its side (667 x 315 up to 915 x 356 visible): the sentences, Hear, Peek and Skip on the left, the keyboard with Check straight under it on the right, all in the first screen.
+   Letter keys are 32 px wide or more (ten keys with 3 px gaps need 347 px); the board is as narrow as that allows so the left column keeps room for Read it to me and the count. */
+@media (min-width: 640px) and (max-height: 520px) {
+  html body.is-child .topbar__inner, html body.is-adult .topbar__inner, html body .topbar__inner { padding-block: 2px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage), body.is-child main > section.wrap.page.play { padding-top: 0; padding-bottom: 8px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .keyboard, body.is-child main > section.wrap.page.play .keyboard { width: clamp(347px, 52vw, 520px); }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .keyboard { align-self: start; position: static; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .btnrow.testbtns, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .btnrow.testbtns { grid-column: 2; grid-row: 1 / 12; align-self: end; justify-self: start; width: clamp(347px, 52vw, 520px); margin: 0 0 0 24px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .btnrow--center .btn, html body main > section.wrap.page.spellpage:not(.tilepage) .btnrow--center .btn--wide { min-height: 48px; height: 48px; margin: 0; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .linkbtn, html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .linkbtn--start { min-height: 44px; height: 44px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead { flex-wrap: nowrap; gap: 0 8px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage).assess .pagehead { flex-wrap: wrap; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .skiprow .linkbtn { font-size: 0.78rem; line-height: 1.15; padding-inline: 6px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) { min-height: 214px; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .rowcount { font-size: 0.72rem; margin: 0; flex: none; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .pagehead .linkbtn { flex: none; white-space: nowrap; }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .answerline, html body main > section.wrap.page.spellpage:not(.tilepage) .spellboxes { min-height: 40px; margin: 0 auto; }
+  html body main > section.wrap.page.play .pagehead h1 { font-size: 1.15rem; line-height: 1.2; margin: 0; }
+  html body main > section.wrap.page.play .pagehead { margin-bottom: 4px; }
+  html body main > section.wrap.page.play .blanks { font-size: 1.6rem; min-height: 0; }
+  html body main > section.wrap.page.play .play__top .pic, html body main > section.wrap.page.play .flower { height: clamp(64px, 17svh, 100px); max-height: clamp(64px, 17svh, 100px); }
+  html body main > section.wrap.page.spellpage:not(.tilepage) .peekrow, html body main > section.wrap.page.spellpage:not(.tilepage) .skiprow, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .peekrow, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .skiprow { margin: 2px 0 0; }
+}

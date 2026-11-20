@@ -83,6 +83,8 @@ body.is-adult .brand__tag {
 .adultrow { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 8px; border-radius: 14px; color: var(--text); text-decoration: none; }
 .adultrow:hover { background: var(--surface-2); }
 .adultrow:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+.adultrow[aria-current="page"] { background: var(--sb-soft); } /* SB5: the page you are on, marked in the Menu */
+.adultrow[aria-current="page"] .adultrow__text b::after { content: ""; }
 .adultrow__ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--sb-soft); color: var(--sb); }
 .adultrow__ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .adultrow__text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
@@ -112,7 +114,8 @@ body.is-adult .foot__papers { display: flex; flex-wrap: wrap; align-items: cente
 .foot__papers p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; max-width: 60ch; }
 .foot__papers a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--link); font-weight: 700; }
 .foot__papers a svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-body.is-adult .foot__more { display: none; }
+/* SB5 J7: the four links (Waystead Learning papers, part of Waystead, For parents, More games) show for an adult too; 48 px targets, inside the page's own safe-zone padding. */
+body.is-adult .foot__inner a { display: inline-flex; align-items: center; min-height: 48px; }
 
 /* 44 px buttons in the same 60 px bar as before, so a page under it does not move. */
 body.is-adult .topbar__inner { padding-top: 8px; padding-bottom: 8px; }

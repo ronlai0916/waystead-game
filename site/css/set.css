@@ -1,0 +1,170 @@
+/* SB5-WP-D: Set a week (site/js/set-views.js). Every selector is under .st-page or starts .st-. Tokens only; no parent-selector rules, no inline styles. */
+.st-page {
+  --safe-zone: 112px; /* the Set bar clears the bottom band of a phone (the design's --bottom-safe) */
+  --st-bar-h: 84px;
+  display: flex; flex-direction: column; gap: 16px;
+  padding-top: 8px;
+  padding-bottom: 0; /* S2: the Set bar is sticky inside the page now, so it ends the page and nothing (footer links included) scrolls under it */
+  min-width: 0;
+}
+@media (min-width: 720px) and (min-height: 600px) { .st-page { --safe-zone: 0px; } }
+.st-page, .st-page * { box-sizing: border-box; }
+.st-page :where(h1, h2, p, b, small, span, label, button, a) { overflow-wrap: anywhere; min-width: 0; }
+.st-h1 { font-size: 1.5rem; line-height: 1.2; margin: 0; }
+.st-h1--done { font-size: 1.4rem; }
+.st-h2 { font-size: 1.05rem; margin: 8px 0 0; }
+.st-sub, .st-help { margin: 0; color: var(--ink-soft, var(--help-fg, inherit)); font-size: .95rem; line-height: 1.4; }
+.st-label { font-weight: 700; font-size: .95rem; }
+.st-help b { font-weight: 700; }
+.st-eyebrow { margin: 0; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.st-saved { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; margin-bottom: 4px; }
+.st-saved svg, .st-page svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* the buttons, rows and cards share one shape */
+.st-back, .st-quiet, .st-small { min-height: 48px; display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0 8px; color: inherit; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; text-align: start; }
+.st-back { align-self: flex-start; text-decoration: none; padding-inline-start: 0; }
+.st-small { min-width: 48px; justify-content: center; font-size: .9rem; }
+.st-page .btn { min-height: 48px; }
+.st-card { border: 1px solid var(--line, currentColor); border-radius: 14px; padding: 14px; background: var(--card, transparent); display: flex; flex-direction: column; gap: 8px; }
+.st-card--flat { box-shadow: none; }
+.st-card__line { margin: 0; line-height: 1.4; }
+.st-card__line--muted { color: var(--ink-soft, inherit); font-size: .92rem; }
+.st-cardlink__row { display: flex; flex-wrap: wrap; gap: 8px; }
+.st-stack { display: flex; flex-direction: column; gap: 10px; }
+.st-stack--tight { gap: 8px; }
+.st-note, .st-warn, .st-err { display: flex; gap: 10px; align-items: flex-start; border-radius: 12px; padding: 12px; border: 1px solid var(--line, currentColor); }
+.st-note p, .st-warn p, .st-err p { margin: 0; line-height: 1.4; }
+.st-note { background: var(--help-bg, transparent); color: var(--help-fg, inherit); }
+.st-warn { background: var(--warn-bg, #fdf1d6); color: var(--warn-fg, #5b3a00); border-color: currentColor; }
+.st-err { background: var(--err-bg, #fbe5e1); color: var(--err-fg, #6a1b10); border-color: currentColor; }
+.st-len.st-help { margin-top: -4px; }
+
+/* rows, children, chapters, lists */
+.st-row { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border: 1px solid var(--line, currentColor); border-radius: 14px; background: var(--card, transparent); cursor: pointer; }
+.st-row.is-on { border-width: 2px; }
+.st-row input { width: 24px; height: 24px; flex: none; margin: 0; }
+.st-row__text { display: flex; flex-direction: column; min-width: 0; }
+.st-row__text small { font-size: .88rem; color: var(--ink-soft, inherit); }
+.st-face { width: 36px; height: 36px; flex: none; border-radius: 50%; display: inline-grid; place-items: center; background: var(--sb, #6b3fa0); color: #fff; font-weight: 700; }
+.st-twinset { margin: 0; min-width: 0; }
+.st-twin { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 480px) { .st-twin { grid-template-columns: 1fr 1fr; } }
+
+/* tabs and years */
+.st-seg, .st-years { display: flex; flex-wrap: wrap; gap: 8px; }
+.st-seg button, .st-years button { flex: 1 1 auto; min-height: 48px; min-width: 48px; padding: 0 12px; border: 1px solid var(--line, currentColor); border-radius: 12px; background: var(--card, transparent); color: inherit; font: inherit; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+.st-seg button.is-on, .st-years button.is-on { border-width: 2px; background: var(--sb, #6b3fa0); color: #fff; }
+.st-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.st-field--pad { padding: 0 14px 14px; }
+.st-input, .st-select, .st-text { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line, currentColor); border-radius: 12px; font: inherit; background: var(--card, #fff); color: inherit; }
+.st-text { min-height: 160px; resize: vertical; }
+.st-addrow__r { display: flex; gap: 8px; flex-wrap: wrap; }
+.st-addrow__r .st-input { flex: 1 1 160px; }
+.st-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.st-wchip { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line, currentColor); font-weight: 600; }
+.st-wchip.is-miss { background: var(--warn-bg, #fdf1d6); }
+.st-sugg { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line, currentColor); border-radius: 12px; overflow: hidden; }
+.st-sug { width: 100%; min-height: 48px; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; background: var(--card, transparent); color: inherit; border: 0; border-bottom: 1px solid var(--line, currentColor); font: inherit; text-align: start; cursor: pointer; }
+.st-sug span { font-size: .88rem; color: var(--ink-soft, inherit); }
+.st-wd { display: grid; grid-template-columns: 28px 28px 1fr auto; align-items: center; gap: 8px; min-height: 48px; border-bottom: 1px solid var(--line, currentColor); padding: 4px 0; }
+.st-wd__w { font-weight: 700; }
+.st-wd__sub { grid-column: 3 / -1; margin-top: -8px; }
+.st-wd__head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.st-count { font-weight: 700; }
+.st-count--full { color: var(--err-fg, inherit); }
+.st-togs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.st-tog { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 6px 10px; border: 1px solid var(--line, currentColor); border-radius: 12px; cursor: pointer; }
+.st-tog.is-on { border-width: 2px; }
+.st-tog input { width: 24px; height: 24px; flex: none; margin: 0; }
+.st-tog i { display: none; }
+.st-sum { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; padding: 12px 14px; border: 1px solid var(--line, currentColor); border-radius: 14px; background: var(--card, transparent); color: inherit; font: inherit; text-align: start; text-decoration: none; min-height: 56px; }
+.st-sum small { grid-column: 1 / -1; color: var(--ink-soft, inherit); }
+.st-sum__go { grid-column: 2; grid-row: 1; }
+
+/* the dates: five chips on a line, in a grid so none is cut off at 360 wide */
+.st-dates { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.st-dates--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.st-dates button { min-height: 56px; min-width: 48px; padding: 4px; border: 1px solid var(--line, currentColor); border-radius: 12px; background: var(--card, transparent); color: inherit; font: inherit; font-size: .88rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; line-height: 1.15; }
+.st-dates button small { font-size: .78rem; font-weight: 500; }
+.st-dates button.is-on { border-width: 2px; background: var(--sb, #6b3fa0); color: #fff; }
+.st-field--date { margin-top: 8px; }
+
+/* preview, stones, day by day */
+.st-see b { display: block; }
+.st-stones { display: flex; gap: 6px; align-items: flex-start; }
+.st-stone { width: 16px; height: 16px; border-radius: 50%; border: 2px dashed var(--line, currentColor); display: inline-grid; place-items: center; font-size: .75rem; font-weight: 700; }
+.st-stone.is-today { background: var(--sb, #6b3fa0); border: 2px solid var(--sb, #6b3fa0); color: #fff; }
+.st-stones--days .st-stone { width: 32px; height: 32px; }
+.st-sg { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.st-sg__s { display: flex; gap: 4px; }
+.st-sg small { font-size: .78rem; }
+.st-det { border: 1px solid var(--line, currentColor); border-radius: 14px; background: var(--card, transparent); }
+.st-det > summary { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 48px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
+.st-det__cue { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+.st-det > .st-daylist, .st-det > .st-diff, .st-det > .st-daynote { margin: 0 14px 12px; }
+.st-diff { display: flex; flex-direction: column; gap: 8px; padding: 0 14px 14px; }
+.st-daylist { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.st-daylist li { line-height: 1.4; }
+.st-daylist b { display: inline-block; min-width: 3em; }
+.st-morerow { display: none; justify-content: space-between; width: 100%; border: 1px solid var(--line, currentColor); border-radius: 14px; text-decoration: none; padding: 0 14px; }
+.st-hlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.st-hrow { display: flex; align-items: center; gap: 10px; }
+.st-hrow small { display: flex; gap: 4px; align-items: center; }
+.st-eachkid { display: flex; flex-direction: column; gap: 8px; }
+.st-eachkid .st-card { flex-direction: row; align-items: center; }
+
+/* short phones: the long preview folds into one cue row, the page keeps the dates above the bar */
+@media (max-height: 699px) {
+  .st-when .st-h1, .st-when .st-namethis { display: none; }
+  .st-when .st-see--full, .st-when .st-daybyday { display: none; }
+  .st-when .st-see--cue { display: flex; }
+  .st-dates button small { display: none; }
+  .st-dates button { min-height: 48px; }
+  .st-page { gap: 10px; }
+}
+
+/* UAT3 (teacher H3): on a phone up to 899 px tall the full preview card would run under the sticky Set bar (its 112 px bottom-band clearance
+   leaves about 210 px for the bar), so it folds into the same cue row as a short phone: the dates stay above the bar, the preview is one tap away. */
+@media (max-width: 600px) and (min-height: 700px) and (max-height: 899px) {
+  .st-when .st-see--full, .st-when .st-daybyday { display: none; }
+  .st-when .st-see--cue { display: flex; }
+}
+
+/* the sheet is a dialog over the page (the page behind is inert) */
+.st-sheetwrap { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, .45); }
+.st-sheetbox { width: 100%; max-width: 560px; max-height: calc(100dvh - 24px); overflow: auto; background: var(--paper, #fff); color: inherit; border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + var(--safe-zone, 0px) / 4); display: flex; flex-direction: column; gap: 12px; }
+.st-sheetbox h2 { margin: 0; font-size: 1.1rem; }
+.st-sheetact { display: flex; justify-content: flex-end; }
+
+/* the Set bar: sticky, always above the bottom band */
+.st-bar { position: sticky; bottom: 0; z-index: 20; margin: 16px -16px 0; display: flex; flex-direction: column; gap: 4px; padding: 10px 16px calc(10px + var(--safe-zone)); background: var(--paper, #fff); border-top: 1px solid var(--line, currentColor); }
+.st-bar .btn { width: 100%; justify-content: center; }
+.st-bar__line { margin: 0; text-align: center; font-size: .9rem; color: var(--ink-soft, inherit); }
+.st-bar [disabled] { opacity: .55; }
+.st-live { margin: 0; font-weight: 600; }
+
+@media (min-width: 720px) {
+  .st-page { max-width: 640px; margin-inline: auto; }
+  .st-bar { margin-inline: 0; padding-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .st-page * { transition: none !important; animation: none !important; } }
+
+/* ---- word by word (04a6, 04a9), the trim step's Add a word (04c), Save in, and the page hooks (round 3b) ---- */
+.st-wbw, .st-typeall, .st-patterns, .st-tricky, .st-trim, .st-words, .st-when, .st-done, .st-change, .st-rename, .st-none { align-items: stretch; }
+.st-words--new .st-sum { text-decoration: none; }
+.st-has-cue { scroll-padding-bottom: calc(var(--st-bar-h) + var(--safe-zone)); }
+.st-has-len .st-len { scroll-margin-bottom: calc(var(--st-bar-h) + var(--safe-zone)); }
+.st-addrow label, .st-savein label { font-weight: 700; }
+.st-add { min-height: 48px; min-width: 48px; flex: none; }
+.st-wd__list { display: flex; flex-direction: column; border-top: 1px solid var(--line, currentColor); }
+.st-wd__no { width: 28px; height: 28px; border-radius: 50%; display: inline-grid; place-items: center; font-size: .8rem; font-weight: 700; background: var(--surface-2, transparent); color: var(--ink-soft, inherit); }
+.st-wd__st { width: 28px; height: 28px; display: inline-grid; place-items: center; color: var(--sb, #6b3fa0); }
+.st-wd__empty { margin: 0; padding: 12px 0; }
+.st-wd__help { margin-top: 4px; }
+.st-wd__name { margin-top: 8px; }
+.st-sug--new { border-top: 1px dashed var(--line, currentColor); }
+.st-sugg li:last-child .st-sug { border-bottom: 0; }
+.st-stones--mini .st-stone { width: 14px; height: 14px; }
+.st-tri { border-style: dashed; background: var(--surface-2, transparent); }
+.st-g1, .st-g2, .st-g3, .st-g4, .st-g5, .st-g6, .st-g7 { flex: 0 0 auto; }
+.st-savein .st-select { min-height: 48px; }

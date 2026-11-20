@@ -1,0 +1,221 @@
+{
+ "chapter": "y1-ch02",
+ "year": 1,
+ "words": {
+  "he": [
+   "My brother is six, and he likes jam.",
+   "Is he the man with the brown dog?",
+   "Dad has a hat, so he is not cold."
+  ],
+  "me": [
+   "Please pass me the red crayon.",
+   "Can you help me tie my shoes?",
+   "Mum read a story to me at bedtime."
+  ],
+  "she": [
+   "Is she the lady who reads stories?",
+   "The girl laughs as she swings high.",
+   "Gran has a new puppy and she loves it."
+  ],
+  "we": [
+   "You and I are friends, so we can share.",
+   "Mum and I are baking, so we need eggs.",
+   "Come on, everyone, we can all clap!"
+  ],
+  "be": [
+   "When I grow up, I will be a baker.",
+   "Please be quiet in the library.",
+   "It will be my birthday on Friday."
+  ],
+  "bank": [
+   "Mum keeps her coins safe at the bank.",
+   "Dad asked the lady at the bank for coins.",
+   "Gran walked to the bank with her card."
+  ],
+  "pink": [
+   "Mix red and white paint to make pink.",
+   "A flamingo has long legs and pink feathers.",
+   "My new trainers are bright pink!"
+  ],
+  "drink": [
+   "The puppy likes to drink from its bowl.",
+   "Pour some milk into a cup to drink.",
+   "Drink your milk before you go to school."
+  ],
+  "thank": [
+   "I will thank my friend for the present.",
+   "Always thank the cook for your dinner.",
+   "Let us thank the teacher for the story."
+  ],
+  "trunk": [
+   "The elephant sniffed the grass with its trunk.",
+   "A squirrel climbed up the tree trunk.",
+   "I hid behind the trunk of a big tree."
+  ]
+ },
+ "rounds": {
+  "he": 1,
+  "me": 0,
+  "she": 1,
+  "we": 1,
+  "be": 0,
+  "bank": 0,
+  "pink": 0,
+  "drink": 0,
+  "thank": 0,
+  "trunk": 1
+ },
+ "rejected": [
+  {
+   "word": "he",
+   "round": 0,
+   "s": "Grandad smiled when he found his glasses.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "he",
+   "round": 0,
+   "s": "The boy waved because he saw his gran.",
+   "reason": "checker: 'Because we saw his gran' is also correct, so the gap has two answers. (also fits: we)"
+  },
+  {
+   "word": "he",
+   "round": 0,
+   "s": "Uncle says he will bake a cake.",
+   "reason": "checker: 'Uncle says we will bake a cake' also works. (also fits: we)"
+  },
+  {
+   "word": "she",
+   "round": 0,
+   "s": "My sister said she had a new pen.",
+   "reason": "checker: 'My sister said we had a new pen' also works. (also fits: we)"
+  },
+  {
+   "word": "she",
+   "round": 0,
+   "s": "Grandma smiled because she liked the card.",
+   "reason": "checker: 'Because we liked the card' also works. (also fits: we)"
+  },
+  {
+   "word": "she",
+   "round": 0,
+   "s": "The girl dug a hole and she planted seeds.",
+   "reason": "checker: 'And we planted seeds' also works. (also fits: we)"
+  },
+  {
+   "word": "she",
+   "round": 0,
+   "s": "Auntie says she will bake a cake.",
+   "reason": "checker: 'Auntie says we will bake a cake' also works. (also fits: we)"
+  },
+  {
+   "word": "we",
+   "round": 0,
+   "s": "Mum and I went shopping, and we got apples.",
+   "reason": "checker: 'And she got apples' also works, meaning Mum. (also fits: she)"
+  },
+  {
+   "word": "we",
+   "round": 0,
+   "s": "In autumn, we jump in the crunchy leaves.",
+   "reason": "checker: A young child may not notice 'he jump' or 'she jump' is wrong, so those could seem to fit. (also fits: he, she)"
+  },
+  {
+   "word": "we",
+   "round": 0,
+   "s": "Today we learn a new song at school.",
+   "reason": "checker: A young child may not notice 'he learn' or 'she learn' is wrong, so those could seem to fit. (also fits: he, she)"
+  },
+  {
+   "word": "bank",
+   "round": 0,
+   "s": "The bank is next to the post office.",
+   "reason": "checker: A tree trunk could also be next to the post office. (also fits: trunk)"
+  },
+  {
+   "word": "thank",
+   "round": 0,
+   "s": "Can you thank Grandad for the warm scarf?",
+   "reason": "machine rule 4: capital word not allowed: Grandad; not on the word lists: Grandad"
+  },
+  {
+   "word": "thank",
+   "round": 0,
+   "s": "Do not forget to thank the bus driver.",
+   "reason": "checker: 'Do not forget to be the bus driver', as in a game, also works. (also fits: be)"
+  },
+  {
+   "word": "trunk",
+   "round": 0,
+   "s": "The elephant sprayed water with its long trunk.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "trunk",
+   "round": 0,
+   "s": "The oak tree has a thick, rough trunk.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "trunk",
+   "round": 0,
+   "s": "Ivy grew all the way up the trunk.",
+   "reason": "machine rule 4: a name: Ivy"
+  },
+  {
+   "word": "he",
+   "round": 1,
+   "s": "My brother is happy because he has a kite.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "he",
+   "round": 1,
+   "s": "Is he the boy with the red coat?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "he",
+   "round": 1,
+   "s": "Look, Grandpa is waving and he is smiling!",
+   "reason": "machine rule 4: capital word not allowed: Grandpa"
+  },
+  {
+   "word": "she",
+   "round": 1,
+   "s": "Is she the lady from the library?",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "she",
+   "round": 1,
+   "s": "Mum is in the kitchen, and she is baking.",
+   "reason": "checker: A mum alone in the kitchen baking is close to a 'who cooks' stereotype, so it is dropped."
+  },
+  {
+   "word": "we",
+   "round": 1,
+   "s": "Are we nearly at the seaside yet?",
+   "reason": "machine rule 6: duplicate"
+  },
+  {
+   "word": "we",
+   "round": 1,
+   "s": "Dad and I made soup, and we ate it.",
+   "reason": "checker: 'He ate it' (meaning Dad) also makes sense, so the gap has two answers. (also fits: he)"
+  },
+  {
+   "word": "trunk",
+   "round": 1,
+   "s": "The squirrel ran up the tree trunk.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "trunk",
+   "round": 1,
+   "s": "Leaves grow on branches, but bark covers the trunk.",
+   "reason": "machine rule 3: 51 characters (max 50)"
+  }
+ ],
+ "sitOut": []
+}

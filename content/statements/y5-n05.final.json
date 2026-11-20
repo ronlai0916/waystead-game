@@ -1,0 +1,113 @@
+{
+ "chapter": "y5-n05",
+ "year": 5,
+ "words": {
+  "referee": [
+   "Who is the referee in today's netball match?",
+   "What a loud whistle the referee has!",
+   "The referee checked her watch and said the match was over."
+  ],
+  "prefer": [
+   "Do you prefer the swings or the slide at the park?",
+   "I like both books, but I prefer the one about boats.",
+   "Cats usually prefer a warm spot by the radiator."
+  ],
+  "reference": [
+   "My dad made a funny reference to our holiday at tea time.",
+   "Our teacher asked us to add a reference to each fact we found.",
+   "A dictionary is a handy reference book for tricky spellings."
+  ],
+  "preference": [
+   "What is your preference for the class pet, a rabbit or a hamster?",
+   "My gran always chooses ginger biscuits, which shows her preference.",
+   "Everyone had a different preference when we voted for the picnic spot."
+  ],
+  "referred": [
+   "The librarian referred me to a shelf of books about space.",
+   "In her speech, she referred to the sunny day we had at the seaside.",
+   "Which book was it that the teacher referred to in assembly?"
+  ],
+  "referring": [
+   "I think she was referring to the cake we made on Friday.",
+   "Which page are you referring to, the first or the second?",
+   "Referring to the map, we turned left at the next corner."
+  ],
+  "preferred": [
+   "We all liked the cake, but my gran preferred the one with cherries.",
+   "Which colour of paint would you have preferred for the shed?",
+   "The dog preferred the sofa to his own basket, as always!"
+  ],
+  "preferring": [
+   "Preferring to stay dry, we played board games indoors.",
+   "He walked to school, preferring the path through the park.",
+   "Preferring snow to rain, the children hoped for a white Christmas!"
+  ],
+  "transferred": [
+   "My gran transferred the seedlings from the tray into the garden.",
+   "My friend moved house and transferred to a new school in autumn.",
+   "The cake was transferred from the tin to a plate."
+  ],
+  "transferring": [
+   "I am transferring my sweets from the packet into a jar.",
+   "Transferring the paint into small pots took us a whole morning.",
+   "My dad is busy transferring the tomatoes from the greenhouse to boxes."
+  ]
+ },
+ "rounds": {
+  "referee": 0,
+  "prefer": 0,
+  "reference": 0,
+  "preference": 0,
+  "referred": 0,
+  "referring": 0,
+  "preferred": 0,
+  "preferring": 0,
+  "transferred": 0,
+  "transferring": 0
+ },
+ "rejected": [
+  {
+   "word": "reference",
+   "round": 0,
+   "s": "The author made a reference to the seaside in her first chapter.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "preference",
+   "round": 0,
+   "s": "Choosing the farm over the beach was her preference for the trip.",
+   "reason": "checker: 'Choosing ... was her preference' is clumsy and repeats itself, so it is not natural English."
+  },
+  {
+   "word": "referring",
+   "round": 0,
+   "s": "The sign by the door keeps referring visitors to the office.",
+   "reason": "checker: 'Keeps transferring visitors to the office' also makes sense. (also fits: transferring)"
+  },
+  {
+   "word": "preferring",
+   "round": 0,
+   "s": "The cat kept preferring the box to the new bed we bought.",
+   "reason": "checker: 'Kept preferring' is not natural, because 'prefer' rarely takes this continuous form."
+  },
+  {
+   "word": "preferring",
+   "round": 0,
+   "s": "Why are you preferring the back seat of the bus today?",
+   "reason": "checker: 'Are you preferring' is unnatural English, because 'prefer' does not usually take the continuous form."
+  },
+  {
+   "word": "transferring",
+   "round": 0,
+   "s": "Are you transferring to the other school next term?",
+   "reason": "checker: 'Are you referring to the other school' also makes sense, so the gap is not clear. (also fits: referring)"
+  },
+  {
+   "word": "transferring",
+   "round": 0,
+   "s": "While transferring the goldfish to a bigger tank, we stayed very calm.",
+   "reason": "checker: 'Stayed very calm' hints at worry for the pet and reads awkwardly."
+  }
+ ],
+ "sitOut": []
+}

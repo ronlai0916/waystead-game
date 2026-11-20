@@ -1,0 +1,149 @@
+{
+ "chapter": "y56-ch04",
+ "year": 5,
+ "words": {
+  "appreciate": [
+   "Thank you for the lovely scarf, I really appreciate it.",
+   "I appreciate the sunshine after so many grey, rainy days!",
+   "We say thank you because we appreciate the cake you baked."
+  ],
+  "attached": [
+   "The kite string is firmly attached to the wooden handle.",
+   "Is the tag still attached to your new coat?",
+   "Look how the little shell is attached to the rock!"
+  ],
+  "communicate": [
+   "Gran lives far away, so we communicate by video call every Sunday.",
+   "Dolphins use clicks and whistles to communicate with each other.",
+   "How do you communicate with friends who speak another language?"
+  ],
+  "exaggerate": [
+   "It was only a drizzle, so don't exaggerate and say it poured!",
+   "My brother caught a tiny fish but likes to exaggerate its size.",
+   "Does she exaggerate when she says her small kitten is huge?"
+  ],
+  "equip": [
+   "Mum plans to equip our garden shed with shelves and hooks.",
+   "Will the teacher equip each group with scissors and glue?",
+   "Let's equip the new den with cushions, torches and snacks!"
+  ],
+  "equipped": [
+   "Dad equipped the shed with new shelves last weekend.",
+   "Is the kitchen equipped with a big oven and a fridge?",
+   "The explorers felt well equipped, with maps, snacks and warm hats!"
+  ],
+  "equipment": [
+   "Please put the sports equipment back in the cupboard.",
+   "Which equipment do we need for the science lesson?",
+   "The gardener keeps her tools and other equipment in a shed."
+  ],
+  "interrupt": [
+   "Please wait your turn and do not interrupt your friend's story.",
+   "Sorry to interrupt, but dinner is ready!",
+   "Will the rain interrupt our picnic this afternoon?"
+  ],
+  "interfere": [
+   "Please do not interfere with my model while the glue dries.",
+   "Loud music may interfere with my homework.",
+   "Thick clouds can interfere with the view of the stars."
+  ],
+  "suggest": [
+   "Can anyone suggest a name for our class hamster?",
+   "I suggest we take our umbrellas because of the dark clouds.",
+   "The librarian will suggest a good book if you ask her."
+  ]
+ },
+ "rounds": {
+  "appreciate": 1,
+  "attached": 0,
+  "communicate": 0,
+  "exaggerate": 1,
+  "equip": 0,
+  "equipped": 0,
+  "equipment": 0,
+  "interrupt": 0,
+  "interfere": 0,
+  "suggest": 0
+ },
+ "rejected": [
+  {
+   "word": "appreciate",
+   "round": 0,
+   "s": "We all appreciate how hard the dinner ladies work every day.",
+   "reason": "checker: 'We all exaggerate how hard...' also works in the gap, and 'dinner ladies' leans on a gender stereotype. (also fits: exaggerate)"
+  },
+  {
+   "word": "appreciate",
+   "round": 0,
+   "s": "Do you appreciate the kind things your friends do for you?",
+   "reason": "checker: 'Do you exaggerate the kind things...' also makes sense. (also fits: exaggerate)"
+  },
+  {
+   "word": "appreciate",
+   "round": 0,
+   "s": "The class wrote a thank you card to appreciate the helpful librarian.",
+   "reason": "checker: 'To appreciate the librarian' sounds unnatural; we would say 'to thank'."
+  },
+  {
+   "word": "attached",
+   "round": 0,
+   "s": "The trailer was attached to the back of the tractor.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "exaggerate",
+   "round": 0,
+   "s": "Saying the queue was a mile long would exaggerate a little.",
+   "reason": "checker: The grammar is awkward; it should be 'would be exaggerating'."
+  },
+  {
+   "word": "exaggerate",
+   "round": 0,
+   "s": "Did the fish really weigh a ton, or do you exaggerate?",
+   "reason": "checker: The tense is wrong; it should be 'are you exaggerating', so it reads unnaturally."
+  },
+  {
+   "word": "exaggerate",
+   "round": 0,
+   "s": "I don't want to exaggerate, but this is the best cake ever!",
+   "reason": "checker: 'I don't want to interrupt, but...' also makes good sense. (also fits: interrupt, interfere)"
+  },
+  {
+   "word": "interrupt",
+   "round": 0,
+   "s": "It is rude to interrupt when your teacher is talking.",
+   "reason": "checker: 'It is rude to interfere' also makes sense here. (also fits: interfere)"
+  },
+  {
+   "word": "interfere",
+   "round": 0,
+   "s": "If the puppy tries to interfere, the wool will get tangled.",
+   "reason": "checker: 'If the puppy tries to interrupt' also works in the gap. (also fits: interrupt)"
+  },
+  {
+   "word": "appreciate",
+   "round": 1,
+   "s": "Mum drove us to school in the rain, so we appreciate the lift.",
+   "reason": "checker: Moving from past 'drove' to present 'appreciate' sounds awkward, so the sentence is not natural."
+  },
+  {
+   "word": "appreciate",
+   "round": 1,
+   "s": "Do you appreciate a warm drink after a cold walk home?",
+   "reason": "checker: 'Do you suggest a warm drink after a cold walk home?' also makes sense. (also fits: suggest)"
+  },
+  {
+   "word": "appreciate",
+   "round": 1,
+   "s": "How much I appreciate a cosy bed after a long journey!",
+   "reason": "checker: This old-fashioned exclamation is hard for a Year 5 child to read naturally."
+  },
+  {
+   "word": "exaggerate",
+   "round": 1,
+   "s": "Waiting ten minutes is not hours, so please do not exaggerate!",
+   "reason": "checker: 'Waiting ten minutes is not hours' is awkward English for a child."
+  }
+ ],
+ "sitOut": []
+}

@@ -1,0 +1,143 @@
+{
+ "chapter": "y5-n01",
+ "year": 5,
+ "words": {
+  "vicious": [
+   "The vicious wind blew my hat right across the beach.",
+   "What a vicious gust that was, flipping our picnic blanket over!",
+   "The sea looked vicious that day, with huge waves crashing on the rocks."
+  ],
+  "precious": [
+   "Water is precious in the desert, so we must not waste a drop.",
+   "She wrapped the precious photograph of her gran in soft paper.",
+   "Every minute of our holiday felt precious, so we played until dark."
+  ],
+  "gracious": [
+   "Even though she lost the game, she stayed gracious and clapped for the winner.",
+   "A gracious host welcomes every guest and offers them a drink.",
+   "How gracious she was, thanking each person who helped at the fair!"
+  ],
+  "spacious": [
+   "Our new classroom is spacious, so everyone has room to spread out.",
+   "The spacious boot of the car held all our bags and a tent.",
+   "Is your bedroom spacious enough for a bunk bed and a desk?"
+  ],
+  "cautious": [
+   "She was cautious on the icy path and took small, slow steps.",
+   "Dad is cautious when he tries a new recipe, so he reads it twice.",
+   "Be cautious on the wet steps and hold the rail."
+  ],
+  "delicious": [
+   "These biscuits taste so delicious that I want another one!",
+   "The delicious smell of toast drifted up the stairs to my bed.",
+   "Is the chocolate cake as delicious as it looks?"
+  ],
+  "ambitious": [
+   "She is ambitious and practises piano every morning to win first prize.",
+   "Are you ambitious enough to try for the top spot in the school quiz?",
+   "It was an ambitious plan to build a huge tree house in one day."
+  ],
+  "nutritious": [
+   "Milk and cheese are nutritious foods that help your bones grow strong.",
+   "Our nutritious soup was packed with vegetables to help us stay strong and healthy.",
+   "Is a school lunch with salad and fish nutritious enough to keep you healthy?"
+  ],
+  "suspicious": [
+   "I felt suspicious when my brother smiled and hid something behind his back.",
+   "Mum felt suspicious when she saw crumbs and the empty biscuit tin.",
+   "A suspicious rustle came from the cupboard, so I peeked inside."
+  ],
+  "infectious": [
+   "The giggles were infectious, and soon the whole class was laughing.",
+   "Yawning is infectious, so when one person yawns, we all do.",
+   "His happy singing was infectious, and everyone clapped along."
+  ]
+ },
+ "rounds": {
+  "vicious": 0,
+  "precious": 0,
+  "gracious": 0,
+  "spacious": 0,
+  "cautious": 0,
+  "delicious": 0,
+  "ambitious": 0,
+  "nutritious": 0,
+  "suspicious": 0,
+  "infectious": 0
+ },
+ "rejected": [
+  {
+   "word": "vicious",
+   "round": 0,
+   "s": "In the pantomime, the villain had a vicious laugh and a cruel plan.",
+   "reason": "checker: Infectious laugh is a common phrase, and suspicious laugh also works, so the gap is unclear. (also fits: infectious, suspicious)"
+  },
+  {
+   "word": "vicious",
+   "round": 0,
+   "s": "Why was the storm so vicious that it snapped the garden fence?",
+   "reason": "checker: The 'Why was it so... that' wording is awkward and unnatural for a child."
+  },
+  {
+   "word": "precious",
+   "round": 0,
+   "s": "My grandad's old watch is precious to him, so he keeps it safe.",
+   "reason": "machine rule 4: not on the word lists: grandad's"
+  },
+  {
+   "word": "gracious",
+   "round": 0,
+   "s": "It was gracious of Dad to thank everyone politely after the party.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "cautious",
+   "round": 0,
+   "s": "Why are you so cautious about standing on that wobbly stool?",
+   "reason": "checker: It treats being careful as odd and suggests standing on a wobbly stool, which is unsafe."
+  },
+  {
+   "word": "cautious",
+   "round": 0,
+   "s": "The cautious rabbit sniffed the air before hopping out of its hutch.",
+   "reason": "checker: A suspicious rabbit sniffing the air also makes sense. (also fits: suspicious)"
+  },
+  {
+   "word": "delicious",
+   "round": 0,
+   "s": "Mum baked a delicious apple pie, and the whole kitchen smelled sweet.",
+   "reason": "checker: Having Mum do the baking repeats a stereotype about who cooks."
+  },
+  {
+   "word": "delicious",
+   "round": 0,
+   "s": "We ate delicious fish and chips on the seafront.",
+   "reason": "checker: There is no taste clue, so nutritious could also fill the gap. (also fits: nutritious)"
+  },
+  {
+   "word": "nutritious",
+   "round": 0,
+   "s": "A bowl of porridge with fruit is a nutritious start to the day.",
+   "reason": "checker: A delicious start to the day also fits well. (also fits: delicious)"
+  },
+  {
+   "word": "nutritious",
+   "round": 0,
+   "s": "Choose a nutritious snack, such as an apple, to give you energy.",
+   "reason": "checker: A delicious snack such as an apple also makes sense. (also fits: delicious)"
+  },
+  {
+   "word": "infectious",
+   "round": 0,
+   "s": "Her excitement about the trip was so infectious that we all cheered.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "infectious",
+   "round": 0,
+   "s": "What an infectious tune, because now we are all humming it!",
+   "reason": "checker: Using 'because' after the exclamation is unnatural English."
+  }
+ ],
+ "sitOut": []
+}

@@ -1,0 +1,185 @@
+{
+ "chapter": "y34-ch10",
+ "year": 4,
+ "words": {
+  "although": [
+   "Although it was late, the puppy still wanted to play.",
+   "I wore my coat, although the sun was shining.",
+   "Although I tried hard, the tower of bricks fell down."
+  ],
+  "experience": [
+   "Do you have any experience of looking after a pet rabbit?",
+   "The new teacher has lots of experience of teaching little children.",
+   "Our teacher said we need more experience before we cook alone."
+  ],
+  "experiment": [
+   "Let's do an experiment to see if ice melts in the sun.",
+   "We mixed paint and water in our science experiment.",
+   "The teacher wrote down each result of the experiment."
+  ],
+  "occasion": [
+   "We only use the best plates on a special occasion.",
+   "Christmas dinner is the one occasion when we all sit together.",
+   "On this occasion, we had a picnic indoors because of rain."
+  ],
+  "opposite": [
+   "Short means the opposite of tall!",
+   "She said yes, but I said the opposite.",
+   "The post box is opposite the library."
+  ],
+  "particular": [
+   "Only this particular key opens the shed door!",
+   "She looked for one particular shell on the beach.",
+   "Which particular book do you want from the shelf?"
+  ],
+  "possible": [
+   "Please tidy your room as soon as possible.",
+   "Counting every star in the sky is not possible!",
+   "Rain is possible this afternoon, so take a coat."
+  ],
+  "possession": [
+   "My bike is my most prized possession.",
+   "Her kite is a treasured possession that she keeps in a box.",
+   "Every child put one possession in the class box."
+  ],
+  "accidentally": [
+   "Oops, I accidentally knocked over the milk!",
+   "We accidentally walked past the shop and had to turn back.",
+   "Did you accidentally take my coat home?"
+  ],
+  "occasionally": [
+   "It occasionally snows here, but not every winter.",
+   "We eat fish and chips only occasionally, as a treat.",
+   "The cat occasionally sits on my lap, but mostly she sleeps."
+  ]
+ },
+ "rounds": {
+  "although": 0,
+  "experience": 1,
+  "experiment": 0,
+  "occasion": 1,
+  "opposite": 0,
+  "particular": 0,
+  "possible": 0,
+  "possession": 0,
+  "accidentally": 0,
+  "occasionally": 0
+ },
+ "rejected": [
+  {
+   "word": "although",
+   "round": 0,
+   "s": "Why did you wear a hat although it was hot?",
+   "reason": "checker: Using although in a question sounds unnatural; 'when' would be the usual word."
+  },
+  {
+   "word": "experience",
+   "round": 0,
+   "s": "Baking bread with Gran was a new experience for me.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "experience",
+   "round": 0,
+   "s": "My uncle has years of experience in fixing bikes.",
+   "reason": "checker: A man as the one who fixes things is a stereotype we avoid."
+  },
+  {
+   "word": "experience",
+   "round": 0,
+   "s": "Did you enjoy the experience of sleeping in a tent?",
+   "reason": "checker: 'The experiment of sleeping in a tent' also makes sense. (also fits: experiment)"
+  },
+  {
+   "word": "experience",
+   "round": 0,
+   "s": "She had no experience of snow, so she loved it!",
+   "reason": "checker: The 'so' link is weak and hard for a child to follow."
+  },
+  {
+   "word": "experiment",
+   "round": 0,
+   "s": "Did the experiment show which paper plane flies furthest?",
+   "reason": "machine rule 4: not on the word lists: furthest"
+  },
+  {
+   "word": "experiment",
+   "round": 0,
+   "s": "Mum let me try a baking experiment with no sugar.",
+   "reason": "checker: 'No sugar' leans towards diet talk, and Mum in the kitchen is a stereotype."
+  },
+  {
+   "word": "occasion",
+   "round": 0,
+   "s": "Your birthday is a happy occasion for the whole family.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "occasion",
+   "round": 0,
+   "s": "Is Eid a happy occasion at your house?",
+   "reason": "checker: The question asks the child about religion at home, which we avoid."
+  },
+  {
+   "word": "occasion",
+   "round": 0,
+   "s": "Dad made a big cake for the occasion!",
+   "reason": "checker: 'Made a big cake for the experiment' also makes sense, and the clue is weak. (also fits: experiment)"
+  },
+  {
+   "word": "opposite",
+   "round": 0,
+   "s": "What is the opposite of happy?",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "possession",
+   "round": 0,
+   "s": "Please look after each possession when we go swimming.",
+   "reason": "checker: 'Each possession' is unnatural; people would say 'your things'."
+  },
+  {
+   "word": "possession",
+   "round": 0,
+   "s": "Is this scarf your possession, or does it belong to me?",
+   "reason": "checker: 'Your possession' is awkward; a child would say 'yours'."
+  },
+  {
+   "word": "accidentally",
+   "round": 0,
+   "s": "She accidentally put salt in the tea instead of sugar.",
+   "reason": "checker: 'Occasionally put salt in the tea' also makes sense, so a child cannot tell which word belongs. (also fits: occasionally)"
+  },
+  {
+   "word": "accidentally",
+   "round": 0,
+   "s": "The ball accidentally rolled into next door's garden.",
+   "reason": "checker: 'Occasionally rolled' also fits, and a ball cannot act on purpose anyway. (also fits: occasionally)"
+  },
+  {
+   "word": "experience",
+   "round": 1,
+   "s": "Mum learned from experience that wellies keep feet dry.",
+   "reason": "machine rule 4: not on the word lists: learned"
+  },
+  {
+   "word": "experience",
+   "round": 1,
+   "s": "You learn to ride a bike with practice and experience.",
+   "reason": "checker: A child could put 'experiment' after 'practice and', so the gap is not certain. (also fits: experiment)"
+  },
+  {
+   "word": "experience",
+   "round": 1,
+   "s": "What a wonderful experience it was to feed the ducks!",
+   "reason": "checker: 'What a wonderful occasion' also reads naturally, so the gap is not certain. (also fits: occasion, experiment)"
+  },
+  {
+   "word": "occasion",
+   "round": 1,
+   "s": "Our street party with flags and cake was quite an occasion!",
+   "reason": "checker: 'Quite an experience' also fits naturally, so the gap is not certain. (also fits: experience)"
+  }
+ ],
+ "sitOut": []
+}

@@ -1,0 +1,161 @@
+{
+ "chapter": "y3-n01",
+ "year": 3,
+ "words": {
+  "unkind": [
+   "Slamming the door in her friend's face was very unkind.",
+   "Saying thank you to the dinner lady is kind, not unkind.",
+   "A gentle person would never be unkind to a tiny kitten."
+  ],
+  "unfair": [
+   "The game was unfair because one team had more players.",
+   "My sister got a bigger slice of cake, and that is unfair!",
+   "Is it unfair that I must go to bed before my brother?"
+  ],
+  "untidy": [
+   "Please put your shoes away, because the hall looks untidy.",
+   "His handwriting was so untidy that nobody could read it.",
+   "The garden looked untidy with long grass and fallen leaves everywhere!"
+  ],
+  "unlock": [
+   "Which key will unlock the little box on the shelf?",
+   "She turned the small silver key to unlock her bike.",
+   "Mum took out her keys to unlock the car."
+  ],
+  "dislike": [
+   "I dislike wet socks, so I wear boots when it rains.",
+   "Do you dislike loud noises like the vacuum cleaner?",
+   "I really dislike getting up early on cold winter mornings!"
+  ],
+  "disagree": [
+   "Some people say tea is nicer, but I disagree!",
+   "My friends disagree, so we will take a vote.",
+   "Do you disagree with me about the best ice cream flavour?"
+  ],
+  "misspell": [
+   "I often misspell words that have double letters in them.",
+   "Did you misspell a word when you wrote the card?",
+   "Writing too fast can make me misspell easy words."
+  ],
+  "mislead": [
+   "A picture on the box can mislead you about what is inside.",
+   "Do not mislead the visitors by telling them the wrong way.",
+   "Did the broken clock mislead us into thinking we were late?"
+  ],
+  "dishonest": [
+   "Did you tell the truth, or were you dishonest?",
+   "Saying the dog ate your homework when it did not is dishonest.",
+   "A dishonest fox in my story tells lies to get the cheese."
+  ],
+  "misbehave": [
+   "Our class will lose playtime if we misbehave in assembly.",
+   "Please do not misbehave in the library, where everyone is reading.",
+   "Mum asked us not to misbehave on the long bus journey."
+  ]
+ },
+ "rounds": {
+  "unkind": 0,
+  "unfair": 0,
+  "untidy": 0,
+  "unlock": 0,
+  "dislike": 0,
+  "disagree": 0,
+  "misspell": 0,
+  "mislead": 0,
+  "dishonest": 1,
+  "misbehave": 0
+ },
+ "rejected": [
+  {
+   "word": "unkind",
+   "round": 0,
+   "s": "Is it unkind to ignore someone who wants to play with you?",
+   "reason": "checker: 'Is it unfair to ignore someone' also makes sense, so the gap has two answers. (also fits: unfair)"
+  },
+  {
+   "word": "unfair",
+   "round": 0,
+   "s": "It is unfair when one child gets three turns and you get none.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "unfair",
+   "round": 0,
+   "s": "The race felt unfair because I started further back than everyone.",
+   "reason": "checker: 'Than everyone' is unnatural (it should be 'everyone else'), and the shape copies the game sentence."
+  },
+  {
+   "word": "unlock",
+   "round": 0,
+   "s": "I need the key to unlock the front door.",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "dislike",
+   "round": 0,
+   "s": "My cat will dislike the rain and stay inside.",
+   "reason": "checker: 'Will dislike' is unnatural English for a habit."
+  },
+  {
+   "word": "dislike",
+   "round": 0,
+   "s": "She will dislike the smell of onions, so we left them out.",
+   "reason": "checker: 'Will dislike' with 'left' mixes tenses in a way that sounds wrong."
+  },
+  {
+   "word": "misspell",
+   "round": 0,
+   "s": "Will the spell checker tell me if I misspell a word?",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "misspell",
+   "round": 0,
+   "s": "Oops, I will misspell my own name if I rush!",
+   "reason": "checker: 'Will misspell' is unnatural here ('might' would be normal)."
+  },
+  {
+   "word": "dishonest",
+   "round": 0,
+   "s": "It is dishonest to say you finished your homework when you did not.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "dishonest",
+   "round": 0,
+   "s": "A dishonest child told Mum the dog had eaten the biscuits.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "dishonest",
+   "round": 0,
+   "s": "Is it dishonest to keep a toy you found in the park?",
+   "reason": "checker: 'Unfair' or 'unkind' could also fit, so the gap has more than one answer. (also fits: unfair, unkind)"
+  },
+  {
+   "word": "dishonest",
+   "round": 0,
+   "s": "Copying a friend's answers and saying they are yours is dishonest!",
+   "reason": "checker: Cheating is also unfair, so a child could put unfair in the gap. (also fits: unfair)"
+  },
+  {
+   "word": "misbehave",
+   "round": 0,
+   "s": "Will the twins misbehave if we stay up late at the party?",
+   "reason": "checker: The switch from 'the twins' to 'we' is confusing, and the link to staying up late is unclear."
+  },
+  {
+   "word": "dishonest",
+   "round": 1,
+   "s": "The dishonest shopkeeper said the old apples were fresh.",
+   "reason": "checker: A child could reasonably put unfair here, because selling old apples as fresh feels unfair. (also fits: unfair)"
+  },
+  {
+   "word": "dishonest",
+   "round": 1,
+   "s": "I felt dishonest when I told a lie about my drawing!",
+   "reason": "checker: Saying you felt dishonest is awkward English, and the exclamation mark does not suit the sentence."
+  }
+ ],
+ "sitOut": []
+}

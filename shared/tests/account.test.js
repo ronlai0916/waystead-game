@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { createApi } from '../account/api.js';
 import { createSession } from '../account/session.js';
 import { createSync } from '../account/sync.js';
-import { createPrefsSync } from '../account/prefs.js';
+import { createPrefsSync, cleanExtra, EXTRA_MAX_BYTES } from '../account/prefs.js';
 import { playerFromMe, cachedPlayer, PLAYER_KEY, playerKey } from '../account/player.js';
 import { chipHtml } from '../account/chip.js';
 import { offerImport, importKey } from '../account/importer.js';
@@ -314,6 +314,119 @@ test('prefs: a change is sent after a pause; offline, it waits; "Match device" i
   await p.flush();
   assert.equal(p.pending, false);
   assert.equal(t.acct.prefs.get(KID_A.id).theme, 'system');
+});
+
+// ---- SB5 TR-80: extra / setExtra --------------------------------------------------------
+
+test('SB5 extra: setExtra round-trips through the account and is read on another device', async () => {
+  const t = setup(CHILD_A);
+  const timers = manualTimers();
+  const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id, setTimer: timers.setTimer, clearTimer: timers.clearTimer });
+  await p.pull();
+  assert.equal(p.extra('sbRole'), undefined);
+  assert.equal(p.setExtra('sbRole', { r: 'teacher', n: 'Ms Patel', at: 5 }), true);
+  assert.deepEqual(p.extra('sbRole'), { r: 'teacher', n: 'Ms Patel', at: 5 });
+  await timers.run();
+  assert.deepEqual(t.acct.prefs.get(KID_A.id).prefs.sbRole, { r: 'teacher', n: 'Ms Patel', at: 5 });
+  assert.equal(t.acct.prefs.get(KID_A.id).prefs.saved, 1);
+  const p2 = createPrefsSync({ api: t.api, storage: memoryStorage(), playerId: KID_A.id });
+  await p2.pull();
+  assert.deepEqual(p2.extra('sbRole'), { r: 'teacher', n: 'Ms Patel', at: 5 });
+  // The returned record is a copy: changing it does not change the stored one.
+  p2.extra('sbRole').n = 'X';
+  assert.equal(p2.extra('sbRole').n, 'Ms Patel');
+});
+
+test('SB5 extra: setExtra survives a look change pushed later, and a null removes it', async () => {
+  const t = setup(CHILD_A);
+  const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id });
+  await p.pull();
+  p.setExtra('sbRole', { r: 'tutor', at: 1 });
+  t.storage.setItem('sb.theme', 'dark');
+  assert.equal(await p.push(), 'saved');
+  assert.equal(t.acct.prefs.get(KID_A.id).theme, 'dark');
+  assert.deepEqual(t.acct.prefs.get(KID_A.id).prefs.sbRole, { r: 'tutor', at: 1 });
+  p.setExtra('sbRole', null);
+  assert.equal(await p.push(), 'saved');
+  assert.equal('sbRole' in t.acct.prefs.get(KID_A.id).prefs, false);
+  assert.equal(p.extra('sbRole'), undefined);
+});
+
+test('SB5 extra: pull keeps a dirty extra (offline set, then back online)', async () => {
+  const t = setup(CHILD_A);
+  const timers = manualTimers();
+  const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id, setTimer: timers.setTimer, clearTimer: timers.clearTimer });
+  await p.pull();
+  t.acct.offline = true;
+  p.setExtra('sbRole', { r: 'parent', n: 'Mum', at: 9 });
+  await timers.run();
+  assert.equal(p.pending, true);
+  t.acct.offline = false;
+  // The account meanwhile holds an older role: the unsent one wins, and is sent.
+  t.acct.prefs.set(KID_A.id, { theme: 'system', dayStyle: 'garden', prefs: { saved: 1, voice: '', sbRole: { r: 'tutor', at: 1 } } });
+  assert.equal(await p.pull(), 'saved');
+  assert.deepEqual(t.acct.prefs.get(KID_A.id).prefs.sbRole, { r: 'parent', n: 'Mum', at: 9 });
+  assert.equal(p.pending, false);
+});
+
+test('SB5 extra: a dirty look after a reload does not wipe the account\'s extras (pull reads before it pushes)', async () => {
+  const t = setup(CHILD_A);
+  t.acct.prefs.set(KID_A.id, { theme: 'dark', dayStyle: 'paint', prefs: { saved: 1, voice: '', sbRole: { r: 'teacher', at: 3 }, wbThing: { a: 1 } } });
+  t.storage.setItem('wa.prefs:' + KID_A.id, 'dirty');
+  const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id });
+  assert.equal(await p.pull(), 'saved');
+  const got = t.acct.prefs.get(KID_A.id).prefs;
+  assert.deepEqual(got.sbRole, { r: 'teacher', at: 3 });
+  assert.deepEqual(got.wbThing, { a: 1 });
+});
+
+test('SB5 extra: cleaning, names and the size cap', async () => {
+  const t = setup(CHILD_A);
+  const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id });
+  await p.pull();
+  // cleaned: functions and undefined are dropped by the JSON round trip
+  assert.deepEqual(cleanExtra({ r: 'x', f() {}, u: undefined, n: null }), { r: 'x', n: null });
+  for (const bad of [undefined, null, 'text', 5, true, [1, 2]]) assert.equal(cleanExtra(bad), undefined);
+  assert.equal(cleanExtra({ a: 1n }), undefined);
+  const circ = {}; circ.me = circ;
+  assert.equal(cleanExtra(circ), undefined);
+  // cap, counted in bytes (multi-byte text counts more)
+  assert.notEqual(cleanExtra({ n: 'a'.repeat(EXTRA_MAX_BYTES - 8) }), undefined);
+  assert.equal(cleanExtra({ n: 'a'.repeat(EXTRA_MAX_BYTES) }), undefined);
+  assert.equal(cleanExtra({ n: '\u00e9'.repeat(EXTRA_MAX_BYTES / 2) }), undefined);
+  // a refused value changes nothing
+  p.setExtra('sbRole', { r: 'parent', at: 1 });
+  assert.equal(p.setExtra('sbRole', { n: 'a'.repeat(900) }), false);
+  assert.deepEqual(p.extra('sbRole'), { r: 'parent', at: 1 });
+  // names: reserved look keys and odd names are refused
+  for (const name of ['saved', 'voice', '__proto__', 'constructor', '', 'a b', 'x'.repeat(33), 5, undefined]) {
+    assert.equal(p.setExtra(name, { a: 1 }), false, String(name));
+    assert.equal(p.extra(name), undefined);
+  }
+  assert.equal(await p.push(), 'saved');
+  assert.equal(t.acct.prefs.get(KID_A.id).prefs.saved, 1);
+  assert.deepEqual(Object.keys(t.acct.prefs.get(KID_A.id).prefs).sort(), ['saved', 'sbRole', 'voice']);
+});
+
+test('SB5 extra: unknown keys are preserved, and old prefs (no extra) are untouched', async () => {
+  const t = setup(CHILD_A);
+  t.acct.prefs.set(KID_A.id, { theme: 'light', dayStyle: 'garden', prefs: { saved: 1, voice: 'Daniel', futureKey: { z: [1, 2] }, other: 'kept' } });
+  const p = createPrefsSync({ api: t.api, storage: t.storage, playerId: KID_A.id });
+  await p.pull();
+  assert.equal(p.extra('futureKey') !== undefined, true); // objects of other apps are readable
+  assert.equal(p.extra('other'), undefined); // a non-object is not an extra
+  p.setExtra('sbRole', { r: 'parent', at: 2 });
+  await p.push();
+  assert.deepEqual(t.acct.prefs.get(KID_A.id).prefs, { saved: 1, voice: 'Daniel', futureKey: { z: [1, 2] }, other: 'kept', sbRole: { r: 'parent', at: 2 } });
+  // Never calling setExtra: the pushed prefs are exactly what they were before this change.
+  const t2 = setup(CHILD_A);
+  const q = createPrefsSync({ api: t2.api, storage: t2.storage, playerId: KID_A.id });
+  assert.equal(await q.pull(), 'saved');
+  assert.deepEqual(t2.acct.prefs.get(KID_A.id), { theme: 'system', dayStyle: 'garden', prefs: { saved: 1, voice: '' } });
+  // A 16c-shaped device (spreads the `other` it read) keeps sbRole when it pushes.
+  const old = t.acct.prefs.get(KID_A.id);
+  await t.api.putPrefs({ theme: old.theme, dayStyle: old.dayStyle, prefs: { ...old.prefs, saved: 1, voice: 'Ava' } });
+  assert.deepEqual(t.acct.prefs.get(KID_A.id).prefs.sbRole, { r: 'parent', at: 2 });
 });
 
 // ---- the one-time import ------------------------------------------------------------

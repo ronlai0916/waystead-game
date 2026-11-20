@@ -14,6 +14,10 @@ import * as St from './study-doc.js';
 import * as W from './words-doc.js';
 import { entryFor } from './word-info.js';
 import { safeDecode } from './chapters-doc.js';
+import * as PR from './practice-doc.js';
+import * as G from './games-doc.js';
+import { getWeek } from './week-choice.js';
+import { tileHtml, openSheet, backLink } from './child-views.js';
 
 const href = (...parts) => '#/' + parts.join('/');
 const yearName = (id) => D.years()[id].label; // "Year 3"
@@ -143,6 +147,7 @@ function ownSection() {
 
 /** #/chapters: "More practice". One school year at a time, its stones, ONE primary button, then three quiet rows. */
 export function chapters(main) {
+  if (isChild() && kind() !== 'adult') return childPractice(main);
   const child = isChild();
   const adult = kind() === 'adult';
   const live = D.liveYears();
@@ -154,7 +159,7 @@ export function chapters(main) {
   const sentence = child ? 'Learn a chapter, then test it.' : 'Each chapter: learn the words, practise them, then take the chapter test.';
   const rows = [
     ['#/custom', SVG.pencil, 'Pick words', 'Choose your own words'],
-    ['#/tricky', SVG.alert, 'Tricky words', tricky ? tricky + ' to go back to' : 'None yet'],
+    ['#/tricky', SVG.alert, 'Words to practise again', tricky ? nWords(tricky) : 'None yet'],
     ['#/progress', SVG.bars, 'Progress', 'Chapters you have passed'],
   ];
   main.innerHTML = '<section class="wrap page front chapterspage' + y12() + '" data-chapters data-for="' + (child ? 'child' : 'adult') + '">'
@@ -197,6 +202,75 @@ export function chapters(main) {
   draw();
   const hear = main.querySelector('[data-hear]');
   if (hear) hear.addEventListener('click', () => sayLine(sentence));
+  return stop;
+}
+
+/* ---------------------------------------------------- Practice (a child) --- */
+const PIC = {
+  list: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>',
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10.2 8.8l5 3.2-5 3.2z"/></svg>',
+  again: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v4.5h4.5"/></svg>',
+  tick: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+};
+const SHUT = 'Opens after your test';
+const SENTENCE_ROWS = {
+  match: 'Words and their meanings',
+  fill: 'Put the word in the sentence',
+  mix: 'Put each word in its sentence',
+};
+const nWords = (n) => n + (n === 1 ? ' word' : ' words');
+
+/**
+ * #/chapters for a child: "Practice" (TR-47). The lists from the grown-up come first ("From Mum", else "From your grown-up"), then Sentence games
+ * (a sheet with Meaning match, Fill in the blanks and Mix and match; shut while a test is due), Words to practise again, the year chapters, Pick words
+ * and My progress. A list that holds a word of a test that is due is shut and shows its name only.
+ */
+export function childPractice(main) {
+  const d = S.readWords();
+  const day = W.localDay(Date.now());
+  const setup = S.readSetup();
+  const pick = C.weekChoice(d, day, getWeek());
+  const week = pick.group;
+  const hidden = S.currentPlayer() ? St.hiddenWords(d, day) : new Set();
+  const locked = St.dueGroups(d, day).length > 0;
+  const own = Su.liveOwn(setup);
+  const sections = PR.practiceSections({ own, hidden: [...hidden], hasWeek: !!week });
+  const live = D.liveYears();
+  const views = Object.fromEntries(live.map((id) => [id, viewOf(id)]));
+  let year = F.pickYear(remembered(live), views, childYear(), live);
+  const tricky = S.trickyWords().length;
+  const picked = S.getSelection().length;
+  const byId = new Map(own.map((e) => [e.id, e]));
+  const draw = {
+    lists: (sec) => '<h2 class="practice__sec" data-own-head>' + esc(C.fromLine(setup)) + '</h2><ul class="practice__list" data-own-list>' + sec.items.map((it, i) => {
+      const e = byId.get(it.id);
+      if (it.hidden) return '<li>' + tileHtml({ icon: PIC.list, title: it.name, sub: SHUT, lock: true, attr: ' data-own-chapter="' + esc(it.id) + '" data-hidden' }) + '</li>';
+      const state = F.stoneState(S.chapterProgress('own-' + it.id));
+      return '<li>' + tileHtml({ href: href('words', 'own', encodeURIComponent(it.id)), icon: PIC.list, title: it.name, sub: nWords(e ? e.words.length : 0) + ' · ' + F.STONE_LABEL[state].toLowerCase(), first: i === 0, attr: ' data-own-chapter="' + esc(it.id) + '" data-state="' + state + '"' }) + '</li>';
+    }).join('') + '</ul>',
+    sentenceGames: () => '<div class="practice__one">' + tileHtml({ button: true, icon: PIC.play, title: PR.SENTENCE_GAMES_TITLE, sub: locked ? SHUT : 'Meaning match, Fill in the blanks, Mix and match', lock: locked, attr: ' data-sentence-games' }) + '</div>',
+    tricky: () => '<div class="practice__one">' + tileHtml({ href: '#/tricky', icon: PIC.again, title: 'Words to practise again', sub: locked ? SHUT : tricky ? nWords(tricky) : 'None yet', lock: locked }) + '</div>',
+    years: () => '<h2 class="practice__sec">Year chapters</h2><div class="yeargrid" role="group" aria-label="Year group" data-yearswitch>' + live.map((id) => '<button type="button" data-year="' + id + '" aria-pressed="' + (id === year) + '">' + esc(yearName(id)) + '</button>').join('') + '</div><div data-yearslot></div>',
+    pick: () => '<div class="practice__one">' + tileHtml({ href: '#/custom', icon: PIC.tick, title: 'Pick words', sub: picked ? 'Choose your own · ' + picked + ' picked' : 'Choose your own' }) + '</div>',
+    progress: () => '<div class="practice__one">' + tileHtml({ href: '#/progress', icon: PIC.eye, title: 'My progress', sub: 'Chapters you have passed' }) + '</div>',
+  };
+  const moreAt = sections.findIndex((x) => x.kind === 'pick');
+  main.innerHTML = '<section class="wrap page front practice' + y12() + '" data-chapters data-for="child">'
+    + '<div class="pagehead">' + backLink() + '<h1>' + PR.PRACTICE_TITLE + '</h1></div>'
+    + sections.map((sec, i) => (i === moreAt ? '<h2 class="practice__sec">More to try</h2>' : '') + draw[sec.kind](sec)).join('') + '</section>';
+  const slot = main.querySelector('[data-yearslot]');
+  const grid = main.querySelector('[data-yearswitch]');
+  const paint = () => {
+    slot.innerHTML = yearPanel(year);
+    grid.querySelectorAll('[data-year]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.year === year)));
+  };
+  paint();
+  grid.querySelectorAll('[data-year]').forEach((b) => b.addEventListener('click', () => { year = b.dataset.year; rememberYear(year); paint(); b.focus({ preventScroll: true }); })); // S3-D8: the pressed year keeps keyboard focus
+  const sg = main.querySelector('[data-sentence-games]');
+  if (sg && !locked && week) {
+    sg.addEventListener('click', () => openSheet(sg, { title: PR.SENTENCE_GAMES_TITLE, cls: 'gamesheet', body: PR.SENTENCE_GAMES.map((id) => tileHtml({ href: '#/words/g/' + encodeURIComponent(week.id) + '/game/' + id, icon: id === 'fill' ? PIC.tick : PIC.list, title: G.GAMES[id].title, sub: SENTENCE_ROWS[id] })).join('') }));
+  }
   return stop;
 }
 

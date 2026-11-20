@@ -1,0 +1,197 @@
+{
+ "chapter": "y34-ch08",
+ "year": 4,
+ "words": {
+  "through": [
+   "The cat crept through the hole in the fence.",
+   "We walked through the park to get to school.",
+   "Sunlight shone through the curtains this morning."
+  ],
+  "important": [
+   "Mum said the letter was important, so I kept it safe.",
+   "Wait, don't throw that away, it is important!",
+   "Keep this ticket safe because it is important."
+  ],
+  "suppose": [
+   "Fine, I suppose I can share my last biscuit.",
+   "I suppose I should tidy my room before tea, shouldn't I?",
+   "Do you suppose I could have a turn on the swing?"
+  ],
+  "accident": [
+   "Nobody meant to break the plate, so it was an accident.",
+   "I am sorry, the spilt juice was an accident!",
+   "Did the kitten knock over the plant pot by accident?"
+  ],
+  "actually": [
+   "I thought the shop was shut, but it is actually open.",
+   "The cake looks plain, but it actually tastes of lemon.",
+   "What is actually inside this big box?"
+  ],
+  "business": [
+   "My aunt started a business selling cakes at the market.",
+   "The shop is a family business, so everyone helps out.",
+   "Which business sells the best ice cream in town?"
+  ],
+  "pressure": [
+   "Use gentle pressure when you press the clay flat.",
+   "Squeeze the toothpaste tube and the pressure pushes it out.",
+   "Too much pressure from heavy snow bent the shed roof."
+  ],
+  "imagine": [
+   "Close your eyes and imagine a beach with warm golden sand.",
+   "Can you imagine a cake as big as a house?",
+   "I love to imagine pictures in my head before I paint."
+  ],
+  "different": [
+   "Is this the same book or a different one?",
+   "Our new house feels different from our old one.",
+   "Each of the cats has a different colour of fur."
+  ],
+  "difficult": [
+   "The jar lid was so tight that it was difficult to open.",
+   "Is this maths question too difficult for us?",
+   "What a difficult jigsaw, with so many bits that look alike!"
+  ],
+  "disappear": [
+   "The sun will disappear behind the clouds soon.",
+   "The footprints on the beach disappear when the tide comes in.",
+   "Why does my sock always disappear in the wash?"
+  ]
+ },
+ "rounds": {
+  "through": 0,
+  "important": 1,
+  "suppose": 1,
+  "accident": 0,
+  "actually": 0,
+  "business": 0,
+  "pressure": 0,
+  "imagine": 0,
+  "different": 0,
+  "difficult": 0,
+  "disappear": 0
+ },
+ "rejected": [
+  {
+   "word": "important",
+   "round": 0,
+   "s": "Being on time is important, as the bus will not wait for us.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "important",
+   "round": 0,
+   "s": "Why is it important to say thank you?",
+   "reason": "checker: 'Why is it difficult to say thank you?' is also a natural question. (also fits: difficult)"
+  },
+  {
+   "word": "important",
+   "round": 0,
+   "s": "The most important part of a birthday is sharing the cake!",
+   "reason": "checker: 'The most difficult part of a birthday is sharing the cake' also makes sense as a joke. (also fits: difficult)"
+  },
+  {
+   "word": "suppose",
+   "round": 0,
+   "s": "We can stay a bit longer, I suppose, if the sun stays out.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "suppose",
+   "round": 0,
+   "s": "I suppose you may stay up late, just this once.",
+   "reason": "checker: This means giving permission rather than thinking something is true, and 'I imagine you may' could also fit. (also fits: imagine)"
+  },
+  {
+   "word": "suppose",
+   "round": 0,
+   "s": "Do you suppose it will rain, as the clouds are so grey?",
+   "reason": "checker: 'Do you imagine it will rain' is also correct English, so the gap has two answers. (also fits: imagine)"
+  },
+  {
+   "word": "suppose",
+   "round": 0,
+   "s": "I suppose the cake is gone because the plate is empty.",
+   "reason": "checker: 'I imagine the cake is gone' also works, so the gap has two answers. (also fits: imagine)"
+  },
+  {
+   "word": "business",
+   "round": 0,
+   "s": "Grandad ran a small business mending clocks and watches.",
+   "reason": "machine rule 4: not on the word lists: Grandad"
+  },
+  {
+   "word": "pressure",
+   "round": 0,
+   "s": "Pump more air in and the pressure in the bike tyre goes up.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "pressure",
+   "round": 0,
+   "s": "Does high pressure bring sunny weather?",
+   "reason": "checker: Air pressure in weather is too abstract for this age and does not show a pushing force."
+  },
+  {
+   "word": "different",
+   "round": 0,
+   "s": "My two socks are not the same, they look different.",
+   "reason": "checker: It repeats the meaning 'not the same' word for word and joins two sentences with only a comma."
+  },
+  {
+   "word": "different",
+   "round": 0,
+   "s": "Can we try a different way home today?",
+   "reason": "checker: 'A difficult way home' is also correct English. (also fits: difficult)"
+  },
+  {
+   "word": "difficult",
+   "round": 0,
+   "s": "Tying my shoelaces was difficult when I was little.",
+   "reason": "checker: 'Tying my shoelaces was different when I was little' also makes sense. (also fits: different)"
+  },
+  {
+   "word": "difficult",
+   "round": 0,
+   "s": "Climbing the steep hill felt difficult with a heavy bag.",
+   "reason": "checker: 'Felt different with a heavy bag' also makes sense. (also fits: different)"
+  },
+  {
+   "word": "important",
+   "round": 1,
+   "s": "Mum said the letter was important, so I posted it today.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "important",
+   "round": 1,
+   "s": "Keep this note safe because it is important.",
+   "reason": "machine rule 6: too like another candidate"
+  },
+  {
+   "word": "important",
+   "round": 1,
+   "s": "A seat belt is important on every car journey.",
+   "reason": "checker: Seat belts suggest the risk of a car crash, which is a doubtful road-safety theme."
+  },
+  {
+   "word": "important",
+   "round": 1,
+   "s": "Is this letter important enough to go in the post box?",
+   "reason": "checker: The logic is odd because whether a letter is important does not decide if it is posted."
+  },
+  {
+   "word": "suppose",
+   "round": 1,
+   "s": "I suppose we should go home before tea.",
+   "reason": "checker: 'I imagine we should go home' is also natural, so the gap has two answers. (also fits: imagine)"
+  },
+  {
+   "word": "suppose",
+   "round": 1,
+   "s": "Well, I suppose we could walk home instead of taking the bus.",
+   "reason": "checker: 'I imagine we could walk home' also makes sense, so a child could pick either word. (also fits: imagine)"
+  }
+ ],
+ "sitOut": []
+}

@@ -115,11 +115,6 @@ test('the stone strip has seven stones, with their states', () => {
 });
 
 // ---- planning ------------------------------------------------------------------------------
-test('10 words is a full week; the line says so', () => {
-  assert.equal(P.atCap(Array(9).fill('a')), false);
-  assert.equal(P.atCap(Array(10).fill('a')), true);
-  assert.equal(P.FULL_WEEK_LINE, '10 words is a full week. Remove one to add another.');
-});
 test('a short week: fewer than 5 days before the test', () => {
   assert.equal(P.isShortWeek(MON, plus(4)), true);
   assert.equal(P.isShortWeek(MON, plus(5)), false);
@@ -131,33 +126,17 @@ test('the date is written beside the field', () => {
   assert.equal(P.dateWords('2026-11-27'), 'Fri 27 Nov');
   assert.equal(P.dateWords(''), '');
 });
-test('the week name: School spellings for typed words, else the list\'s name', () => {
-  assert.equal(P.suggestName({ typedCount: 1, listName: 'Year 3 & 4 words', test: plus(5) }), 'School spellings');
-  assert.equal(P.suggestName({ typedCount: 0, listName: 'Year 3 & 4 words', test: plus(5) }), 'Year 3 & 4 words');
-  assert.match(P.suggestName({ typedCount: 0, listName: '', test: plus(5) }), /^Words for/);
-});
-test('the child\'s year list, and where the planner starts', () => {
+test('the child\'s year list', () => {
   assert.deepEqual([3, 4, 5, 6].map((y) => P.yearListFor(y)), ['y3', 'y4', 'y5', 'y6']);
   assert.deepEqual([1, 2].map((y) => P.yearListFor(y, ['y3', 'y4', 'y5', 'y6'])), ['y3', 'y3'], 'Years 1 and 2 are Year 3 until they have words');
   assert.deepEqual([1, 2, 3, 7].map((y) => P.yearListFor(y, ['y1', 'y2', 'y3', 'y4', 'y5', 'y6'])), ['y1', 'y2', 'y3', 'y6']);
   assert.equal(P.yearListFor(undefined), 'y3');
-  assert.equal(P.firstStep({ children: 2, chosen: '', editing: false }), 1);
-  assert.equal(P.firstStep({ children: 1, chosen: '', editing: false }), 2, 'one child: skip step 1');
-  assert.equal(P.firstStep({ children: 2, chosen: 'k', editing: false }), 2);
-  assert.equal(P.firstStep({ children: 2, chosen: '', editing: true }), 2, 'a revision has its child');
-  assert.equal(P.stepBack(3, { children: 2, editing: false }), 2);
-  assert.equal(P.stepBack(2, { children: 2, editing: false }), 1);
-  assert.equal(P.stepBack(2, { children: 1, editing: false }), 0, 'step 1 was never shown');
-  assert.equal(P.stepBack(2, { children: 2, editing: true }), 0);
 });
 test('one plan id: sending it twice makes one group', () => {
   const plan = { name: 'School spellings', test: plus(5), words: ['fruit'] };
   const once = P.createPlan(W.emptyDoc(), plan, { id: 'pabc', today: MON, now: 1 }).doc;
   const twice = P.createPlan(once, plan, { id: 'pabc', today: MON, now: 2 }).doc;
   assert.equal(W.liveGroups(twice).length, 1);
-  const src = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  assert.match(src, /const planId = 'p' \+/);
-  assert.equal((src.match(/id: planId/g) || []).length, 1, 'only one place makes a plan, with the form\'s id');
 });
 
 // ---- revise ---------------------------------------------------------------------------------
@@ -248,7 +227,7 @@ test('grown-ups pages: no inline style or script, own stylesheet in the shell, a
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   assert.ok(sw.includes("'css/grownups.css'"));
   assert.match(readFileSync(file('site/index.html'), 'utf8'), /css\/grownups\.css/);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-16c'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-19f'/);
   const css = readFileSync(file('site/css/grownups.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   for (const rule of css.split('}').map((r) => r.split('{')[0].trim()).filter((s) => s && !s.startsWith('@') && !/^\d|^(from|to)/.test(s))) {
     for (const sel of rule.split(',').map((x) => x.trim())) assert.match(sel, /^\.gu|^@/, 'scoped to .gu: ' + sel);
@@ -256,7 +235,7 @@ test('grown-ups pages: no inline style or script, own stylesheet in the shell, a
 });
 test('the wording a parent reads', () => {
   const views = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  for (const s of ['At a glance', 'Change words or test date', 'Delete this week', 'Print this week', 'Plan next week', 'Deleted weeks', 'Bring back', 'Start the week for', 'All children', 'Step \' + step + \' of 3']) assert.ok(views.includes(s), s);
+  for (const s of ['At a glance', 'Change words or test date', 'Delete this week', 'Print this week', 'Set next week', 'Deleted weeks', 'Bring back', 'backName']) assert.ok(views.includes(s), s);
   assert.equal(P.deleteQuestion('School spellings', 'Robin'), 'Delete School spellings for Robin?');
   assert.equal(P.deleteBody('Robin'), 'Robin\'s practice on these words is kept and still counts towards remembered words.');
 });
@@ -344,10 +323,6 @@ test('S3: a date the grown-up picks must be after today; the passed-date line', 
   assert.match(P.editPlan(d, 'g1', { test: day }, { today: day, now: at(day) }).error, /./, 'today is not after today');
   assert.equal(P.editPlan(d, 'g1', { test: plus(8) }, { today: day, now: at(day) }).doc.groups.g1.test, plus(8));
   assert.equal(P.passedLine('Robin'), 'The test date has passed. Robin\'s test opens when the jobs are done. You can pick a new date.');
-  const views = readFileSync(file('site/js/grownups-views.js'), 'utf8');
-  assert.match(views, /test = existing\.test;/);
-  assert.doesNotMatch(views, /existing\.test > day \? existing\.test/);
-  assert.match(views, /data-datepassed/);
   assert.ok(g);
 });
 

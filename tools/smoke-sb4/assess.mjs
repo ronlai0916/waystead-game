@@ -370,7 +370,7 @@ export default function (H) {
     const t = await text();
     ok(/Test done\./.test(t) && /You spelled 3 of 4\./.test(t) && /1 word will come back to practise\./.test(t) && !BANNED.test(t), 'the end: ' + t.slice(0, 160));
     ok(!await has('[data-end=celebrate]') && (await text('[data-practise-word]')).replace(/\s|·/g, '').toLowerCase() === second, 'the slipped word as a card, no celebration');
-    ok(/Back to my words/.test(await text('.assess__end')), 'the way back');
+    ok(/Practise the 1 test word/.test(await text('.assess__end a.btn--primary')) && await ev('document.querySelector(".assess__end a.btn--primary").getAttribute("href")') === '#/tricky' && await ev('[...document.querySelectorAll(".assess__end a:not(.btn--primary)")].some((a) => a.textContent.trim() === "Go to Today" && a.getAttribute("href") === "#/")'), 'SB5: Practise the 1 test word leads, Go to Today is the way back: ' + await text('.assess__end'));
     const d = await readWords();
     ok(d.results.filter((r) => r.k === 't').length === 4, 'four tries in all');
     ok(W.slipped(d, W.groupById(d, 'g1')).join() === second, 'the slip is in the group\'s results');
@@ -497,7 +497,7 @@ export default function (H) {
     ok(!await has('[data-quizrow]'), 'not before Practice day is done');
     await start({ doc: withSetup(studiedDoc()), day: plus(2), hash: '#/words/g/g1' });
     await until('document.querySelector("main h1")', 'the week page');
-    ok(await has('[data-quizrow]') && /Try a quick quiz/.test(await text('[data-quizrow]')), 'the row after Practice day');
+    ok(await has('[data-quizrow]') && /Quiz\s*5 quick questions/.test(await text('[data-quizrow]')) && /\/quiz$/.test(await ev('document.querySelector("[data-quizrow]").getAttribute("href")')), 'the Quiz tile after Practice day (D26 tiles): ' + await text('[data-quizrow]'));
     await click('[data-quizrow]');
     await until('document.querySelector("[data-assess=word]")', 'the week quiz');
     ok(/^Word 1 of 4$/.test(await progress()) || /^Word 1 of 5$/.test(await progress()), 'a quiz of the week\'s words: ' + await progress());
@@ -509,10 +509,10 @@ export default function (H) {
 
     step('test day: no row, and the route shows the test card');
     await start({ doc: withSetup(studiedDoc()), day: plus(5), hash: '#/words/g/g1' });
-    await until('document.querySelector("[data-testcard]")', 'the test card');
-    ok(!await has('[data-quizrow]'), 'no quiz row while the test is due');
+    await until('document.querySelector("[data-job]")', 'the Today\'s test tile (D26: the week page is tiles)');
+    ok(/Today.s test/.test(await text('[data-job]')) && !await has('[data-quizrow]'), 'no quiz tile while the test is due');
     await go('#/words/g/g1/quiz');
-    await until('document.querySelector("[data-testcard]")', 'the test card instead of the quiz');
+    await until('document.querySelector("[data-job]") && !document.querySelector("[data-assess]")', 'the week page with the test tile instead of the quiz');
     ok(!await has('[data-assess]') && !new RegExp(WORDS.join('|'), 'i').test(await text()), 'no quiz and no word');
     await start({ doc: studiedDoc(), prog: progDoc({ 'y34-ch01': { studiedAt: T0, practisedAt: T0 } }), day: plus(5), hash: '#/y3/ch01/quiz', tiles: false });
     await until('document.querySelector("[data-testcard]")', 'a chapter that holds a due word shows the test card, not its quiz');
@@ -538,12 +538,12 @@ export default function (H) {
     step('Year 6 on Standard: "Your exam is ready."');
     await start({ doc: examDoc(), year: 6, day: plus(3), hash: '#/' });
     await until('document.querySelector("[data-examrow]")', 'the home row');
-    ok((await text('[data-examrow]')).trim() === 'Your exam is ready.', 'Year 6: ' + await text('[data-examrow]'));
+    ok(/^Your exam is ready\.\s*Start it when you are/.test((await text('[data-examrow]')).trim()), 'Year 6: ' + await text('[data-examrow]'));
 
     step('Year 4: "Your big test is ready."');
     await start({ doc: examDoc(), year: 4, day: plus(3), hash: '#/' });
     await until('document.querySelector("[data-examrow]")', 'the home row');
-    ok((await text('[data-examrow]')).trim() === 'Your big test is ready.' && (await rect('[data-examrow]')).h >= 48, 'Year 4: ' + await text('[data-examrow]'));
+    ok(/^Your big test is ready\.\s*Start it when you are/.test((await text('[data-examrow]')).trim()) && (await rect('[data-examrow]')).h >= 48, 'Year 4: ' + await text('[data-examrow]'));
     await H.shot('wp5-exam-home');
     await ev('sessionStorage.removeItem("sb.examDraft")');
     await click('[data-examrow]');

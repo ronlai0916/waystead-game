@@ -1,0 +1,347 @@
+{
+ "chapter": "y3-n03",
+ "year": 3,
+ "words": {
+  "gently": [
+   "Please pat the tiny bunny gently, as its fur is so soft.",
+   "Turn the thin old pages gently so they do not tear.",
+   "The breeze blew gently, and the leaves barely moved."
+  ],
+  "quickly": [
+   "The bus is about to leave, so we must run quickly!",
+   "She quickly ate her toast because the bell was about to ring.",
+   "Hurry up and get dressed quickly, or we will miss the bus."
+  ],
+  "happily": [
+   "The story ended with everyone living happily ever after.",
+   "With a glad heart, he sat happily by the window.",
+   "How happily we waved, glad that the holiday had begun!"
+  ],
+  "easily": [
+   "It is so light that I can easily carry it!",
+   "Can you reach the top shelf easily or do you need steps?",
+   "The tall girl could easily see over the fence."
+  ],
+  "noisily": [
+   "The lorry rumbled noisily down our street and woke the baby.",
+   "Why is the washing machine rattling so noisily today?",
+   "Don't eat your crisps so noisily in the quiet library!"
+  ],
+  "angrily": [
+   "My dad was cross about the muddy floor and frowned angrily.",
+   "She glared angrily at the broken kite and folded her arms.",
+   "Cross about the lost game, he sat angrily with his arms folded."
+  ],
+  "basically": [
+   "A pancake is basically flour, eggs and milk.",
+   "The cake is basically done, so we just need the icing.",
+   "The two paintings are basically the same, but one has more blue."
+  ],
+  "magically": [
+   "In the story, the pumpkin magically became a golden coach.",
+   "The old teapot magically turned into a tiny silver bird.",
+   "Did the cards magically float up from the table?"
+  ],
+  "fantastically": [
+   "Our class did fantastically in the spelling test!",
+   "My kite flew fantastically well, and we cheered in the park.",
+   "We had a fantastically good time at the seaside today."
+  ],
+  "dramatically": [
+   "She flopped dramatically onto the sofa, like an actor in a play.",
+   "With a grand sweep of his arm, the dancer bowed dramatically.",
+   "He pointed dramatically at the cake, like an actor on a stage."
+  ]
+ },
+ "rounds": {
+  "gently": 0,
+  "quickly": 0,
+  "happily": 1,
+  "easily": 1,
+  "noisily": 0,
+  "angrily": 1,
+  "basically": 0,
+  "magically": 0,
+  "fantastically": 2,
+  "dramatically": 1
+ },
+ "rejected": [
+  {
+   "word": "gently",
+   "round": 0,
+   "s": "How gently Dad rocked the little baby to sleep!",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "quickly",
+   "round": 0,
+   "s": "Quickly, the cat dashed up the tree after the fluttering leaf.",
+   "reason": "checker: Dashed already shows speed, so dramatically or happily could also start the sentence. (also fits: dramatically, happily)"
+  },
+  {
+   "word": "quickly",
+   "round": 0,
+   "s": "The fast cyclist went by so quickly that I blinked.",
+   "reason": "checker: Saying that I blinked is an odd result of something going fast, so the sentence reads unnaturally."
+  },
+  {
+   "word": "happily",
+   "round": 0,
+   "s": "The puppy wagged its tail happily when Mum came home.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "happily",
+   "round": 0,
+   "s": "We smiled and sang happily all the way to the seaside.",
+   "reason": "checker: Singing noisily all the way also makes sense, so the gap is not clear. (also fits: noisily)"
+  },
+  {
+   "word": "happily",
+   "round": 0,
+   "s": "Why is the baby laughing so happily at the bubbles?",
+   "reason": "checker: A baby laughing so noisily at bubbles is just as natural. (also fits: noisily)"
+  },
+  {
+   "word": "happily",
+   "round": 0,
+   "s": "Happily, the rain stopped just before the picnic began.",
+   "reason": "checker: This uses happily to mean luckily, and magically could also fit the gap. (also fits: magically)"
+  },
+  {
+   "word": "happily",
+   "round": 0,
+   "s": "Grinning with joy, she happily opened her birthday present.",
+   "reason": "checker: Opening a present quickly or noisily also makes sense here. (also fits: quickly, noisily)"
+  },
+  {
+   "word": "easily",
+   "round": 0,
+   "s": "The lid was loose, so it came off easily.",
+   "reason": "checker: A loose lid could also come off quickly, so the clue is not strong enough. (also fits: quickly)"
+  },
+  {
+   "word": "easily",
+   "round": 0,
+   "s": "The sums were so simple that she did them easily.",
+   "reason": "checker: Simple sums done quickly makes just as much sense. (also fits: quickly)"
+  },
+  {
+   "word": "easily",
+   "round": 0,
+   "s": "A light feather floats easily, but a heavy stone sinks.",
+   "reason": "checker: A light feather floats gently is very natural too. (also fits: gently)"
+  },
+  {
+   "word": "easily",
+   "round": 0,
+   "s": "Easily, she won the sack race and was not even tired.",
+   "reason": "checker: Happily, she won also fits, and starting with Easily sounds awkward. (also fits: happily)"
+  },
+  {
+   "word": "noisily",
+   "round": 0,
+   "s": "The children banged their drums noisily in music class.",
+   "reason": "checker: Children banging drums happily in music class makes sense too. (also fits: happily)"
+  },
+  {
+   "word": "noisily",
+   "round": 0,
+   "s": "Noisily, the crows squawked in the tall tree at dawn.",
+   "reason": "checker: Crows could squawk angrily or happily, so the gap is not clear. (also fits: angrily, happily)"
+  },
+  {
+   "word": "angrily",
+   "round": 0,
+   "s": "He frowned angrily when the rain spoiled the picnic.",
+   "reason": "machine rule 4: not on the word lists: spoiled"
+  },
+  {
+   "word": "angrily",
+   "round": 0,
+   "s": "Why is the goose hissing so angrily at the bread bag?",
+   "reason": "checker: A goose hissing so noisily also makes sense. (also fits: noisily)"
+  },
+  {
+   "word": "angrily",
+   "round": 0,
+   "s": "My brother stamped his feet angrily and said it was unfair.",
+   "reason": "checker: Stamping your feet noisily is a very natural phrase too. (also fits: noisily)"
+  },
+  {
+   "word": "magically",
+   "round": 0,
+   "s": "Her wand glowed, and the flowers magically grew taller.",
+   "reason": "checker: The flowers could also grow quickly or dramatically taller. (also fits: quickly, dramatically)"
+  },
+  {
+   "word": "magically",
+   "round": 0,
+   "s": "How did the magician magically make the scarf vanish?",
+   "reason": "checker: Magician makes the word repeat itself, and quickly also fits. (also fits: quickly)"
+  },
+  {
+   "word": "fantastically",
+   "round": 0,
+   "s": "The choir sang fantastically at the school concert.",
+   "reason": "checker: A choir could also sing happily or noisily. (also fits: happily, noisily)"
+  },
+  {
+   "word": "fantastically",
+   "round": 0,
+   "s": "She painted the sunset fantastically, with bright colours and swirls.",
+   "reason": "checker: Painting dramatically with bright colours and swirls makes sense too. (also fits: dramatically, happily)"
+  },
+  {
+   "word": "fantastically",
+   "round": 0,
+   "s": "How fantastically the band played at the summer fair!",
+   "reason": "checker: A band could also play noisily or happily. (also fits: noisily, happily)"
+  },
+  {
+   "word": "dramatically",
+   "round": 0,
+   "s": "The temperature dropped dramatically overnight, and the grass was white with frost.",
+   "reason": "machine rule 3: 83 characters (max 75)"
+  },
+  {
+   "word": "dramatically",
+   "round": 0,
+   "s": "The curtains dramatically opened and the play began.",
+   "reason": "checker: Curtains could also open quickly or magically. (also fits: quickly, magically)"
+  },
+  {
+   "word": "dramatically",
+   "round": 0,
+   "s": "The kite swooped dramatically down towards the beach.",
+   "reason": "checker: A kite swooping quickly down is just as natural. (also fits: quickly)"
+  },
+  {
+   "word": "dramatically",
+   "round": 0,
+   "s": "Did the puddle grow dramatically after the heavy rain?",
+   "reason": "checker: Here it means by a lot rather than in a sudden, exciting way, and quickly also fits. (also fits: quickly)"
+  },
+  {
+   "word": "happily",
+   "round": 1,
+   "s": "Feeling glad all day, I smiled happily at my friends.",
+   "reason": "checker: 'Smiled gently' also makes sense, so the gap is not clear. (also fits: gently)"
+  },
+  {
+   "word": "happily",
+   "round": 1,
+   "s": "Did the children play happily, feeling glad all afternoon?",
+   "reason": "checker: Children can 'play noisily' too, so two words fit. (also fits: noisily)"
+  },
+  {
+   "word": "easily",
+   "round": 1,
+   "s": "The cake was so simple to bake that anyone could easily do it.",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "easily",
+   "round": 1,
+   "s": "Could you easily make a paper boat with these steps?",
+   "reason": "checker: 'Quickly make a paper boat' also works, and 'steps' could be read two ways. (also fits: quickly)"
+  },
+  {
+   "word": "angrily",
+   "round": 1,
+   "s": "Dad grumbled angrily when the car would not start.",
+   "reason": "checker: 'Grumbled noisily' also makes sense. (also fits: noisily)"
+  },
+  {
+   "word": "angrily",
+   "round": 1,
+   "s": "Angrily, she crumpled the paper because her drawing had smudged.",
+   "reason": "checker: 'Quickly, she crumpled the paper' also works. (also fits: quickly)"
+  },
+  {
+   "word": "angrily",
+   "round": 1,
+   "s": "Why is the cat staring angrily at the closed window?",
+   "reason": "checker: A cat could be 'staring happily' too, and there is no clue to anger. (also fits: happily)"
+  },
+  {
+   "word": "angrily",
+   "round": 1,
+   "s": "How angrily he scowled when his ice cream fell on the pavement!",
+   "reason": "checker: 'Scowled dramatically' could also fit. (also fits: dramatically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 1,
+   "s": "Wow, how fantastically bright the stars are tonight!",
+   "reason": "checker: 'Magically bright' stars also make sense. (also fits: magically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 1,
+   "s": "Is your new bike fantastically fast, or just a bit fast?",
+   "reason": "checker: The question is unnatural and confusing for a child."
+  },
+  {
+   "word": "fantastically",
+   "round": 1,
+   "s": "Her sandcastle was fantastically tall, with towers and a flag.",
+   "reason": "reader flag two_fit ('dramatically' also fits: 'Her sandcastle was dramatically tall' makes sense too.); re-judge: The flag is real. 'Dramatically' can describe an adjective to mean 'strikingly', so 'dramatically tall' is acceptable English, and 'magically tall' could also work. More than one bank word fits, so drop this sentence."
+  },
+  {
+   "word": "dramatically",
+   "round": 1,
+   "s": "Dramatically, the actor flung out his arms and bowed.",
+   "reason": "checker: 'Quickly, the actor flung out his arms' also works. (also fits: quickly)"
+  },
+  {
+   "word": "dramatically",
+   "round": 1,
+   "s": "Was the weather changing dramatically from sunshine to a sudden storm?",
+   "reason": "checker: 'Changing quickly' also fits. (also fits: quickly)"
+  },
+  {
+   "word": "dramatically",
+   "round": 1,
+   "s": "How dramatically the lights flashed on at the start of the show!",
+   "reason": "checker: Lights could flash on quickly or magically too. (also fits: quickly, magically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 2,
+   "s": "The birthday cake was fantastically big and covered in sprinkles.",
+   "reason": "checker: Here the word only means 'very', and 'dramatically big' could also fill the gap. (also fits: dramatically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 2,
+   "s": "The cake was fantastically tasty, the best I have ever eaten.",
+   "reason": "checker: A child could write 'magically tasty', and here the word only means 'very'. (also fits: magically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 2,
+   "s": "She drew the horse so fantastically that we all clapped.",
+   "reason": "checker: Many manner adverbs fit 'drew the horse so ___ that we all clapped'. (also fits: quickly, easily, magically, dramatically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 2,
+   "s": "How fantastically you painted this picture of the sea!",
+   "reason": "checker: Many manner adverbs fit after 'How'. (also fits: quickly, gently, easily, magically, dramatically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 2,
+   "s": "Dad cooked fantastically, so we all asked for more pie.",
+   "reason": "checker: 'Cooked magically' also suggests very good food, so the clue is not unique. (also fits: magically)"
+  },
+  {
+   "word": "fantastically",
+   "round": 2,
+   "s": "Did the choir sing fantastically at the school concert?",
+   "reason": "checker: A choir could sing gently, happily, noisily or dramatically. (also fits: gently, happily, noisily, dramatically)"
+  }
+ ],
+ "sitOut": []
+}

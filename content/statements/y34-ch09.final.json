@@ -1,0 +1,137 @@
+{
+ "chapter": "y34-ch09",
+ "year": 4,
+ "words": {
+  "enough": [
+   "The rope was long enough to reach the tree.",
+   "Stop pouring, there is enough juice in my cup!",
+   "Is there enough room on the sofa for me?"
+  ],
+  "exercise": [
+   "We stretch and jump in the hall for morning exercise.",
+   "Swimming and skipping are fun kinds of exercise.",
+   "Can we get some fresh air and exercise at the park?"
+  ],
+  "medicine": [
+   "This medicine tastes sweet, like strawberries!",
+   "The vet gave our rabbit some medicine from a tiny spoon.",
+   "Please read the label before you take any medicine."
+  ],
+  "ordinary": [
+   "Is this an ordinary pencil or a magic one?",
+   "Most pebbles are ordinary, but this one is bright blue.",
+   "The shoes were ordinary, with no sparkles or lights."
+  ],
+  "position": [
+   "Mark the position of our town on the map.",
+   "She moved the lamp to a better position by the window.",
+   "The sun changes its position in the sky each hour."
+  ],
+  "question": [
+   "Can I ask you a question about the story?",
+   "The visitor smiled and answered every question from the class.",
+   "Who knows the answer to this question?"
+  ],
+  "separate": [
+   "We sort the paper and the cans into separate bins.",
+   "Keep the cats and the dogs in separate rooms.",
+   "The two paths go in separate directions after the gate."
+  ],
+  "naughty": [
+   "The naughty kitten knocked the plant off the shelf.",
+   "He said sorry for being naughty at the party.",
+   "Do not be naughty in the shop, stay close to me."
+  ],
+  "favourite": [
+   "What is your favourite song to sing at school?",
+   "Her favourite toy is a soft grey rabbit.",
+   "The shop has my favourite flavour of ice cream!"
+  ],
+  "knowledge": [
+   "She used her knowledge of birds to name each one.",
+   "A trip to the museum added to our knowledge of old toys.",
+   "Gran's knowledge of plants helps the garden grow."
+  ],
+  "therefore": [
+   "We missed the bus and therefore arrived late.",
+   "The grass was wet and therefore we wore our wellies.",
+   "She forgot her coat and was therefore cold on the walk."
+  ]
+ },
+ "rounds": {
+  "enough": 0,
+  "exercise": 0,
+  "medicine": 0,
+  "ordinary": 0,
+  "position": 0,
+  "question": 0,
+  "separate": 0,
+  "naughty": 0,
+  "favourite": 0,
+  "knowledge": 0,
+  "therefore": 0
+ },
+ "rejected": [
+  {
+   "word": "enough",
+   "round": 0,
+   "s": "Do we have enough chairs for all the guests?",
+   "reason": "checker: 'Separate chairs' and 'ordinary chairs' also make sense in the gap. (also fits: separate, ordinary)"
+  },
+  {
+   "word": "enough",
+   "round": 0,
+   "s": "I put enough milk in the bowl for the kitten.",
+   "reason": "checker: 'Ordinary milk' also makes sense, and milk is not good advice for kittens. (also fits: ordinary)"
+  },
+  {
+   "word": "exercise",
+   "round": 0,
+   "s": "Gran does gentle stretching exercise on the mat each day.",
+   "reason": "checker: 'Stretching exercise' sounds unnatural; people would say 'exercises'."
+  },
+  {
+   "word": "exercise",
+   "round": 0,
+   "s": "The cat gets plenty of exercise chasing garden birds.",
+   "reason": "checker: A cat chasing birds hints at hunting and harm."
+  },
+  {
+   "word": "question",
+   "round": 0,
+   "s": "That is a tricky question, so let me think.",
+   "reason": "checker: 'Tricky exercise' and 'tricky position' also make sense. (also fits: exercise, position)"
+  },
+  {
+   "word": "question",
+   "round": 0,
+   "s": "Every written question needs a mark at the end.",
+   "reason": "checker: 'Every written exercise needs a mark' also makes sense, and the clue is confusing. (also fits: exercise)"
+  },
+  {
+   "word": "separate",
+   "round": 0,
+   "s": "Each twin has a separate bed.",
+   "reason": "checker: 'Each twin has a favourite bed' also makes sense. (also fits: favourite)"
+  },
+  {
+   "word": "favourite",
+   "round": 0,
+   "s": "Autumn is Gran's favourite time to walk in the park.",
+   "reason": "machine rule 4: capital word not allowed: Gran's"
+  },
+  {
+   "word": "therefore",
+   "round": 0,
+   "s": "The shop was closed, therefore we walked home without biscuits.",
+   "reason": "checker: Joining two sentences with only a comma before 'therefore' is not correct punctuation to model."
+  },
+  {
+   "word": "therefore",
+   "round": 0,
+   "s": "The cake was burnt, therefore we bought a new one.",
+   "reason": "checker: Joining two sentences with only a comma before 'therefore' is not correct punctuation to model."
+  }
+ ],
+ "sitOut": []
+}

@@ -1,0 +1,185 @@
+{
+ "chapter": "y34-ch07",
+ "year": 4,
+ "words": {
+  "February": [
+   "My cousin has a birthday in February, just after January.",
+   "Snowdrops often appear in the garden in February.",
+   "Hooray, half term is in February, so we can sleep in!"
+  ],
+  "increase": [
+   "Plants increase in height when they get sun and rain.",
+   "If you add more flour, the dough will increase in size.",
+   "Do not increase the volume, please!"
+  ],
+  "interest": [
+   "He showed great interest in the shells on the beach.",
+   "The class lost interest when the story went on too long.",
+   "Football is her main interest, so she plays every day."
+  ],
+  "material": [
+   "The tent is made from a strong waterproof material.",
+   "Which material is best for a raincoat, plastic or wool?",
+   "Glass is a see-through material, so we can look through it."
+  ],
+  "peculiar": [
+   "The old clock made a peculiar noise every hour.",
+   "What a peculiar hat, with feathers and a bell on top!",
+   "That cloud has a peculiar shape, like a giant teapot."
+  ],
+  "potatoes": [
+   "We dug up some potatoes from the vegetable patch.",
+   "Dad mashed the potatoes with butter and a little milk.",
+   "Can you peel the potatoes before they go in the pot?"
+  ],
+  "probably": [
+   "I am not sure, but she is probably at the library.",
+   "Dark clouds are gathering, so we will probably get wet.",
+   "Our dog is probably asleep in his basket by now."
+  ],
+  "remember": [
+   "Can you remember where we left the football?",
+   "Please remember to bring your coat to school.",
+   "I cannot remember the last time we had such a sunny day."
+  ],
+  "sentence": [
+   "A full stop goes at the end of every sentence.",
+   "Can you add a describing word to make this sentence better?",
+   "I wrote one long sentence about my pet rabbit."
+  ],
+  "surprise": [
+   "Finding a frog in my boot was a big surprise.",
+   "Do not tell her, because the trip is a surprise!",
+   "We planned a surprise party for our teacher."
+  ],
+  "thought": [
+   "He had a thought about how to mend the broken kite.",
+   "A sudden thought popped into my head during maths.",
+   "Sit still and let each thought drift through your mind."
+  ]
+ },
+ "rounds": {
+  "February": 0,
+  "increase": 0,
+  "interest": 0,
+  "material": 0,
+  "peculiar": 0,
+  "potatoes": 0,
+  "probably": 0,
+  "remember": 0,
+  "sentence": 0,
+  "surprise": 0,
+  "thought": 1
+ },
+ "rejected": [
+  {
+   "word": "February",
+   "round": 0,
+   "s": "Is February the shortest month of the year?",
+   "reason": "machine rule 5: shares a run of 4 words with the meaning; word overlap with the meaning is 67%"
+  },
+  {
+   "word": "increase",
+   "round": 0,
+   "s": "Will the river increase after so much rain?",
+   "reason": "checker: We say a river 'rises', so 'a river increases' is not natural English."
+  },
+  {
+   "word": "increase",
+   "round": 0,
+   "s": "I try to increase the number of pages I read each day.",
+   "reason": "checker: 'Remember the number of pages' also makes sense. (also fits: remember)"
+  },
+  {
+   "word": "interest",
+   "round": 0,
+   "s": "My little brother has a new interest in the birds in our garden!",
+   "reason": "machine rule 3: 13 words (needs 5-12)"
+  },
+  {
+   "word": "interest",
+   "round": 0,
+   "s": "What is your biggest interest after school?",
+   "reason": "checker: The wording is awkward, and 'biggest surprise' also works. (also fits: surprise)"
+  },
+  {
+   "word": "material",
+   "round": 0,
+   "s": "My mum bought some soft red material to sew a cushion cover.",
+   "reason": "checker: Dropped to be safe: Mum doing the sewing is a mild gender-role stereotype."
+  },
+  {
+   "word": "peculiar",
+   "round": 0,
+   "s": "Is it peculiar for a cat to bark like a dog?",
+   "reason": "checker: The made-up idea makes the question confusing rather than natural."
+  },
+  {
+   "word": "potatoes",
+   "round": 0,
+   "s": "Chips are made by cutting potatoes into long strips.",
+   "reason": "checker: 'Cutting material into long strips' also reads sensibly. (also fits: material)"
+  },
+  {
+   "word": "remember",
+   "round": 0,
+   "s": "Try to remember the rhyme we learned in class today!",
+   "reason": "machine rule 4: not on the word lists: learned"
+  },
+  {
+   "word": "sentence",
+   "round": 0,
+   "s": "This sentence has a missing word, so it makes no sense!",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "sentence",
+   "round": 0,
+   "s": "My teacher asked me to read the sentence out loud.",
+   "reason": "checker: 'Read the material out loud' also makes sense. (also fits: material)"
+  },
+  {
+   "word": "surprise",
+   "round": 0,
+   "s": "What a lovely surprise to see gran at the door!",
+   "reason": "checker: 'What a lovely thought' could also be chosen. (also fits: thought)"
+  },
+  {
+   "word": "thought",
+   "round": 0,
+   "s": "What a good thought, to bake biscuits for the class!",
+   "reason": "checker: 'What a good surprise' could also be chosen. (also fits: surprise)"
+  },
+  {
+   "word": "thought",
+   "round": 0,
+   "s": "Keep that thought in your head until you can write it down.",
+   "reason": "checker: 'Keep that sentence in your head' also makes sense. (also fits: sentence)"
+  },
+  {
+   "word": "thought",
+   "round": 0,
+   "s": "I had a happy thought about the holiday by the sea.",
+   "reason": "reader flag two_fit (Both 'thought' and 'surprise' could go in the gap: 'I had a happy surprise about the holiday by the sea' reads as grammatical, so I could not tell which word was meant.); re-judge: The flag is right. 'I had a happy surprise' is natural English, and 'about the holiday' fits well enough that a child could fairly pick 'surprise'. Nothing in the sentence rules it out, so two words fit."
+  },
+  {
+   "word": "thought",
+   "round": 1,
+   "s": "A thought popped into my head while I walked to school.",
+   "reason": "checker: A sentence popping into your head also makes sense here, and it is nearly the same as the maths sentence. (also fits: sentence)"
+  },
+  {
+   "word": "thought",
+   "round": 1,
+   "s": "Where did that thought in my head come from?",
+   "reason": "checker: The wording is awkward and unnatural for a child to read."
+  },
+  {
+   "word": "thought",
+   "round": 1,
+   "s": "We thought the park would be open, but the gate was shut.",
+   "reason": "checker: We remembered the park would be open also makes sense, and thought is used as a verb here. (also fits: remember)"
+  }
+ ],
+ "sitOut": []
+}

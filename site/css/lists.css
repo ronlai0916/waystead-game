@@ -1,0 +1,118 @@
+/* ==========================================================================
+   SB5 (WP-E): Word lists library, list editor, sentence panel, results.
+   Every rule is under .ls (the page's own class beside .gu). Existing tokens
+   only (the text pairs are the ones grownups.css already uses). No :has(),
+   targets are at least 48 px, a long word wraps, and nothing makes the page
+   scroll sideways at 360 wide or at 130% text. --safe-zone is the bottom
+   band the main buttons stay clear of (phone keyboards and browser bars).
+   ========================================================================== */
+.ls { --safe-zone: 110px; padding-bottom: calc(var(--safe-zone) + 24px); min-width: 0; }
+.ls * { min-width: 0; }
+.ls .btn--big { min-height: 56px; width: 100%; justify-content: center; font-size: 1.1rem; }
+.ls .btn svg, .ls .ls-tab svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.ls .btn--quiet { background: none; border: 0; box-shadow: none; color: var(--link); text-decoration: underline; padding: 0 8px; min-height: 48px; font-weight: 700; }
+.ls .btn--quiet:focus-visible, .ls .ls-tab:focus-visible, .ls .ls-chip:focus-visible, .ls .ls-sug__b:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ls-sec { font-size: 1.1rem; margin: 18px 0 8px; }
+
+/* ---- the library ---- */
+.ls-cards { display: grid; gap: 14px; margin-top: 8px; }
+.ls-card .gu-panel__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.ls-card__title { color: var(--text); text-decoration: none; font-family: var(--f-display); overflow-wrap: anywhere; display: inline-flex; align-items: center; min-height: 48px; }
+.ls-card__title:hover { text-decoration: underline; }
+.ls-card .gu-actions .btn { min-height: 48px; }
+.ls-deleted { margin-top: 20px; padding: 12px 18px; }
+.ls-deleted summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
+.ls-deleted ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.ls-deleted li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; min-height: 48px; }
+.ls .ls-bar { position: sticky; bottom: var(--safe-zone); z-index: 2; display: grid; gap: 8px; margin-top: 18px; padding: 12px 0; background: var(--surface); border-top: 1px solid var(--line); }
+.ls .ls-bar--static { position: static; } /* S2: the Results share block is three buttons tall (263 px with the band): it sits in the page, not over it */
+.ls .ls-bar > p { text-align: center; margin: 0; }
+.ls .ls-bar .gu-actions { justify-content: center; }
+.ls .ls-bar a.btn { text-decoration: none; }
+
+/* ---- the editor ---- */
+.ls-edit, .ls-saved, .ls-panel, .ls-sentences { display: grid; gap: 14px; }
+.ls-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.ls-tab { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+.ls-tab[aria-pressed="true"] { border-color: var(--sb); box-shadow: 0 0 0 2px var(--sb); }
+.ls-find { display: grid; gap: 10px; }
+.ls-find label { font-weight: 700; }
+.ls-find__row { display: flex; flex-wrap: wrap; gap: 8px; }
+.ls-find__row .field { flex: 1 1 12rem; min-height: 48px; }
+.ls-find__row .btn { min-height: 48px; }
+.ls-years { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.ls-years__l { font-size: 0.9rem; color: var(--muted); margin-right: 4px; }
+.ls-chip { min-height: 48px; min-width: 48px; padding: 0 14px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
+.ls-chip[aria-pressed="true"] { border-color: var(--sb); box-shadow: 0 0 0 2px var(--sb); font-weight: 700; }
+.ls-sug__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ls-sug__b { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 12px; width: 100%; min-height: 48px; padding: 6px 14px; border: 2px solid var(--line); border-radius: var(--r); background: var(--surface); color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.ls-sug__b span { color: var(--muted); font-size: 0.9rem; }
+.ls-sug__b--new { border-style: dashed; }
+.ls-count { font-weight: 700; }
+.ls-paste textarea { min-height: 12rem; width: 100%; }
+.ls .gu-ownword { align-items: center; }
+.ls .gu-ownword.is-making .gu-ownword__s { font-style: italic; }
+.ls-num { flex: none; width: 2rem; height: 2rem; border-radius: 50%; background: var(--surface-2); color: var(--muted); display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; }
+.ls .gu-ownword__s { display: grid; gap: 2px; }
+.ls-fine { display: block; font-size: 0.88rem; color: var(--muted); }
+.ls-acts { display: inline-flex; flex-wrap: wrap; gap: 0 4px; }
+.ls-link { display: inline-flex; align-items: center; min-height: 48px; font-weight: 700; color: var(--link); }
+.ls-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.ls-chips li { padding: 6px 14px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); overflow-wrap: anywhere; }
+
+/* ---- the sentence panel and the status page ---- */
+.ls-made { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 14px; }
+.ls-made li { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.ls-sent { font-size: 1.1rem; overflow-wrap: anywhere; }
+.ls-slist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ls-srow { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-height: 48px; padding: 4px 0; border-top: 1px solid var(--line); }
+.ls-srow b { font-family: var(--f-ipa); font-size: 1.15rem; overflow-wrap: anywhere; }
+.ls-srow .ls-fine { flex: 1 1 10rem; }
+
+/* ---- results ---- */
+.ls-giventlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ls-given { display: grid; gap: 4px; padding-top: 10px; border-top: 1px solid var(--line); }
+.ls-given:first-child { border-top: 0; padding-top: 0; }
+.ls .t-wordlist { list-style: none; margin: 0; padding: 0; display: grid; }
+.ls .t-wordrow { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; min-height: 48px; align-items: center; padding: 4px 0; border-top: 1px solid var(--line); }
+.ls .t-wordrow .t-word { font-family: var(--f-ipa); font-size: 1.15rem; font-weight: 600; overflow-wrap: anywhere; }
+.ls .t-wordrow.is-flag span:last-child { color: var(--help-fg); font-weight: 700; }
+.ls .gu-table:not(.t-table) th, .ls .gu-table:not(.t-table) td { overflow-wrap: anywhere; }
+.ls .t-table th, .ls .t-table td { overflow-wrap: break-word; hyphens: none; }
+@media print { .ls .t-table th, .ls .t-table td { overflow-wrap: normal; } } /* S3-D12: on paper a word never splits */
+
+@media (min-width: 700px) {
+  .ls-cards { grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); }
+  .ls .ls-bar .btn--big { width: auto; justify-self: center; min-width: 18rem; }
+}
+@media print {
+  .ls .ls-noprint, .ls .ls-bar, .ls .ls-tabs, .ls .gu-back { display: none !important; }
+  .ls [data-print-skip] { display: none !important; }
+  .ls [data-part][hidden]:not([data-print-skip]) { display: block !important; }
+}
+
+/* ---- a list's own page, Give for practice, copies, ready-made lists (SB5 round 3b) ---- */
+.ls-listpage, .ls-give, .ls-copy, .ls-chapter, .ls-readylists { display: grid; gap: 14px; }
+.ls-top { margin-top: 4px; }
+.ls-top .btn { min-height: 48px; }
+.ls-lede { font-weight: 700; margin: 0; overflow-wrap: anywhere; }
+.ls-flash { display: grid; gap: 10px; }
+.ls-face { width: 36px; height: 36px; flex: none; border-radius: 50%; display: inline-grid; place-items: center; background: var(--sb); color: var(--on-sb, #fff); font-weight: 700; }
+.ls-given--kid { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px; }
+.ls-given__t { display: grid; gap: 2px; min-width: 0; }
+.ls-rows { display: grid; gap: 8px; border: 0; margin: 0; padding: 12px; }
+.ls-row { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border: 2px solid var(--line); border-radius: var(--r); background: var(--surface); cursor: pointer; }
+.ls-row input { width: 24px; height: 24px; flex: none; margin: 0; }
+.ls-row.is-taken { cursor: default; background: var(--surface-2); }
+.ls-row--all { border-style: dashed; }
+.ls-row__t { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.ls-fix { min-height: 48px; min-width: 48px; }
+.ls .ls-quiet { min-height: 48px; }
+.ls-sug { display: grid; gap: 6px; }
+.ls-ready { display: grid; gap: 4px; min-height: 56px; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
+.ls-ready b { font-family: var(--f-display); font-size: 1.1rem; }
+.ls-ready:hover { border-color: var(--sb); }
+.ls-chlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ls-ch { display: grid; gap: 2px; min-height: 56px; padding: 10px 14px; border: 2px solid var(--line); border-radius: var(--r); background: var(--surface); color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
+.ls-ch:hover { border-color: var(--sb); }
+.ls .ls-ch:focus-visible, .ls .ls-ready:focus-visible, .ls .ls-row:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }

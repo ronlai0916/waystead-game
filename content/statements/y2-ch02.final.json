@@ -1,0 +1,155 @@
+{
+ "chapter": "y2-ch02",
+ "year": 2,
+ "words": {
+  "climb": [
+   "We can climb the ladder to reach the apples.",
+   "The kitten tried to climb up the curtain.",
+   "Can you climb up the slide steps at the park?"
+  ],
+  "most": [
+   "Most sheep are white, but a few are black.",
+   "Dad picked the most flowers, so his bunch was biggest.",
+   "Wow, we scored the most goals of any team!"
+  ],
+  "only": [
+   "There is only one biscuit left in the tin.",
+   "I can only hear the rain on the roof.",
+   "Why is there only one sock in the basket?"
+  ],
+  "both": [
+   "I have two socks, and both are wet.",
+   "Do you want jam, cheese, or both on toast?",
+   "Mum has two bags, and I can lift both!"
+  ],
+  "old": [
+   "This book is old, and the pages are yellow.",
+   "My old shoes are too small now.",
+   "How old will you be on your birthday?"
+  ],
+  "cold": [
+   "Put on a hat, because it is cold outside.",
+   "Brr, my hands are so cold today!",
+   "I want a cold drink after the race."
+  ],
+  "city": [
+   "Is London a city or a village?",
+   "Many buses and tall buildings fill the city.",
+   "We visited a big city for my birthday."
+  ],
+  "ice": [
+   "Ice melts when the sun shines on it.",
+   "Put some ice in my juice, please.",
+   "The puddle froze into hard, slippery ice."
+  ],
+  "face": [
+   "I wash my face and brush my teeth.",
+   "Can you make a silly face for the photo?",
+   "The sun felt warm on my face."
+  ],
+  "fence": [
+   "The dog cannot get out past the garden fence.",
+   "Can you see the sheep behind the fence?",
+   "Dad is painting the wooden fence green."
+  ]
+ },
+ "rounds": {
+  "climb": 0,
+  "most": 1,
+  "only": 0,
+  "both": 0,
+  "old": 0,
+  "cold": 0,
+  "city": 0,
+  "ice": 0,
+  "face": 0,
+  "fence": 0
+ },
+ "rejected": [
+  {
+   "word": "most",
+   "round": 0,
+   "s": "Most of the apples on the tree are red.",
+   "reason": "checker: 'Both of the apples on the tree are red' also makes sense. (also fits: both)"
+  },
+  {
+   "word": "most",
+   "round": 0,
+   "s": "Most days we walk to school together.",
+   "reason": "checker: A child could put 'Cold days we walk to school', so the clue is not clear enough. (also fits: cold)"
+  },
+  {
+   "word": "most",
+   "round": 0,
+   "s": "That was the most fun day ever!",
+   "reason": "checker: 'That was the only fun day ever' also makes sense. (also fits: only)"
+  },
+  {
+   "word": "only",
+   "round": 0,
+   "s": "The shop is open only on Saturdays.",
+   "reason": "machine rule 4: capital word not allowed: Saturdays; not on the word lists: Saturdays"
+  },
+  {
+   "word": "only",
+   "round": 0,
+   "s": "Wow, we have only five minutes to play!",
+   "reason": "checker: 'Wow' sounds excited while 'only five minutes' sounds disappointed, which is confusing, and it is not about one."
+  },
+  {
+   "word": "both",
+   "round": 0,
+   "s": "My two cats both sleep on the sofa.",
+   "reason": "checker: 'My two cats only sleep on the sofa' also makes sense. (also fits: only)"
+  },
+  {
+   "word": "both",
+   "round": 0,
+   "s": "Both the red hat and the green hat are mine.",
+   "reason": "checker: 'Only the red hat and the green hat are mine' also makes sense. (also fits: only)"
+  },
+  {
+   "word": "old",
+   "round": 0,
+   "s": "The oak tree is very old and very tall.",
+   "reason": "checker: 'The oak tree is very cold' could also be put in, so it is doubtful. (also fits: cold)"
+  },
+  {
+   "word": "cold",
+   "round": 0,
+   "s": "Why is the milk so cold?",
+   "reason": "checker: 'Why is the milk so old?' also makes sense. (also fits: old)"
+  },
+  {
+   "word": "ice",
+   "round": 0,
+   "s": "Look, the water in the tray is now ice!",
+   "reason": "checker: 'The water in the tray is now cold' also makes sense. (also fits: cold)"
+  },
+  {
+   "word": "fence",
+   "round": 0,
+   "s": "A bird sat on the fence and sang.",
+   "reason": "checker: 'A bird sat on the ice and sang' also makes sense. (also fits: ice)"
+  },
+  {
+   "word": "fence",
+   "round": 0,
+   "s": "The wind blew a leaf over the fence.",
+   "reason": "checker: A leaf could also blow over the city or the ice. (also fits: city, ice)"
+  },
+  {
+   "word": "most",
+   "round": 1,
+   "s": "Most birds can fly, but the penguin cannot.",
+   "reason": "checker: 'Only birds can fly, but the penguin cannot' also reads as sense to a child, so the target is not the only fit. (also fits: only)"
+  },
+  {
+   "word": "most",
+   "round": 1,
+   "s": "Which jar has the most sweets?",
+   "reason": "checker: 'Which jar has the old sweets?' is natural too, so the target is not the only fit. (also fits: old)"
+  }
+ ],
+ "sitOut": []
+}

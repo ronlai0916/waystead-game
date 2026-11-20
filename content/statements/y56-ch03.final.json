@@ -1,0 +1,95 @@
+{
+ "chapter": "y56-ch03",
+ "year": 5,
+ "words": {
+  "accommodate": [
+   "The new classroom is big enough to accommodate the whole class.",
+   "Our small car cannot accommodate five children and all their bags.",
+   "Will the shed accommodate a bike, a lawnmower and my old scooter?"
+  ],
+  "accompany": [
+   "Mum will accompany me to the library on Saturday.",
+   "May I accompany you to the park with your dog?",
+   "Soft piano music will accompany the choir at the school concert."
+  ],
+  "according": [
+   "According to the weather forecast, it will rain all day on Friday.",
+   "We are baking the bread according to my gran's old recipe.",
+   "The game must be played according to the rules inside the box."
+  ],
+  "aggressive": [
+   "My cat can look aggressive when she hisses and puffs up her fur.",
+   "A good team plays hard but is never aggressive with the others.",
+   "The aggressive goose hissed and chased us away from its pond."
+  ],
+  "embarrass": [
+   "Forgetting my lines in the play could embarrass me a lot.",
+   "Does it embarrass you when everyone sings happy birthday to you?",
+   "Getting a loud round of applause may embarrass a shy child."
+  ],
+  "harass": [
+   "Do not harass the cat by asking her to play again and again.",
+   "The seagulls harass us at the beach, begging for our chips.",
+   "Please do not harass the baker with questions every minute!"
+  ],
+  "occupy": [
+   "What game can occupy the children on a rainy afternoon?",
+   "A big sofa can occupy most of our small living room.",
+   "Painting will occupy me for the whole of Saturday morning."
+  ],
+  "occur": [
+   "Rainbows occur when the sun shines through falling rain.",
+   "When does the school sports day usually occur?",
+   "Will the next full moon occur on a Tuesday?"
+  ],
+  "committee": [
+   "The committee met after school to decide the date of the sports day.",
+   "The class committee voted on a name for our new rabbit.",
+   "Who is on the committee that picks the books for our library?"
+  ],
+  "necessary": [
+   "Pack only the necessary things in your bag for the school trip.",
+   "It is not necessary to shout, because I can hear you!",
+   "Warm boots are necessary for a winter walk through the snow."
+  ]
+ },
+ "rounds": {
+  "accommodate": 0,
+  "accompany": 0,
+  "according": 0,
+  "aggressive": 0,
+  "embarrass": 0,
+  "harass": 0,
+  "occupy": 0,
+  "occur": 0,
+  "committee": 0,
+  "necessary": 0
+ },
+ "rejected": [
+  {
+   "word": "accompany",
+   "round": 0,
+   "s": "Which grown-up can accompany our class on the trip to the seaside?",
+   "reason": "checker: A grown-up could also 'occupy' the class on the trip, so the gap is not unique. (also fits: occupy)"
+  },
+  {
+   "word": "according",
+   "round": 0,
+   "s": "Did the shop open at nine, according to the sign on the door?",
+   "reason": "checker: Using the past tense 'did' with a sign is awkward and a little confusing for a child."
+  },
+  {
+   "word": "embarrass",
+   "round": 0,
+   "s": "Please don't embarrass me by waving at me in front of my friends!",
+   "reason": "checker: 'Harass me by waving at me' could also work, so the gap is not unique enough. (also fits: harass)"
+  },
+  {
+   "word": "harass",
+   "round": 0,
+   "s": "Why do the flies harass us every time we eat outside?",
+   "reason": "checker: Flies could jokingly 'accompany' us every time we eat, so the gap is not clearly unique. (also fits: accompany)"
+  }
+ ],
+ "sitOut": []
+}

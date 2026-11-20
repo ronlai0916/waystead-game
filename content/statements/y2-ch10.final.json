@@ -1,0 +1,216 @@
+{
+ "chapter": "y2-ch10",
+ "year": 2,
+ "words": {
+  "door": [
+   "Can you open the front door for me?",
+   "The cat scratched at the door to get in.",
+   "Hang your coat on the hook behind the door!"
+  ],
+  "floor": [
+   "Please sit on the floor and build with bricks.",
+   "Is the floor still wet from the mop?",
+   "Which floor of the shop sells toys?"
+  ],
+  "poor": [
+   "Was the king rich or poor in the story?",
+   "Poor people long ago could not buy new boots.",
+   "The weather was poor, so we stayed in."
+  ],
+  "Mr": [
+   "We said hello to Mr Hill and his dog.",
+   "Mr Wood put on his coat and hat.",
+   "Mr Lane fixed the gate with his new tools."
+  ],
+  "Mrs": [
+   "Mrs Hill read us her favourite story.",
+   "Mrs Wood watered her roses in the garden.",
+   "Mrs Brown and her baby waved from the bus."
+  ],
+  "parents": [
+   "Both my parents help me with my reading.",
+   "My parents clapped at the end of the school play.",
+   "Do your parents have a dog at home?"
+  ],
+  "Christmas": [
+   "Is it nearly Christmas, with snow and presents?",
+   "We sing songs round the tree before Christmas.",
+   "I hope to get a new bike for Christmas."
+  ],
+  "small": [
+   "I need a big box, not a small one.",
+   "The ant was too small to see easily.",
+   "Can I have a small bowl of rice?"
+  ],
+  "walk": [
+   "Let's walk, not run, down the school corridor.",
+   "Babies learn to crawl before they walk.",
+   "I like to walk the dog by the river."
+  ],
+  "always": [
+   "The sun always rises in the morning.",
+   "My cat always sleeps on the warm sofa.",
+   "Dad always says please and thank you!"
+  ]
+ },
+ "rounds": {
+  "door": 0,
+  "floor": 0,
+  "poor": 1,
+  "Mr": 1,
+  "Mrs": 1,
+  "parents": 0,
+  "Christmas": 0,
+  "small": 0,
+  "walk": 0,
+  "always": 0
+ },
+ "rejected": [
+  {
+   "word": "door",
+   "round": 0,
+   "s": "Knock on the door and wait for Mum.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "floor",
+   "round": 0,
+   "s": "Oops! My ice cream dropped on the floor!",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: My"
+  },
+  {
+   "word": "floor",
+   "round": 0,
+   "s": "Mum swept the crumbs off the kitchen floor.",
+   "reason": "checker: Showing Mum doing the cleaning is a household stereotype, so it is dropped."
+  },
+  {
+   "word": "poor",
+   "round": 0,
+   "s": "In the tale, the poor girl had only one coat.",
+   "reason": "checker: 'The small girl had only one coat' also works, so the gap is unclear. (also fits: small)"
+  },
+  {
+   "word": "poor",
+   "round": 0,
+   "s": "The poor kitten was wet and wanted a cuddle.",
+   "reason": "checker: Poor here means 'sad, to be pitied', and small also fits. (also fits: small)"
+  },
+  {
+   "word": "poor",
+   "round": 0,
+   "s": "Long ago, the family was poor and had few toys.",
+   "reason": "checker: 'The family was small' also makes sense, so the gap is unclear. (also fits: small)"
+  },
+  {
+   "word": "Mr",
+   "round": 0,
+   "s": "The letter for Dad began with Mr.",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "Mr",
+   "round": 0,
+   "s": "The post for Grandad says Mr on the front.",
+   "reason": "machine rule 4: capital word not allowed: Grandad; not on the word lists: Grandad"
+  },
+  {
+   "word": "Mr",
+   "round": 0,
+   "s": "Write Mr in front of a man's name.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "Mrs",
+   "round": 0,
+   "s": "The post for Gran says Mrs on the front.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "Mrs",
+   "round": 0,
+   "s": "Mrs is the short title for a married lady.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "Mrs",
+   "round": 0,
+   "s": "Write Mrs in front of a lady's name.",
+   "reason": "machine rule 5: word overlap with the meaning is 50%"
+  },
+  {
+   "word": "Mrs",
+   "round": 0,
+   "s": "The letter for Mum began with Mrs.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "Christmas",
+   "round": 0,
+   "s": "Gran made a big turkey dinner on Christmas Day.",
+   "reason": "machine rule 4: capital word not allowed: Day"
+  },
+  {
+   "word": "Christmas",
+   "round": 0,
+   "s": "Hooray, we are making cards for Christmas!",
+   "reason": "checker: 'Making cards for parents' also makes sense, so the gap is unclear. (also fits: parents)"
+  },
+  {
+   "word": "walk",
+   "round": 0,
+   "s": "Can we walk to the shop for some milk?",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "always",
+   "round": 0,
+   "s": "Does Gran always read us a story at bedtime?",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "poor",
+   "round": 1,
+   "s": "In the tale, the poor king had no gold left.",
+   "reason": "checker: 'The small king had no gold left' also makes sense, so the gap has more than one answer. (also fits: small)"
+  },
+  {
+   "word": "poor",
+   "round": 1,
+   "s": "Was the baker too poor to buy more flour?",
+   "reason": "checker: 'Too small to buy' could also work, and a worker who cannot afford supplies is an everyday money worry. (also fits: small)"
+  },
+  {
+   "word": "poor",
+   "round": 1,
+   "s": "The poor man in the story could not buy bread!",
+   "reason": "checker: 'The small man in the story' also makes sense, so the gap has more than one answer. (also fits: small)"
+  },
+  {
+   "word": "Mr",
+   "round": 1,
+   "s": "A man's card at school may say Mr on it.",
+   "reason": "checker: 'A man's card at school' is awkward and unclear for a young reader."
+  },
+  {
+   "word": "Mr",
+   "round": 1,
+   "s": "The gift tag for my grandpa starts with Mr.",
+   "reason": "checker: A child would write Grandpa on a gift tag, not Mr, so the sentence sounds unnatural."
+  },
+  {
+   "word": "Mrs",
+   "round": 1,
+   "s": "My teacher is a married woman, so her sign says Mrs.",
+   "reason": "machine rule 3: 11 words (needs 5-10)"
+  },
+  {
+   "word": "Mrs",
+   "round": 1,
+   "s": "I put Mrs on the card for my nan.",
+   "reason": "machine rule 4: not on the word lists: nan"
+  }
+ ],
+ "sitOut": [],
+ "manualEdits": "19 Nov 2026: Opus spot-check fixes (OPUS-SPOTCHECK.md), machine-checked with statements-check rules"
+}

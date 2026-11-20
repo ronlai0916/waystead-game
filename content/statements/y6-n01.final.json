@@ -1,0 +1,161 @@
+{
+ "chapter": "y6-n01",
+ "year": 6,
+ "words": {
+  "received": [
+   "Last week our class received a shiny trophy for tidy work.",
+   "She smiled because she received a birthday card from every friend.",
+   "We received lots of kind messages after the school play last night!"
+  ],
+  "receive": [
+   "The winner will stand on the stage to receive the shiny cup.",
+   "What present would you like to receive on your birthday?",
+   "Our class will receive a new book box from the library on Monday."
+  ],
+  "receipt": [
+   "The cashier printed a long receipt after I paid for the biscuits.",
+   "If the toaster breaks, bring it back with the receipt!",
+   "Where did I put the receipt for my new trainers?"
+  ],
+  "receiver": [
+   "Gran held the receiver to her ear to hear the voice.",
+   "Put the receiver back on the phone when you finish talking.",
+   "The old phone had a long curly wire joined to its receiver."
+  ],
+  "deceive": [
+   "It is wrong to deceive your friends with a made-up story.",
+   "The magician wanted to deceive us by hiding the coin in his sleeve.",
+   "Don't let the tricky puzzle deceive you, because the answer is simple."
+  ],
+  "deceit": [
+   "Telling lies to win the game was an act of deceit.",
+   "Honesty is the opposite of deceit, so always tell the truth.",
+   "There was no deceit in her smile, and she meant every kind word."
+  ],
+  "conceited": [
+   "Don't be conceited just because you won the sack race.",
+   "The conceited peacock kept showing off and saying he was the best bird.",
+   "A conceited rooster crowed loudly, sure that the sun rose just for him."
+  ],
+  "deceitful": [
+   "It was deceitful to say you had finished when you had not.",
+   "The deceitful shopkeeper said the old bike was brand new.",
+   "What a deceitful thing to copy my picture and say it was yours!"
+  ],
+  "perceive": [
+   "Through the foggy window I could just perceive the shape of the bus.",
+   "Do you perceive a difference between the two shades of blue paint?",
+   "Bats can perceive tiny sounds that people cannot hear."
+  ],
+  "conceive": [
+   "Try to conceive a new game we can play at break time.",
+   "She sat with her sketchbook to conceive a poster for the fair.",
+   "Who could conceive such a lovely design for a paper boat?"
+  ]
+ },
+ "rounds": {
+  "received": 0,
+  "receive": 1,
+  "receipt": 0,
+  "receiver": 0,
+  "deceive": 0,
+  "deceit": 0,
+  "conceited": 0,
+  "deceitful": 0,
+  "perceive": 0,
+  "conceive": 0
+ },
+ "rejected": [
+  {
+   "word": "received",
+   "round": 0,
+   "s": "Yesterday the postman knocked, and I received a parcel from Gran.",
+   "reason": "machine rule 4: capital word not allowed: Gran"
+  },
+  {
+   "word": "received",
+   "round": 0,
+   "s": "Why was Dad so happy when he received his new bike on Saturday?",
+   "reason": "machine rule 4: capital word not allowed: Dad"
+  },
+  {
+   "word": "receive",
+   "round": 0,
+   "s": "How long does it take to receive a letter from far away?",
+   "reason": "machine rule 5: shares a run of 4 words with the example"
+  },
+  {
+   "word": "receive",
+   "round": 0,
+   "s": "Open the door when the postman comes to receive the parcel.",
+   "reason": "checker: It reads as if the postman is the one getting the parcel, which is confusing."
+  },
+  {
+   "word": "receive",
+   "round": 0,
+   "s": "Winners at the sports day race get to receive a gold medal.",
+   "reason": "checker: 'Get to receive' and 'sports day race' sound clumsy."
+  },
+  {
+   "word": "receipt",
+   "round": 0,
+   "s": "The shop gave Mum a receipt, so she could return the jumper.",
+   "reason": "machine rule 4: capital word not allowed: Mum"
+  },
+  {
+   "word": "deceive",
+   "round": 0,
+   "s": "Can a chameleon deceive hungry birds by changing colour?",
+   "reason": "checker: 'Hungry birds' hints that the chameleon might be eaten, so it is dropped to be safe."
+  },
+  {
+   "word": "deceit",
+   "round": 0,
+   "s": "The game was spoiled by deceit when one player hid a card.",
+   "reason": "machine rule 4: not on the word lists: spoiled"
+  },
+  {
+   "word": "deceit",
+   "round": 0,
+   "s": "Why did the stall owner use deceit and say the cake was fresh?",
+   "reason": "checker: 'Use deceit' sounds unnatural."
+  },
+  {
+   "word": "conceited",
+   "round": 0,
+   "s": "Was she conceited? She boasted about her goals all through the match.",
+   "reason": "machine rule 2,4: more than one sentence; capital word not allowed: She"
+  },
+  {
+   "word": "conceited",
+   "round": 0,
+   "s": "He was too conceited to share the praise for the sandcastle.",
+   "reason": "checker: 'Too deceitful to share the praise' could also make sense, so two words fit. (also fits: deceitful)"
+  },
+  {
+   "word": "deceitful",
+   "round": 0,
+   "s": "The deceitful cat pretended to be asleep while it ate the fish.",
+   "reason": "checker: Pretending to sleep while eating does not make sense."
+  },
+  {
+   "word": "conceive",
+   "round": 0,
+   "s": "Let us conceive a plan to build a treehouse this summer.",
+   "reason": "machine rule 4: not on the word lists: treehouse"
+  },
+  {
+   "word": "conceive",
+   "round": 0,
+   "s": "I cannot conceive how a tiny seed grows into a tall tree.",
+   "reason": "checker: 'I cannot perceive how' (meaning understand) also fits the gap. (also fits: perceive)"
+  },
+  {
+   "word": "receive",
+   "round": 1,
+   "s": "Did you receive my birthday card in the post yet?",
+   "reason": "checker: Using 'Did you ... yet' is American; British English would say 'Have you received ... yet'."
+  }
+ ],
+ "sitOut": []
+}
