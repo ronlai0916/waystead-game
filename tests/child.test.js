@@ -209,7 +209,7 @@ test('constraints: no inline style attribute or script in the child views, and t
   assert.match(index, /css\/child\.css/);
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   for (const f of ['css/child.css', 'js/child-doc.js', 'js/child-views.js']) assert.ok(sw.includes("'" + f + "'"), f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-19f'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-20a'/);
 });
 
 test('the keyboard stays three rows that never wrap; Delete is at least 48 px wide', () => {
@@ -234,7 +234,7 @@ test('SB3-C1 fix round: child chrome only for a known child; the keyboard sizes 
   assert.doesNotMatch(css, /^\.key \{|^\.keyboard \{ container-type/m);
   assert.match(css, /body\.is-child \.keyboard \{ container-type: inline-size/);
   assert.match(css, /\.key--del \{ flex: none; width: 72px; min-width: 48px; \}/);
-  assert.match(css, /min-height: calc\(100svh - 80px\)/);
+  assert.match(css, /min-height: var\(--page-h\)/);
   assert.match(css, /body\.is-child \.brand \{ min-height: 48px/);
   assert.match(css, /body\.is-child \.modeswitch, body\.is-child \.groupmanage \{ display: none/);
   assert.match(readFileSync(file('site/js/ui.js'), 'utf8'), /is-child/);

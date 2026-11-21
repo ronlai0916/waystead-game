@@ -572,7 +572,7 @@ export default function (H) {
     // long words: at least 24 px between Peek and the tray
     for (const [w, h] of [[390, 664], [390, 844]]) {
       await openSpell('accidentally', 4, w, h);
-      const g = await ev(`(() => document.querySelector('.keyboard--tray').getBoundingClientRect().top - document.querySelector('.peekrow').getBoundingClientRect().bottom)()`);
+      const g = await ev(`(() => (document.querySelector('.traycol') || document.querySelector('.keyboard--tray')).getBoundingClientRect().top - document.querySelector('.peekrow').getBoundingClientRect().bottom)()`);
       ok(g >= 23.5, 'accidentally at ' + w + 'x' + h + ': Peek to tray ' + g);
     }
   });

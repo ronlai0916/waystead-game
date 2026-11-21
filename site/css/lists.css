@@ -6,7 +6,7 @@
    scroll sideways at 360 wide or at 130% text. --safe-zone is the bottom
    band the main buttons stay clear of (phone keyboards and browser bars).
    ========================================================================== */
-.ls { --safe-zone: 110px; padding-bottom: calc(var(--safe-zone) + 24px); min-width: 0; }
+.ls { --safe-zone: var(--bottom-reserve); padding-bottom: calc(var(--safe-zone) + 24px); min-width: 0; }
 .ls * { min-width: 0; }
 .ls .btn--big { min-height: 56px; width: 100%; justify-content: center; font-size: 1.1rem; }
 .ls .btn svg, .ls .ls-tab svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }

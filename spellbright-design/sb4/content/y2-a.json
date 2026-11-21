@@ -369,7 +369,7 @@
      "ipa": "/təʊld/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "Said something to someone, from the word tell.",
+      "definition": "Said something to someone; the past of \"tell\".",
       "example": "Dad told us a funny story."
      },
      "chunks": [
@@ -384,7 +384,7 @@
      "ipa": "/ˈevri/",
      "meaning": {
       "partOfSpeech": "determiner",
-      "definition": "Each one of them.",
+      "definition": "Each one, with none left out.",
       "example": "We go to the park every day."
      },
      "chunks": [

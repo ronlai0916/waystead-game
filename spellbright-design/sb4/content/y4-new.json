@@ -98,7 +98,7 @@
      "ipa": "/ɪmˈpɜːfɪkt/",
      "meaning": {
       "partOfSpeech": "adjective",
-      "definition": "Not perfect; having a small fault.",
+      "definition": "Not quite right; having a small fault.",
       "example": "My drawing is imperfect, but I like it."
      },
      "chunks": [
@@ -389,7 +389,7 @@
      "meaning": {
       "partOfSpeech": "noun",
       "definition": "Sharing or splitting a number into equal groups.",
-      "example": "Division is the opposite of multiplication."
+      "example": "Sharing 12 sweets between 3 friends is a division sum."
      },
      "chunks": [
       "di",

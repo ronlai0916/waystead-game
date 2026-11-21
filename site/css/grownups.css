@@ -333,7 +333,7 @@
   .gu .gu-ownword__x { grid-column: 2; grid-row: 1 / span 2; }
   .gu .gu-ownword.is-note { min-height: 44px; }
 }
-.gu-dialog { max-height: calc(100dvh - 24px); overflow-y: auto; }
+.gu-dialog { max-height: calc(var(--app-h) - var(--sat) - 24px); overflow-y: auto; }
 @media (max-height: 520px) {
   .gu-dialog { padding: 14px 18px; gap: 8px; }
   .gu-pick { max-height: 26vh; }
@@ -538,9 +538,9 @@
    Targets are 48 px at least; the main button of a page sits in a bar that ends above the phone's bottom band (--safe-zone, 112 px).
    ========================================================================== */
 .gu { --gh-safe: 0px; }
-@media (max-width: 480px), (max-height: 480px) { .gu { --gh-safe: var(--safe-zone, calc(env(safe-area-inset-bottom, 0px) + 112px)); } }
+@media (max-width: 480px), (max-height: 480px) { .gu { --gh-safe: var(--bottom-reserve); } }
 @media (min-width: 720px) and (min-height: 600px) { .gu { --gh-safe: 0px; } }
-.gu.gh-page { display: flex; flex-direction: column; gap: 14px; max-width: 760px; min-height: calc(100vh - 84px); min-height: calc(100svh - 84px); padding-top: 14px; padding-bottom: 0; }
+.gu.gh-page { display: flex; flex-direction: column; gap: 14px; max-width: 760px; min-height: var(--page-h); padding-top: 14px; padding-bottom: 0; }
 .gu.gh-page--wide { max-width: 1040px; }
 .gu .gh-page__head { display: grid; gap: 4px; }
 .gu .gh-eyebrow { margin: 0; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--eyebrow); }
@@ -550,7 +550,7 @@
 .gu .gh-help b { color: var(--text); }
 
 /* the sticky bar: one main button, a helper line above it, the phone's band under it */
-.gu .gh-bar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(12px + env(safe-area-inset-bottom))); background: var(--bg); border-top: 2px solid var(--line); display: grid; gap: 6px; }
+.gu .gh-bar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(12px + var(--sab))); background: var(--bg); border-top: 2px solid var(--line); display: grid; gap: 6px; }
 .gu .gh-bar .btn { width: 100%; max-width: none; min-height: 52px; justify-content: center; }
 .gu .gh-bar__line { order: -1; margin: 0; text-align: center; color: var(--muted); font-size: 0.95rem; overflow-wrap: anywhere; }
 .gu .gh-bar--two { gap: 4px; }
@@ -728,7 +728,7 @@
 .gu .gu-ocard dt { color: var(--muted); font-size: 0.92rem; }
 .gu .gu-ocard dd { margin: 0; overflow-wrap: anywhere; }
 .gu .gu-overview--table { display: none; }
-.gu .gu-obar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(12px + env(safe-area-inset-bottom))); background: var(--bg); border-top: 2px solid var(--line); }
+.gu .gu-obar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(12px + var(--sab))); background: var(--bg); border-top: 2px solid var(--line); }
 .gu .gu-obar .btn { width: 100%; min-height: 52px; justify-content: center; }
 @media (min-width: 700px) {
   .gu .gu-ocards { display: none; }

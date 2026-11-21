@@ -13,7 +13,8 @@ test('07a: the four footer links, in order', () => {
 });
 test('the footer sits below the bottom safe zone on a phone, outside the Today section', () => {
   const css = read('site/css/child.css');
-  assert.match(css, /\.today__foot \{ margin-top: var\(--safe-zone\); margin-bottom: 0; \}/);
+  assert.match(css, /\.today__foot \{ margin-top: 0; margin-bottom: 0; \}/, 'D1: the Today section ends at the reserve line; main\'s bottom padding (the reserve) clears the bar');
+  assert.match(css, /body\.is-child main:not\([^{]*\{ padding-bottom: var\(--safe-zone\); \}/);
   assert.match(read('site/js/child-views.js'), /<\/div><\/section>' \+ todayFoot\(\)/);
 });
 test('11d: the Stop sheet says where you are and what happens', () => {

@@ -17,7 +17,7 @@
      "ipa": "/ʌnˈkaɪnd/",
      "meaning": {
       "partOfSpeech": "adjective",
-      "definition": "Not kind; mean or hurtful to other people.",
+      "definition": "Mean or hurtful to other people.",
       "example": "It is unkind to laugh at someone who has fallen."
      },
      "chunks": [
@@ -31,7 +31,7 @@
      "ipa": "/ʌnˈfeə/",
      "meaning": {
       "partOfSpeech": "adjective",
-      "definition": "Not right or equal; not treating everyone the same.",
+      "definition": "Not treating everyone the same or in the right way.",
       "example": "It felt unfair that only one team got a prize."
      },
      "chunks": [
@@ -104,7 +104,7 @@
      "ipa": "/ˌmɪsˈspel/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "To spell a word without getting the letters right.",
+      "definition": "To write a word with letters that are not the right ones.",
       "example": "Check your work so you do not misspell any words."
      },
      "chunks": [
@@ -176,7 +176,7 @@
      "ipa": "/ˌriːˈpleɪ/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "To play something again.",
+      "definition": "To watch or listen to something again, such as a video or a song.",
       "example": "Can we replay that funny video one more time?"
      },
      "chunks": [
@@ -204,7 +204,7 @@
      "ipa": "/ˌriːˈraɪt/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "To write something again, often to make it better.",
+      "definition": "To put your words down again on paper, often to make them better.",
       "example": "I will rewrite my story with a new ending."
      },
      "chunks": [
@@ -219,7 +219,7 @@
      "ipa": "/ˌriːˈbɪld/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "To build something again.",
+      "definition": "To put something up again after it has been broken or knocked down.",
       "example": "We helped rebuild the sandcastle after the wave hit it."
      },
      "chunks": [
@@ -447,7 +447,7 @@
      "ipa": "/ˈmædʒɪkli/",
      "meaning": {
       "partOfSpeech": "adverb",
-      "definition": "In a way that seems done by magic.",
+      "definition": "In a way that seems impossible, as if by a spell.",
       "example": "The rabbit magically appeared from the hat."
      },
      "chunks": [

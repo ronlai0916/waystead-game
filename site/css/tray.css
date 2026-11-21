@@ -153,7 +153,7 @@ body.is-child .keyboard.keyboard--pad .key, .keyboard.keyboard--pad .key { width
    A page shorter than the screen keeps its keys at the foot, now 112 px up, so the bar never covers Check. Colours: none; no inline style. */
 @media (max-width: 600px) {
   body main > section.wrap.page.spellpage, body main > section.wrap.page.play, body main > section.wrap.page.game, body main > section:has(.keyboard),
-  body.is-child main > section:has(.keyboard) { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); }
+  body.is-child main > section:has(.keyboard) { padding-bottom: var(--bottom-reserve); }
 }
 
 /* HOTFIX1, part 2: on a phone (up to 480 px wide) the practice, spelling, test, quiz, Fix it in and Quick-fire pages tighten above the keys, so Check or

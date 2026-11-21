@@ -1107,8 +1107,8 @@ scene('practice: the keyboard, a pressed key, a peek, Stop for now', async () =>
   const p1 = await rect('.key[data-letter=P]');
   const a1 = await rect('.key[data-letter=A]');
   ok(Math.abs(q1.y - p1.y) < 1 && p1.x + p1.w <= 390, 'P stays on row 1 at 390: ' + JSON.stringify(p1));
-  ok(q1.w >= 34 && q1.w <= 36 && q1.h === 56, 'keys are about 35 x 56: ' + JSON.stringify(q1));
-  ok(Math.abs((a1.y - q1.y - q1.h) - 8) < 1, 'rows are 8 px apart');
+  ok(q1.w >= 34 && q1.w <= 36 && q1.h === 48, 'keys are about 35 x 48 (SB5 D1: from a 720 px room down the keys are 48 high): ' + JSON.stringify(q1));
+  ok(Math.abs((a1.y - q1.y - q1.h) - 4) < 1, 'rows are 4 px apart');
   ok(Math.abs((await rect('.key[data-letter=W]')).x - q1.x - q1.w - 3) < 1, 'keys are 3 px apart');
   step('a pressed key shows its letter above, and nothing moves');
   const before = await ev('document.documentElement.scrollHeight');
@@ -1390,7 +1390,7 @@ scene('Hello flower game: no one-word progress line, lives kept, child-sized key
   ok(!await has('.progressline') && !/Word 1 of 1/.test(await text()), 'no "Word 1 of 1"');
   ok(await ev('document.querySelectorAll(".lives i").length') === 6, 'the lives stay');
   const k = await rect('.key[data-letter=A]');
-  ok(Math.round(k.h) === 56 && k.w >= 34 && k.w <= 37, 'keys are 35 x 56: ' + JSON.stringify(k));
+  ok(Math.round(k.h) === 48 && k.w >= 34 && k.w <= 37, 'keys are 35 x 48 (SB5 D1): ' + JSON.stringify(k));
   const k2 = await rect('.keyboard-row .key');
   ok(Math.abs(k2.w - 35) < 2.5, 'the same width as the other child keyboards');
   await allViews('child-hello-game');
@@ -2465,7 +2465,9 @@ async function kbFit({ role, page, style: s, w, h, dump = null, base = KB_BASE }
     ok(b, id + ': no base values recorded');
     const now = [m.kb.x, m.kb.y, m.kb.w, m.kb.h, m.q.w, m.q.h].map((n) => Math.round(n * 10) / 10);
     // An adult's page now has the Waystead Learning line in its foot (SB3-F): a tall page may gain a scroll bar, which makes the keyboard up to 17 px narrower. Where it sits is unchanged.
-    const same = role === 'adult' ? now.every((n, i) => (i === 2 || i === 4 ? n <= b[i] + 0.5 && n >= b[i] - 17 : i === 0 ? Math.abs(n - b[i]) <= 9 : n === b[i])) : JSON.stringify(now) === JSON.stringify(b);
+    // SB5 D1: the one-column phone (390 x 844, a 112 px reserve: the room is 732 px) now has the compact keyboard (keys 48 high, no pop-up room, rows 4 px apart): x, width and key width are as before, the height is the new one.
+    if (w < 600) { ok(role === 'adult' ? (m.q.w >= 32 && m.q.h >= 46.5 && m.kb.h <= b[3] + 1) : (now[0] === b[0] && now[2] === b[2] && Math.round(m.q.h) === 48 && m.kb.h < b[3]), id + ': keyboard compact at 390: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now)); return m; }
+    const same = role === 'adult' ? now.every((n, i) => (i === 2 || i === 4 ? n <= b[i] + 0.5 && n >= b[i] - 17 : i === 0 ? Math.abs(n - b[i]) <= 9 : n === b[i])) : now.every((n, i) => (i === 1 ? Math.abs(n - b[i]) <= 9 : n === b[i])); // SB5 D1: y within 9 px (the page now measures the real top-bar height instead of a guessed 72 px)
     ok(same, id + ': keyboard moved: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now));
   }
   if (role === 'child' && w >= 820 && h <= 1000 && (s === 'garden' || page === 'flower')) {

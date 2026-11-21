@@ -59,7 +59,7 @@ html.wa-pre body :is(.allgames, .topbar__inner > .thememenu, #player-slot, #them
 .instruct h1 { font-size: clamp(1.45rem, 6vw, 1.9rem); }
 
 /* ---- Home --------------------------------------------------------------- */
-.childhome { display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 20px; min-height: calc(100vh - 80px); min-height: calc(100svh - 80px); }
+.childhome { display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 20px; min-height: var(--page-h); }
 .savedline { align-self: center; margin: 0 0 12px; padding: 8px 18px; border-radius: 999px; background: var(--accent-soft); color: var(--text); font-weight: 700; }
 .homesay { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .pipring { width: 200px; height: 200px; border-radius: 50%; background: var(--pip-ring); display: grid; place-items: center; }
@@ -187,7 +187,7 @@ body.is-child .keyboard .key.is-pressed { transform: translateY(3px); filter: br
 @media (max-width: 480px) { body.is-child .spellpage .keyboard, body.is-child .play .keyboard { width: calc(100% + 20px); margin-inline: -10px; } }
 /* The keyboard sits at the foot of the screen (a flexible space above it on a tall screen). The 80 px above its first row is where
    the pop-up letter shows, so it never covers Hear, Peek or Skip. On a wide screen the board is capped and centred. */
-body.is-child main > section:has(.keyboard) { display: flex; flex-direction: column; box-sizing: border-box; min-height: calc(100vh - 72px); min-height: calc(100svh - 72px); }
+body.is-child main > section:has(.keyboard) { display: flex; flex-direction: column; box-sizing: border-box; min-height: var(--page-h); }
 body.is-child main > section:has(.keyboard) > [data-slot]:has(.keyboard) { flex: 1; display: flex; flex-direction: column; }
 body.is-child .keyboard { margin-top: auto; max-width: 500px; margin-inline: auto; width: 100%; }
 body.is-child .keyboard::before { content: ''; display: block; height: 72px; flex: none; }
@@ -221,8 +221,8 @@ body.is-child .play .keyboard .key { height: 56px; }
 .sheetlayer { position: fixed; inset: 0; z-index: 60; }
 .sheetback { position: absolute; inset: 0; background: rgba(27, 26, 32, 0.55); }
 .sheet {
-  position: absolute; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto; padding: 10px 16px calc(18px + env(safe-area-inset-bottom));
-  max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; box-sizing: border-box;
+  position: absolute; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto; padding: 10px 16px max(18px, var(--bottom-reserve));
+  display: flex; flex-direction: column; max-height: calc(var(--app-h) - var(--sat) - 12px); overflow: hidden; box-sizing: border-box;
   background: var(--bg); color: var(--text); border-radius: 28px 28px 0 0; box-shadow: 0 -12px 40px -16px rgba(0, 0, 0, 0.5);
 }
 .sheet__grip { display: block; width: 44px; height: 5px; margin: 0 auto 8px; border-radius: 999px; background: var(--line); }
@@ -235,7 +235,7 @@ body.is-child .play .keyboard .key { height: 56px; }
   background: var(--surface); border: var(--card-border); border-radius: 20px; box-shadow: var(--shadow);
 }
 button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer; }
-.weeksheet .sheet__rows { max-height: 60vh; overflow-y: auto; }
+.weeksheet .sheet__rows { overflow-y: auto; }
 .weekrow { min-height: 64px; justify-content: space-between; }
 .weekrow.is-current { border: 2px solid var(--accent); }
 .weekrow .pill { flex: none; }
@@ -330,7 +330,6 @@ button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer;
 @media (max-width: 480px) { .exampaper { border: 0; background: none; } .exampaper .assess__card { border: 0; background: none; padding-inline: 0; } }
 
 /* WP-S: a sheet's last row rises above the phone browser's floating bar; a tall sheet scrolls inside itself. */
-@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .sheet { padding-bottom: calc(18px + var(--safe-zone)); } }
 @media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { body.is-child main:not(:has(> section.spellpage, > section.play, > section.game, > section .keyboard)) { padding-bottom: var(--safe-zone); } }
 /* WP-S: the Settings page's own padding (its last links stood in the zone). */
 @media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .childsettings { padding-bottom: var(--safe-zone); } }
@@ -340,8 +339,8 @@ button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer;
    Colours are the three looks' own tokens (the pairs the contrast test holds). No inline styles. Everything to tap is at least 48 px high.
    The main button and the tiles end above the bottom safe zone (--safe-zone, about 112 px: a phone browser's floating bar covers it).
    ========================================================================== */
-.today { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; padding-bottom: 0; min-height: calc(100vh - 72px); min-height: calc(100svh - 72px); }
-@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .today { min-height: calc(100vh - 72px - var(--safe-zone)); min-height: calc(100svh - 72px - var(--safe-zone)); } }
+.today { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; padding-bottom: 0; min-height: 0; }
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .today { min-height: var(--page-h); } } /* SB5 D1: the content is top-aligned; the section is one screen tall, so the footer links start below the first screen and scroll clear of the browser's bar */
 .today__l { display: grid; gap: 8px; align-content: start; }
 .today__head { display: grid; gap: 0; }
 .today__head .eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; font-size: 0.85rem; }
@@ -353,7 +352,7 @@ button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer;
 @media (max-width: 420px), (max-height: 699px) and (max-width: 600px) { .hearit--icon { width: 48px; padding: 0; } .hearit--icon .hearit__t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
 .seeweek { display: block; min-height: 48px; color: var(--text); text-decoration: none; border-radius: 16px; }
 .today__things { display: grid; gap: 8px; }
-.today__r { margin-top: auto; display: grid; gap: 10px; padding-top: 8px; }
+.today__r { margin-top: 0; display: grid; gap: 10px; padding-top: 8px; }
 .today__big { display: flex; justify-content: flex-start; align-items: center; gap: 14px; min-height: 72px; text-align: left; padding: 8px 18px; font-size: 1rem; }
 .today__big svg.hero__ico { width: 36px; height: 36px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .today__bigtext { display: grid; gap: 2px; min-width: 0; }
@@ -408,7 +407,9 @@ button.sheetrow { width: 100%; font: inherit; text-align: left; cursor: pointer;
 @media (max-height: 699px) { .practice .tile { min-height: 56px; padding-block: 4px; } .practice { gap: 8px; } }
 
 /* The sentence games sheet and the things-waiting sheet: the rows scroll inside the sheet on a short phone. */
-.menusheet .sheet__rows, .thingssheet .sheet__rows, .gamesheet .sheet__rows { max-height: calc(100vh - 150px); max-height: calc(100dvh - 150px - var(--safe-zone)); overflow-y: auto; overscroll-behavior: contain; }
+.sheet__head, .sheet__grip { flex: none; }
+.sheet__rows { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; align-content: start; } /* SB5 D1: the rows scroll inside the sheet, which reaches down to the bottom reserve */
+.menusheet .sheet__rows, .thingssheet .sheet__rows, .gamesheet .sheet__rows { max-height: none; }
 
 /* ---- Fold rules for the practice pages (TR-61 to TR-63): Check, Next, Hear, Peek and the keys stay in the first screen on a phone ---- */
 /* Under 700 px high the page header tightens first: the lede and eyebrow go, the gaps drop to 8 px. Keys stay 48 px or more; letter keys are at least 32 x 48. */
@@ -448,7 +449,7 @@ body.is-child .keyboard .key { min-width: 32px; min-height: 48px; }
 @media (min-width: 820px) { .today__foot { max-width: 880px; } }
 .today__foot a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 12px; color: var(--sb); font-weight: 700; text-align: center; text-decoration: none; }
 .today__foot a:focus-visible { outline: 3px solid var(--focus, currentColor); outline-offset: 2px; border-radius: 8px; }
-@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .today__foot { margin-top: var(--safe-zone); margin-bottom: 0; } }
+@media (max-width: 600px), (max-height: 480px) and (max-width: 950px) { .today__foot { margin-top: 0; margin-bottom: 0; } } /* SB5 D1: main's bottom padding (the reserve) keeps the last link clear of the browser's bar */
 
 /* Stop for now? (11d) */
 .stopsheet .sheet__rows { display: grid; gap: 14px; }
@@ -524,6 +525,6 @@ body.is-child .keyboard .key { min-width: 32px; min-height: 48px; }
   html body main > section.wrap.page.play .pagehead h1 { font-size: 1.15rem; line-height: 1.2; margin: 0; }
   html body main > section.wrap.page.play .pagehead { margin-bottom: 4px; }
   html body main > section.wrap.page.play .blanks { font-size: 1.6rem; min-height: 0; }
-  html body main > section.wrap.page.play .play__top .pic, html body main > section.wrap.page.play .flower { height: clamp(64px, 17svh, 100px); max-height: clamp(64px, 17svh, 100px); }
+  html body main > section.wrap.page.play .play__top .pic, html body main > section.wrap.page.play .flower { height: clamp(64px, calc(var(--app-h) * 0.17), 100px); max-height: clamp(64px, calc(var(--app-h) * 0.17), 100px); }
   html body main > section.wrap.page.spellpage:not(.tilepage) .peekrow, html body main > section.wrap.page.spellpage:not(.tilepage) .skiprow, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .peekrow, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .skiprow { margin: 2px 0 0; }
 }

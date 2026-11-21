@@ -103,7 +103,7 @@
      "ipa": "/ˈpeɪntə/",
      "meaning": {
       "partOfSpeech": "noun",
-      "definition": "Someone who paints pictures or walls.",
+      "definition": "Someone who colours pictures or walls with a brush.",
       "example": "The painter made the door bright red."
      },
      "chunks": [
@@ -144,7 +144,7 @@
      "ipa": "/nəʊ/",
      "meaning": {
       "partOfSpeech": "adverb",
-      "definition": "The opposite of yes.",
+      "definition": "The opposite of \"yes\"; you say it when you do not agree.",
       "example": "No, I do not want any more peas."
      },
      "chunks": [
@@ -186,7 +186,7 @@
      "ipa": "/baɪ/",
      "meaning": {
       "partOfSpeech": "preposition",
-      "definition": "Next to something, or done by someone.",
+      "definition": "Next to something, as in \"by the fire\".",
       "example": "The cat sat by the fire."
      },
      "chunks": [

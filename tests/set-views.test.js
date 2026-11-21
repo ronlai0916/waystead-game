@@ -151,7 +151,7 @@ test('every CSS selector belongs to the page', () => {
   for (const s of sel.join(',').split(',').map((x) => x.trim()).filter(Boolean)) assert.match(s, /\.st-/, s);
 });
 test('the bar clears the bottom band and targets are 48px', () => {
-  assert.match(CSS, /--safe-zone: 112px/);
+  assert.match(CSS, /--safe-zone: var\(--bottom-reserve\)/);
   assert.match(CSS, /\.st-bar \{[^}]*var\(--safe-zone\)/);
   assert.match(CSS, /@media \(min-width: 720px\) and \(min-height: 600px\) \{ \.st-page \{ --safe-zone: 0px/);
   for (const c of ['.st-back', '.st-seg button', '.st-row', '.st-dates button', '.st-tog', '.st-sug']) assert.ok(CSS.includes(c), c);

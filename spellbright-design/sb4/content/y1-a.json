@@ -17,7 +17,7 @@
      "ipa": "/ðə/",
      "meaning": {
       "partOfSpeech": "determiner",
-      "definition": "A little word we use before a thing, like the cat.",
+      "definition": "A little word we put before a thing, as in \"the cat\".",
       "example": "We looked up and saw the moon."
      },
      "chunks": [
@@ -31,7 +31,7 @@
      "ipa": "/ə/",
      "meaning": {
       "partOfSpeech": "determiner",
-      "definition": "A little word that means one thing, like a cat.",
+      "definition": "A little word we put before one thing, as in \"a cat\".",
       "example": "Mum gave me a red apple."
      },
      "chunks": [
@@ -57,7 +57,7 @@
      "ipa": "/ɪz/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "A word that tells us about one person or thing.",
+      "definition": "A little word that links a thing to what it looks or acts like.",
       "example": "The sky is blue today."
      },
      "chunks": [
@@ -185,7 +185,7 @@
      "ipa": "/miː/",
      "meaning": {
       "partOfSpeech": "pronoun",
-      "definition": "The word for yourself, as in give it to me.",
+      "definition": "The word you use for yourself, as in \"give it to me\".",
       "example": "Please give the ball to me."
      },
      "chunks": [
@@ -213,7 +213,7 @@
      "ipa": "/wiː/",
      "meaning": {
       "partOfSpeech": "pronoun",
-      "definition": "The word for you and other people together.",
+      "definition": "The word for yourself and other people together.",
       "example": "We play in the park."
      },
      "chunks": [
@@ -227,7 +227,7 @@
      "ipa": "/biː/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "A word for what someone is or will become.",
+      "definition": "A word for what you are, or what you hope to turn into.",
       "example": "I want to be a doctor."
      },
      "chunks": [
@@ -341,7 +341,7 @@
      "ipa": "/wɒz/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "A word that tells us something happened before now.",
+      "definition": "The word we use instead of \"is\" when we talk about the past.",
       "example": "It was sunny all day."
      },
      "chunks": [
@@ -355,7 +355,7 @@
      "ipa": "/ɒv/",
      "meaning": {
       "partOfSpeech": "preposition",
-      "definition": "A little word that joins things, like a cup of tea.",
+      "definition": "A little word that joins two things, as in \"a cup of tea\".",
       "example": "I drank a cup of milk."
      },
      "chunks": [
@@ -681,7 +681,7 @@
      "ipa": "/ɑː/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "A word that tells us about you, we or more than one.",
+      "definition": "The word that goes with \"you\", \"we\" and \"they\" instead of \"is\".",
       "example": "We are at home."
      },
      "chunks": [
@@ -695,7 +695,7 @@
      "ipa": "/wɜː/",
      "meaning": {
       "partOfSpeech": "verb",
-      "definition": "A word that tells us about more than one thing before now.",
+      "definition": "The word we use instead of \"are\" when we talk about the past.",
       "example": "The birds were singing this morning."
      },
      "chunks": [
@@ -754,7 +754,7 @@
      "ipa": "/dɪʃɪz/",
      "meaning": {
       "partOfSpeech": "noun",
-      "definition": "More than one dish, the plates and bowls we eat from.",
+      "definition": "The plates and bowls we eat from.",
       "example": "Dad washed the dishes after tea."
      },
      "chunks": [

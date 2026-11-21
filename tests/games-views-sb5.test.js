@@ -103,7 +103,7 @@ test('the pages: Game day by year and week kind; the tests guard hides words; Me
 });
 test('mix.css: sizes, fold band, no :has, no sideways scroll rules, tokens only', () => {
   assert.doesNotMatch(css, /:has\(/);
-  assert.match(css, /--clear: 110px/);
+  assert.match(css, /--clear: var\(--bottom-reserve\)/);
   assert.match(css, /\.mixcard \{[^}]*min-width: 64px; min-height: 52px/);
   assert.match(css, /\.mixslot \{[^}]*min-height: 56px/);
   assert.match(css, /touch-action: none/);

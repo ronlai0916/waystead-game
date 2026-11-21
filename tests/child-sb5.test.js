@@ -189,14 +189,15 @@ test('every new child sentence is at most 8 words (two lines copied from the des
 
 test('the fold rules are in the css: the safe zone, 112 px bands, keys at least 32 x 48, no inline style, no new :has()', () => {
   const app = read('site/css/app.css');
-  assert.match(app, /--safe-zone: calc\(env\(safe-area-inset-bottom, 0px\) \+ 112px\)/);
+  assert.match(app, /--safe-zone: var\(--bottom-reserve\)/);
+  assert.match(app, /--bottom-reserve: calc\(env\(safe-area-inset-bottom, 0px\) \+ 112px\)/);
   const child = read('site/css/child.css');
-  assert.match(child, /\.sheet \{ padding-bottom: calc\(18px \+ var\(--safe-zone\)\); \}/);
+  assert.match(read('site/css/device.css'), /\.sheet \{ padding-bottom: max\(18px, var\(--bottom-reserve\)\); \}/);
   assert.match(child, /body\.is-child \.keyboard \.key \{ min-width: 32px; min-height: 48px; \}/);
   assert.match(read('site/css/tray.css'), /HOTFIX1 \(17 Nov\)/);
   const mine = child.slice(child.indexOf('SB5 (WP-F2)'));
   assert.doesNotMatch(mine, /:has\(/, 'TR-63: no :has() in the new rules');
-  assert.match(mine, /\.today \{[^}]*var\(--safe-zone\)/, 'Today ends above the band');
+  assert.match(mine, /\.today \{ min-height: var\(--page-h\); \}/, 'Today is one screen tall (D1), its content top-aligned, so the footer starts below the first screen');
   for (const f of ['child-views.js', 'front-views.js', 'words-views.js', 'study-views.js']) assert.doesNotMatch(read('site/js/' + f), /\sstyle="/, f);
 });
 

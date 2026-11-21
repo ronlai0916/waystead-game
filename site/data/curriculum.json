@@ -30,7 +30,7 @@
             "ipa": "/ðə/",
             "meaning": {
               "partOfSpeech": "determiner",
-              "definition": "A little word we use before a thing, like the cat.",
+              "definition": "A little word we put before a thing, as in \"the cat\".",
               "example": "We looked up and saw the moon."
             },
             "chunks": [
@@ -44,7 +44,7 @@
             "ipa": "/ə/",
             "meaning": {
               "partOfSpeech": "determiner",
-              "definition": "A little word that means one thing, like a cat.",
+              "definition": "A little word we put before one thing, as in \"a cat\".",
               "example": "Mum gave me a red apple."
             },
             "chunks": [
@@ -70,7 +70,7 @@
             "ipa": "/ɪz/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "A word that tells us about one person or thing.",
+              "definition": "A little word that links a thing to what it looks or acts like.",
               "example": "The sky is blue today."
             },
             "chunks": [
@@ -198,7 +198,7 @@
             "ipa": "/miː/",
             "meaning": {
               "partOfSpeech": "pronoun",
-              "definition": "The word for yourself, as in give it to me.",
+              "definition": "The word you use for yourself, as in \"give it to me\".",
               "example": "Please give the ball to me."
             },
             "chunks": [
@@ -226,7 +226,7 @@
             "ipa": "/wiː/",
             "meaning": {
               "partOfSpeech": "pronoun",
-              "definition": "The word for you and other people together.",
+              "definition": "The word for yourself and other people together.",
               "example": "We play in the park."
             },
             "chunks": [
@@ -240,7 +240,7 @@
             "ipa": "/biː/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "A word for what someone is or will become.",
+              "definition": "A word for what you are, or what you hope to turn into.",
               "example": "I want to be a doctor."
             },
             "chunks": [
@@ -354,7 +354,7 @@
             "ipa": "/wɒz/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "A word that tells us something happened before now.",
+              "definition": "The word we use instead of \"is\" when we talk about the past.",
               "example": "It was sunny all day."
             },
             "chunks": [
@@ -368,7 +368,7 @@
             "ipa": "/ɒv/",
             "meaning": {
               "partOfSpeech": "preposition",
-              "definition": "A little word that joins things, like a cup of tea.",
+              "definition": "A little word that joins two things, as in \"a cup of tea\".",
               "example": "I drank a cup of milk."
             },
             "chunks": [
@@ -694,7 +694,7 @@
             "ipa": "/ɑː/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "A word that tells us about you, we or more than one.",
+              "definition": "The word that goes with \"you\", \"we\" and \"they\" instead of \"is\".",
               "example": "We are at home."
             },
             "chunks": [
@@ -708,7 +708,7 @@
             "ipa": "/wɜː/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "A word that tells us about more than one thing before now.",
+              "definition": "The word we use instead of \"are\" when we talk about the past.",
               "example": "The birds were singing this morning."
             },
             "chunks": [
@@ -767,7 +767,7 @@
             "ipa": "/dɪʃɪz/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "More than one dish, the plates and bowls we eat from.",
+              "definition": "The plates and bowls we eat from.",
               "example": "Dad washed the dishes after tea."
             },
             "chunks": [
@@ -894,7 +894,7 @@
             "ipa": "/ˈpeɪntə/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "Someone who paints pictures or walls.",
+              "definition": "Someone who colours pictures or walls with a brush.",
               "example": "The painter made the door bright red."
             },
             "chunks": [
@@ -935,7 +935,7 @@
             "ipa": "/nəʊ/",
             "meaning": {
               "partOfSpeech": "adverb",
-              "definition": "The opposite of yes.",
+              "definition": "The opposite of \"yes\"; you say it when you do not agree.",
               "example": "No, I do not want any more peas."
             },
             "chunks": [
@@ -977,7 +977,7 @@
             "ipa": "/baɪ/",
             "meaning": {
               "partOfSpeech": "preposition",
-              "definition": "Next to something, or done by someone.",
+              "definition": "Next to something, as in \"by the fire\".",
               "example": "The cat sat by the fire."
             },
             "chunks": [
@@ -1895,7 +1895,7 @@
             "ipa": "/təʊld/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "Said something to someone, from the word tell.",
+              "definition": "Said something to someone; the past of \"tell\".",
               "example": "Dad told us a funny story."
             },
             "chunks": [
@@ -1910,7 +1910,7 @@
             "ipa": "/ˈevri/",
             "meaning": {
               "partOfSpeech": "determiner",
-              "definition": "Each one of them.",
+              "definition": "Each one, with none left out.",
               "example": "We go to the park every day."
             },
             "chunks": [
@@ -2716,7 +2716,7 @@
             "ipa": "/wʊd/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "A word for what might happen.",
+              "definition": "A word for something that might happen or that you wish for.",
               "example": "I would like a biscuit please."
             },
             "chunks": [
@@ -3052,7 +3052,7 @@
             "ipa": "/ˈmɪs.tə/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "A short word put before a man's name.",
+              "definition": "A short title for a man, written before his name.",
               "example": "Mr Green is my teacher."
             },
             "chunks": [
@@ -3065,7 +3065,7 @@
             "ipa": "/ˈmɪs.ɪz/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "A short word put before a married lady's name.",
+              "definition": "A short title for a married lady, written before her name.",
               "example": "Mrs Patel is waiting at the gate."
             },
             "chunks": [
@@ -3237,7 +3237,7 @@
             "ipa": "/hɜːd/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "Took in sound through the ears (past tense of hear).",
+              "definition": "Took in sound through the ears; the past of \"hear\".",
               "example": "I heard the doorbell ring."
             },
             "image": "heard.jpg",
@@ -3617,7 +3617,7 @@
             "ipa": "/ˈfɔː.wədz/",
             "meaning": {
               "partOfSpeech": "adverb",
-              "definition": "Moving towards the front (same as forward).",
+              "definition": "Towards the front, in the direction you are facing.",
               "example": "She leaned forwards to listen."
             },
             "image": "forwards.jpg",
@@ -3846,7 +3846,7 @@
             "ipa": "/ˈnætʃ.ər.əl/",
             "meaning": {
               "partOfSpeech": "adjective",
-              "definition": "Made by nature, not by people.",
+              "definition": "Found in the world around us, not made by people.",
               "example": "Wood is a natural material."
             },
             "image": "natural.jpg",
@@ -3961,7 +3961,7 @@
             "ipa": "/kɔːt/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "Took hold of something that was moving (past tense of catch).",
+              "definition": "Took hold of something that was moving; the past of \"catch\".",
               "example": "She caught the ball with one hand."
             },
             "image": "caught.jpg",
@@ -4025,7 +4025,7 @@
             "ipa": "/ðəʊ/",
             "meaning": {
               "partOfSpeech": "conjunction",
-              "definition": "Used to add a different idea (similar to 'but').",
+              "definition": "A word that adds a different idea, a bit like \"but\".",
               "example": "I will come, though I might be late."
             },
             "image": "though.jpg",
@@ -4716,8 +4716,8 @@
             "ipa": "/ˈɒp.ə.zɪt/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "Completely different from something.",
-              "example": "Hot is the opposite of cold."
+              "definition": "Something that is as different as can be from another thing.",
+              "example": "The opposite of \"hot\" is \"cold\"."
             },
             "image": "opposite.jpg",
             "chunks": [
@@ -4820,7 +4820,7 @@
             "ipa": "/ʌnˈkaɪnd/",
             "meaning": {
               "partOfSpeech": "adjective",
-              "definition": "Not kind; mean or hurtful to other people.",
+              "definition": "Mean or hurtful to other people.",
               "example": "It is unkind to laugh at someone who has fallen."
             },
             "chunks": [
@@ -4834,7 +4834,7 @@
             "ipa": "/ʌnˈfeə/",
             "meaning": {
               "partOfSpeech": "adjective",
-              "definition": "Not right or equal; not treating everyone the same.",
+              "definition": "Not treating everyone the same or in the right way.",
               "example": "It felt unfair that only one team got a prize."
             },
             "chunks": [
@@ -4907,7 +4907,7 @@
             "ipa": "/ˌmɪsˈspel/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "To spell a word without getting the letters right.",
+              "definition": "To write a word with letters that are not the right ones.",
               "example": "Check your work so you do not misspell any words."
             },
             "chunks": [
@@ -4979,7 +4979,7 @@
             "ipa": "/ˌriːˈpleɪ/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "To play something again.",
+              "definition": "To watch or listen to something again, such as a video or a song.",
               "example": "Can we replay that funny video one more time?"
             },
             "chunks": [
@@ -5007,7 +5007,7 @@
             "ipa": "/ˌriːˈraɪt/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "To write something again, often to make it better.",
+              "definition": "To put your words down again on paper, often to make them better.",
               "example": "I will rewrite my story with a new ending."
             },
             "chunks": [
@@ -5022,7 +5022,7 @@
             "ipa": "/ˌriːˈbɪld/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "To build something again.",
+              "definition": "To put something up again after it has been broken or knocked down.",
               "example": "We helped rebuild the sandcastle after the wave hit it."
             },
             "chunks": [
@@ -5250,7 +5250,7 @@
             "ipa": "/ˈmædʒɪkli/",
             "meaning": {
               "partOfSpeech": "adverb",
-              "definition": "In a way that seems done by magic.",
+              "definition": "In a way that seems impossible, as if by a spell.",
               "example": "The rabbit magically appeared from the hat."
             },
             "chunks": [
@@ -5732,7 +5732,7 @@
             "ipa": "/ɪmˈpɜːfɪkt/",
             "meaning": {
               "partOfSpeech": "adjective",
-              "definition": "Not perfect; having a small fault.",
+              "definition": "Not quite right; having a small fault.",
               "example": "My drawing is imperfect, but I like it."
             },
             "chunks": [
@@ -6023,7 +6023,7 @@
             "meaning": {
               "partOfSpeech": "noun",
               "definition": "Sharing or splitting a number into equal groups.",
-              "example": "Division is the opposite of multiplication."
+              "example": "Sharing 12 sweets between 3 friends is a division sum."
             },
             "chunks": [
               "di",
@@ -6554,8 +6554,8 @@
             "ipa": "/raɪm/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "When words end with the same sound, like cat and hat.",
-              "example": "Cat and hat are a rhyme."
+              "definition": "The same sound at the end of two words, such as \"cat\" and \"hat\".",
+              "example": "A rhyme for \"cat\" is \"hat\"."
             },
             "image": "rhyme.jpg",
             "chunks": [
@@ -6826,7 +6826,7 @@
             "ipa": "/əˈkɔː.dɪŋ/",
             "meaning": {
               "partOfSpeech": "adverb",
-              "definition": "As stated by; following.",
+              "definition": "As said or shown by someone or something.",
               "example": "According to the map, we go left."
             },
             "image": "according.jpg",
@@ -7028,7 +7028,7 @@
             "ipa": "/ɪˈkwɪpt/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "Given the things needed (past tense of equip).",
+              "definition": "Given the things needed; the past of \"equip\".",
               "example": "The climbers were equipped with ropes."
             },
             "image": "equipped.jpg",
@@ -7565,7 +7565,7 @@
             "meaning": {
               "partOfSpeech": "adjective",
               "definition": "To do with the body.",
-              "example": "PE means physical education."
+              "example": "\"PE\" stands for \"physical education\"."
             },
             "image": "physical.jpg",
             "chunks": [
@@ -8055,7 +8055,7 @@
             "meaning": {
               "partOfSpeech": "adverb",
               "definition": "In a real, honest way.",
-              "example": "Yours sincerely is used at the end of a letter."
+              "example": "We write \"Yours sincerely\" at the end of a letter."
             },
             "image": "sincerely.jpg",
             "chunks": [
@@ -9662,7 +9662,7 @@
             "ipa": "/ˈsensəbəl/",
             "meaning": {
               "partOfSpeech": "adjective",
-              "definition": "Showing good sense and sound judgement.",
+              "definition": "Wise and careful; making good choices.",
               "example": "It is sensible to wear a coat in the rain."
             },
             "chunks": [

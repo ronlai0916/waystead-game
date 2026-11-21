@@ -133,6 +133,16 @@ export function setByLine(gid, setup) {
   const by = setup && setup.by && typeof setup.by.n === 'string' ? Su.cleanName(setup.by.n) : '';
   return SD.setByWords(SD.weekRole(id) || 'parent', by);
 }
+/**
+ * SB5 D1: the grown-up's chosen name is cached on the device (`sb.by:<player>`, written whenever a words value that has it is read), so the first paint after a cold start says
+ * "Set by Dad", not "Set by your grown-up" until the account answers. `cached` is that name; a name already in the setup wins.
+ */
+export function setupWithBy(setup, cached) {
+  const n = setup && setup.by && typeof setup.by.n === 'string' ? Su.cleanName(setup.by.n) : '';
+  if (n) return setup;
+  const c = typeof cached === 'string' ? Su.cleanName(cached) : '';
+  return c ? { ...(setup || {}), by: { n: c, at: 1 } } : (setup || {});
+}
 /** "From Mum" on a Practice list card, else "From your grown-up" (today's wording). */
 export const fromLine = (setup) => {
   const n = setup && setup.by && typeof setup.by.n === 'string' ? Su.cleanName(setup.by.n) : '';

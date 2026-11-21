@@ -64,7 +64,7 @@ body.is-adult .brand__tag {
 .adultlayer__back { position: absolute; inset: 0; background: rgba(27, 26, 32, 0.5); }
 .adultpanel {
   position: absolute; top: var(--adult-top, 76px); right: max(16px, calc((100vw - var(--wrap)) / 2 + 16px)); width: min(420px, calc(100vw - 32px));
-  max-height: calc(100vh - var(--adult-top, 76px) - 12px); max-height: calc(100dvh - 80px); overflow-y: auto; overscroll-behavior: contain;
+  max-height: calc(var(--app-h) - var(--adult-top, 76px) - 14px); overflow-y: auto; overscroll-behavior: contain;
   padding: 16px 18px 18px; background: var(--surface); color: var(--text); border: 3px solid var(--sb); border-radius: 22px; box-shadow: var(--shadow), 0 16px 40px -16px rgba(0, 0, 0, 0.45);
 }
 .adultpanel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
@@ -100,8 +100,8 @@ body.is-adult .brand__tag {
 .adultpanel .choice:focus-visible, .adultpanel .linkbtn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 @media (max-width: 599.98px) {
   .adultpanel {
-    top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 86vh; max-height: calc(100dvh - 80px);
-    border: 0; border-radius: 28px 28px 0 0; background: var(--bg); padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
+    top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: calc(var(--app-h) - var(--head-h) - 8px);
+    border: 0; border-radius: 28px 28px 0 0; background: var(--bg); padding: 14px 16px max(18px, var(--bottom-reserve));
     box-shadow: 0 -12px 40px -16px rgba(0, 0, 0, 0.5);
   }
   .adultlooks { grid-template-columns: minmax(0, 1fr); }

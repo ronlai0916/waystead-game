@@ -196,7 +196,7 @@ test('lists.css: every rule is under .ls, targets are 48 px, the bar clears the 
     if (!sel || sel.startsWith('@')) continue;
     for (const s of sel.split(',').map((x) => x.trim())) assert.match(s, /^(\.ls|\.ls-)/, s);
   }
-  assert.match(css, /--safe-zone: 110px/);
+  assert.match(css, /--safe-zone: var\(--bottom-reserve\)/);
   assert.match(css, /\.ls \.ls-bar \{[^}]*bottom: var\(--safe-zone\)/);
   for (const k of ['.ls-tab', '.ls-chip', '.ls-sug__b']) assert.match(css, new RegExp('\\' + k + ' \\{[^}]*min-height: 48px'));
   assert.doesNotMatch(css, /overflow-x:\s*scroll|width:\s*\d{4,}px/);

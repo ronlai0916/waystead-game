@@ -68,7 +68,7 @@
             "ipa": "/ɪz/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "A form of \"be\" used with he, she or it.",
+              "definition": "A little word that links a thing to what it looks or acts like.",
               "example": "The sky is blue today."
             },
             "chunks": [
@@ -467,7 +467,7 @@
             "ipa": "/hɜːd/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "Took in sound through the ears (past tense of hear).",
+              "definition": "Took in sound through the ears; the past of \"hear\".",
               "example": "I heard the doorbell ring."
             },
             "image": "heard.jpg",
@@ -847,7 +847,7 @@
             "ipa": "/ˈfɔː.wədz/",
             "meaning": {
               "partOfSpeech": "adverb",
-              "definition": "Moving towards the front (same as forward).",
+              "definition": "Towards the front, in the direction you are facing.",
               "example": "She leaned forwards to listen."
             },
             "image": "forwards.jpg",
@@ -1076,7 +1076,7 @@
             "ipa": "/ˈnætʃ.ər.əl/",
             "meaning": {
               "partOfSpeech": "adjective",
-              "definition": "Made by nature, not by people.",
+              "definition": "Found in the world around us, not made by people.",
               "example": "Wood is a natural material."
             },
             "image": "natural.jpg",
@@ -1191,7 +1191,7 @@
             "ipa": "/kɔːt/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "Took hold of something that was moving (past tense of catch).",
+              "definition": "Took hold of something that was moving; the past of \"catch\".",
               "example": "She caught the ball with one hand."
             },
             "image": "caught.jpg",
@@ -1255,7 +1255,7 @@
             "ipa": "/ðəʊ/",
             "meaning": {
               "partOfSpeech": "conjunction",
-              "definition": "Used to add a different idea (similar to 'but').",
+              "definition": "A word that adds a different idea, a bit like \"but\".",
               "example": "I will come, though I might be late."
             },
             "image": "though.jpg",
@@ -1946,8 +1946,8 @@
             "ipa": "/ˈɒp.ə.zɪt/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "Completely different from something.",
-              "example": "Hot is the opposite of cold."
+              "definition": "Something that is as different as can be from another thing.",
+              "example": "The opposite of \"hot\" is \"cold\"."
             },
             "image": "opposite.jpg",
             "chunks": [
@@ -2109,8 +2109,8 @@
             "ipa": "/raɪm/",
             "meaning": {
               "partOfSpeech": "noun",
-              "definition": "When words end with the same sound, like cat and hat.",
-              "example": "Cat and hat are a rhyme."
+              "definition": "The same sound at the end of two words, such as \"cat\" and \"hat\".",
+              "example": "A rhyme for \"cat\" is \"hat\"."
             },
             "image": "rhyme.jpg",
             "chunks": [
@@ -2381,7 +2381,7 @@
             "ipa": "/əˈkɔː.dɪŋ/",
             "meaning": {
               "partOfSpeech": "adverb",
-              "definition": "As stated by; following.",
+              "definition": "As said or shown by someone or something.",
               "example": "According to the map, we go left."
             },
             "image": "according.jpg",
@@ -2583,7 +2583,7 @@
             "ipa": "/ɪˈkwɪpt/",
             "meaning": {
               "partOfSpeech": "verb",
-              "definition": "Given the things needed (past tense of equip).",
+              "definition": "Given the things needed; the past of \"equip\".",
               "example": "The climbers were equipped with ropes."
             },
             "image": "equipped.jpg",
@@ -3120,7 +3120,7 @@
             "meaning": {
               "partOfSpeech": "adjective",
               "definition": "To do with the body.",
-              "example": "PE means physical education."
+              "example": "\"PE\" stands for \"physical education\"."
             },
             "image": "physical.jpg",
             "chunks": [
@@ -3610,7 +3610,7 @@
             "meaning": {
               "partOfSpeech": "adverb",
               "definition": "In a real, honest way.",
-              "example": "Yours sincerely is used at the end of a letter."
+              "example": "We write \"Yours sincerely\" at the end of a letter."
             },
             "image": "sincerely.jpg",
             "chunks": [

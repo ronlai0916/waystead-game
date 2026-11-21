@@ -16,7 +16,7 @@ import { PLAYER_KEY } from './player.js';
 
 export const SIGNED_OUT_PARAM = 'signedout';
 const PREFIX = { spellbright: 'sb', wordbright: 'wb' };
-const DATA = ['sb.progress', 'sb.words', 'sb.week', 'sb.year', 'wb.game', 'wb.setup', 'wb.stats', 'sb.role', 'sb.roleAsk', 'sb.t3', 'sb.st', 'sb.setTab', 'sb.adult'];
+const DATA = ['sb.progress', 'sb.words', 'sb.week', 'sb.year', 'wb.game', 'wb.setup', 'wb.stats', 'sb.role', 'sb.roleAsk', 'sb.t3', 'sb.st', 'sb.setTab', 'sb.adult', 'sb.by'];
 const HANDOFFS = ['sb.copyList', 'sb.setChapter', 'sb.scanWords', 'sb.planWords', 'sb.selection'];
 
 function keysOf(storage) {

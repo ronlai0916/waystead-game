@@ -1,6 +1,6 @@
 /* SB5-WP-D: Set a week (site/js/set-views.js). Every selector is under .st-page or starts .st-. Tokens only; no parent-selector rules, no inline styles. */
 .st-page {
-  --safe-zone: 112px; /* the Set bar clears the bottom band of a phone (the design's --bottom-safe) */
+  --safe-zone: var(--bottom-reserve); /* the Set bar clears the bottom band of a phone (the design's --bottom-safe) */
   --st-bar-h: 84px;
   display: flex; flex-direction: column; gap: 16px;
   padding-top: 8px;
@@ -132,7 +132,7 @@
 
 /* the sheet is a dialog over the page (the page behind is inert) */
 .st-sheetwrap { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, .45); }
-.st-sheetbox { width: 100%; max-width: 560px; max-height: calc(100dvh - 24px); overflow: auto; background: var(--paper, #fff); color: inherit; border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + var(--safe-zone, 0px) / 4); display: flex; flex-direction: column; gap: 12px; }
+.st-sheetbox { width: 100%; max-width: 560px; max-height: calc(var(--app-h) - var(--sat) - 24px); overflow: auto; background: var(--paper, #fff); color: inherit; border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + var(--safe-zone, 0px) / 4); display: flex; flex-direction: column; gap: 12px; }
 .st-sheetbox h2 { margin: 0; font-size: 1.1rem; }
 .st-sheetact { display: flex; justify-content: flex-end; }
 

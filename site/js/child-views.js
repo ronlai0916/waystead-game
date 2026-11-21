@@ -214,6 +214,16 @@ export const FOOT_LINKS = [
   { href: '#/about', text: 'For parents' },
   { href: '../', text: 'More games' },
 ];
+/** The grown-up's name from the device's own cache when the words value has none yet (first paint on a cold start); remembered whenever the value has it. */
+function byCached(setup) {
+  const id = S.currentPlayer();
+  const key = id ? 'sb.by:' + id : '';
+  try {
+    const n = setup && setup.by && typeof setup.by.n === 'string' ? setup.by.n : '';
+    if (key && n) localStorage.setItem(key, n);
+    return C.setupWithBy(setup, key && !n ? localStorage.getItem(key) : '');
+  } catch (e) { return setup || {}; }
+}
 const todayFoot = () => '<nav class="wrap page today__foot" aria-label="More from Waystead" data-todayfoot>' + FOOT_LINKS.map((l) => '<a href="' + esc(l.href) + '">' + esc(l.text) + '</a>').join('') + '</nav>';
 
 /* ------------------------------------------------------------------ home --- */
@@ -234,7 +244,7 @@ export function childHome(main) {
   const t = todayText({ g, st, day, year, jobs, testStarted, score: st && st.status === 'done' ? score : null });
   const locked = St.dueGroups(d, day).length > 0; // a test is due: Practice, Words to practise again and Games stay shut until it is done
   const tricky = S.trickyWords().length;
-  const setBy = g ? C.setByLine(g.id, S.readSetup()) : '';
+  const setBy = g ? C.setByLine(g.id, byCached(S.readSetup())) : '';
   const href = { job: g && r.step ? stepHref(d, g, r.step.id, day) : '#/chapters', wordbright: '../wordbright/', practice: '#/chapters', tricky: '#/tricky' }[t.to];
   const attr = t.to === 'job' ? ' data-job' : t.to === 'wordbright' ? ' data-wordbright' : '';
   const name = firstName(playerName());
@@ -328,7 +338,7 @@ export function pathPage(main, { gid }) {
   const st = St.studyState(d, g, day);
   const year = childYear();
   const kind = St.weekKind(g);
-  const setBy = C.setByLine(g.id, S.readSetup());
+  const setBy = C.setByLine(g.id, byCached(S.readSetup()));
   const icon = { done: TICK, today: SVG.playc, waiting: SVG.clock, later: SVG.cal };
   const rows = weekRows(d, g, day, st, year).map((x) => {
     const live = x.step && (x.state === 'today' || x.state === 'waiting');
@@ -566,7 +576,7 @@ function openWeeks(opener, weeks, pick) {
     + '<span class="sheetrow__text"><b>' + esc(w.name) + '</b><span>' + esc(w.by ? w.by + ' · ' + w.testLabel : w.testLabel) + '</span><span>' + esc(w.job) + '</span></span>'
     + (w.current ? '<span class="pill pill--done">Showing now</span>' : w.waiting ? '<span class="pill pill--warm">Jobs waiting</span>' : '') + '</button>';
   const setup = S.readSetup();
-  const list = weeks.map((w) => ({ ...w, by: C.setByLine(w.id, setup) }));
+  const list = weeks.map((w) => ({ ...w, by: C.setByLine(w.id, byCached(setup)) }));
   openSheet(opener, { title: 'Which week?', cls: 'weeksheet', body: list.map(row).join(''), onPick: (el) => {
     const same = el.hasAttribute('aria-current');
     if (same) { if (opener.isConnected) opener.focus(); } else pick(el.dataset.week);

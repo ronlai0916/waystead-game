@@ -117,7 +117,8 @@
   background: radial-gradient(circle at 12px 0, var(--hedge) 11px, transparent 12px) repeat-x;
   background-size: 24px 12px;
 }
-[data-style="garden"] main { padding-top: 6px; }
+[data-style="garden"] { --main-pt: 6px; }
+[data-style="garden"] main { padding-top: var(--main-pt); }
 [data-style="garden"] .btn { font-family: var(--f-display); font-weight: 600; font-size: 1.06rem; }
 [data-style="garden"] .key { font-weight: 600; }
 [data-style="garden"] .iconbtn, [data-style="garden"] .tab { border-radius: 999px; }
