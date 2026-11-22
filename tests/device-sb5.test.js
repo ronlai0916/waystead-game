@@ -158,3 +158,12 @@ test('D2: #/device is routed, safe, in the shell, linked from Settings (child) a
   assert.doesNotMatch(rd('js/device-view.js'), /style="/, 'no style attribute in the markup (strict CSP)');
   assert.equal(rowsText([['A', '1'], ['B', '2']]), 'A: 1\nB: 2');
 });
+
+test('22 Nov: iOS Safari portrait reserve uses the real page vs screen height (Ron\'s iPhone Air, full bar)', () => {
+  const ios = D.detect({ ua: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1', maxTouchPoints: 5 });
+  assert.equal(D.reserveFor(ios, 'portrait', 0, 420, 746, { sh: 912, sat: 0 }), 8, 'the page ends above the bar: no gap');
+  assert.equal(D.reserveFor(ios, 'portrait', 34, 420, 912, { sh: 912, sat: 59 }), 84, 'the page reaches the foot (bar over it): 84');
+  assert.equal(D.reserveFor(ios, 'portrait', 0, 420, 845, { sh: 912, sat: 0 }), 79, 'small pill: the page nearly reaches the foot');
+  assert.equal(D.reserveFor(ios, 'portrait', 34, 420, 912), 84, 'no screen numbers: 84 as before');
+  assert.equal(D.reserveFor(ios, 'landscape', 0, 912, 380, { sh: 912, sat: 0 }), 48, 'landscape unchanged');
+});

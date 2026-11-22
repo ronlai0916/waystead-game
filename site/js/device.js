@@ -68,10 +68,18 @@
   function sizeClass(h) { return h < 600 ? 'xs' : h < 720 ? 's' : h < 860 ? 'm' : 'l'; }
 
   /** The bottom overlay reserve (px): how far above the bottom edge the last control must end. in: detect() result + { orient, sab }. */
-  function reserveFor(d, orient, sab, w, h) {
+  function reserveFor(d, orient, sab, w, h, scr) {
     var b = Math.max(0, Number(sab) || 0);
     var land = orient === 'landscape';
     if (d.os === 'ios') {
+      // 22 Nov (Ron's iPhone Air, Safari 27.2, About this device): with Safari's full bar showing, the page is 746 px of a 912 px screen. The page starts under
+      // the status bar (inset top 0) and ENDS ABOVE the bar, so the bar covers none of it and 84 more left a 100 px gap. So: 84 less the part of the screen's foot
+      // that already lies below the page (screen height - page height - the status-bar strip above the page, about 62 px when the inset top is 0), at least 8.
+      // When the bar shrinks to the small pill the page grows to the foot again and the reserve goes back to about 84. scr = { sh: screen height, sat: inset top }.
+      if (d.browser === 'safari' && !d.standalone && d.iosVersion >= 15 && !land && scr && scr.sh > 0 && h > 0) {
+        var below = scr.sh - h - ((Number(scr.sat) || 0) > 0 ? 0 : 62);
+        return Math.max(8, Math.min(84, Math.round(84 - Math.max(0, below))));
+      }
       // The floating bottom bar overlays the page. Measured on Ron's iPhone Air (Safari 26, screenshot 21 Nov): the bar's top is about 80 px above the screen's foot,
       // and that foot INCLUDES the 34 px home-indicator strip (the bar sits inside it, it does not stack on top of it). The old 78 + inset (= 112) counted the
       // strip twice and left about 30 px blank (about 60 px with the sticky bar's own padding). So: 84 in total, whatever the inset reads. Landscape: a thinner bar.
@@ -133,6 +141,11 @@
     return !!(a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable));
   }
 
+  function screenTall() { // the screen's long side (iOS reports the portrait size whichever way the phone is held)
+    var sc = root.screen || {};
+    return Math.max(Number(sc.width) || 0, Number(sc.height) || 0);
+  }
+
   function measure() {
     var vv = root.visualViewport;
     var w = Math.round((vv && vv.width) || root.innerWidth || 0);
@@ -145,7 +158,7 @@
     if (!headEl || !headEl.isConnected) headEl = doc.querySelector('.topbar');
     var head = headEl ? Math.round(headEl.getBoundingClientRect().height) : 0;
     if (!head) head = Number(readLS('sb.headH')) || DEFAULT_HEAD;
-    return { d: d, w: w, h: h, orient: orient, ins: ins, head: head, reserve: reserveFor(d, orient, ins.sab, w, h) };
+    return { d: d, w: w, h: h, orient: orient, ins: ins, head: head, reserve: reserveFor(d, orient, ins.sab, w, h, { sh: screenTall(), sat: ins.sat }) };
   }
 
   function apply() {

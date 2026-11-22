@@ -27,6 +27,9 @@ const DESK = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 // w x h is the viewport the page gets (innerWidth x innerHeight). bar: the drawn overlay height (iPhone Safari). reserve/os/browser/h: what device.js must conclude.
 export const PROFILES = [
   { id: 'iphone-air', label: 'iPhone Air, Safari 26 (Ron)', w: 420, h: 912, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'm' },
+  // Ron's real iPhone Air with Safari 27's FULL bar showing (About this device, 22 Nov): the page is 746 of a 912 screen, starts under the status bar
+  // (inset top 0) and ends above the bar, which covers none of it: nothing to draw, and the reserve must shrink to 8 (no 100 px gap).
+  { id: 'iphone-air-bar', label: 'iPhone Air, Safari 27, full bar (Ron, real)', w: 420, h: 746, sh: 912, ua: SAFARI26, touch: 5, sat: 0, sab: 0, bar: 0, os: 'ios', browser: 'safari', reserve: 8, cls: 'm' },
   { id: 'iphone-17pro', label: 'iPhone 17 Pro, Safari 26', w: 402, h: 874, ua: SAFARI26, touch: 5, sat: 62, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'm' },
   { id: 'iphone-16', label: 'iPhone 16, Safari 26', w: 393, h: 852, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
   { id: 'iphone-14', label: 'iPhone 14, Safari 26', w: 390, h: 844, ua: SAFARI26, touch: 5, sat: 47, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
@@ -56,7 +59,7 @@ export default function (H) {
 
   async function apply(p) {
     const mobile = p.os === 'ios' || p.os === 'android';
-    await send('Emulation.setDeviceMetricsOverride', { width: p.w, height: p.h, deviceScaleFactor: 2, mobile });
+    await send('Emulation.setDeviceMetricsOverride', { width: p.w, height: p.h, deviceScaleFactor: 2, mobile, ...(p.sh ? { screenWidth: p.w, screenHeight: p.sh } : {}) });
     await send('Emulation.setUserAgentOverride', { userAgent: p.ua, platform: p.os === 'desktop' ? 'Linux x86_64' : p.os === 'android' ? 'Linux armv81' : p.os === 'ipados' ? 'MacIntel' : 'iPhone' });
     await send('Emulation.setTouchEmulationEnabled', { enabled: p.touch > 0, maxTouchPoints: p.touch || 1 });
     await send('Emulation.setEmitTouchEventsForMouse', { enabled: false }).catch(() => {});
