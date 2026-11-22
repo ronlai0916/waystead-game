@@ -136,17 +136,17 @@ html:is([data-h="xs"], [data-h="s"]) .practice { gap: 8px; }
 }
 
 /* ---- SB5 D2 (21 Nov): sheets that fit, adult bars that sit just above the reserve, and the About this device page ---- */
-/* Menu, things-waiting and games sheets: on a phone with little room (data-h s and xs) the rows are compact so all of them show (xs: all but the last, which scrolls into view). Subtitles stay. */
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheet__rows { gap: 6px; }
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow { min-height: 52px; padding: 4px 12px; gap: 10px; }
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow:not(.sheetrow--quiet) { border-radius: 16px; }
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow--quiet { min-height: 52px; }
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__ico { width: 32px; height: 32px; }
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__ico svg { width: 18px; height: 18px; }
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__text b { font-size: 1.02rem; }
-html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__text span { font-size: 0.85rem; }
-html:is([data-h="xs"], [data-h="s"]) .sheet__head { margin-bottom: 6px; }
-html:is([data-h="xs"], [data-h="s"]) .sheet__grip { margin-bottom: 4px; }
+/* Menu, things-waiting and games sheets: on every phone (22 Nov: the iPhone 17 Pro fitted with 0 px to spare at data-h m and scrolled on the real phone), and on any screen with little room (data-h s and xs), the rows are compact so all of them show (xs: all but the last, which scrolls into view). Subtitles stay. */
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheet__rows { gap: 6px; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow { min-height: 52px; padding: 4px 12px; gap: 10px; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow:not(.sheetrow--quiet) { border-radius: 16px; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow--quiet { min-height: 52px; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__ico { width: 32px; height: 32px; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__ico svg { width: 18px; height: 18px; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__text b { font-size: 1.02rem; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__text span { font-size: 0.85rem; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) .sheet__head { margin-bottom: 6px; }
+html:is([data-h="xs"], [data-h="s"], [data-os="ios"], [data-os="android"]) .sheet__grip { margin-bottom: 4px; }
 html[data-h="xs"] .sheet { padding-top: 6px; }
 
 /* Grown-up sticky bars: the button ends at the reserve line (the padding below it is the reserve); on a phone the line over the button is one compact line. */

@@ -209,7 +209,7 @@ test('constraints: no inline style attribute or script in the child views, and t
   assert.match(index, /css\/child\.css/);
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   for (const f of ['css/child.css', 'js/child-doc.js', 'js/child-views.js']) assert.ok(sw.includes("'" + f + "'"), f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-21a'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-22a'/);
 });
 
 test('the keyboard stays three rows that never wrap; Delete is at least 48 px wide', () => {
