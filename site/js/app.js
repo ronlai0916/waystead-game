@@ -15,6 +15,7 @@ import { home } from './room.js';
 import { useWho, kind, isChild, isKnownChild, isAdult, ADULT_KEY } from './who.js';
 import { applyAdult, useAdultTools } from './adult-chrome.js';
 import * as CV from './child-views.js';
+import { devicePage } from './device-view.js'; // SB5 D2: About this device
 import { pathPage, settingsPage, applyChrome, wireChrome, useChildTools, closeMenu } from './child-views.js';
 import * as GU from './grownups-views.js';
 import * as SU from './setup-views.js'; // SB4-WP6
@@ -94,6 +95,7 @@ const ROUTES = [
   ['words/g/:gid/game/:game', GV.oneGame],
   ['words/g/:gid/path', pathPage],
   ['settings', settingsPage],
+  ['device', devicePage], // SB5 D2: About this device (the sizes this phone gives the page)
   ['look', later(CV, 'lookVoicePage')], // SB5 (R4): Look and voice, a child's page
   ['grownups', GU.grownups],
   ['grownups/stories', storyReview],

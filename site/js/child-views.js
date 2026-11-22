@@ -450,7 +450,8 @@ export function settingsPage(main) {
     + '<p><a href="#/about"><b>For parents</b><br><span class="muted small">How Spellbright works</span></a></p>'
     + '<p><a href="https://waystead.co.uk"><b>Waystead</b><br><span class="muted small">Who makes Spellbright</span></a></p>'
     + '<p><a href="../"><b>More games</b><br><span class="muted small">All Waystead games</span></a></p>'
-    + '<p class="small muted">Some words and facts come from UK Government material under the Open Government Licence v3.0.</p></div></details></section>';
+    + '<p class="small muted">Some words and facts come from UK Government material under the Open Government Licence v3.0.</p></div></details>'
+    + '<p class="small devlink"><a href="#/device" data-devicelink>About this device</a></p></section>';
   menuBackLink(main);
   return () => stop();
 }

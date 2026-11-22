@@ -119,7 +119,8 @@ function accountHtml() {
     + (voice ? '<div class="adultvoice" data-voicecard>' + voice + '</div>' : '<div class="adultvoice" data-voicecard hidden></div>')
     + roleRowsHtml()
     + '<ul class="adultlist adultlist--rule"><li>' + row(links.parentsHref, I.parents, 'How Spellbright works', 'For parents, teachers and tutors', ' data-parents') + '</li>'
-    + '<li>' + row(links.outHref, I.out, 'Sign out', '', ' data-signout') + '</li></ul>';
+    + '<li>' + row(links.outHref, I.out, 'Sign out', '', ' data-signout') + '</li></ul>'
+    + '<p class="small devlink"><a href="#/device" data-devicelink>About this device</a></p>';
 }
 
 /** Your role: "I use Spellbright as: Parent" and "Children see: Set by Mum", both to #/grownups/role (the change page). */

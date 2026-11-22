@@ -86,9 +86,10 @@ test('standalone is passed through', () => {
 
 test('bottom reserve per profile', () => {
   const r = (k, o, sab, x) => D.reserveFor(d(k, x), o, sab);
-  assert.equal(r('iphoneSafari26', 'portrait', 34), 112, 'the floating bar: 78 + inset');
-  assert.equal(r('iphoneSafari26', 'portrait', 0), 86, 'iPhone SE: 78 + at least 8');
-  assert.equal(r('iphoneSafari26', 'landscape', 21), 69);
+  assert.equal(r('iphoneSafari26', 'portrait', 34), 84, 'the floating bar: 84 in total, the 78 spans the inset (no double count)');
+  assert.equal(r('iphoneSafari26', 'portrait', 0), 84, 'iPhone SE: the same 84');
+  assert.equal(r('iphoneSafari26', 'landscape', 21), 48, 'landscape: max(48, inset + 20)');
+  assert.equal(r('iphoneSafari26', 'landscape', 34), 54);
   assert.equal(r('iphoneSafari26', 'portrait', 34, { standalone: true }), 34, 'home-screen app: the inset only');
   assert.equal(r('iphoneSafari14', 'portrait', 34), 46, 'old Safari: toolbar outside the page');
   for (const k of ['iphoneChrome', 'iphoneFirefox', 'iphoneEdge', 'iphoneWebview']) assert.equal(r(k, 'portrait', 34), 46, k);
@@ -141,4 +142,19 @@ test('the grown-up name is read from the device cache when the words value has n
   assert.match(C.setByLine('g.p1', C.setupWithBy({}, '')), /grown-up/i);
   assert.deepEqual(C.setupWithBy({ by: { n: 'Mum', at: 9 } }, 'Dad'), { by: { n: 'Mum', at: 9 } }, 'a name in the setup wins');
   assert.deepEqual(C.setupWithBy(undefined, null), {});
+});
+
+// ---- D2: the About this device page, its link, the shell, the reserve comment -----------------------------------------------------
+import { rowsText } from '../site/js/device-view.js';
+test('D2: #/device is routed, safe, in the shell, linked from Settings (child) and the account panel (adult)', () => {
+  const rd = (p) => readFileSync(SITE + p, 'utf8');
+  assert.match(rd('js/app.js'), /\['device', devicePage\]/);
+  assert.match(rd('js/test-guard.js'), /device: 'safe'/);
+  assert.match(rd('sw.js'), /'js\/device-view\.js'/);
+  assert.match(rd('js/child-views.js'), /href="#\/device" data-devicelink>About this device/);
+  assert.match(rd('js/adult-chrome.js'), /href="#\/device" data-devicelink>About this device/);
+  const css = rd('css/device.css');
+  assert.match(css, /\.devline \{[^}]*bottom: var\(--bottom-reserve\)/);
+  assert.doesNotMatch(rd('js/device-view.js'), /style="/, 'no style attribute in the markup (strict CSP)');
+  assert.equal(rowsText([['A', '1'], ['B', '2']]), 'A: 1\nB: 2');
 });

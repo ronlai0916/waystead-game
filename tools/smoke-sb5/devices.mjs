@@ -5,7 +5,7 @@
 //   - the device's user agent, platform and touch points (so js/device.js detects it exactly as on the phone),
 //   - the safe-area insets: Chromium cannot set env(safe-area-inset-*), so the harness stores {"sat":..,"sab":..} in localStorage "sb.devTest", which js/device.js reads
 //     (only when that key exists; no visitor has it) and writes into --sat/--sab. No product CSS path differs.
-//   - for iPhone Safari a drawn overlay (red band, pointer-events none) of the floating bar's real size, at the bottom, over the page.
+//   - for iPhone Safari a drawn overlay (red band, pointer-events none) of the floating bar's real size, at the bottom, over the page: its top is 78 px above the SCREEN foot, which INCLUDES the home-indicator inset (D2 fix: it was drawn 78 px above the inset, so the double count never showed).
 // Checks, per profile and page, at scroll 0: the main buttons fully visible, ABOVE the bottom reserve (so never under the overlay), not clipped or covered (hit test),
 //   no sideways scroll, the page's own markers; pages that must fit one screen (practice, tiles, test, quiz, quick-fire, the six games, the Menu sheet) also have no scroll;
 //   sheets: the rows scroll inside the sheet, which reaches down to the reserve, and the last row can be scrolled clear of it; the data-* attributes match the profile.
@@ -26,11 +26,11 @@ const DESK = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 
 // w x h is the viewport the page gets (innerWidth x innerHeight). bar: the drawn overlay height (iPhone Safari). reserve/os/browser/h: what device.js must conclude.
 export const PROFILES = [
-  { id: 'iphone-air', label: 'iPhone Air, Safari 26 (Ron)', w: 420, h: 912, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 112, cls: 'm' },
-  { id: 'iphone-17pro', label: 'iPhone 17 Pro, Safari 26', w: 402, h: 874, ua: SAFARI26, touch: 5, sat: 62, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 112, cls: 's' },
-  { id: 'iphone-16', label: 'iPhone 16, Safari 26', w: 393, h: 852, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 112, cls: 's' },
-  { id: 'iphone-14', label: 'iPhone 14, Safari 26', w: 390, h: 844, ua: SAFARI26, touch: 5, sat: 47, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 112, cls: 's' },
-  { id: 'iphone-se', label: 'iPhone SE, Safari 26', w: 375, h: 667, ua: SAFARI26, touch: 5, sat: 20, sab: 0, bar: 78, os: 'ios', browser: 'safari', reserve: 86, cls: 'xs' },
+  { id: 'iphone-air', label: 'iPhone Air, Safari 26 (Ron)', w: 420, h: 912, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'm' },
+  { id: 'iphone-17pro', label: 'iPhone 17 Pro, Safari 26', w: 402, h: 874, ua: SAFARI26, touch: 5, sat: 62, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'm' },
+  { id: 'iphone-16', label: 'iPhone 16, Safari 26', w: 393, h: 852, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
+  { id: 'iphone-14', label: 'iPhone 14, Safari 26', w: 390, h: 844, ua: SAFARI26, touch: 5, sat: 47, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
+  { id: 'iphone-se', label: 'iPhone SE, Safari 26', w: 375, h: 667, ua: SAFARI26, touch: 5, sat: 20, sab: 0, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'xs' },
   { id: 'iphone-chrome', label: 'iPhone 16, Chrome', w: 393, h: 700, ua: CHROME_IOS, touch: 5, sat: 0, sab: 0, bar: 0, os: 'ios', browser: 'chrome', reserve: 12, cls: 's' },
   { id: 'pixel-9', label: 'Pixel 9, Chrome', w: 412, h: 915, ua: PIXEL, touch: 5, sat: 0, sab: 0, bar: 0, os: 'android', browser: 'chrome', reserve: 16, cls: 'l' },
   { id: 'android-360x800', label: 'Android 360x800, Chrome', w: 360, h: 800, ua: PIXEL, touch: 5, sat: 0, sab: 0, bar: 0, os: 'android', browser: 'chrome', reserve: 16, cls: 'm' },
@@ -72,6 +72,7 @@ export default function (H) {
     await seeder();
     await ev('localStorage.setItem("sb.devTest",' + q(JSON.stringify({ sat: p.sat, sab: p.sab })) + ')');
     await ev('localStorage.setItem("sb.tilesTest","' + (seeder.tiles ? '1' : '0') + '")');
+    if (process.env.DEVICES_NIGHT) await ev('localStorage.setItem("sb.theme","dark")'); // DEVICES_NIGHT=1: the Night look (screenshots)
     await apply(p);
     await open(day, hash);
   }
@@ -79,7 +80,7 @@ export default function (H) {
     let o = document.getElementById('__ov'); if (o) o.remove();
     if (!${p.bar}) return;
     o = document.createElement('div'); o.id = '__ov'; o.setAttribute('aria-hidden', 'true');
-    o.style.cssText = 'position:fixed;left:0;right:0;bottom:${p.sab}px;height:${p.bar}px;pointer-events:none;z-index:2147483647;background:rgba(200,0,0,.22)';
+    o.style.cssText = 'position:fixed;left:0;right:0;bottom:0;height:${p.bar}px;pointer-events:none;z-index:2147483647;background:rgba(200,0,0,.22)';
     const b = document.createElement('div'); b.style.cssText = 'position:absolute;left:18px;right:18px;bottom:0;height:48px;border-radius:24px;background:rgba(80,80,80,.55)'; o.append(b);
     document.body.append(o);
   })()`);
@@ -141,6 +142,8 @@ export default function (H) {
     }, { flower: true }],
     ...['missing', 'unjumble', 'match', 'fill', 'mix'].map((g) => ['child-game-' + g, childSeed(gameDayDoc, D2), D2, '#/words/g/g1/game/' + g, 'document.querySelector("main h1")', null, { fit: true, game: g, noctl: g === 'match' }]),
     ['child-menu-sheet', childSeed(gameDayDoc, D2), D2, '#/', 'document.querySelector("[data-room=job]")', async () => { await click('#child-menu'); await until('document.querySelector(".menusheet .sheet__rows")', 'the menu sheet'); }, { sheet: '.menusheet' }],
+    ['adult-home', adultSeed(D2), D2, '#/grownups', 'document.querySelector("main h1")', async () => { await sleep(500); }, { bar: '.gh-bar, .gu-obar', optional: true }],
+    ['child-device-page', childSeed(gameDayDoc, D2), D2, '#/device', 'document.querySelector("[data-device-page]")', null, { bar: '[data-none]', optional: true }],
     ['adult-set-a-week', adultSeed(D2), D2, '#/grownups/set', 'document.querySelector(".st-page")', async () => { await sleep(400); }, { bar: '.st-bar' }],
     ['adult-word-lists', adultSeed(D2), D2, '#/grownups/own', 'document.querySelector("main h1")', async () => { await sleep(400); }, { bar: '.ls-bar, .gh-bar, .gu-obar', optional: true }],
   ];
@@ -220,6 +223,7 @@ export default function (H) {
       if (!s.hitOk) add('the last row is covered or clipped');
       if (s.over && s.rowsB < limit - 4) add('the rows stop at ' + s.rowsB + ', a blank band above the reserve line ' + limit);
       if (s.rowsB > limit + 0.5) add('the rows box reaches ' + s.rowsB + ', past the reserve line ' + limit);
+      if (s.over && p.browser === 'safari' && p.os === 'ios' && p.w >= 393 && p.h >= 852) add('the sheet rows need scrolling on a tall iPhone (' + p.id + '): every row must show without scrolling');
       if (s.sideways > 0) add('the sheet scrolls sideways');
       if (s.sheetTop < p.sat) add('the sheet top ' + s.sheetTop + ' is under the status bar (' + p.sat + ')');
     }

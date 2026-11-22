@@ -550,7 +550,7 @@
 .gu .gh-help b { color: var(--text); }
 
 /* the sticky bar: one main button, a helper line above it, the phone's band under it */
-.gu .gh-bar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(12px + var(--sab))); background: var(--bg); border-top: 2px solid var(--line); display: grid; gap: 6px; }
+.gu .gh-bar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(16px + var(--sab))); background: var(--bg); border-top: 2px solid var(--line); display: grid; gap: 6px; }
 .gu .gh-bar .btn { width: 100%; max-width: none; min-height: 52px; justify-content: center; }
 .gu .gh-bar__line { order: -1; margin: 0; text-align: center; color: var(--muted); font-size: 0.95rem; overflow-wrap: anywhere; }
 .gu .gh-bar--two { gap: 4px; }
@@ -728,7 +728,7 @@
 .gu .gu-ocard dt { color: var(--muted); font-size: 0.92rem; }
 .gu .gu-ocard dd { margin: 0; overflow-wrap: anywhere; }
 .gu .gu-overview--table { display: none; }
-.gu .gu-obar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(12px + var(--sab))); background: var(--bg); border-top: 2px solid var(--line); }
+.gu .gu-obar { position: sticky; bottom: 0; z-index: 3; margin: auto -16px 0; padding: 10px 16px max(var(--gh-safe), calc(16px + var(--sab))); background: var(--bg); border-top: 2px solid var(--line); }
 .gu .gu-obar .btn { width: 100%; min-height: 52px; justify-content: center; }
 @media (min-width: 700px) {
   .gu .gu-ocards { display: none; }

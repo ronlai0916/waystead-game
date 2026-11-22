@@ -134,3 +134,44 @@ html:is([data-h="xs"], [data-h="s"]) .practice { gap: 8px; }
 @media (min-width: 601px) and (orientation: portrait) {
   html[data-os="ipados"] body main > section.wrap.page.spellpage, html[data-os="ipados"] body main > section.wrap.page.play, html[data-os="ipados"] body main > section.wrap.page.game { padding-bottom: var(--bottom-reserve); }
 }
+
+/* ---- SB5 D2 (21 Nov): sheets that fit, adult bars that sit just above the reserve, and the About this device page ---- */
+/* Menu, things-waiting and games sheets: on a phone with little room (data-h s and xs) the rows are compact so all of them show (xs: all but the last, which scrolls into view). Subtitles stay. */
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheet__rows { gap: 6px; }
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow { min-height: 52px; padding: 4px 12px; gap: 10px; }
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow:not(.sheetrow--quiet) { border-radius: 16px; }
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow--quiet { min-height: 52px; }
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__ico { width: 32px; height: 32px; }
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__ico svg { width: 18px; height: 18px; }
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__text b { font-size: 1.02rem; }
+html:is([data-h="xs"], [data-h="s"]) :is(.menusheet, .thingssheet, .gamesheet) .sheetrow__text span { font-size: 0.85rem; }
+html:is([data-h="xs"], [data-h="s"]) .sheet__head { margin-bottom: 6px; }
+html:is([data-h="xs"], [data-h="s"]) .sheet__grip { margin-bottom: 4px; }
+html[data-h="xs"] .sheet { padding-top: 6px; }
+
+/* Grown-up sticky bars: the button ends at the reserve line (the padding below it is the reserve); on a phone the line over the button is one compact line. */
+@media (max-width: 480px) {
+  .gu .gh-bar { padding-top: 6px; gap: 4px; }
+  .gu .gh-bar .btn { min-height: 48px; }
+  .gu .gh-bar__line { font-size: 0.85rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gu .gu-obar { padding-top: 6px; }
+  .gu .gu-obar .btn { min-height: 48px; }
+  .st-bar { padding-top: 6px; gap: 2px; }
+  .st-bar .btn { min-height: 48px; }
+  .st-bar__line { font-size: 0.85rem; line-height: 1.2; }
+}
+
+/* About this device (#/device) */
+.devlink { margin: 12px 0 0; text-align: center; }
+.devlink a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; color: var(--muted); }
+.devpage__list { margin: 12px 0; display: grid; gap: 0; }
+.devpage__row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.devpage__row dt { color: var(--muted); }
+.devpage__row dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; text-align: right; }
+.devpage__actions { display: grid; gap: 6px; margin: 12px 0; }
+.devpage__actions .btn { min-height: 44px; }
+.devpage__text { margin: 0 0 12px; padding: 10px; font-size: 0.8rem; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; user-select: text; -webkit-user-select: text; }
+.devpage { padding-right: 44px; }
+.devline { position: fixed; left: 0; right: 0; bottom: var(--bottom-reserve); height: 0; border-top: 3px solid #d00; z-index: 2147483000; pointer-events: none; }
+.devruler { position: fixed; top: 0; bottom: 0; right: 0; width: 40px; z-index: 2147483001; pointer-events: none; background: rgba(255, 255, 255, 0.55); border-left: 1px solid #d00; }
+.devruler__tick { position: absolute; right: 0; width: 100%; height: 13px; border-bottom: 1px solid #d00; font: 600 11px/1 system-ui, sans-serif; color: #900; text-align: left; padding-left: 3px; box-sizing: border-box; }

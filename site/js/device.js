@@ -72,7 +72,10 @@
     var b = Math.max(0, Number(sab) || 0);
     var land = orient === 'landscape';
     if (d.os === 'ios') {
-      if (d.browser === 'safari' && !d.standalone && d.iosVersion >= 15) return land ? 48 + b : 78 + Math.max(b, 8); // the floating bottom bar overlays the page (its top is about 81 px above the screen's foot on an iPhone Air, whatever the inset reads)
+      // The floating bottom bar overlays the page. Measured on Ron's iPhone Air (Safari 26, screenshot 21 Nov): the bar's top is about 80 px above the screen's foot,
+      // and that foot INCLUDES the 34 px home-indicator strip (the bar sits inside it, it does not stack on top of it). The old 78 + inset (= 112) counted the
+      // strip twice and left about 30 px blank (about 60 px with the sticky bar's own padding). So: 84 in total, whatever the inset reads. Landscape: a thinner bar.
+      if (d.browser === 'safari' && !d.standalone && d.iosVersion >= 15) return land ? Math.max(48, b + 20) : 84;
       if (d.browser === 'safari' && d.standalone) return b;
       return b + 12; // Chrome, Firefox, Edge, a web view, an old Safari: the toolbar is outside the page
     }
