@@ -9,3 +9,5 @@ wordbright-design/assets-raw/options/
 
 # raw Grok art stays local
 compose-design/assets-raw/*.png
+graphify-out/
+.venv*/
