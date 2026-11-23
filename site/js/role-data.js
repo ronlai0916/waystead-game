@@ -76,9 +76,19 @@ export function createRoleStore({ storage, playerId, prefs = null, now = () => D
     try { until = Number(storage.getItem(ASK_KEY + playerId)) || 0; } catch (e) { until = 0; }
     return now() >= until;
   }
+  /**
+   * T1 round 2 (checker S1): the ONE rule for asking the role. 'no' = nobody is asked (a role exists here, or "Not now" is still running);
+   * 'wait' = no role on this device but the account's prefs have not been read (or there is no sync), so a role may exist elsewhere: not yet;
+   * 'ask' = no role anywhere we can see: show the role page. app.js landing() and grownups() both use it.
+   */
+  function askState() {
+    if (!shouldAsk()) return 'no';
+    if (!prefs || prefs.loaded !== true) return 'wait';
+    return 'ask';
+  }
   // The teacher's "3 steps" panel: has this device opened the class results? (convenience, absent = not done)
   const openedResults = () => { try { return storage.getItem(OPENED_KEY + playerId) === '1'; } catch (e) { return false; } };
   const markOpenedResults = () => write(storage, OPENED_KEY + playerId, '1');
 
-  return { get, set, setName, role, name, notNow, shouldAsk, openedResults, markOpenedResults };
+  return { get, set, setName, role, name, notNow, shouldAsk, askState, openedResults, markOpenedResults };
 }

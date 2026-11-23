@@ -96,9 +96,12 @@ export default function (H) {
       await signedOutBlank(DAY);
       acct.who = adultMe;
       acct.prefs.set(ADULT, { theme: 'system', dayStyle: 'garden', prefs: { saved: 1, sbRole: { r: 'teacher', n: 'Ms Patel', at: 1795000000000 } } });
+      acct.slowMe = 0;
+      acct.slowPrefs = 1200; // T1 round 2: deterministic race: /api/me answers at once, the prefs 1.2 s later (a slow /api/me left over from an earlier scene no longer matters)
       await open(DAY, '#/');
       const seen = [];
-      for (let i = 0; i < 14; i += 1) { seen.push(await ev('location.hash')); await sleep(250); }
+      for (let i = 0; i < 24; i += 1) { seen.push(await ev('location.hash')); await sleep(150); }
+      acct.slowPrefs = 0;
       ok(!seen.some((h) => /role/.test(h)), 'never the role page: ' + [...new Set(seen)].join(' > '));
       ok(!/Who are you setting spellings for/.test(await bodyText()), 'page says: ' + (await bodyText()).slice(0, 100));
       const dev = JSON.parse(await ev('localStorage.getItem("sb.role:' + ADULT + '")'));

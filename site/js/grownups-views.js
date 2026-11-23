@@ -140,7 +140,7 @@ function miniStones(k, who) {
   const label = who + ': ' + done + ' of ' + k.steps.length + ' jobs done' + (wait ? ', ' + wait + ' waiting' : '');
   return '<ol class="gh-mini" role="img" aria-label="' + esc(label) + '">' + k.steps.map((v) => '<li class="gh-ms ' + miniClass(v) + '"></li>').join('') + '</ol>';
 }
-const stoneKey = () => '<p class="gh-key" data-stonekey><span class="gh-key__s is-done" aria-hidden="true"></span>Done <span class="gh-key__s is-today" aria-hidden="true"></span>Today '
+const stoneKey = () => '<p class="gh-key" data-stonekey><b class="gh-key__t">Key:</b> <span class="gh-key__s is-done" aria-hidden="true"></span>Done <span class="gh-key__s is-today" aria-hidden="true"></span>Today '
   + '<span class="gh-key__s is-wait" aria-hidden="true"></span>Waiting <span class="gh-key__s" aria-hidden="true"></span>Later</p>';
 
 /** The newest week whose test is done, with its score; null when the child has not taken a test. */
@@ -258,7 +258,9 @@ function classTable(models) {
     }).join('') + '</tbody></table></div>';
 }
 
-export function needsRole() { const s = AC.roleStore(); return !!s && s.shouldAsk(); }
+// 'ask' only when the role store says so: it waits for the account's prefs to be read first (the same rule as app.js landing(), checker S1),
+// so a second device whose account already has a role never sees the role page flash. While it waits the normal home draws.
+export function needsRole() { const s = AC.roleStore(); return !!s && s.askState() === 'ask'; }
 
 export function grownups(main) {
   if (!adultOnly(main)) return undefined;

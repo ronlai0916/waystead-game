@@ -333,6 +333,7 @@ function run(main, { kids, master, editing, started, scanOn = false, hand = null
   const body = main.querySelector('[data-edit-body]');
   const q = (s) => body.querySelector(s);
   const say = (t) => { live.textContent = ''; if (t) setTimeout(() => { live.textContent = t; }, 30); };
+  const clearSay = () => { live.textContent = ''; }; // T1: a status such as "1 added." belongs to the tap that made it; a later edit empties it
   const focus = (el) => { if (el) el.focus({ preventScroll: false }); };
   const titleEl = main.querySelector('.pagehead');
   const h1 = () => main.querySelector('h1');
@@ -452,7 +453,7 @@ function run(main, { kids, master, editing, started, scanOn = false, hand = null
         + '<button type="submit" class="btn btn--ghost" data-add' + (full() ? ' disabled' : '') + '>Add word</button></div>'
         + '<div class="ls-years" role="group" aria-label="Only from"><span class="ls-years__l">Only from</span>' + ['', 1, 2, 3, 4, 5, 6].map((y) => '<button type="button" class="ls-chip" data-act="year" data-y="' + y + '" aria-pressed="' + (String(year) === String(y)) + '">' + (y ? 'Year ' + y : 'All years') + '</button>').join('') + '</div>'
         + '<div class="ls-sug" data-sug>' + sugHtml() + '</div><p class="small muted">Matches come from all ready-made Year 1 to 6 words. Tap one to add it.</p></form>'
-      : '<div class="gu-field ls-paste"><label for="own-paste">Words, one on each line</label><textarea id="own-paste" class="field" rows="8" autocomplete="off" autocapitalize="off" spellcheck="false" data-paste>' + esc(pasteValue) + '</textarea>'
+      : '<div class="gu-field ls-paste"><label for="own-paste">Words, one on each line or with commas</label><textarea id="own-paste" class="field" rows="8" autocomplete="off" autocapitalize="off" spellcheck="false" data-paste>' + esc(pasteValue) + '</textarea>'
         + '<p class="small muted" data-pastecount>' + esc(D.splitTyped(pasteValue).length + ' words') + '. A list holds up to ' + Ow.MAX_WORDS + '. You can paste a whole list.</p></div>';
     const share = kids.length
       ? '<section class="card gu-panel"><fieldset class="gu-share"><legend>Give for practice</legend><p class="muted">' + esc(L.asRole(L.PAGE.giveHelp, role)) + '</p>' + kids.map((k) => '<label class="gu-check"><input type="checkbox" value="' + esc(k.id) + '"' + (to.includes(k.id) ? ' checked' : '') + ' data-share><span>' + esc(k.nickname) + '</span></label>').join('') + '</fieldset>'
@@ -629,7 +630,7 @@ function run(main, { kids, master, editing, started, scanOn = false, hand = null
     const r = await ask({
       title: 'Delete this list?',
       bodyHtml: '<p>The list goes to Deleted lists. You can bring it back within 30 days. Weeks and results already set stay as they are.</p>',
-      actions: [{ id: 'no', label: 'Keep it', cls: 'btn--primary' }, { id: 'yes', label: 'Delete this list', cls: 'btn--destroy' }],
+      actions: [{ id: 'no', label: 'Keep it', cls: 'btn--primary' }, { id: 'yes', label: 'Yes, delete it', cls: 'btn--destroy' }],
     });
     if (!r || r.id !== 'yes' || isStopped()) return;
     const d = await D.deleteOwnChapter(childApi(), oid);
@@ -698,6 +699,7 @@ function run(main, { kids, master, editing, started, scanOn = false, hand = null
     const w = t.dataset.w;
     if (act === 'another') { if (location.hash.replace(/\/$/, '') === LIST + '/new') { ev.preventDefault(); redraw(); } return; } // a link to the empty form: fresh state, never the saved oid
     ev.preventDefault();
+    if (!['pick', 'addnew', 'fix', 'remove'].includes(act)) clearSay();
     if (act === 'tab') { if (tab === 'paste' && t.dataset.tab === 'word') { await commitPaste(); } if (t.dataset.tab === 'paste') pasteValue = words.join('\n'); tab = t.dataset.tab; draw(); focus(q(tab === 'word' ? '[data-typed]' : '[data-paste]')); }
     else if (act === 'year') { year = t.dataset.y; draw(); focus(q('[data-typed]')); }
     else if (act === 'pick') { typed = ''; await addText(w); }
@@ -726,11 +728,12 @@ function run(main, { kids, master, editing, started, scanOn = false, hand = null
   });
   body.addEventListener('input', (ev) => {
     const t = ev.target;
+    clearSay();
     if (t.matches('[data-name]')) name = t.value;
     else if (t.matches('[data-typed]')) { typed = t.value; updateSug(); }
     else if (t.matches('[data-paste]')) { pasteValue = t.value; q('[data-pastecount]').textContent = D.splitTyped(pasteValue).length + ' words. A list holds up to ' + Ow.MAX_WORDS + '. You can paste a whole list.'; }
   });
-  body.addEventListener('change', (ev) => { if (ev.target.matches('[data-share]')) to = [...body.querySelectorAll('[data-share]')].filter((x) => x.checked).map((x) => x.value); });
+  body.addEventListener('change', (ev) => { clearSay(); if (ev.target.matches('[data-share]')) to = [...body.querySelectorAll('[data-share]')].filter((x) => x.checked).map((x) => x.value); });
   // A one-line box drops line breaks and tabs on paste, which would join the words: they become ", " instead.
   body.addEventListener('paste', (ev) => {
     const box = ev.target;
@@ -778,7 +781,7 @@ async function deleteFlow(oid, name) {
   const r = await ask({
     title: 'Delete this list?',
     bodyHtml: '<p>The list goes to Deleted lists. You can bring it back within 30 days. Weeks and results already set stay as they are.</p>',
-    actions: [{ id: 'no', label: 'Keep it', cls: 'btn--primary' }, { id: 'yes', label: 'Delete this list', cls: 'btn--destroy' }],
+    actions: [{ id: 'no', label: 'Keep it', cls: 'btn--primary' }, { id: 'yes', label: 'Yes, delete it', cls: 'btn--destroy' }],
   });
   if (!r || r.id !== 'yes') return '';
   const d = await D.deleteOwnChapter(childApi(), oid);

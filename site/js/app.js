@@ -316,12 +316,12 @@ function landing(path) {
   let r = null;
   try { r = roles(); } catch (e) { r = null; }
   if (!r) return false;
-  let ask = false;
-  try { ask = r.shouldAsk(); } catch (e) { ask = false; }
-  if (!ask) return false;
+  let state = 'no';
+  try { state = r.askState(); } catch (e) { state = 'no'; }
+  if (state === 'no') return false;
   const prefs = account.prefs;
-  if (!prefs) return false; // the account's sync is not connected yet: the next draw asks
-  if (prefs.loaded !== true) {
+  if (state === 'wait') {
+    if (!prefs) return false; // the account's sync is not connected yet: the next draw asks
     const id = account.session.player.id;
     if (!rolePulled.has(id)) {
       rolePulled.add(id);

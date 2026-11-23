@@ -76,6 +76,7 @@ const account = createServer(async (req, res) => {
   const cors = { 'Access-Control-Allow-Origin': SITE, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'Retry-After', Vary: 'Origin' };
   if (req.method === 'OPTIONS') { res.writeHead(204, cors); res.end(); return; }
   if (acct.slowMe && req.url.startsWith('/api/me')) await new Promise((r) => setTimeout(r, acct.slowMe));
+  if (acct.slowPrefs && req.url.startsWith('/api/prefs') && req.method === 'GET') await new Promise((r) => setTimeout(r, acct.slowPrefs)); // T1 round 2: /api/me answers first, the prefs after (the S1 race)
   if (acct.offline) { req.socket.destroy(); return; } // the network gone, as the browser sees it
   if (req.url.startsWith('/api/voice/')) { res.writeHead(404, cors); res.end(); return; }
   const chunks = [];
@@ -1107,9 +1108,9 @@ scene('practice: the keyboard, a pressed key, a peek, Stop for now', async () =>
   const p1 = await rect('.key[data-letter=P]');
   const a1 = await rect('.key[data-letter=A]');
   ok(Math.abs(q1.y - p1.y) < 1 && p1.x + p1.w <= 390, 'P stays on row 1 at 390: ' + JSON.stringify(p1));
-  ok(q1.w >= 34 && q1.w <= 36 && q1.h === 48, 'keys are about 35 x 48 (SB5 D1: from a 720 px room down the keys are 48 high): ' + JSON.stringify(q1));
+  ok(q1.w >= 34 && q1.w <= 37 && q1.h === 48, 'keys are about 35 to 37 x 48 (SB5 T1: the board is full width at 390, 36.8 px; SB5 D1: from a 720 px room down the keys are 48 high): ' + JSON.stringify(q1));
   ok(Math.abs((a1.y - q1.y - q1.h) - 4) < 1, 'rows are 4 px apart');
-  ok(Math.abs((await rect('.key[data-letter=W]')).x - q1.x - q1.w - 3) < 1, 'keys are 3 px apart');
+  ok(Math.abs((await rect('.key[data-letter=W]')).x - q1.x - q1.w - 2) < 1, 'keys are 2 px apart (SB5 T1: 2 px on a phone 411 px wide or less)');
   step('a pressed key shows its letter above, and nothing moves');
   const before = await ev('document.documentElement.scrollHeight');
   const kb = await rect('.keyboard');
@@ -2466,7 +2467,7 @@ async function kbFit({ role, page, style: s, w, h, dump = null, base = KB_BASE }
     const now = [m.kb.x, m.kb.y, m.kb.w, m.kb.h, m.q.w, m.q.h].map((n) => Math.round(n * 10) / 10);
     // An adult's page now has the Waystead Learning line in its foot (SB3-F): a tall page may gain a scroll bar, which makes the keyboard up to 17 px narrower. Where it sits is unchanged.
     // SB5 D1: the one-column phone (390 x 844, a 112 px reserve: the room is 732 px) now has the compact keyboard (keys 48 high, no pop-up room, rows 4 px apart): x, width and key width are as before, the height is the new one.
-    if (w < 600) { ok(role === 'adult' ? (m.q.w >= 32 && m.q.h >= 46.5 && m.kb.h <= b[3] + 1) : (now[0] === b[0] && now[2] === b[2] && Math.round(m.q.h) === 48 && m.kb.h < b[3]), id + ': keyboard compact at 390: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now)); return m; }
+    if (w < 600) { ok(role === 'adult' ? (m.q.w >= 32 && m.q.h >= 46.5 && m.kb.h <= b[3] + 1) : ((w <= 411 ? (now[0] === 0 && now[2] === w) : (now[0] === b[0] && now[2] === b[2])) && Math.round(m.q.h) === 48 && m.kb.h < b[3]), id + ': keyboard compact at 390: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now)); return m; }
     const same = role === 'adult' ? now.every((n, i) => (i === 2 || i === 4 ? n <= b[i] + 0.5 && n >= b[i] - 17 : i === 0 ? Math.abs(n - b[i]) <= 9 : n === b[i])) : now.every((n, i) => (i === 1 ? Math.abs(n - b[i]) <= 9 : n === b[i])); // SB5 D1: y within 9 px (the page now measures the real top-bar height instead of a guessed 72 px)
     ok(same, id + ': keyboard moved: base ' + JSON.stringify(b) + ' now ' + JSON.stringify(now));
   }

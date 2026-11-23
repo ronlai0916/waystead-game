@@ -116,7 +116,7 @@ test('TR-4: an adult on their own practice pages goes back to Play yourself; a c
 test('TR-5, TR-82: an adult with no role and no "Not now" goes to the role page first', () => {
   assert.match(app, /function landing\(path\)/);
   assert.match(app, /if \(path !== '' && path !== 'grownups'\) return false;/);
-  assert.match(app, /r\.shouldAsk\(\)/);
+  assert.match(app, /r\.askState\(\)/); // T1 round 2: shouldAsk plus the wait for the account prefs, one rule
   assert.match(app, /location\.replace\('#\/grownups\/role'\)/);
   assert.ok(app.indexOf('if (landing(path)) return;') < app.indexOf('const found = match(path);'), 'asked before the page is chosen');
 });
@@ -130,7 +130,7 @@ test('TR-8: every shell file exists, nothing the app needs is missing, and the n
   const index = read('site/index.html');
   for (const f of readdirSync(file('site/css')).filter((n) => n.endsWith('.css'))) assert.ok(index.includes('css/' + f), 'linked: ' + f);
   for (const f of SHELL.filter((x) => /^css\/[^/]+\.css$/.test(x))) assert.ok(index.includes(f), 'linked: ' + f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-22b'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-23a'/);
 });
 
 test('16c devices: a new version replaces every older cache and takes over at once', () => {

@@ -238,7 +238,7 @@ export const COPY = {
   title: 'Edit a copy',
   stays: (src) => src + ' stays as it is. Your changes go in the copy.',
   nameLabel: 'Name of the copy',
-  wordsLabel: 'Words, one on each line',
+  wordsLabel: 'Words, one on each line or with commas',
   save: 'Save the copy',
   then: 'Then pick children and a date',
   saved: 'Copy saved',

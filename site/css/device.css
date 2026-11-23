@@ -175,3 +175,12 @@ html[data-h="xs"] .sheet { padding-top: 6px; }
 .devline { position: fixed; left: 0; right: 0; bottom: var(--bottom-reserve); height: 0; border-top: 3px solid #d00; z-index: 2147483000; pointer-events: none; }
 .devruler { position: fixed; top: 0; bottom: 0; right: 0; width: 40px; z-index: 2147483001; pointer-events: none; background: rgba(255, 255, 255, 0.55); border-left: 1px solid #d00; }
 .devruler__tick { position: absolute; right: 0; width: 100%; height: 13px; border-bottom: 1px solid #d00; font: 600 11px/1 system-ui, sans-serif; color: #900; text-align: left; padding-left: 3px; box-sizing: border-box; }
+
+/* SB5 T1 (23 Nov): a child's letter keys as wide as a 360-411 px screen allows (412 and up keep the older, roomier rule). The board runs the full width of the screen (2 px at each edge), the gap is 2 px, so 10 keys are
+   (width - 22) / 10 wide: 33.8 at 360, 35.3 at 375, 36.8 at 390 (35 at 360 would need a gap of 1 px and no edge). Same three rows (10/9/7), no wrapping, keys 48 high (rules above). */
+@media (max-width: 411px) {
+  html body.is-child .keyboard.keyboard:not(.keyboard--tray):not(.keyboard--pad) { width: 100vw !important; max-width: none; margin-inline: calc(50% - 50vw) !important; } /* !important: the page-level rules above name the section and the slot, so they outrank any short selector */
+  html body.is-child .keyboard.keyboard:not(.keyboard--tray):not(.keyboard--pad) .keyboard-row.keyboard-row { gap: 2px; }
+  html body.is-child .keyboard.keyboard:not(.keyboard--tray):not(.keyboard--pad) .keyboard-row .key.key { width: min(46px, calc((100cqw - 22px) / 10)); min-width: 32px; }
+  html body.is-child .keyboard.keyboard:not(.keyboard--tray):not(.keyboard--pad) .keyboard-row .key.key.key--del { width: calc(2 * min(46px, calc((100cqw - 22px) / 10)) + 2px); }
+}

@@ -132,7 +132,8 @@ test('F-2: a second device has no role of its own but the account has one: nobod
   assert.equal(acct.prefs.get(ADULT.id).prefs.sbRole.r, 'teacher', 'the account role is untouched');
 });
 test('F-2: the app asks only after the prefs were READ; the role page leaves when a role arrives and Continue never writes a default over it', () => {
-  assert.match(APP, /if \(prefs\.loaded !== true\) \{/);
+  assert.match(APP, /state = r\.askState\(\)/);
+  assert.match(APP, /if \(state === 'wait'\) \{/);
   assert.match(APP, /if \(!prefs\) return false;/);
   assert.doesNotMatch(APP, /let rolePulled = false/);
   assert.match(GV, /window\.addEventListener\('wa:prefs', onPrefs\)/);

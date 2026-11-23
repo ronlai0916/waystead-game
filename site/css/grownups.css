@@ -608,6 +608,7 @@
 .gu .gh-ms.is-today { background: var(--stone-today); border-color: var(--stone-edge); }
 .gu .gh-ms.is-wait { background: transparent; border-style: dashed; border-color: var(--accent-strong); }
 .gu .gh-key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 0; color: var(--muted); font-size: 0.95rem; }
+.gu .gh-key__t { font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em; }
 .gu .gh-key__s { display: inline-block; width: 16px; height: 16px; border-radius: 40% 60% 55% 45% / 50% 45% 55% 50%; border: 2px solid var(--line); background: var(--stone-wait-bg); }
 .gu .gh-key__s.is-done { background: var(--accent-soft); border-color: var(--accent); }
 .gu .gh-key__s.is-today { background: var(--stone-today); border-color: var(--stone-edge); }
@@ -740,4 +741,10 @@
   .gu .gu-overview--table { display: grid !important; }
   .gu .gu-obar { display: none !important; }
   .gu .gu-paper { border: 1px solid #000; }
+}
+
+/* SB5 T1: the four name chips (Mum, Dad, Grandma, Grandad) stay on one line on a phone; below 360 px they wrap. */
+@media (max-width: 480px) {
+  .gu .gh-namechips { gap: 4px; }
+  .gu .gh-chipbtn { padding: 0 8px; }
 }

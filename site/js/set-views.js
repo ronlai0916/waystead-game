@@ -60,7 +60,7 @@ export const TEXT = {
   nameList: 'Name your list',
   nameSuggest: 'We suggest this name. Change it if you like.',
   savedAs: 'Saved as a Word list called',
-  typeLabel: 'Words, one on each line',
+  typeLabel: 'Words, one on each line or with commas',
   remove: 'Remove',
   trimTitle: 'Which 10 words?',
   trimDone: (n) => 'Done: use these ' + n,
@@ -74,6 +74,7 @@ export const TEXT = {
   differentDate: 'Different date for one child',
   differentHelp: (date) => 'Pick a child, then a date. The others keep ' + date + '.',
   children: 'Children',
+  tickHelp: (one) => 'Tick each ' + one + ' who should get this week.',
   learner: 'Learner',
   nameThis: 'Name this week',
   optional: 'Optional',
@@ -443,7 +444,7 @@ export function kidsHtml(m) {
   const busy = m.busy.map((b) => '<fieldset class="st-card st-card--flat st-twinset"><legend class="st-label">' + esc(b.legend) + '</legend><div class="st-twin">'
     + radioRow('bz-' + b.id, 'keep', !b.replace, TEXT.keepBoth, TEXT.keepBothSub, { attr: att('data-busy', b.id) }) + radioRow('bz-' + b.id, 'replace', b.replace, TEXT.replace, TEXT.replaceSub, { attr: att('data-busy', b.id) }) + '</div></fieldset>').join('');
   const limit = m.limit ? '<p class="st-help"><b>' + esc(m.limit.line) + '</b>' + esc(m.limit.tail) + '</p>' + (m.limit.ask ? '<a class="st-quiet" href="' + esc(m.limit.href) + '">' + I.ext + esc(RO.ASK_MORE) + '</a>' : '') : '';
-  return '<h2 class="st-h2">' + esc(m.title) + '</h2><div class="st-stack st-stack--tight">' + all + rows + '</div>' + busy + limit;
+  return '<h2 class="st-h2">' + esc(m.title) + '</h2>' + (m.one ? '<p class="st-help" data-tickhelp>' + esc(TEXT.tickHelp(m.one)) + '</p>' : '') + '<div class="st-stack st-stack--tight">' + all + rows + '</div>' + busy + limit;
 }
 
 // ---- the done page (04d, 04d2, 04d3, 04dt, 04du) -------------------------------------------------------------------
@@ -814,7 +815,7 @@ export function setWeek(main, params = {}) {
       const lim = limitFor({ role, count: kidsAll.length, limit, cap, origin: accountOrigin(location) });
       const total = kids.length;
       return {
-        kids: rows, title: role === 'tutor' ? TEXT.learner : TEXT.children, many: RO.WORDS[role].many, busy, limit: lim,
+        kids: rows, title: role === 'tutor' ? TEXT.learner : TEXT.children, many: RO.WORDS[role].many, one: RO.WORDS[role].one, busy, limit: lim,
         showAll: isTeacher ? total > 1 : total >= 3 && !fixedCid && role !== 'tutor', ticked: st.cids.length,
         allLine: isTeacher ? TEXT.notThisWeek : st.cids.length + ' ticked' + (st.cids.length ? ', as last week' : ''),
       };
