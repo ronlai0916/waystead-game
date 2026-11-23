@@ -174,7 +174,7 @@
     set('--bottom-reserve', m.reserve + 'px');
     set('--head-h', m.head + 'px');
     if (headEl && m.head !== last.savedHead) { last.savedHead = m.head; writeLS('sb.headH', String(m.head)); }
-    last.h = m.h; last.orient = m.orient;
+    last.h = m.h; last.w = m.w; last.orient = m.orient;
     return m;
   }
 
@@ -189,6 +189,20 @@
   root.addEventListener('orientationchange', queue);
   if (root.visualViewport) { root.visualViewport.addEventListener('resize', queue); root.visualViewport.addEventListener('scroll', queue); }
   doc.addEventListener('focusout', queue);
+  // 23b: Safari's bar changes size (full bar <-> the small pill) while the page is being scrolled, and the page's height changes with it. On Ron's iPhone Air the reserve stayed at its
+  // full-bar 8 px after the bar shrank, so the last links sat under the pill. A resize event is not always sent, so: also look when the page scrolls or is touched, when it is shown again,
+  // and every 400 ms while it is visible (two number reads, nothing is written unless a number changed).
+  root.addEventListener('scroll', queue, { passive: true });
+  root.addEventListener('touchend', queue, { passive: true });
+  root.addEventListener('pageshow', queue);
+  doc.addEventListener('visibilitychange', queue);
+  if (root.setInterval) root.setInterval(function () {
+    if (doc.hidden || editing()) return;
+    var vv2 = root.visualViewport;
+    var h2 = Math.round((vv2 && vv2.height) || root.innerHeight || 0);
+    var w2 = Math.round((vv2 && vv2.width) || root.innerWidth || 0);
+    if (h2 !== last.h || w2 !== last.w) queue();
+  }, 400);
   doc.addEventListener('DOMContentLoaded', function () {
     apply();
     var bar = doc.querySelector('.topbar');

@@ -30,6 +30,9 @@ export const PROFILES = [
   // Ron's real iPhone Air with Safari 27's FULL bar showing (About this device, 22 Nov): the page is 746 of a 912 screen, starts under the status bar
   // (inset top 0) and ends above the bar, which covers none of it: nothing to draw, and the reserve must shrink to 8 (no 100 px gap).
   { id: 'iphone-air-bar', label: 'iPhone Air, Safari 27, full bar (Ron, real)', w: 420, h: 746, sh: 912, ua: SAFARI26, touch: 5, sat: 0, sab: 0, bar: 0, os: 'ios', browser: 'safari', reserve: 8, cls: 'm' },
+  // The OTHER real Safari state on Ron's iPhone Air (23 Nov): the bar shrinks to the pill and the page grows to the screen's foot (845 of 912, inset top 0), the floating bar drawn over it.
+  // device.js: 84 - (912 - 845 - 62) = 79.
+  { id: 'iphone-air-pill', label: 'iPhone Air, Safari 27, bar shrunk to the pill (Ron, real)', w: 420, h: 845, sh: 912, ua: SAFARI26, touch: 5, sat: 0, sab: 0, bar: 78, os: 'ios', browser: 'safari', reserve: 79, cls: 'm' },
   { id: 'iphone-17pro', label: 'iPhone 17 Pro, Safari 26', w: 402, h: 874, ua: SAFARI26, touch: 5, sat: 62, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'm' },
   { id: 'iphone-16', label: 'iPhone 16, Safari 26', w: 393, h: 852, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
   { id: 'iphone-14', label: 'iPhone 14, Safari 26', w: 390, h: 844, ua: SAFARI26, touch: 5, sat: 47, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
@@ -70,12 +73,12 @@ export default function (H) {
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 900, deviceScaleFactor: 1, mobile: false });
   }
   /** Seed (the page storage is cleared by the seeding, so the hook key goes in last), then open at the profile's own size. */
-  async function openAs(p, day, hash, seeder) {
+  async function openAs(p, day, hash, seeder, night) {
     await reset();
     await seeder();
     await ev('localStorage.setItem("sb.devTest",' + q(JSON.stringify({ sat: p.sat, sab: p.sab })) + ')');
     await ev('localStorage.setItem("sb.tilesTest","' + (seeder.tiles ? '1' : '0') + '")');
-    if (process.env.DEVICES_NIGHT) await ev('localStorage.setItem("sb.theme","dark")'); // DEVICES_NIGHT=1: the Night look (screenshots)
+    if (night || process.env.DEVICES_NIGHT) await ev('localStorage.setItem("sb.theme","dark")'); // DEVICES_NIGHT=1: the Night look (screenshots)
     await apply(p);
     await open(day, hash);
   }
@@ -128,6 +131,18 @@ export default function (H) {
   const D1 = plus(1); const D2 = plus(2); const D4 = plus(4); const D5 = plus(5);
   const FLOWER_LIST = `(async () => { const c = await (await fetch('data/curriculum.json')).json(); return c.year_3_4.chapters.flatMap((ch) => ch.words.map((w) => w.word)).slice(0, 10); })()`;
   const fixTyping = async () => { await click('[data-cover]'); await click('[data-written]'); await until('document.querySelector("[data-check]") && ' + KEYS, 'Fix it in typing'); };
+  // Set a week: Children step, Next, the New tab, Word by word
+  const toWordByWord = async () => {
+    await sleep(400);
+    if (await ev('!!document.querySelector("[data-kid]:not(:checked)")')) await ev('document.querySelector("[data-kid]:not(:checked)").click()');
+    await click('[data-act="next"]');
+    await until('document.querySelector("[data-tab=new], [data-act=toWords], [data-act=words]")', 'the words step');
+    if (await ev('!document.querySelector("[data-tab=new]")')) await click('[data-act=toWords], [data-act=words]');
+    await until('document.querySelector("[data-tab=new]")', 'the words tabs');
+    await click('[data-tab="new"]');
+    await click('[data-act="wbw"]');
+    await until('document.querySelector("#st-find")', 'Word by word');
+  };
   // [id, seeder, day, hash, wait expression, after-load step, options { fit: no scroll, sheet: opens a sheet }]
   const PAGES = [
     ['child-today', childSeed(gameDayDoc, D2), D2, '#/', 'document.querySelector("[data-room=job]")', null, { today: true }],
@@ -143,11 +158,26 @@ export default function (H) {
       await go('#/custom/play');
       await until('document.querySelector(".blanks") && ' + KEYS, 'the flower game');
     }, { flower: true }],
+    ['child-today-noweek', childSeed(() => W.emptyDoc(), D2), D2, '#/', 'document.querySelector("main section, main nav")', async () => { await sleep(500); }, { last: true, optional: true }],
+    ['child-today-night', childSeed(gameDayDoc, D2), D2, '#/', 'document.querySelector("[data-room=job]")', null, { today: true, last: true, night: true }],
+    ['child-flower-tiles', childTiles(weekDoc, MON, 1), MON, '#/', 'document.querySelector("main section")', async () => {
+      const list = await ev(FLOWER_LIST);
+      await ev('sessionStorage.setItem("sb.selection",' + q(JSON.stringify(list)) + ')');
+      await go('#/custom/play');
+      await until('document.querySelector(".blanks") && document.querySelector("[data-wrongtext]")', 'the flower game with tiles');
+    }, { flower: true, last: true, fitTall: true }],
+    ['child-hello-tiles', childTiles(weekDoc, MON, 1), MON, '#/words/g/g1/study/hello', 'document.querySelector("[data-play]")', async () => { await click('[data-play]'); await until('document.querySelector(".blanks") && document.querySelector("[data-wrongtext]")', 'Hello words flower game'); }, { flower: true, last: true, fitTall: true }],
+    ['child-hello-keys', childSeed(weekDoc, MON), MON, '#/words/g/g1/study/hello', 'document.querySelector("[data-play]")', async () => { await click('[data-play]'); await until('document.querySelector(".blanks") && document.querySelector("[data-wrongtext]")', 'Hello words flower game'); }, { flower: true, last: true, fitTall: true }],
+    ['adult-word-by-word-night', adultSeed(D2), D2, '#/grownups/set', 'document.querySelector(".st-page")', async () => { await toWordByWord(); }, { bar: '.st-bar', optional: true, last: true, fields: true, night: true }],
+    ['adult-word-by-word-day', adultSeed(D2), D2, '#/grownups/set', 'document.querySelector(".st-page")', async () => { await toWordByWord(); }, { bar: '.st-bar', optional: true, last: true, fields: true }],
     ...['missing', 'unjumble', 'match', 'fill', 'mix'].map((g) => ['child-game-' + g, childSeed(gameDayDoc, D2), D2, '#/words/g/g1/game/' + g, 'document.querySelector("main h1")', null, { fit: true, game: g, noctl: g === 'match' }]),
     ['child-menu-sheet', childSeed(gameDayDoc, D2), D2, '#/', 'document.querySelector("[data-room=job]")', async () => { await click('#child-menu'); await until('document.querySelector(".menusheet .sheet__rows")', 'the menu sheet'); }, { sheet: '.menusheet' }],
     ['adult-home', adultSeed(D2), D2, '#/grownups', 'document.querySelector("main h1")', async () => { await sleep(500); }, { bar: '.gh-bar, .gu-obar', optional: true }],
     ['child-device-page', childSeed(gameDayDoc, D2), D2, '#/device', 'document.querySelector("[data-device-page]")', null, { bar: '[data-none]', optional: true }],
     ['adult-set-a-week', adultSeed(D2), D2, '#/grownups/set', 'document.querySelector(".st-page")', async () => { await sleep(400); }, { bar: '.st-bar' }],
+    ['adult-list-editor-night', adultSeed(D2), D2, '#/grownups/own/new', 'document.querySelector("main h1")', async () => { await sleep(500); }, { bar: '[data-none]', optional: true, fields: 'maybe', night: true }],
+    ['adult-list-find-night', adultSeed(D2), D2, '#/grownups/own/ready', 'document.querySelector("main h1")', async () => { await sleep(500); }, { bar: '[data-none]', optional: true, fields: 'maybe', night: true }],
+    ['adult-type-all-night', adultSeed(D2), D2, '#/grownups/set', 'document.querySelector(".st-page")', async () => { await toWordByWord(); await click('[data-act="toWords"]'); await click('[data-tab="new"]'); await click('[data-act="typeall"]'); await until('document.querySelector("[data-text]")', 'type all'); }, { bar: '.st-bar', optional: true, fields: true, night: true }],
     ['adult-word-lists', adultSeed(D2), D2, '#/grownups/own', 'document.querySelector("main h1")', async () => { await sleep(400); }, { bar: '.ls-bar, .gh-bar, .gu-obar', optional: true }],
   ];
 
@@ -161,7 +191,7 @@ export default function (H) {
   async function runPage(p, pg, defects) {
     const [id, seeder, day, hash, wait, after, o] = pg;
     const add = (what) => defects.push({ profile: p.id, page: id, what });
-    await openAs(p, day, hash, seeder);
+    await openAs(p, day, hash, seeder, o.night);
     try {
       await until(wait, id + ' page', 9000);
       if (after) await after();
@@ -205,6 +235,36 @@ export default function (H) {
       if (f.some((b) => b > limit + 0.5)) add('the footer links end at ' + Math.max(...f) + ', under the reserve line ' + limit + ' when scrolled to the end');
       const nm = await ev('(document.querySelector(".today__eyebrow, .eyebrow") || {}).textContent || ""');
       num.eyebrow = nm;
+    }
+    if (o.last || o.fields) {
+      // the LAST content (footer links included, fixed and sticky bars and the harness overlay left out) must end above the reserve line when the page is scrolled to its end
+      const LASTB = `(() => { const main = document.querySelector('main'); const foot = document.querySelector('.foot'); let max = 0, who = '';
+        const skip = (e) => { for (let n = e; n && n !== document.body; n = n.parentElement) { const cs = getComputedStyle(n); if (n.id === '__ov' || n.id === 'toast' || (n.tagName === 'DETAILS' && !n.open && e.tagName !== 'SUMMARY' && !e.closest('summary')) || cs.position === 'fixed' || cs.position === 'sticky' || n.hidden) return true; } return false; };
+        for (const root of [main, foot]) { if (!root) continue; for (const e of root.querySelectorAll('*')) { if (e.children.length && e.tagName !== 'BUTTON' && e.tagName !== 'A' && e.tagName !== 'INPUT') continue; const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); if (r.width < 2 || r.height < 2 || cs.visibility === 'hidden' || cs.display === 'none' || skip(e)) continue; if (r.bottom > max) { max = r.bottom; who = e.tagName.toLowerCase() + '.' + String(e.className).split(' ')[0] + ' ' + (e.textContent || '').trim().slice(0, 24); } } }
+        return { b: Math.round(max), who }; })()`;
+      const top = await ev(LASTB);
+      const r = await ev(`(() => { const r = document.scrollingElement; const before = r.scrollHeight > innerHeight + 1; r.scrollTo({ top: r.scrollHeight, behavior: 'instant' }); return before; })()`);
+      await sleep(120);
+      const end = await ev(LASTB);
+      await ev(`document.scrollingElement.scrollTo({ top: 0, behavior: 'instant' })`);
+      num.lastTop = top.b; num.lastEnd = end.b; num.lastWho = end.who;
+      if (o.last && !o.bar && !o.sheet && end.b > limit + 0.5) add('the last content (' + end.who + ') ends at ' + end.b + ' when scrolled to the end: under the reserve line ' + limit);
+      if (o.fitTall && p.w >= 390 && p.h >= 744 && (top.b > limit + 0.5 || r)) add('must fit with no scrolling: the last content (' + top.who + ') ends at ' + top.b + ', the reserve line is ' + limit + (r ? ', the page scrolls' : ''));
+    }
+    if (o.fields) {
+      const f = await ev(`(() => { const lum = (c) => { const v = c.map((x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+        const parse = (s) => { const m = /rgba?\\(([^)]+)\\)/.exec(s); if (!m) return null; const a = m[1].split(/[ ,/]+/).filter(Boolean).map(Number); return { c: a.slice(0, 3), a: a.length > 3 ? a[3] : 1 }; };
+        const bgOf = (e) => { let acc = [0, 0, 0], have = false; const layers = []; for (let n = e; n; n = n.parentElement) { const p = parse(getComputedStyle(n).backgroundColor); if (p && p.a > 0) { layers.push(p); if (p.a >= 1) break; } } let base = [255, 255, 255]; for (const p of layers.reverse()) base = base.map((b, i) => b * (1 - p.a) + p.c[i] * p.a); return base; };
+        const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+        const out = []; for (const e of document.querySelectorAll('main input:not([type=checkbox]):not([type=radio]):not([type=file]), main textarea, main select')) { const r = e.getBoundingClientRect(); if (r.width < 2) continue; const cs = getComputedStyle(e); const bg = bgOf(e); const fg = parse(cs.color).c; const o = { n: e.tagName.toLowerCase() + '#' + e.id, text: Math.round(ratio(fg, bg) * 10) / 10 };
+          if (e.placeholder) { const ph = parse(getComputedStyle(e, '::placeholder').color); o.ph = ph ? Math.round(ratio(ph.c, bg) * 10) / 10 : 0; o.phA = ph ? ph.a : 0; }
+          out.push(o); } return out; })()`);
+      num.fields = f.map((x) => x.n + ':' + x.text + (x.ph !== undefined ? '/' + x.ph : '')).join(' ');
+      if (!f.length && o.fields !== 'maybe') add('no text fields found');
+      for (const x of f) {
+        if (x.text < 4.5) add('field ' + x.n + ' text contrast ' + x.text + ':1, needs 4.5');
+        if (x.ph !== undefined && x.ph < 4.5) add('field ' + x.n + ' hint contrast ' + x.ph + ':1, needs 4.5');
+      }
     }
     if (o.game === 'mix') {
       const s = await ev(`(() => { const sl = [...document.querySelectorAll('.mixslot')]; const board = document.querySelector('.mixboard').getBoundingClientRect(); const bar = document.querySelector('.mixbar').getBoundingClientRect();
@@ -267,7 +327,36 @@ export default function (H) {
       ok(!defects.length, defects.length + ' device defects (listed above)');
     });
   }
-  make('child keyboard and tile pages', (pg) => /^child-(fix|practice|test|quiz|quick|flower)/.test(pg[0]));
+  // 23b: the bar changes size AFTER the page has loaded (Ron's phone kept the full-bar reserve of 8 when the bar shrank to the pill). The resize, visualViewport and scroll events are swallowed here,
+  // so only device.js's own look every 400 ms can notice. Full bar (420x746, reserve 8) -> pill (420x845, reserve 79) -> full bar again; at each state the reserve is right and the last content
+  // (the footer links of Today) scrolls to above the reserve line.
+  scene('SB5 devices: Safari bar changes', async () => {
+    mkdirSync(SHOTS, { recursive: true });
+    const full = PROFILES.find((x) => x.id === 'iphone-air-bar'); const pill = PROFILES.find((x) => x.id === 'iphone-air-pill');
+    const defects = [];
+    const pages = [['child-today', childSeed(gameDayDoc, D2), D2, '#/', 'document.querySelector("[data-room=job]")', null], ['child-today-noweek', childSeed(() => W.emptyDoc(), D2), D2, '#/', 'document.querySelector("main section, main nav")', null]];
+    for (const [id, seeder, day, hash, wait] of pages) {
+      await openAs(full, day, hash, seeder);
+      await until(wait, id, 9000); await sleep(400);
+      await ev(`(() => { for (const t of [window, window.visualViewport]) for (const n of ['resize', 'scroll']) t.addEventListener(n, (e) => e.stopImmediatePropagation(), true); window.addEventListener('touchend', (e) => e.stopImmediatePropagation(), true); })()`);
+      for (const [label, p] of [['pill', pill], ['full bar', full], ['pill', pill]]) {
+        await apply(p);
+        let got = '';
+        for (let i = 0; i < 20; i++) { await sleep(150); got = await ev('document.documentElement.style.getPropertyValue("--bottom-reserve")'); if (parseInt(got, 10) === p.reserve) break; }
+        if (parseInt(got, 10) !== p.reserve) defects.push(id + ' -> ' + label + ': --bottom-reserve is ' + got + ' 3 s after the bar changed, expected ' + p.reserve + 'px');
+        await drawOverlay(p);
+        const limit = p.h - p.reserve;
+        const f = await ev(`(() => { const r = document.scrollingElement; r.scrollTo({ top: r.scrollHeight, behavior: 'instant' }); const out = [...document.querySelectorAll('.today__foot a, .foot a, main section *')].filter((e) => !e.children.length && e.getBoundingClientRect().height > 0).map((e) => Math.round(e.getBoundingClientRect().bottom)); return Math.max(0, ...out); })()`);
+        await shotTo(p, id + '-end-' + label.replace(' ', '-'));
+        await ev(`document.scrollingElement.scrollTo({ top: 0, behavior: 'instant' })`);
+        if (f > limit + 0.5) defects.push(id + ' -> ' + label + ': the last content ends at ' + f + ' when scrolled to the end, under the reserve line ' + limit);
+      }
+    }
+    await reset();
+    for (const d of defects) console.log('  DEFECT ' + d);
+    ok(!defects.length, defects.length + ' bar-change defects (listed above)');
+  });
+  make('child keyboard and tile pages', (pg) => /^child-(fix|practice|test|quiz|quick|flower|hello)/.test(pg[0]));
   make('child Today, games and Menu', (pg) => /^child-(today|game|menu)/.test(pg[0]));
   make('grown-up pages', (pg) => /^adult-/.test(pg[0]));
 }

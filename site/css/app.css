@@ -374,6 +374,8 @@ details.hint .hint__body { padding: 0 16px 14px; display: grid; gap: 6px; }
 .picker label { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); font-weight: 600; cursor: pointer; }
 .picker input { width: 18px; height: 18px; accent-color: var(--sb); }
 .field { width: 100%; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--field-edge, var(--line)); background: var(--surface); color: var(--text); }
+/* 23b: every text box shows its hint in --muted (4.5:1 on --surface in all three looks, tests/contrast.test.js), never the browser's pale grey */
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 .stickybar { position: sticky; bottom: 0; padding: 12px 0; background: var(--bg); border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 16px; }
 
 /* ---- Tables / misc ---------------------------------------------------- */

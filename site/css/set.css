@@ -25,7 +25,7 @@
 .st-back { align-self: flex-start; text-decoration: none; padding-inline-start: 0; }
 .st-small { min-width: 48px; justify-content: center; font-size: .9rem; }
 .st-page .btn { min-height: 48px; }
-.st-card { border: 1px solid var(--line, currentColor); border-radius: 14px; padding: 14px; background: var(--card, transparent); display: flex; flex-direction: column; gap: 8px; }
+.st-card { border: 1px solid var(--line, currentColor); border-radius: 14px; padding: 14px; background: transparent; display: flex; flex-direction: column; gap: 8px; }
 .st-card--flat { box-shadow: none; }
 .st-card__line { margin: 0; line-height: 1.4; }
 .st-card__line--muted { color: var(--ink-soft, inherit); font-size: .92rem; }
@@ -40,7 +40,7 @@
 .st-len.st-help { margin-top: -4px; }
 
 /* rows, children, chapters, lists */
-.st-row { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border: 1px solid var(--line, currentColor); border-radius: 14px; background: var(--card, transparent); cursor: pointer; }
+.st-row { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border: 1px solid var(--line, currentColor); border-radius: 14px; background: transparent; cursor: pointer; }
 .st-row.is-on { border-width: 2px; }
 .st-row input { width: 24px; height: 24px; flex: none; margin: 0; accent-color: var(--accent); } /* T1: the style's own button colour, not the browser's blue (--accent on --surface is in tests/contrast.test.js) */
 .st-row__text { display: flex; flex-direction: column; min-width: 0; }
@@ -52,11 +52,11 @@
 
 /* tabs and years */
 .st-seg, .st-years { display: flex; flex-wrap: wrap; gap: 8px; }
-.st-seg button, .st-years button { flex: 1 1 auto; min-height: 48px; min-width: 48px; padding: 0 12px; border: 1px solid var(--line, currentColor); border-radius: 12px; background: var(--card, transparent); color: inherit; font: inherit; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+.st-seg button, .st-years button { flex: 1 1 auto; min-height: 48px; min-width: 48px; padding: 0 12px; border: 1px solid var(--line, currentColor); border-radius: 12px; background: transparent; color: inherit; font: inherit; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
 .st-seg button.is-on, .st-years button.is-on { border-width: 2px; background: var(--sb, #6b3fa0); color: #fff; }
 .st-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .st-field--pad { padding: 0 14px 14px; }
-.st-input, .st-select, .st-text { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line, currentColor); border-radius: 12px; font: inherit; background: var(--card, #fff); color: inherit; }
+.st-input, .st-select, .st-text { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--field-edge, var(--line)); border-radius: 12px; font: inherit; background: var(--surface); color: var(--text); }
 .st-text { min-height: 160px; resize: vertical; }
 .st-addrow__r { display: flex; gap: 8px; flex-wrap: wrap; }
 .st-addrow__r .st-input { flex: 1 1 160px; }
@@ -64,7 +64,7 @@
 .st-wchip { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line, currentColor); font-weight: 600; }
 .st-wchip.is-miss { background: var(--warn-bg, #fdf1d6); }
 .st-sugg { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line, currentColor); border-radius: 12px; overflow: hidden; }
-.st-sug { width: 100%; min-height: 48px; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; background: var(--card, transparent); color: inherit; border: 0; border-bottom: 1px solid var(--line, currentColor); font: inherit; text-align: start; cursor: pointer; }
+.st-sug { width: 100%; min-height: 48px; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; background: transparent; color: inherit; border: 0; border-bottom: 1px solid var(--line, currentColor); font: inherit; text-align: start; cursor: pointer; }
 .st-sug span { font-size: .88rem; color: var(--ink-soft, inherit); }
 .st-wd { display: grid; grid-template-columns: 28px 28px 1fr auto; align-items: center; gap: 8px; min-height: 48px; border-bottom: 1px solid var(--line, currentColor); padding: 4px 0; }
 .st-wd__w { font-weight: 700; }
@@ -77,14 +77,14 @@
 .st-tog.is-on { border-width: 2px; }
 .st-tog input { width: 24px; height: 24px; flex: none; margin: 0; }
 .st-tog i { display: none; }
-.st-sum { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; padding: 12px 14px; border: 1px solid var(--line, currentColor); border-radius: 14px; background: var(--card, transparent); color: inherit; font: inherit; text-align: start; text-decoration: none; min-height: 56px; }
+.st-sum { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; padding: 12px 14px; border: 1px solid var(--line, currentColor); border-radius: 14px; background: transparent; color: inherit; font: inherit; text-align: start; text-decoration: none; min-height: 56px; }
 .st-sum small { grid-column: 1 / -1; color: var(--ink-soft, inherit); }
 .st-sum__go { grid-column: 2; grid-row: 1; }
 
 /* the dates: five chips on a line, in a grid so none is cut off at 360 wide */
 .st-dates { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .st-dates--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.st-dates button { min-height: 56px; min-width: 48px; padding: 4px; border: 1px solid var(--line, currentColor); border-radius: 12px; background: var(--card, transparent); color: inherit; font: inherit; font-size: .88rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; line-height: 1.15; }
+.st-dates button { min-height: 56px; min-width: 48px; padding: 4px; border: 1px solid var(--line, currentColor); border-radius: 12px; background: transparent; color: inherit; font: inherit; font-size: .88rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; line-height: 1.15; }
 .st-dates button small { font-size: .78rem; font-weight: 500; }
 .st-dates button.is-on { border-width: 2px; background: var(--sb, #6b3fa0); color: #fff; }
 .st-field--date { margin-top: 8px; }
@@ -98,7 +98,7 @@
 .st-sg { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .st-sg__s { display: flex; gap: 4px; }
 .st-sg small { font-size: .78rem; }
-.st-det { border: 1px solid var(--line, currentColor); border-radius: 14px; background: var(--card, transparent); }
+.st-det { border: 1px solid var(--line, currentColor); border-radius: 14px; background: transparent; }
 .st-det > summary { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 48px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
 .st-det__cue { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
 .st-det > .st-daylist, .st-det > .st-diff, .st-det > .st-daynote { margin: 0 14px 12px; }

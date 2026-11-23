@@ -184,3 +184,17 @@ html[data-h="xs"] .sheet { padding-top: 6px; }
   html body.is-child .keyboard.keyboard:not(.keyboard--tray):not(.keyboard--pad) .keyboard-row .key.key { width: min(46px, calc((100cqw - 22px) / 10)); min-width: 32px; }
   html body.is-child .keyboard.keyboard:not(.keyboard--tray):not(.keyboard--pad) .keyboard-row .key.key.key--del { width: calc(2 * min(46px, calc((100cqw - 22px) / 10)) + 2px); }
 }
+
+/* SB5 23b (23 Nov, Ron's iPhone Air): the flower game (Hello words, Practise, any flower page) on a phone must keep the tiles or keys AND "Petals left" above --bottom-reserve with no scroll.
+   "Petals left" moves up under the petal dots (CSS order only, the page's markup is unchanged), where it is read first and Safari's bar never covers it. The picture and flower take what is left:
+   the page height less the reserve less 515 px for everything else (heading, status, Petals left, Hear 56, blanks, spell line, meaning bar 48, the tiles or keys), at least 96 and at most their old 209.
+   A short phone scrolls instead, and the padding-bottom (the reserve) keeps its end clear of the bar. Phones in portrait only (up to 600 px wide). */
+@media (max-width: 600px) {
+  body main > section.wrap.page.play > .pagehead { order: -3; }
+  body main > section.wrap.page.play > .status { order: -2; }
+  body main > section.wrap.page.play > [data-wrongtext] { order: -1; margin: 0; font-weight: 600; }
+  body main > section.wrap.page.play .play__top { height: clamp(96px, calc(var(--page-h) - var(--bottom-reserve) - 515px), 209px); }
+  body main > section.wrap.page.play .play__top .pic { aspect-ratio: auto; height: 100%; min-height: 0; } /* the row sets the height, the picture fills it */
+  body main > section.wrap.page.play .play__top .flower { height: 100%; width: auto; max-width: 100%; max-height: none; justify-self: center; min-height: 0; }
+  body main > section.wrap.page.play .btnrow--center { margin-top: 0; }
+}

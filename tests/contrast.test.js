@@ -55,6 +55,8 @@ export function ratio(a, b) {
 const TEXT = [
   ['--text', '--bg'], ['--text', '--surface'], ['--text', '--surface-2'], ['--text', '--accent-soft'],
   ['--muted', '--bg'], ['--muted', '--surface'], ['--muted', '--surface-2'],
+  // 23b: a text box's typed text and its placeholder (input::placeholder is --muted) on the box's --surface
+  ['--text', '--surface'], ['--muted', '--surface'],
   ['--on-accent', '--accent'], ['--on-accent', '--accent-strong'], ['--accent-strong', '--accent-soft'],
   ['--link', '--bg'], ['--link', '--surface'],
   ['--eyebrow', '--bg'], ['--eyebrow', '--surface'], ['--product', '--bg'], ['--wordmark', '--bg'],

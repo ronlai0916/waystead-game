@@ -130,7 +130,7 @@ test('TR-8: every shell file exists, nothing the app needs is missing, and the n
   const index = read('site/index.html');
   for (const f of readdirSync(file('site/css')).filter((n) => n.endsWith('.css'))) assert.ok(index.includes('css/' + f), 'linked: ' + f);
   for (const f of SHELL.filter((x) => /^css\/[^/]+\.css$/.test(x))) assert.ok(index.includes(f), 'linked: ' + f);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-23a'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-23b'/);
 });
 
 test('16c devices: a new version replaces every older cache and takes over at once', () => {
