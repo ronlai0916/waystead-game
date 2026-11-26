@@ -13,6 +13,7 @@ import { speak, sayLine, stop } from './speech.js';
 import { picture, esc } from './ui.js';
 import { childYear } from './who.js';
 import * as Tr from './tray.js';
+import { mountTileKeys, pressCheck } from './tile-keys.js';
 import { traySpec, middleCode, CODE } from './ladder-doc.js';
 import { peekRule, peekMs } from './peek-doc.js';
 import { mountPeek } from './peek.js';
@@ -263,6 +264,13 @@ export function buildSentence(main, opts = {}) {
       let done = false;
       const ctrl = Tr.mountTray(root, spec, { mode: 'practice', glowAfter: spec.glowAfter, onChange: (s) => { const b = root.querySelector('[data-next]'); if (b && !done) b.disabled = !s.full; } });
       undo.push(() => ctrl.destroy());
+      // D31: a hardware keyboard works the tiles like a tap; removed when the step goes
+      const keyMount = mountTileKeys({
+        onLetter: (ch) => { if (!done) ctrl.key(ch); },
+        onBack: () => { if (!done) ctrl.back(); },
+        onCheck: () => { if (!done) pressCheck(root, '[data-next]'); },
+      });
+      undo.push(() => keyMount.destroy());
       let busy = false;
       const rule = peekRule('builder', { way });
       const peek = peekControl(root, {

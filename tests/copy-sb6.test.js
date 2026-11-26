@@ -21,7 +21,7 @@ export const CHILD_FILES = ['sbs-views.js', 'tray.js', 'child-views.js', 'child-
 /** The Step by step child's own screens: also bans "special", a count of tries, "Try harder" and a year group. */
 export const SBS_CHILD_FILES = ['sbs-views.js', 'sbs-rules.js', 'ladder-doc.js', 'peek.js', 'builder-views.js', 'sentence-doc.js'];
 /** What a grown-up reads. */
-export const ADULT_FILES = ['setup-views.js', 'set-views.js', 'set-doc.js', 'grownups-views.js', 'grownups-doc.js', 'role-doc.js', 'sbs-report-doc.js', 'sbs-week-doc.js', 'pictures-doc.js', 'own-views.js'];
+export const ADULT_FILES = ['setup-views.js', 'set-views.js', 'set-doc.js', 'grownups-views.js', 'grownups-doc.js', 'role-doc.js', 'sbs-report-doc.js', 'sbs-week-doc.js', 'pictures-doc.js', 'own-views.js', 'reset-doc.js'];
 /** Both or neither (rules and data files with text in them). */
 export const OTHER_FILES = ['sbs-rules.js', 'ladder-doc.js', 'peek-doc.js', 'rows-doc.js', 'session-doc.js', 'words-views.js', 'study-doc.js', 'front-doc.js', 'words-doc.js', 'setup-doc.js', 'grownups-data.js', 'pictures-data.js', 'own-data.js', 'ui.js'];
 export const SCOPE = [...new Set([...CHILD_FILES, ...SBS_CHILD_FILES, ...ADULT_FILES, ...OTHER_FILES])].filter((f) => existsSync(path(f)));

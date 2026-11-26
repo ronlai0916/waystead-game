@@ -27,6 +27,7 @@ import { childYear } from './who.js';
 import { peekRowHtml, peekButtonHtml, mountPeek } from './peek.js';
 import { peekMs } from './peek-doc.js';
 import * as Su from './setup-doc.js';
+import { handleKey as tileKey, pressCheck } from './tile-keys.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const today = () => W.localDay(Date.now());
@@ -331,7 +332,7 @@ function fix(main, g, start) {
   function onKey(e) {
     if (e.metaKey || e.ctrlKey || e.altKey || phase !== 'type') return;
     if (ctrl) {
-      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); ctrl.back(); }
+      tileKey(e, { onLetter: (ch) => ctrl.key(ch), onBack: () => ctrl.back(), onCheck: () => pressCheck(main) });
       return;
     }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); put(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); del(); } else if (e.key === 'Enter') { e.preventDefault(); check(); }

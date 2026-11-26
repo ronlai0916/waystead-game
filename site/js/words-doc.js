@@ -31,6 +31,11 @@
 //   · steps: '<group>|se:<ss>' (a sitting ended), '<group>|rw:<k>' and '<group>|rw:<k>:<i>' (rows done), '<group>|practice';
 //   · top level: aside?: { ['<group>|<word lower case>']: { day: 'YYYY-MM-DD' | '', at } } (SB6 D25): a grown-up sets a stuck word aside for one
 //     day (day '' = brought back). Written ONLY by grownups-data setAsideWord; newest `at` wins in merge; dropped once its day has passed.
+//   · SB7 (D28-D30): top level `resets?: { [id]: { at, day, g, t: 'words'|'stone'|'week', w?, i?, s? } }`: a grown-up's reset of a Step by step week
+//     (reset-doc.js). The reset removes the records at once; the stamp makes the removal win every later merge: records of that group (and words,
+//     or stone) with `at` at or before the stamp's `at` are dropped from BOTH copies before they merge (applyResets). Written ONLY by
+//     grownups-data resetWeek; a union by id on merge; at most RESET_KEEP stamps, and spent after RESET_DAYS days (trim). Under 4 KB, so an older
+//     release keeps it as an unknown key (it does not apply it; the next newer device does).
 //   · top level: any other key whose value is a JSON object or array of at most 4 KB is kept (extras) and merged by `.at`.
 //   · folded days gain: RUNG slots 1..15 (bits 16..30, thermometer: a clean try at a rung sets every slot up to its own; the whole word
 //     sets slot 15, a partial rung saturates at slot 14), and ALL_FIRST (bit 7), ALL_TRIED (bit 6), R_TRY (bit 5); ladderFacts reads them.
@@ -120,7 +125,7 @@ export const MAX_CLUE = 80;
 export const MAX_NOTE = 160;
 
 // SB6 (TR-15): top-level keys this release knows; any other key with a small JSON object or array is kept.
-const TOP = ['v', 'resetAt', 'groups', 'results', 'folded', 'steps', 'clues', 'notes', 'skips', 'weekPick', 'setup', 'own', 'aside'];
+const TOP = ['v', 'resetAt', 'groups', 'results', 'folded', 'steps', 'clues', 'notes', 'skips', 'weekPick', 'setup', 'own', 'aside', 'resets'];
 const TOP_NAME = /^[A-Za-z][A-Za-z0-9_]{0,23}$/;
 export const MAX_EXTRA = 4096; // bytes of JSON for one unknown top-level key
 const GROUP_KNOWN = ['name', 'start', 'test', 'words', 'back', 'at', 'gone'];
@@ -156,7 +161,8 @@ export function normalise(d) {
     if (isObj(f) && key.includes('|')) out.folded[key] = { n: num(f.n), t: num(f.t), p: num(f.p), through: num(f.through), days: isObj(f.days) ? { ...f.days } : {} };
   }
   for (const [key, s] of Object.entries(isObj(d.steps) ? d.steps : {})) {
-    if (isObj(s) && key.includes('|') && isDay(s.d) && num(s.at)) out.steps[key] = { d: s.d, at: s.at };
+    // SB7 (FIX-2): a row group mark ('rw:<k>:<i>') may carry `h`, a short hash of the words of its group when it was done, so it counts only for that same set of words
+    if (isObj(s) && key.includes('|') && isDay(s.d) && num(s.at)) out.steps[key] = { d: s.d, at: s.at, ...(typeof s.h === 'string' && /^[a-z0-9]{1,10}$/.test(s.h) ? { h: s.h } : {}) };
   }
   for (const [w, c] of Object.entries(isObj(d.clues) ? d.clues : {})) {
     if (isObj(c) && typeof c.t === 'string' && num(c.at)) out.clues[w] = { t: c.t, at: c.at };
@@ -172,10 +178,12 @@ export function normalise(d) {
   if (!Ow.isEmpty(own)) out.own = own;
   const aside = cleanAside(d.aside);
   if (aside) out.aside = aside;
+  const resets = cleanResets(d.resets);
+  if (resets) out.resets = resets;
   for (const [k, v] of Object.entries(d)) { // SB6 (TR-15): a top-level key this release does not know, kept as it is
     if (!TOP.includes(k) && TOP_NAME.test(k) && v !== null && typeof v === 'object' && jbytes(v) <= MAX_EXTRA) out[k] = v;
   }
-  return out;
+  return out.resets ? applyResets(out) : out; // SB7: whoever reads a copy (a grown-up's page, an older device's save) sees the resets applied
 }
 
 // ---- SB6 (D25): a grown-up sets a stuck word aside for today --------------------------------------------------------------
@@ -204,6 +212,172 @@ export function setAside(d, gid, word, day, now) {
   const today = localDay(now);
   const kept = Object.fromEntries(Object.entries(d.aside || {}).filter(([k, e]) => k !== key && asideLive(e, today, now)));
   return { ...d, aside: { ...kept, [key]: { day, at: Math.max(now, (prev ? prev.at : 0) + 1) } } };
+}
+
+// ---- SB7 (D28-D30): a grown-up's resets of a Step by step week -------------------------------------------------------------------
+// A reset removes records; a STAMP keeps them removed. A stamp is { at, day, g, t, ... } and means: of group `g`, everything of this reach
+// that was written at or before `at` is gone, on every device, whatever a later merge brings in.
+//   t 'week'   everything of the week except the test: tries, sentences, step marks, skips, set-aside marks, folded days
+//   t 'words'  the same, for the words in `w` (lower case); `i` holds their places in the week's list (for the part marks 'hello:<i>', 'fix:<i>')
+//              plus the stone marks that say "every word is done" (hello, fix, practice), Meanings (games, games:*) and Sentences (story), so those
+//              stones are not done until the restarted word has done them again (D32), and the row round marks (rw:<size>); a row group mark
+//              (rw:<size>:<index>) goes only for the groups that held a picked word when it was reset (`r`: '<size>:<index>'); other rows stay
+//   t 'stone'  `s` = hello | fix | games | story | practice: that stone's tries, marks and sentences, for every word
+// The test (k 't') and the Usual-way study of other weeks are never reached. Tries already folded by trimming cannot be told apart by stone,
+// so a stone reset leaves folded days (a week and word reset takes them).
+export const RESET_KEEP = 24; // stamps kept
+export const RESET_BYTES = 3600; // the stamps' JSON in bytes: under MAX_EXTRA (4096), so an older release keeps the key whole
+export const RESET_DAYS = 45; // a stamp is spent this long after it was made
+export const RESET_STONES = ['hello', 'fix', 'games', 'story', 'practice'];
+const RESET_TYPES = ['words', 'stone', 'week'];
+const STONE_OF_J = { h: 'hello', f: 'fix', w: 'practice' };
+const isGid = (x) => typeof x === 'string' && x.length >= 1 && x.length <= 64 && !x.includes('|');
+const ROW_KEY = /^\d{1,2}:\d{1,3}$/;
+/** The stamps that are well formed, whatever their number or size. */
+function validResets(r) {
+  if (!isObj(r)) return {};
+  const out = {};
+  for (const [id, e] of Object.entries(r)) {
+    if (!/^[A-Za-z0-9_-]{1,40}$/.test(id) || !isObj(e) || !(num(e.at) > 0) || !isDay(e.day) || !isGid(e.g) || !RESET_TYPES.includes(e.t)) continue;
+    const x = { at: e.at, day: e.day, g: e.g, t: e.t };
+    if (e.t === 'words') {
+      const w = (Array.isArray(e.w) ? e.w : []).filter((v) => typeof v === 'string' && v && v.length <= 40 && !v.includes('|')).map(lc).slice(0, MAX_WORDS);
+      if (!w.length) continue;
+      x.w = w;
+      x.i = (Array.isArray(e.i) ? e.i : []).filter((v) => Number.isInteger(v) && v >= 0 && v < 100).slice(0, MAX_WORDS + MAX_BACK);
+      x.r = (Array.isArray(e.r) ? e.r : []).filter((v) => typeof v === 'string' && ROW_KEY.test(v)).slice(0, 40); // row groups ('<size>:<index>') that held a picked word
+    } else if (e.t === 'stone') {
+      if (!RESET_STONES.includes(e.s)) continue;
+      x.s = e.s;
+    }
+    out[id] = x;
+  }
+  return out;
+}
+/**
+ * Fit stamps into RESET_KEEP stamps and RESET_BYTES. A stamp is never dropped because a newer one covers it (FIX-3): a child device still on
+ * 25b merges `resets` by the bigger copy, not by union, so a newer map must always be a superset of the older one (and so also bigger).
+ * Stamps go only when spent (trim, RESET_DAYS) or over the cap: then the oldest go and are answered in `lost`. Only a reset that is being
+ * MADE refuses on that (addReset), so a reset is never taken back by making a new one; a merge of two devices' stamps can still overflow,
+ * then the oldest go (the known limit).
+ */
+export function fitResets(all) {
+  const order = Object.keys(all).sort((a, b) => all[b].at - all[a].at || (a < b ? -1 : 1));
+  const kept = {};
+  const lost = [];
+  for (const id of order) {
+    if (Object.keys(kept).length < RESET_KEEP && jbytes({ ...kept, [id]: all[id] }) <= RESET_BYTES) kept[id] = all[id];
+    else lost.push(id);
+  }
+  return { kept, lost };
+}
+function cleanResets(r) {
+  const { kept } = fitResets(validResets(r));
+  return Object.keys(kept).length ? kept : null;
+}
+/** The stone each sitting ('<group>|<ss>') belongs to, from the ladder tries in it (one sitting is one stone). */
+export function sittingStones(results) {
+  const out = new Map();
+  for (const r of results) {
+    const st = STONE_OF_J[r.j];
+    if (st && isSitting(r.ss) && !out.has(r.g + '|' + r.ss)) out.set(r.g + '|' + r.ss, st);
+  }
+  return out;
+}
+const STONE_STEP = {
+  hello: (k) => k === 'hello' || /^hello:\d+$/.test(k),
+  fix: (k) => k === 'fix' || /^fix:\d+$/.test(k),
+  games: (k) => k === 'games' || k.startsWith('games:'),
+  story: (k) => k === 'story' || k.startsWith('story:'),
+  practice: (k) => k === 'practice' || k.startsWith('rw:'),
+};
+const STONE_TRY = {
+  hello: (r, st) => r.j === 'h' || ((r.j === 'k' || r.j === 'q') && st === 'hello'),
+  fix: (r, st) => r.j === 'f' || ((r.j === 'k' || r.j === 'q') && st === 'fix'),
+  practice: (r, st) => r.j === 'w' || ((r.j === 'k' || r.j === 'q') && st === 'practice'),
+  games: (r) => !r.j && r.k === 'p' && (r.s === 'm' || (r.s === 'g' && !Number.isInteger(r.r))),
+  story: (r) => r.j === 'b',
+};
+const hasWord = (x, w) => x.w.includes(lc(w));
+/** Does the stamp reach this try? (`stoneOf`: the sitting's stone, or ''.) */
+export function resetReachesTry(x, r, stoneOf = '') {
+  if (r.g !== x.g || r.at > x.at || r.k === 't') return false;
+  if (x.t === 'week') return true;
+  if (x.t === 'words') return hasWord(x, r.w);
+  return STONE_TRY[x.s](r, stoneOf);
+}
+/** Does the stamp reach this step mark (the part after '<group>|')? */
+export function resetReachesStep(x, step, stoneOf = '') {
+  if (x.t === 'week') return true;
+  if (x.t === 'words') {
+    const m = /^(?:hello|fix):(\d+)$/.exec(step);
+    const row = /^rw:(\d+):(\d+)$/.exec(step);
+    // a row group mark goes only where a picked word was in that group; the round marks ('rw:<size>') and 'practice' go so the rows come round again
+    if (row) return x.r.includes(row[1] + ':' + row[2]);
+    // D32: Meanings (games, games:*) and Sentences (story, story:*) go too, so those stones are not done until the restarted word has done them again
+    return step === 'hello' || step === 'fix' || step === 'practice' || /^rw:\d+$/.test(step) || STONE_STEP.games(step) || STONE_STEP.story(step) || (!!m && x.i.includes(Number(m[1])));
+  }
+  return STONE_STEP[x.s](step) || (step.startsWith('se:') && stoneOf === x.s);
+}
+/**
+ * The words value with every record a stamp reaches taken out. `ssStone` is sittingStones(...) (merge passes both copies' tries, so a
+ * check or game of a sitting whose ladder tries only one copy holds is still told apart). Anything newer than the stamp is kept.
+ */
+export function applyResets(d, resets = d.resets, ssStone = sittingStones(d.results)) {
+  const list = Object.values(resets || {});
+  if (!list.length) return d;
+  const stoneOfTry = (r) => ssStone.get(r.g + '|' + r.ss) || '';
+  const results = d.results.filter((r) => !list.some((x) => resetReachesTry(x, r, stoneOfTry(r))));
+  const steps = Object.fromEntries(Object.entries(d.steps).filter(([key, s]) => {
+    const at = key.indexOf('|');
+    const gid = key.slice(0, at);
+    const step = key.slice(at + 1);
+    const ss = step.startsWith('se:') ? ssStone.get(gid + '|' + step.slice(3)) || '' : '';
+    return !list.some((x) => x.g === gid && s.at <= x.at && resetReachesStep(x, step, ss));
+  }));
+  const notes = d.notes.filter((n) => !list.some((x) => x.g === n.g && n.at <= x.at && (x.t === 'week' || (x.t === 'words' && hasWord(x, n.w)) || (x.t === 'stone' && x.s === 'story'))));
+  const skips = d.skips.filter((k) => !list.some((x) => x.g === k.g && k.at <= x.at && (x.t === 'week' || (x.t === 'words' && hasWord(x, k.w)))));
+  const folded = {};
+  for (const [key, f] of Object.entries(d.folded)) {
+    const at = key.indexOf('|');
+    const gid = key.slice(0, at);
+    const word = key.slice(at + 1);
+    const hit = list.filter((x) => x.g === gid && x.t !== 'stone' && (x.t === 'week' || hasWord(x, word)));
+    let keep = f;
+    for (const x of hit) {
+      if (!keep) break;
+      if (keep.through <= x.at) keep = null; // folded entirely before the reset
+      else keep = { ...keep, days: Object.fromEntries(Object.entries(keep.days).filter(([day]) => day >= x.day)) }; // folded across it: the days before the reset's day go
+    }
+    if (keep) folded[key] = keep;
+  }
+  const out = { ...d, results, steps, notes, skips, folded };
+  if (d.aside) {
+    const aside = Object.fromEntries(Object.entries(d.aside).filter(([key, e]) => {
+      const gid = key.slice(0, key.indexOf('|'));
+      const word = key.slice(key.indexOf('|') + 1);
+      return !list.some((x) => x.g === gid && e.at <= x.at && x.t !== 'stone' && (x.t === 'week' || hasWord(x, word)));
+    }));
+    if (Object.keys(aside).length) out.aside = aside; else delete out.aside;
+  }
+  return out;
+}
+/** The newest stamp that reaches a word of a group (a week or a words reset; with `hello`, a redo of Meet too): the time its own facts start from, or 0. */
+export function resetFloor(d, gid, word, { hello = false } = {}) {
+  let at = 0;
+  for (const x of Object.values((d && d.resets) || {})) {
+    if (x.g !== gid) continue;
+    if (x.t === 'week' || (x.t === 'words' && hasWord(x, word)) || (hello && x.t === 'stone' && x.s === 'hello')) at = Math.max(at, x.at);
+  }
+  return at;
+}
+/** A stamp for the doc: the same id twice is one stamp. Answers the doc with it added, or null when it cannot be kept without losing an older stamp. */
+export function addReset(d, id, stamp) {
+  const all = validResets({ ...(d.resets || {}), [id]: stamp });
+  const { kept, lost } = fitResets(all);
+  if (lost.length) return null;
+  const { resets, ...rest } = d;
+  return Object.keys(kept).length ? { ...rest, resets: kept } : rest;
 }
 
 // ---- days ----------------------------------------------------------------------
@@ -520,9 +694,9 @@ export function comeBack(d, g, day) {
 const stepKey = (g, step) => g + '|' + step;
 export const stepDay = (d, g, step) => (d.steps[stepKey(g.id, step)] || { d: '' }).d;
 /** The first time counts. `step` may be a part of a job, 'fix:2'. */
-export function markStep(d, g, step, day, now) {
+export function markStep(d, g, step, day, now, h = '') {
   const key = stepKey(g.id, step);
-  return d.steps[key] ? d : { ...d, steps: { ...d.steps, [key]: { d: day, at: now } } };
+  return d.steps[key] ? d : { ...d, steps: { ...d.steps, [key]: { d: day, at: now, ...(h ? { h } : {}) } } };
 }
 /** One clue a word; an empty one takes it away. */
 export function setClue(d, word, text, now) {
@@ -767,8 +941,15 @@ const LOG = {
 // SB6: at an equal `at` the copy with more in it wins (longer JSON, then the larger text), so a copy that has `focus` beats one that lost it.
 const biggerJson = (q, p) => { const a = JSON.stringify(q); const b = JSON.stringify(p); return a.length > b.length || (a.length === b.length && a > b); };
 export function merge(a, b) {
-  const x = normalise(a);
-  const y = normalise(b);
+  let x = normalise(a);
+  let y = normalise(b);
+  // SB7: a grown-up's reset wins: both copies lose what the union of their stamps reaches, then they merge
+  const stamps = cleanResets({ ...(x.resets || {}), ...(y.resets || {}) });
+  if (stamps) {
+    const ssStone = sittingStones([...x.results, ...y.results]);
+    x = applyResets(x, stamps, ssStone);
+    y = applyResets(y, stamps, ssStone);
+  }
   const log = mergeLog(x, y, LOG);
   const out = { ...emptyDoc(), resetAt: log.resetAt, groups: {}, results: log.results, folded: log.folded };
   for (const id of new Set([...Object.keys(x.groups), ...Object.keys(y.groups)])) {
@@ -779,7 +960,7 @@ export function merge(a, b) {
   }
   const later = (x) => x.at > out.resetAt;
   for (const key of new Set([...Object.keys(x.steps), ...Object.keys(y.steps)])) {
-    const s = [x.steps[key], y.steps[key]].filter(Boolean).sort((p, q) => p.at - q.at)[0];
+    const s = [x.steps[key], y.steps[key]].filter(Boolean).sort((p, q) => p.at - q.at || (q.h ? 1 : 0) - (p.h ? 1 : 0))[0]; // the first time it was done; at a tie the copy that knows its words
     if (later(s)) out.steps[key] = s;
   }
   for (const w of new Set([...Object.keys(x.clues), ...Object.keys(y.clues)])) {
@@ -802,6 +983,7 @@ export function merge(a, b) {
     aside[k] = !p ? q : !q ? p : q.at > p.at || (q.at === p.at && biggerJson(q, p)) ? q : p;
   }
   if (Object.keys(aside).length) out.aside = aside;
+  if (stamps) out.resets = stamps;
   // SB6 (TR-15): a key this release does not know
   for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) {
     if (TOP.includes(k)) continue;
@@ -817,6 +999,13 @@ export function merge(a, b) {
 }
 
 export function trim(d, now) {
+  if (d.resets) { // SB7: a stamp is spent RESET_DAYS days after it was made
+    const live = Object.fromEntries(Object.entries(d.resets).filter(([, x]) => now - x.at < RESET_DAYS * DAY_MS));
+    if (Object.keys(live).length !== Object.keys(d.resets).length) {
+      const { resets, ...rest } = d;
+      d = Object.keys(live).length ? { ...rest, resets: live } : rest;
+    }
+  }
   if (d.aside) { // a set-aside mark is spent once its day has passed
     const today = localDay(now);
     const live = Object.fromEntries(Object.entries(d.aside).filter(([, e]) => asideLive(e, today, now)));

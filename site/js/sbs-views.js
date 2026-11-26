@@ -19,6 +19,7 @@ import * as D from './data.js';
 import * as Tr from './tray.js';
 import { RULES } from './sbs-rules.js';
 import { mountPeek } from './peek.js';
+import { mountTileKeys, pressCheck, tileForLetter } from './tile-keys.js';
 import { speak, sayLine, spellOut, stop as stopSpeech } from './speech.js';
 import { esc, picture, pictureState } from './ui.js';
 import { entryFor, findEntry, meaningsFor } from './word-info.js';
@@ -336,11 +337,6 @@ function keysCtrl(root, spec, { onChange }) {
     render();
     return { right: false, wrongGaps: wrong, slips: [...wrong].sort((a, b) => a - b), glowGap: null, ...state() };
   };
-  const onKey = (e) => {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key === 'Backspace') { e.preventDefault(); back(); } else if (/^[a-zA-Z]$/.test(e.key)) key(e.key);
-  };
-  document.addEventListener('keydown', onKey);
   root.querySelectorAll('.key[data-letter]').forEach((k) => k.addEventListener('click', () => key(k.dataset.letter)));
   const del = root.querySelector('[data-del]');
   if (del) del.addEventListener('click', back);
@@ -351,7 +347,7 @@ function keysCtrl(root, spec, { onChange }) {
   return {
     key, back, check, state, lock(on) { locked = !!on; render(); }, say() {}, setBase() {},
     restorePlaced(map) { let n = 0; for (const g of Object.keys(map || {}).map(Number).sort((a, b) => a - b)) { if (gaps.includes(g) && typeof map[g] === 'string' && !(g in placed)) { placed[g] = map[g]; order.push(g); n += 1; } } if (n) render(); return n; },
-    destroy() { document.removeEventListener('keydown', onKey); },
+    destroy() {},
   };
 }
 const keysSpecFor = (entry) => { const letters = [...entry.word].map((ch) => ({ ch, shown: false })); const gaps = T.fillableOf(entry.word); gaps.forEach(() => {}); return { word: entry.word, letters: [...entry.word].map((ch, i) => ({ ch, shown: !gaps.includes(i) })), gaps, tiles: [] , level: 5, rows: 0, glowAfter: 2, code: CODE.ALL, input: 'keys', model: false, _n: letters.length }; };
@@ -406,6 +402,12 @@ export function rungScreen(main, o) {
   const ctrl = keys
     ? keysCtrl(root, spec, { onChange: (s) => onChange(s) })
     : Tr.mountTray(root, spec, { mode: 'practice', xs: true, onChange: (s) => onChange(s) });
+  // D31: a hardware keyboard works the tiles (and the typing board) like a tap; gone with the screen (destroy), never kept for the next one
+  const keyMount = mountTileKeys({
+    onLetter: (ch) => { if (!finished && !done) ctrl.key(ch); },
+    onBack: () => { if (!finished && !done) ctrl.back(); },
+    onCheck: () => { if (finished) return; if (!done) pressCheck(root); else if (!checkBtn.disabled) checkBtn.click(); }, // after a right answer Enter is Next
+  });
   function onChange(s) {
     if (finished) return;
     if (!done) checkBtn.disabled = !s.full;
@@ -452,7 +454,7 @@ export function rungScreen(main, o) {
   const lead = !o.preview ? (o.say ? Promise.resolve(wordTry(() => sayLine(first))) : Promise.resolve()) : Promise.resolve();
   lead.then(() => { if (root.isConnected && !finished && o.autoSpeak !== false) wordTry(() => speak(word)); });
   return {
-    destroy() { finished = true; window.removeEventListener('resize', onResize); if (peekCtl) peekCtl.destroy(); if (ctrl.destroy) ctrl.destroy(); stopSpeech(); },
+    destroy() { finished = true; keyMount.destroy(); window.removeEventListener('resize', onResize); if (peekCtl) peekCtl.destroy(); if (ctrl.destroy) ctrl.destroy(); stopSpeech(); },
     snapshot: () => ({ placed: (ctrl.state().placedIds) || {}, peeks, slips: [...slips] }),
     lock: (on) => ctrl.lock(on),
   };
@@ -721,7 +723,20 @@ export function rowScreen(main, o) {
   qa('.hearround[data-hearw]').forEach((b) => b.addEventListener('click', () => wordTry(() => speak(b.dataset.hearw))));
   q('[data-hearall]').addEventListener('click', () => wordTry(async () => { for (const x of [...(o.kept || []), ...list.map((y) => y.entry)]) { await speak(x.word); await sleepMs(250); } }));
   q('[data-instruct]')?.addEventListener('click', () => wordTry(() => sayLine(lineP.textContent)));
-  backBtn.addEventListener('click', () => { if (done) return; const w = sts.map((s, i) => [s.order.length, i]); const cur = sts[active].order.length ? active : (w.filter((x) => x[0]).pop() || [0, active])[1]; const nx = T.back(sts[cur]); if (nx !== sts[cur]) { sts[cur] = nx; active = cur; render(); } });
+  function takeBack() { if (done) return; const w = sts.map((s, i) => [s.order.length, i]); const cur = sts[active].order.length ? active : (w.filter((x) => x[0]).pop() || [0, active])[1]; const nx = T.back(sts[cur]); if (nx !== sts[cur]) { sts[cur] = nx; active = cur; render(); } }
+  backBtn.addEventListener('click', takeBack);
+  // D31: a letter key takes the next matching unused tile of the word being spelled, as a tap does (no tile left: nothing happens)
+  function keyLetter(ch) {
+    if (done || finished || (peekCtl && peekCtl.isShowing())) return;
+    const used = new Set(Object.values(sts[active].placed));
+    const t = tileForLetter(specs[active].tiles, used, ch);
+    if (t) put(t.id);
+  }
+  const keyMount = mountTileKeys({
+    onLetter: keyLetter,
+    onBack: () => { if (!finished && !(peekCtl && peekCtl.isShowing())) takeBack(); },
+    onCheck: () => { if (finished) return; if (!done) pressCheck(root); else if (!checkBtn.disabled) checkBtn.click(); },
+  });
   checkBtn.addEventListener('click', () => {
     if (!ok()) return;
     if (done) { if (!finished) { finished = true; if (o.onNext) o.onNext(); } return; }
@@ -794,7 +809,7 @@ export function rowScreen(main, o) {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(onResize);
   if (o.say) wordTry(() => sayLine(firstLine));
   return {
-    destroy() { finished = true; window.removeEventListener('resize', onResize); if (peekCtl) peekCtl.destroy(); stopSpeech(); },
+    destroy() { finished = true; keyMount.destroy(); window.removeEventListener('resize', onResize); if (peekCtl) peekCtl.destroy(); stopSpeech(); },
     snapshot: () => ({ active, placed: placedMap(), peeks }),
     lock() {},
   };
@@ -912,7 +927,7 @@ const newSs = () => S.newId().slice(-6);
  */
 export function sbsCtx({ d, g, step, day, entryOf }) {
   const facts = new Map();
-  const factsOf = (w) => { const k = lc(w); if (!facts.has(k)) facts.set(k, W.ladderFacts(d, w, day)); return facts.get(k); };
+  const factsOf = (w) => { const k = lc(w); if (!facts.has(k)) facts.set(k, K.factsOf(d, g, w, day, { hello: step === 'hello' })); return facts.get(k); };
   const left = K.wordsLeft(d, g, step, day);
   const words = step === 'practice' ? [] : left.length ? left : (step === 'hello' || step === 'fix' ? [...g.words] : []);
   const ctx = {
@@ -985,7 +1000,8 @@ export function sbsStone(main, { g, step } = {}) {
     const marks = [...K.pendingMarks(d, group(), step, day), ...extra];
     if (!marks.length) return;
     const now = Date.now();
-    S.updateWords((dd) => marks.reduce((x, m) => W.markStep(x, group(), m, day, now), dd));
+    const hashes = step === 'practice' ? K.markHashes(d, group(), marks, day) : {}; // a row group mark remembers its words (FIX-2)
+    S.updateWords((dd) => marks.reduce((x, m) => W.markStep(x, group(), m, day, now, hashes[m] || ''), dd));
     refresh();
     safePoint();
   }
@@ -1034,7 +1050,7 @@ export function sbsStone(main, { g, step } = {}) {
     savePlace();
     screen = meetScreen(main, { entry: e, strip: stripFor(item), say: item.say, onReady: () => { advance(); refresh(); next(); } });
   }
-  function usualOf(word) { return W.ladderFacts(d, word, day).usualSpots || []; }
+  function usualOf(word) { return K.factsOf(d, group(), word, day, { hello: step === 'hello' }).usualSpots || []; }
   function showRung(isCheck) {
     const e = entryOf(item.word);
     const restored = restoreFor(item);

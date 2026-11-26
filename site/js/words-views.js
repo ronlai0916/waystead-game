@@ -25,6 +25,7 @@ import * as K from './sbs-week-doc.js';
 import { hearInSentence, canSentence } from './sentence.js';
 import * as A from './assess-doc.js';
 import * as AV from './assess-views.js';
+import { handleKey as tileKey, pressCheck } from './tile-keys.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const AGAIN_MS = 1600; // how long a finished word stays before it comes back
@@ -580,7 +581,7 @@ export function spellWord(main, { gid, n }) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (spec) {
       if (hold || done) return;
-      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); ctrl.back(); }
+      tileKey(e, { onLetter: (ch) => ctrl.key(ch), onBack: () => ctrl.back(), onCheck: () => pressCheck(main) });
       return;
     }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); letter(e.key); }

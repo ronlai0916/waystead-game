@@ -206,3 +206,14 @@ export function setAsideWord(api, childId, gid, word, day, opts = {}) {
   const now = opts.now || (() => Date.now());
   return changeWords(api, childId, (words) => ({ doc: W.setAside(words, gid, word, day, now()) }), { ...opts, now });
 }
+
+// ---- SB7 (D28-D30): a grown-up resets part of a Step by step week ---------------------------------------------------------
+/**
+ * Reset a week of a child's: `run(words, { now, today })` is one of reset-doc's restartWords / redoStone / restartWeek (already bound to the week)
+ * and answers { doc } or { error }. It goes through changeWords (the grown-up's session, the same 409 retry), so a child's device never writes it,
+ * and the reset leaves a stamp in the words value that wins every later merge. Answers as changeWords.
+ */
+export function resetWeek(api, childId, run, opts = {}) {
+  const now = opts.now || (() => Date.now());
+  return changeWords(api, childId, (words) => run(words, { now: now(), today: opts.today || W.localDay(now()) }), { ...opts, now });
+}

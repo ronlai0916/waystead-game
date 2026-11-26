@@ -84,11 +84,65 @@ function metOrder(d, g, words) {
   return seen.length === words.length ? seen : null;
 }
 
+/** SB7: the row groups ('<size>:<index>') of every round that hold any of `words`, as the plan stands now (a grown-up's restart of those words clears just those marks). */
+export function rowKeysOf(d, g, facts, words, { rules = RULES } = {}) {
+  const ids = rowWords(d, g, facts);
+  const avoid = metOrder(d, g, ids);
+  const want = words.map(lc);
+  const out = [];
+  for (const size of roundSizes(g.words.length, rules)) {
+    rowPlan(ids, size, seedOf(g.id + '|rows', ''), { avoid, rules }).forEach((grp, i) => { if (grp.some((w) => want.includes(lc(w)))) out.push(size + ':' + i); });
+  }
+  return out;
+}
+
+/**
+ * The hash a row group mark is written with (`mark` is 'rw:<k>:<i>'), from the plan as it stands; '' for any other mark or a group the plan does not have.
+ * The runner writes it beside the mark (W.markStep's last argument).
+ */
+export function markHash(d, g, facts, mark) {
+  const m = /^rw:(\d+):(\d+)$/.exec(mark);
+  if (!m) return '';
+  const ids = rowWords(d, g, facts);
+  const plan = rowPlan(ids, Number(m[1]), seedOf(g.id + '|rows', ''), { avoid: metOrder(d, g, ids) });
+  const grp = plan[Number(m[2])];
+  return grp ? setHash(grp) : '';
+}
+/** The doc with every row group mark that has no `h` given the hash of the group the plan now has at its index: done before a restart of words can reshape the plan, so a kept mark stays tied to its own words. */
+export function tagMarks(d, g, facts) {
+  let steps = null;
+  for (const [key, s] of Object.entries(d.steps)) {
+    const m = key.startsWith(g.id + '|') && /^rw:(\d+):(\d+)$/.exec(key.slice(g.id.length + 1));
+    if (!m || s.h) continue;
+    const h = markHash(d, g, facts, m[0]);
+    if (h) { steps = steps || { ...d.steps }; steps[key] = { ...s, h }; }
+  }
+  return steps ? { ...d, steps } : d;
+}
+
 // ---- marks ---------------------------------------------------------------------------------------
 /** The round of this size has its `rw:<size>` mark (D14: marks, not tries). */
 export const roundDone = (d, g, size) => !!W.stepDay(d, g, 'rw:' + size);
-/** The row group `index` of this size has its `rw:<size>:<index>` mark. */
-export const groupDone = (d, g, size, index) => !!W.stepDay(d, g, 'rw:' + size + ':' + index);
+/** SB7 (FIX-2): a short hash of a group's words (any order, any case): what a row group mark remembers, so it counts only for the same set of words. */
+export function setHash(words) {
+  const text = words.map(lc).sort().join('|');
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i += 1) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h.toString(36);
+}
+/**
+ * The row group `index` of this size has its `rw:<size>:<index>` mark. With `group` (the words the plan now puts there) the mark must still fit them:
+ * a mark that knows its words (`h`) counts only for the same set; an old mark (written before this, no `h`) counts unless a grown-up's restart of
+ * words came after it (the plan can have been reshaped since, so the index may now be another group). A mark that does not count leaves the group
+ * to its words' own tries, as any group with no mark.
+ */
+export function groupDone(d, g, size, index, group = null) {
+  const m = d.steps[g.id + '|rw:' + size + ':' + index];
+  if (!m) return false;
+  if (!group) return true;
+  if (m.h) return m.h === setHash(group);
+  return !Object.values(d.resets || {}).some((x) => x.g === g.id && x.t === 'words' && m.at <= x.at);
+}
 /** Every size in `roundSizes` has its mark; a week of one word has no rows and is done at once. */
 export function stoneDone(d, g) {
   return roundSizes(g.words.length).every((k) => roundDone(d, g, k));
@@ -123,7 +177,7 @@ export function rowResume(d, g, size, word, entry) {
 
 /** One group of a round: who is still to do it. D22: nobody is passed over. */
 export function groupStatus(d, g, size, index, group) {
-  if (groupDone(d, g, size, index)) return { done: true, left: [], members: group };
+  if (groupDone(d, g, size, index, group)) return { done: true, left: [], members: group };
   const left = group.filter((w) => reachedInRow(d, g, size, w) !== true);
   return { done: left.length === 0, left, members: group };
 }
@@ -186,7 +240,7 @@ export function marksToWrite(d, g, today, facts, { rules = RULES } = {}) {
     const plan = rowPlan(words, size, seedOf(g.id + '|rows', ''), { avoid, rules });
     let complete = true;
     for (let i = 0; i < plan.length; i += 1) {
-      if (groupDone(d, g, size, i)) continue;
+      if (groupDone(d, g, size, i, plan[i])) continue;
       if (groupStatus(d, g, size, i, plan[i]).done) { if (!have('rw:' + size + ':' + i)) out.push('rw:' + size + ':' + i); } else complete = false;
     }
     if (!complete) { all = false; break; }

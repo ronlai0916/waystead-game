@@ -17,6 +17,7 @@ import { dotsListHtml } from './study-views.js';
 import { modeSwitch } from './words-views.js';
 import * as A from './assess-doc.js';
 import * as Tr from './tray.js';
+import { handleKey as tileKey, pressCheck } from './tile-keys.js';
 import { hearInSentence, canSentence } from './sentence.js';
 import { childYear } from './who.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
@@ -177,7 +178,7 @@ function missing(main, ctx, done) {
     if (!plainKey(e)) return;
     if (tiles) {
       if (!live) return;
-      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); tiles.ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); tiles.ctrl.back(); }
+      tileKey(e, { onLetter: (ch) => tiles.ctrl.key(ch), onBack: () => tiles.ctrl.back(), onCheck: () => pressCheck(main) });
       return;
     }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); letter(e.key); }
@@ -429,7 +430,7 @@ function quick(main, ctx, done) {
     if (!plainKey(e)) return;
     if (tiles) {
       if (!live) return;
-      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); tiles.ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); tiles.ctrl.back(); }
+      tileKey(e, { onLetter: (ch) => tiles.ctrl.key(ch), onBack: () => tiles.ctrl.back(), onCheck: () => pressCheck(main) });
       return;
     }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); put(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); del(); } else if (e.key === 'Enter' && live) { e.preventDefault(); submit(); }
@@ -818,7 +819,7 @@ function fill(main, ctx, done) {
   function onKey(e) {
     if (!plainKey(e) || !live || !spelled) return;
     if (tiles) {
-      if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); tiles.ctrl.key(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); tiles.ctrl.back(); }
+      tileKey(e, { onLetter: (ch) => tiles.ctrl.key(ch), onBack: () => tiles.ctrl.back(), onCheck: () => pressCheck(main) });
       return;
     }
     if (/^[a-z]$/i.test(e.key)) { e.preventDefault(); put(e.key); } else if (e.key === 'Backspace') { e.preventDefault(); del(); } else if (e.key === 'Enter' && typed) { e.preventDefault(); check(); }

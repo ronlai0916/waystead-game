@@ -13,6 +13,7 @@ import * as RD from './role-doc.js'; // SB5 WP-C: three roles, three homes
 import * as AC from './adult-chrome.js'; // the saved role and name (roleStore), the Menu redraw
 import * as AD from './adult-doc.js';
 import * as SR from './sbs-report-doc.js';
+import * as RS from './reset-doc.js'; // SB7: the grown-up's resets of a Step by step week
 import * as Su from './setup-doc.js';
 import * as Sdata from './set-data.js'; // pushName after a rename
 import * as S from './store.js';
@@ -478,6 +479,25 @@ export function sbsMoreHtml(m, nick, g, offer) {
   return '<section class="card gu-glance gu-sbsmore" aria-labelledby="gu-sbsmore-h" data-sbsmore><h2 id="gu-sbsmore-h">Step by step: the week so far</h2>' + off + sit + test + sent + '</section>';
 }
 
+/**
+ * SB7 (D28-D30): the grown-up's way to start part of a Step by step week again. Only a grown-up sees it (this page is adult-only) and only for a
+ * child on Step by step; the child's own pages have nothing like it. `why` is a reason it cannot be used now (the test has begun), else ''.
+ */
+export function resetCardHtml(g, nick, why = '') {
+  if (why) return '<section class="card gu-reset" aria-labelledby="gu-reset-h" data-resets><h2 id="gu-reset-h">' + esc(RS.RESET_TITLE) + '</h2><p class="small muted" data-resetwhy>' + esc(why) + '</p></section>';
+  const words = W.rows(g);
+  return '<section class="card gu-reset noprint" aria-labelledby="gu-reset-h" data-resets><h2 id="gu-reset-h">' + esc(RS.RESET_TITLE) + '</h2><p class="small muted">' + esc(RS.RESET_HELP) + '</p>'
+    + '<div class="gu-reset__part" data-reset-words><h3>' + esc(RS.WORDS_HEAD) + '</h3><p class="small muted" id="gu-reset-wh">' + esc(RS.wordsHelp(nick)) + '</p>'
+    + '<ul class="gu-reset__list" aria-describedby="gu-reset-wh">' + words.map((w, i) => '<li><label class="gu-check gu-reset__pick"><input type="checkbox" data-reset-word value="' + esc(w) + '" id="gu-rw' + i + '"><span>' + esc(w) + '</span></label></li>').join('') + '</ul>'
+    + '<button type="button" class="btn btn--ghost" data-reset-words-go disabled>' + esc(RS.WORDS_BUTTON) + '</button></div>'
+    + '<div class="gu-reset__part" data-reset-stone><h3>' + esc(RS.STONE_HEAD) + '</h3><p class="small muted">' + esc(RS.STONE_HELP) + '</p>'
+    + '<label class="gu-reset__label" for="gu-reset-stone">' + esc(RS.STONE_LABEL) + '</label><select id="gu-reset-stone" class="field gu-reset__select" data-reset-stone-pick>'
+    + RS.STONES.map((s2) => '<option value="' + s2 + '">' + esc(RS.stoneTitle(s2)) + '</option>').join('') + '</select>'
+    + '<button type="button" class="btn btn--ghost" data-reset-stone-go>' + esc(RS.STONE_BUTTON) + '</button></div>'
+    + '<div class="gu-reset__part" data-reset-week><h3>' + esc(RS.WEEK_HEAD) + '</h3><p class="small muted">' + esc(RS.WEEK_HELP) + '</p>'
+    + '<button type="button" class="btn btn--ghost" data-reset-week-go>' + esc(RS.WEEK_BUTTON) + '</button></div></section>';
+}
+
 export function childDashboard(main, { cid, gid }) {
   if (!adultOnly(main) || needsApi()) return undefined;
   const id = safeDecode(cid);
@@ -565,6 +585,7 @@ export function childDashboard(main, { cid, gid }) {
     const wordsCard = sbsM ? sbsWordsHtml(sbsM, nick) : '<section class="card gu-words" aria-labelledby="gu-words-h"><h2 id="gu-words-h">Words</h2>'
       + '<p class="small muted">' + esc(St.ROW_LINE) + ' Words that need help come first.</p>'
       + '<p class="small muted">' + esc(P.STATUS_KEY) + '</p><ul class="gu-wordlist">' + words.map((w) => wordRow(w, g, nick, !findEntry(w.word))).join('') + '</ul></section>';
+    const resetCard = sbsM && Su.wayOf(setupNow) === 'sbs' ? resetCardHtml(g, nick, RS.blockedReason(d, g)) : ''; // a Usual-way child has none
     const more = '<section class="card gu-glance" aria-labelledby="gu-more-h"><h2 id="gu-more-h">More about the week</h2>'
       + (rep.test.taken ? '<p><b>Test:</b> ' + rep.test.right + ' of ' + rep.test.of + ' right' + (rep.test.rows.some((x) => !x.right) ? ' · Slipped: ' + esc(rep.test.rows.filter((x) => !x.right).map((x) => x.word).join(', ')) : '') + '</p>' : '')
       + (rep.comeBack.length ? '<p data-reportskips><b>Come back to this:</b> ' + esc(rep.comeBack.join(', ')) + '</p>' : '')
@@ -574,7 +595,7 @@ export function childDashboard(main, { cid, gid }) {
       + '<div class="card stat"><b>' + over.independent + '%</b><span>Independent first goes</span><span class="muted small">' + over.clean + ' of ' + plural(over.firstGoes, 'first go', 'first goes') + '</span></div></div>'
       + (rep.sentences.length ? '<h3>Sentences</h3><ul class="report__list">' + rep.sentences.map((s) => '<li><b>' + esc(s.word) + ':</b> ' + esc(s.text) + '</li>').join('') + '</ul>' : '')
       + '<p class="small muted">' + esc(PRIVACY) + '</p><p class="small"><a class="gh-quiet" href="#/grownups/help" data-helplink>' + esc(W3[role].help) + '</a></p></section>';
-    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + byLine(g.id) + ' · ' + P.weekLine(k)) + notes + before(g, k, rep) + '<div data-setupcard></div><div data-waycard></div>' + switcher + glance + path + wordsCard + more + (sbsM ? sbsMoreHtml(sbsM, nick, g, P.usualWayOffer(d, day)) : '') + '<div data-setupreport></div>' + earlier + pickCard + deleted + '</section>';
+    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + byLine(g.id) + ' · ' + P.weekLine(k)) + notes + before(g, k, rep) + '<div data-setupcard></div><div data-waycard></div>' + switcher + glance + path + wordsCard + resetCard + more + (sbsM ? sbsMoreHtml(sbsM, nick, g, P.usualWayOffer(d, day)) : '') + '<div data-setupreport></div>' + earlier + pickCard + deleted + '</section>';
     wire(g);
     // S3-D3: a typed word's meaning comes from Wordbright's list, fetched once; only the word rows are redrawn when it arrives.
     const typedNow = words.map((w) => w.word).filter((w2) => !findEntry(w2) && !meaningTried.has(w2));
@@ -616,6 +637,7 @@ export function childDashboard(main, { cid, gid }) {
     if (printBtn) printBtn.addEventListener('click', () => window.print());
     const printBefore = q('[data-print-before]');
     if (printBefore) printBefore.addEventListener('click', () => window.print());
+    wireResets(g, q);
     const del = q('[data-delete]');
     if (del) {
       del.addEventListener('click', async () => {
@@ -633,6 +655,40 @@ export function childDashboard(main, { cid, gid }) {
     const undoBtn = q('[data-undo]');
     if (undoBtn) undoBtn.addEventListener('click', () => restore(undo.gid, true));
     main.querySelectorAll('[data-restore]').forEach((b) => b.addEventListener('click', () => restore(b.dataset.restore, false)));
+  }
+  /** SB7: the three resets. Each asks first (a dialog that says what goes and that it cannot be undone), then writes through the grown-up's session. */
+  function wireResets(g, q) {
+    if (!g || !q('[data-resets]')) return;
+    const picks = [...main.querySelectorAll('[data-reset-word]')];
+    const goWords = q('[data-reset-words-go]');
+    const ticked = () => picks.filter((x) => x.checked).map((x) => x.value);
+    if (goWords) {
+      picks.forEach((x) => x.addEventListener('change', () => { goWords.disabled = !ticked().length; }));
+      goWords.addEventListener('click', () => {
+        const words = ticked();
+        if (words.length) runReset(g, 'words', words, (doc, o) => RS.restartWords(doc, g.id, words, o), goWords);
+      });
+    }
+    const goStone = q('[data-reset-stone-go]');
+    if (goStone) goStone.addEventListener('click', () => { const stone = q('[data-reset-stone-pick]').value; runReset(g, 'stone', stone, (doc, o) => RS.redoStone(doc, g.id, stone, o), goStone); });
+    const goWeek = q('[data-reset-week-go]');
+    if (goWeek) goWeek.addEventListener('click', () => runReset(g, 'week', null, (doc, o) => RS.restartWeek(doc, g.id, o), goWeek));
+  }
+  async function runReset(g, kind, arg, run, btn) {
+    const ask = RS.confirmFor(kind, arg);
+    const yes = await confirmDialog({ ...ask, opener: btn });
+    if (!yes || stopped) return;
+    line = ''; problemLine = '';
+    const r = await A.resetWeek(childApi(), id, run);
+    if (stopped) return;
+    if (r.problem === 'playing' || r.problem === 'no-child') { showProblem(main, r.problem); return; }
+    if (r.problem === 'signed-out') recheckWho();
+    if (r.problem || r.error) { problemLine = (r.problem ? P.PROBLEM_TEXT[r.problem] : r.error) + ' Nothing has been changed.'; draw(); return; }
+    c = { ...c, words: W.normalise(r.doc) };
+    toast(RS.doneLine(kind, kind === 'words' ? r.words || arg : arg));
+    draw();
+    const back = main.querySelector('[data-resets] h2');
+    if (back) { back.setAttribute('tabindex', '-1'); back.focus({ preventScroll: true }); }
   }
   /** D25: only a grown-up, only from here: set a stuck word aside for today ('YYYY-MM-DD'), or bring it back ('' day). */
   async function aside(g, word, day, btn) {

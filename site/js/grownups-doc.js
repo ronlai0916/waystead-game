@@ -690,7 +690,7 @@ const dayName = (day) => W.dayLabel(day);
 export function sbsWeek(d, g, today, { name = '', setup = null, entryOf = () => null, year = 0 } = {}) {
   const su = setup || W.setupOf(d);
   const words = g.words.map((word) => {
-    const facts = W.ladderFacts(d, word, today);
+    const facts = K.factsOf(d, g, word, today);
     const st = SR.status(facts);
     return { word, status: st, pill: SR.STATUS_TEXT[st], line: SR.wordLine(name, word, facts, { entry: entryOf(word) }) };
   });
@@ -705,7 +705,7 @@ export function sbsWeek(d, g, today, { name = '', setup = null, entryOf = () => 
 /** "You could try the usual way." when every word was On its own in each of the last two weeks that ended. */
 export function usualWayOffer(d, today, entryOf = () => null) {
   const ended = W.liveGroups(d).filter((g) => g.test <= today && isSbsWeek(d, g)).sort((a, b) => (a.test < b.test ? -1 : 1));
-  return SR.tryUsualWay(ended.map((g) => g.words.map((w) => W.ladderFacts(d, w, today))));
+  return SR.tryUsualWay(ended.map((g) => g.words.map((w) => K.factsOf(d, g, w, today))));
 }
 export const USUAL_OFFER = (name) => name + ' did every word on their own for two weeks. You could try the usual way.';
 export const setAsideButton = (name) => 'Let ' + name + ' set it aside for today';

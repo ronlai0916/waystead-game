@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { makeHelpers } from './helpers.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-export const SCENE_FILES = ['baseline.mjs', 'sbs.mjs', 'gu.mjs', 'pictures.mjs', 'peek.mjs', 'builder.mjs', 'normal.mjs', 'estimate.mjs'];
+export const SCENE_FILES = ['baseline.mjs', 'sbs.mjs', 'gu.mjs', 'pictures.mjs', 'peek.mjs', 'builder.mjs', 'normal.mjs', 'estimate.mjs', 'reset.mjs', 'keyboard.mjs'];
 
 export default async function (H) {
   const S = makeHelpers(H);

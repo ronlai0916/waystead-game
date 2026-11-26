@@ -818,3 +818,15 @@
   .gu .gu-pill { border: 1px solid #000; }
 }
 .gu .gu-sbslist { list-style: none; margin: 14px 0 0; padding: 0; }
+
+/* ---- SB7: Start again (a grown-up's resets of a Step by step week) -------------------------------------------- */
+.gu-reset { padding: 18px 22px; margin-bottom: 20px; display: grid; gap: 14px; }
+.gu-reset h2, .gu-reset h3, .gu-reset p { margin: 0; }
+.gu .gu-reset__part { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); justify-items: start; }
+.gu .gu-reset__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 2px 12px; width: 100%; }
+.gu .gu-reset__pick { padding: 4px 6px; border: 0; background: none; min-height: 48px; overflow-wrap: anywhere; }
+.gu .gu-reset__pick input[type="checkbox"] { width: 44px; height: 44px; border-radius: 10px; }
+.gu .gu-reset__label { font-weight: 700; }
+.gu .gu-reset__select { min-height: 48px; width: 100%; max-width: 360px; }
+.gu .gu-reset .btn { min-height: 48px; }
+@media print { .gu-reset { display: none !important; } }

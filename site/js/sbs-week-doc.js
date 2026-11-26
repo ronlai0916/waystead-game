@@ -57,10 +57,23 @@ export function canOpen(d, g, step, today, setup) {
 // ---- when a stone is done -----------------------------------------------------------------------------------------
 const partMark = (d, g, step, word) => !!W.stepDay(d, g, step + ':' + W.rows(g).indexOf(word));
 
+/**
+ * What the ladder knows about a word, for this week. Normally W.ladderFacts (every week, every stone). After a grown-up's reset of the word,
+ * the week, or (for Meet) that stone (SB7, D28-D30), only this week's own tries made since the reset count, so a word that was On its own
+ * in an earlier week, or climbed in another stone, starts again from Meet. `hello`: this is the Meet stone's question.
+ */
+export function factsOf(d, g, w, today, { hello = false } = {}) {
+  const floor = W.resetFloor(d, g.id, w, { hello });
+  if (!floor) return W.ladderFacts(d, w, today);
+  const keep = ([key, f]) => key.startsWith(g.id + '|') && f.through > floor;
+  return W.ladderFacts({ ...d, results: d.results.filter((r) => r.g === g.id && r.at > floor), folded: Object.fromEntries(Object.entries(d.folded).filter(keep)) }, w, today);
+}
 const reachedAll = (d, g, w, today) => {
-  const f = W.ladderFacts(d, w, today);
+  const f = factsOf(d, g, w, today, { hello: true });
+  // SB7 (FIX-1): the clean whole-word go in the ladder counts only if made after the word's Meet floor (a redo of Meet keeps the Fix tries, and they must not finish Meet again)
+  const floor = W.resetFloor(d, g.id, w, { hello: true });
   return f.secure || Math.max(f.best, f.bestToday) >= CODE.ALL
-    || d.results.some((r) => r.g === g.id && lc(r.w) === lc(w) && r.r === CODE.ALL && (r.j === 'h' || r.j === 'f') && clean(r));
+    || d.results.some((r) => r.g === g.id && lc(r.w) === lc(w) && r.r === CODE.ALL && (r.j === 'h' || r.j === 'f') && clean(r) && r.at > floor);
 };
 /** Meet the words: the word reached the whole word on its own once (D22: no pass-over, it must climb). */
 export const helloWordDone = (d, g, w, today) => partMark(d, g, 'hello', w) || reachedAll(d, g, w, today);
@@ -97,7 +110,7 @@ export function pendingMarks(d, g, step, today) {
   const have = (s) => !!W.stepDay(d, g, s);
   const out = [];
   if (step === 'practice') {
-    const facts = new Map(g.words.map((w) => [w, W.ladderFacts(d, w, today)]));
+    const facts = new Map(g.words.map((w) => [w, factsOf(d, g, w, today)]));
     return Rows.marksToWrite(d, g, today, facts);
   }
   if (step === 'hello' || step === 'fix') {
@@ -109,6 +122,12 @@ export function pendingMarks(d, g, step, today) {
   }
   if (stoneDone(d, g, step, today) && !W.stepDay(d, g, step)) out.push(step);
   return out;
+}
+
+/** SB7 (FIX-2): what each row group mark in `marks` is written with ('rw:<k>:<i>' → the hash of its group's words; other marks → ''). */
+export function markHashes(d, g, marks, today) {
+  const facts = new Map(g.words.map((w) => [w, factsOf(d, g, w, today)]));
+  return Object.fromEntries(marks.map((m) => [m, Rows.markHash(d, g, facts, m)]));
 }
 
 // ---- which way a stone runs (TR-31) -------------------------------------------------------------------------------
@@ -152,7 +171,8 @@ export function remaining(d, g, today) {
     fixWords: none('fix') ? [] : wordsLeft(d, g, 'fix', today),
     sizes: none('practice') ? [] : Rows.roundSizes(g.words.length).filter((k) => !Rows.roundDone(d, g, k)),
     meanings: !none('games'),
-    sentences: !none('story'),
+    // the `story` mark, as the child's stone reads it: after a words restart (D32/D33) the notes of the other words would still count 3 sentences
+    sentences: !W.stepDay(d, g, 'story'),
   };
 }
 
