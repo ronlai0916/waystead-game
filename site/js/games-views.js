@@ -22,6 +22,10 @@ import { childYear } from './who.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 import { weekListOid } from './set-doc.js';
 import { readCache, visible } from './sentences-data.js';
+import { peekRowHtml, peekButtonHtml, mountPeek } from './peek.js';
+import { peekMs } from './peek-doc.js';
+import * as Su from './setup-doc.js';
+import { RULES } from './sbs-rules.js';
 
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
@@ -29,22 +33,31 @@ const plural = (n, one) => n + ' ' + one + (n === 1 ? '' : 's');
 const plainKey = (e) => !(e.metaKey || e.ctrlKey || e.altKey);
 
 function pageHtml(ctx, title, n, body) {
-  return '<section class="wrap page spellpage game" data-game="' + title.id + '"><div class="pagehead"><span class="eyebrow">' + esc(ctx.eyebrow) + '</span><h1>' + esc(title.text) + '</h1>'
+  return '<section class="wrap page spellpage' + (body.includes('tileword') ? ' tilepage' : '') + ' game" data-game="' + title.id + '"><div class="pagehead"><span class="eyebrow">' + esc(ctx.eyebrow) + '</span><h1>' + esc(title.text) + '</h1>'
     + (n ? '<p class="muted">' + esc(n) + '</p>' : '') + '</div>' + body + '</section>';
 }
 // The same Hear and Skip rows as practice: one big "Hear the word", Skip as a link.
-const heard = () => '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
+// peek: true = its own row under Hear (the grid's place); 'beside' = in Hear's row, so the page keeps its height (the keyboard games: 23b's fold numbers stay).
+const heard = ({ peek = true } = {}) => '<div class="btnrow btnrow--center' + (peek === 'beside' ? ' btnrow--peek' : '') + '"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button>' + (peek === 'beside' ? peekButtonHtml() : '') + '</div>'
+  + (peek === true ? peekRowHtml() : '')
   + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>';
 
 // SB4-WP4: the letter-tray screens (levels 1 to 4) of Missing letters and Quick-fire share these.
 const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const tileBody = (spec, lv) => Tr.lineHtml(Tr.instructionFor(lv), Tr.moreFor(spec, lv))
-  + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: spec.tricky }) + '<button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button></div>'
+  + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: spec.tricky }) + '<div class="btnrow btnrow--peek"><button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button>' + peekButtonHtml() + '</div></div>'
   + '<div data-slot>' + Tr.colHtml(Tr.trayHtml(spec),
     '<div class="btnrow btnrow--center testbtns testbtns--tray"><button type="button" class="btn btn--primary" data-check disabled>' + TICK + 'Check</button>'
     + '<button type="button" class="btn btn--ghost" data-skip>Skip for now<span class="sr">. It comes back later.</span></button></div>') + '</div>';
+// SB6 (TR-41): one Peek on every spelling game. The setup gives the way (Step by step shows it 3 s by default) and the child's Peek time.
+const peekMsFor = (input) => { const setup = S.readSetup(); return peekMs(setup, { way: Su.wayOf(setup), input }); };
+const peekNudge = () => (Su.wayOf(S.readSetup()) === 'sbs' ? 10000 : 0);
+/** A Peek on a keyboard page: the word shows in the boxes, or on the line above them; `lock` freezes the keys; `onPeek` counts it. */
+function keyPeek(main, word, { boxes, lock, onPeek, can, line }) {
+  return mountPeek(main, { word, ms: peekMsFor('keys'), boxes, lock, onPeek, can, line, nudgeMs: peekNudge() });
+}
 /** Mounts the tray on the page just drawn. Returns the controller; onRight(pass) when a Check is right. */
-function wireTiles(main, spec, entry, { lv, pf, onRight, onSkip }) {
+function wireTiles(main, spec, entry, { lv, pf, onRight, onSkip, onLock }) {
   const rules = A.RULES.practice[pf] || A.RULES.practice.normal;
   const hearNow = () => (rules.sentence === 'auto' && canSentence(entry) ? hearInSentence(entry) : speak(entry.word));
   const ctrl = Tr.mountTray(main, spec, {
@@ -53,12 +66,18 @@ function wireTiles(main, spec, entry, { lv, pf, onRight, onSkip }) {
   });
   main.querySelector('[data-hear]').addEventListener('click', hearNow);
   main.querySelector('[data-skip]').addEventListener('click', onSkip);
-  main.querySelector('[data-check]').addEventListener('click', () => { const r = ctrl.check(); if (r && r.right) onRight(passOf(r, lv)); });
-  return { ctrl, hearNow, rules };
+  const box = { peeks: 0 };
+  main.querySelector('[data-check]').addEventListener('click', () => { const r = ctrl.check(); if (r && r.right) onRight(passOf(r, lv, box.peeks)); });
+  const peek = mountPeek(main, {
+    word: entry.word, ms: peekMsFor('tiles'), words: () => [{ root: main, entry }], nudgeMs: peekNudge(),
+    lock: (on) => { ctrl.lock(on); const c = main.querySelector('[data-check]'); if (c) c.disabled = on || !ctrl.state().full || ctrl.state().right; if (onLock) onLock(on); },
+    onPeek: () => { box.peeks += 1; },
+  });
+  return { ctrl, hearNow, rules, peeks: () => box.peeks, peek, destroy() { peek.destroy(); ctrl.destroy(); } };
 }
 /** A tile pass as a game records it: clean only when the first Check was right and the tray filled nothing. */
-function passOf(s, lv) { return { tries: s.tries, clean: !s.tries && !s.helped, lv, ...(s.helped ? { h: 1 } : {}) }; }
-const leftPass = (ctrl, lv) => { const s = ctrl.state(); return s.tries || s.helped ? passOf(s, lv) : null; };
+function passOf(s, lv, peeks = 0) { return G.withPeeks({ tries: s.tries, clean: !s.tries && !s.helped, lv, ...(s.helped ? { h: 1 } : {}) }, peeks); }
+const leftPass = (ctrl, lv, peeks = 0) => { const s = ctrl.state(); return s.tries || s.helped || peeks ? passOf(s, lv, peeks) : null; };
 
 function wordDone(ctx, slot, w, clean, next, last) {
   slot.innerHTML = '<div class="card result ' + (clean ? 'result--good' : 'result--bad') + '"><div class="result__head">'
@@ -80,13 +99,17 @@ function missing(main, ctx, done) {
   let live = false;
   let tiles = null; // the letter tray, on level 1 to 4
   let level = 5;
+  let peeking = false;
+  let peekCtl = null;
   function show(line = '') {
+    if (peekCtl) { peekCtl.destroy(); peekCtl = null; }
+    peeking = false;
     const e = entryFor(words[0]);
     w = e.word;
     blanks = G.blanksFor(e);
     run = G.newMissing(w, blanks);
     live = true;
-    if (tiles) { tiles.ctrl.destroy(); tiles = null; }
+    if (tiles) { tiles.destroy(); tiles = null; }
     const { lv, pf } = S.helpNow(childYear());
     level = lv;
     const spec = lv < 5 ? Tr.specFor(e, lv, { pf, gaps: blanks }) : null;
@@ -111,17 +134,18 @@ function missing(main, ctx, done) {
     main.innerHTML = pageHtml(ctx, { id: 'missing', text: G.GAMES.missing.title }, ctx.leftLine(words),
       '<div class="spellboxes" aria-label="The word with letters missing">' + [...w].map((c, n) => '<span class="spellbox' + (blanks.includes(n) ? '" data-gap="' + blanks.indexOf(n) + '">' : ' is-filled">' + esc(c)) + '</span>').join('') + '</div>'
       + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
-      + '<div data-slot>' + heard() + keyboard() + '</div>');
+      + '<div data-slot>' + heard({ peek: 'beside' }) + keyboard() + '</div>');
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
     main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelectorAll('.key').forEach((k) => k.addEventListener('click', () => letter(k.dataset.letter)));
+    peekCtl = keyPeek(main, w, { boxes: () => [...main.querySelectorAll('.spellboxes .spellbox')], lock: (on) => { peeking = on; }, onPeek: () => { run = R.peek(run); }, can: () => live });
     mark();
     speak(w);
     window.scrollTo(0, 0);
   }
   const mark = () => main.querySelectorAll('[data-gap]').forEach((b) => b.classList.toggle('is-next', Number(b.dataset.gap) === run.at));
   function letter(L) {
-    if (!live) return;
+    if (!live || peeking) return;
     const at = run.at;
     const r = R.typeLetter(run, L);
     run = r.run;
@@ -144,7 +168,7 @@ function missing(main, ctx, done) {
   }
   function skip() {
     if (!live) return;
-    if (tiles) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); } else if (R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false });
+    if (tiles) { const lp = leftPass(tiles.ctrl, level, tiles.peeks()); if (lp) ctx.record(w, { ...lp, clean: false }); } else if (R.mustRecord(run)) ctx.record(w, G.leftPassOf(run));
     ctx.skip(w);
     words = G.afterSkip(words);
     show();
@@ -163,9 +187,10 @@ function missing(main, ctx, done) {
   return () => {
     document.removeEventListener('keydown', onKey);
     if (tiles) {
-      if (live) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); }
-      tiles.ctrl.destroy();
-    } else if (live && R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false }); // left halfway after a mistake
+      if (live) { const lp = leftPass(tiles.ctrl, level, tiles.peeks()); if (lp) ctx.record(w, { ...lp, clean: false }); }
+      tiles.destroy();
+    } else if (live && R.mustRecord(run)) ctx.record(w, G.leftPassOf(run)); // left halfway after a slip or a peek
+    if (peekCtl) peekCtl.destroy();
   };
 }
 
@@ -175,22 +200,27 @@ function unjumble(main, ctx, done) {
   let w = '';
   let run = null;
   let live = false;
+  let peeking = false;
+  let peekCtl = null;
   function show(line = '') {
+    if (peekCtl) { peekCtl.destroy(); peekCtl = null; }
+    peeking = false;
     w = entryFor(words[0]).word;
     run = R.newRun(w);
     live = true;
     main.innerHTML = pageHtml(ctx, { id: 'unjumble', text: G.GAMES.unjumble.title }, ctx.leftLine(words),
       '<div class="spellboxes" aria-label="Your word, ' + w.length + ' letters">' + [...w].map((_, n) => '<span class="spellbox" data-box="' + n + '"></span>').join('') + '</div>'
       + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
-      + '<div data-slot>' + heard() + '<div class="tiles-row" role="group" aria-label="Letters">' + G.jumble(w).map((c) => '<button type="button" class="key tile" data-tile="' + esc(c.toLowerCase()) + '">' + esc(c.toUpperCase()) + '</button>').join('') + '</div></div>');
+      + '<div data-slot>' + heard({ peek: 'beside' }) + '<div class="tiles-row" role="group" aria-label="Letters">' + G.jumble(w).map((c) => '<button type="button" class="key tile" data-tile="' + esc(c.toLowerCase()) + '">' + esc(c.toUpperCase()) + '</button>').join('') + '</div></div>');
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
     main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelectorAll('[data-tile]').forEach((t) => t.addEventListener('click', () => tap(t)));
+    peekCtl = keyPeek(main, w, { boxes: () => [...main.querySelectorAll('.spellboxes .spellbox')], lock: (on) => { peeking = on; }, onPeek: () => { run = R.peek(run); }, can: () => live });
     speak(w);
     window.scrollTo(0, 0);
   }
   function tap(tile) {
-    if (!live) return;
+    if (!live || peeking) return;
     const at = run.at;
     const r = R.typeLetter(run, tile.dataset.tile);
     run = r.run;
@@ -214,13 +244,13 @@ function unjumble(main, ctx, done) {
   }
   function skip() {
     if (!live) return;
-    if (R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false });
+    if (R.mustRecord(run)) ctx.record(w, G.leftPassOf(run));
     ctx.skip(w);
     words = G.afterSkip(words);
     show();
   }
   function onKey(e) {
-    if (!plainKey(e) || !/^[a-z]$/i.test(e.key) || !live) return;
+    if (!plainKey(e) || !/^[a-z]$/i.test(e.key) || !live || peeking) return;
     e.preventDefault();
     const want = w[run.at].toLowerCase();
     const key = e.key.toLowerCase();
@@ -233,7 +263,8 @@ function unjumble(main, ctx, done) {
   show();
   return () => {
     document.removeEventListener('keydown', onKey);
-    if (live && R.mustRecord(run)) ctx.record(w, { tries: run.tries, clean: false });
+    if (live && R.mustRecord(run)) ctx.record(w, G.leftPassOf(run));
+    if (peekCtl) peekCtl.destroy();
   };
 }
 
@@ -242,19 +273,21 @@ function match(main, ctx, done) {
   const entries = ctx.words.map(entryFor).filter((e) => hasMeaning(e.word));
   if (!entries.length) { Promise.resolve().then(done); return () => {}; }
   const spare = D.allWords().filter((e) => !ctx.words.includes(e.word));
-  const rounds = G.matchRounds(entries, spare);
+  const rounds = G.matchRounds(entries, spare, Math.random, ctx.sbs ? RULES.meanings.cards : G.MATCH_SIZE);
   let r = 0;
   let state = G.newMatch();
   let chosen = '';
   function draw(line = '') {
     const round = rounds[r];
+    const opt = (btn, text, kind) => (ctx.sbs ? '<div class="matchopt">' + btn + optHear(text, kind) + '</div>' : btn);
     main.innerHTML = pageHtml(ctx, { id: 'match', text: G.GAMES.match.title }, 'Round ' + (r + 1) + ' of ' + rounds.length,
       '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line || (chosen ? 'Now tap what it means.' : 'Tap a word.')) + '</p>'
-      + '<div class="matchgrid"><div class="matchcol" role="group" aria-label="Words">' + round.cards.map((c, n) => '<button type="button" class="matchcard matchcard--word' + (c.word === chosen ? ' is-on' : '') + (state.matched.includes(c.word) ? ' is-done' : '') + '" data-word="' + n + '"' + (state.matched.includes(c.word) ? ' disabled' : '') + '><span class="matchcard__key" aria-hidden="true">' + (n + 1) + '</span>' + esc(c.word) + '</button>').join('') + '</div>'
+      + '<div class="matchgrid' + (ctx.sbs ? ' matchgrid--sbs' : '') + '"><div class="matchcol" role="group" aria-label="Words">' + round.cards.map((c, n) => opt('<button type="button" class="matchcard matchcard--word' + (c.word === chosen ? ' is-on' : '') + (state.matched.includes(c.word) ? ' is-done' : '') + '" data-word="' + n + '"' + (state.matched.includes(c.word) ? ' disabled' : '') + '><span class="matchcard__key" aria-hidden="true">' + (n + 1) + '</span>' + esc(c.word) + '</button>', c.word, 'word')).join('') + '</div>'
       + '<div class="matchcol" role="group" aria-label="Meanings">' + round.meanings.map((m, n) => {
         const used = round.cards.some((c) => c.meaning === m && state.matched.includes(c.word));
-        return '<button type="button" class="matchcard' + (used ? ' is-done' : '') + '" data-meaning="' + n + '"' + (used ? ' disabled' : '') + '><span class="matchcard__key" aria-hidden="true">' + 'ABCD'[n] + '</span>' + esc(m) + '</button>';
+        return opt('<button type="button" class="matchcard' + (used ? ' is-done' : '') + '" data-meaning="' + n + '"' + (used ? ' disabled' : '') + '><span class="matchcard__key" aria-hidden="true">' + 'ABCD'[n] + '</span>' + esc(m) + '</button>', m, 'meaning');
       }).join('') + '</div></div>');
+    wireOptHear(main);
     main.querySelectorAll('[data-word]').forEach((b) => b.addEventListener('click', () => pickWord(Number(b.dataset.word))));
     main.querySelectorAll('[data-meaning]').forEach((b) => b.addEventListener('click', () => pickMeaning(Number(b.dataset.meaning))));
   }
@@ -298,12 +331,36 @@ function quick(main, ctx, done) {
   let timer = null;
   let tiles = null;
   let level = 5;
+  let peeking = false;
+  let peekCtl = null;
+  let peeksN = 0; // Peeks at this go (keyboard)
+  // The gentle bar and its "take your time": a Peek stops them, and they start again from full when the word is hidden.
+  function startClock() {
+    const secs = G.quickSeconds(w);
+    const bar = main.querySelector('[data-bar]');
+    if (bar) { bar.classList.remove('is-paused'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; bar.style.setProperty('--secs', secs + 's'); }
+    clearTimeout(timer);
+    timer = setTimeout(() => { // the timer only ever says this
+      if (!live || peeking) return;
+      if (tiles) { tiles.ctrl.say('Take your time.'); tiles.hearNow(); return; }
+      main.querySelector('[data-line]').textContent = 'Take your time.';
+      speak(w);
+    }, secs * 1000);
+  }
+  function holdClock(on) {
+    peeking = on;
+    const bar = main.querySelector('[data-bar]');
+    if (on) { clearTimeout(timer); if (bar) bar.classList.add('is-paused'); } else if (live) startClock();
+  }
   function ask(line = '') {
+    if (peekCtl) { peekCtl.destroy(); peekCtl = null; }
+    peeking = false;
+    peeksN = 0;
     const e = entryFor(words[0]);
     w = e.word;
     typed = '';
     live = true;
-    if (tiles) { tiles.ctrl.destroy(); tiles = null; }
+    if (tiles) { tiles.destroy(); tiles = null; }
     const { lv, pf } = S.helpNow(childYear());
     level = lv;
     const spec = lv < 5 ? Tr.specFor(e, lv, { pf }) : null;
@@ -311,7 +368,7 @@ function quick(main, ctx, done) {
       const bar = (A.RULES.practice[pf] || A.RULES.practice.normal).quickBar;
       main.innerHTML = pageHtml(ctx, { id: 'quick', text: G.GAMES.quick.title }, ctx.leftLine(words), (bar ? '<div class="gentlebar" aria-hidden="true"><span data-bar></span></div>' : '') + tileBody({ ...spec, tricky: e.tricky }, lv));
       tiles = wireTiles(main, spec, e, {
-        lv, pf, onSkip: skip,
+        lv, pf, onSkip: skip, onLock: holdClock,
         onRight(p) {
           live = false;
           clearTimeout(timer);
@@ -323,11 +380,7 @@ function quick(main, ctx, done) {
         },
       });
       if (line) tiles.ctrl.say(line);
-      const secs = G.quickSeconds(w);
-      const barEl = main.querySelector('[data-bar]');
-      if (barEl) barEl.style.setProperty('--secs', secs + 's');
-      clearTimeout(timer);
-      timer = setTimeout(() => { if (!live) return; tiles.ctrl.say('Take your time.'); tiles.hearNow(); }, secs * 1000);
+      startClock();
       tiles.hearNow();
       window.scrollTo(0, 0);
       return;
@@ -336,33 +389,27 @@ function quick(main, ctx, done) {
       '<div class="gentlebar" aria-hidden="true"><span data-bar></span></div>'
       + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>'
       + '<p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
-      + '<div data-slot>' + heard() + keyboard({ del: true })
+      + '<div data-slot>' + heard({ peek: 'beside' }) + keyboard({ del: true })
       + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--primary btn--wide" data-go>Next' + ICON.arrow + '</button></div></div>');
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
     main.querySelector('[data-del]').addEventListener('click', del);
     main.querySelector('[data-go]').addEventListener('click', submit);
     main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelectorAll('.key[data-letter]').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
-    const secs = G.quickSeconds(w);
-    main.querySelector('[data-bar]').style.setProperty('--secs', secs + 's');
-    clearTimeout(timer);
-    timer = setTimeout(() => { // the timer only ever says this
-      if (!live) return;
-      main.querySelector('[data-line]').textContent = 'Take your time.';
-      speak(w);
-    }, secs * 1000);
+    peekCtl = keyPeek(main, w, { line: '[data-answer]', lock: holdClock, onPeek: () => { peeksN += 1; }, can: () => live });
+    startClock();
     speak(w);
     window.scrollTo(0, 0);
   }
   const show = () => { main.querySelector('[data-answer]').textContent = typed; };
-  function put(L) { if (live && typed.length < 24) { typed += L.toLowerCase(); show(); } }
-  function del() { if (live) { typed = typed.slice(0, -1); show(); } }
+  function put(L) { if (live && !peeking && typed.length < 24) { typed += L.toLowerCase(); show(); } }
+  function del() { if (live && !peeking) { typed = typed.slice(0, -1); show(); } }
   function submit() {
-    if (!live) return;
+    if (!live || peeking) return;
     if (!typed) { toast('Type the word first'); return; }
     live = false;
     clearTimeout(timer);
-    const p = G.quickPass(w, typed);
+    const p = G.quickPass(w, typed, peeksN);
     ctx.record(w, p);
     words = G.afterPass(words, p.clean);
     if (!p.clean) { ask(RETRY_LINE); return; }
@@ -373,7 +420,7 @@ function quick(main, ctx, done) {
     if (!live) return;
     live = false;
     clearTimeout(timer);
-    if (tiles) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); }
+    if (tiles) { const lp = leftPass(tiles.ctrl, level, tiles.peeks()); if (lp) ctx.record(w, { ...lp, clean: false }); } else if (peeksN) ctx.record(w, { tries: 0, clean: false, peeks: peeksN });
     ctx.skip(w);
     words = G.afterSkip(words);
     ask();
@@ -392,7 +439,8 @@ function quick(main, ctx, done) {
   return () => {
     clearTimeout(timer);
     document.removeEventListener('keydown', onKey);
-    if (tiles) { if (live) { const lp = leftPass(tiles.ctrl, level); if (lp) ctx.record(w, { ...lp, clean: false }); } tiles.ctrl.destroy(); }
+    if (tiles) { if (live) { const lp = leftPass(tiles.ctrl, level, tiles.peeks()); if (lp) ctx.record(w, { ...lp, clean: false }); } tiles.destroy(); } else if (live && peeksN) ctx.record(w, { tries: 0, clean: false, peeks: peeksN });
+    if (peekCtl) peekCtl.destroy();
   };
 }
 
@@ -457,14 +505,20 @@ function spareEntries(words, bank) {
   return G.shuffled(pool).slice(0, 24).map((e) => textEntryFor(e.word, { bank, curriculum: e }));
 }
 /** Whether a game is on the list for these words: Fill in the blanks and Mix and match need enough sentences. */
-function sentenceGameOn(g, words, id, bank) {
+function sentenceGameOn(g, words, id, bank, sbs = false) {
   const es = sentenceEntries(g, words, bank);
-  return G.gamesFor(id === 'mix' ? mixPool(es) : es, {}, [id]).length > 0;
+  return G.gamesFor(id === 'mix' ? mixPool(es) : es, {}, [id], { sbs: false }).length > 0 && (!sbs || es.length >= RULES.meanings.cards);
 }
 
 // ---- the same Stop-free page for both: the sentence, the cards and a bar at the foot -------------------------------------
 const mixPage = (ctx, id, title, n, body) => '<section class="wrap page mixpage game" data-game="' + id + '"><div class="pagehead"><span class="eyebrow">' + esc(ctx.eyebrow) + '</span><h1>' + esc(title) + '</h1>'
   + (n ? '<p class="muted">' + esc(n) + '</p>' : '') + '</div>' + body + '</section>';
+// F6: in Step by step every option on a Meanings board has its own Hear (48 x 48, a sibling of the card so a tap on it never picks the option), which says the option's text
+const HEAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const optHear = (text, kind) => '<button type="button" class="hearround" data-hearopt="' + kind + '" data-text="' + esc(text) + '" aria-label="Hear: ' + esc(text) + '">' + HEAR_SVG + '</button>';
+function wireOptHear(main) {
+  main.querySelectorAll('[data-hearopt]').forEach((b) => b.addEventListener('click', () => (b.dataset.hearopt === 'word' ? speak(b.dataset.text) : sayLine(b.dataset.text))));
+}
 const cardHtml = (word, cls = '', extra = '') => '<button type="button" class="mixcard' + cls + '" data-card="' + esc(word) + '"' + extra + '>' + esc(word) + '</button>';
 const gapHtml = (before, after, fill = '') => esc(before) + '<span class="blank' + (fill ? ' is-filled' : '') + '" data-blank role="img" aria-label="' + (fill ? esc(fill) : 'blank') + '">' + esc(fill) + '</span>' + esc(after);
 const READ_BTN = '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-read>' + ICON.play + 'Read it to me</button></div>';
@@ -589,6 +643,7 @@ export function boardPlay(board) {
 
 const MISS_LINE = 'Not that one. Try another word.';
 const BOARD_HELP = 'Drag a word onto a sentence, or tap a word then a sentence.';
+const SBS_BOARD_HELP = 'Tap a word, then its sentence.';
 /** The end-of-game card for the two sentence games: the score, then on. */
 function scoreCard(main, ctx, title, clean, total, onNext) {
   main.innerHTML = '<section class="wrap page mixpage game"><div class="card result result--good mixscore" role="status"><div class="result__head"><span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(12, 1.3) + '</span>'
@@ -604,7 +659,7 @@ const focusAfter = (main, sel) => { const el = sel && main.querySelector(sel); i
 
 /* -------------------------------------------------------- Fill in the blanks --- */
 function fill(main, ctx, done) {
-  const level = G.levelFor(ctx.year);
+  const level = ctx.sbs ? G.sbsLevel(ctx.year) : G.levelFor(ctx.year);
   const items = G.fillItems(ctx.entries, level, { hidden: ctx.hidden, doneToday: ctx.doneToday });
   if (!items.length) { Promise.resolve().then(done); return () => {}; }
   const total = items.length;
@@ -620,6 +675,10 @@ function fill(main, ctx, done) {
   let lvl = 5;
   let typed = '';
   let stopDrag = () => {};
+  let peeking = false;
+  let peekCtl = null;
+  let peeksN = 0; // Peeks at this sentence (keyboard)
+  const sbs = !!ctx.sbs; // Step by step: tap only, the sentence read aloud, cards of 3
   const head = () => 'Sentence ' + (k + 1) + ' of ' + total;
   const cardBox = (fillWord = '') => '<div class="fillcard"><p class="fillgap" data-gaptext>' + gapHtml(item.before, item.after, fillWord) + '</p></div>';
 
@@ -644,19 +703,24 @@ function fill(main, ctx, done) {
     tries = 0;
     typed = '';
     live = true;
-    if (tiles) { tiles.ctrl.destroy(); tiles = null; }
+    peeksN = 0;
+    peeking = false;
+    if (peekCtl) { peekCtl.destroy(); peekCtl = null; }
+    if (tiles) { tiles.destroy(); tiles = null; }
     stopDrag();
     stopDrag = () => {};
     if (spelled) { showSpell(line); return; }
     const cards = G.fillChoices(item, weekWords, level, [...ctx.hidden]);
     main.innerHTML = mixPage(ctx, 'fill', G.GAMES.fill.title, head(), cardBox()
-      + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line || 'Tap a word to fill in the blank, or drag it.') + '</p>' + READ_BTN
-      + '<div class="mixbar" data-fold="keys"><div class="mixtray" role="group" aria-label="Word cards">' + cards.map((w) => cardHtml(w)).join('') + '</div>'
+      + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line || (sbs ? 'Tap the word that fits.' : 'Tap a word to fill in the blank, or drag it.')) + '</p>' + READ_BTN
+      + '<div class="mixbar' + (sbs ? ' mixbar--sbs' : '') + '" data-fold="keys"><div class="mixtray" role="group" aria-label="Word cards">' + cards.map((w) => (sbs ? '<span class="mixopt">' + cardHtml(w) + optHear(w, 'word') + '</span>' : cardHtml(w))).join('') + '</div>'
       + '<div class="mixact"><button type="button" class="btn btn--ghost" data-skip>Skip<span class="sr"> for now. It comes back later.</span></button></div></div>');
+    wireOptHear(main);
     main.querySelectorAll('[data-card]').forEach((c) => c.addEventListener('click', () => pick(c.dataset.card)));
     main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelector('[data-read]').addEventListener('click', () => sayLine(G.readLine(item.before, item.after)));
-    stopDrag = enableDrag(main, { targets: '[data-blank], .fillcard', onDrop: (w) => pick(w) });
+    if (!sbs) stopDrag = enableDrag(main, { targets: '[data-blank], .fillcard', onDrop: (w) => pick(w) });
+    else sayLine(G.readLine(item.before, item.after));
     window.scrollTo(0, 0);
   }
   function pick(word) {
@@ -688,7 +752,7 @@ function fill(main, ctx, done) {
   }
   function skip() {
     if (!live) return;
-    if (tiles) { const lp = leftPass(tiles.ctrl, lvl); if (lp) ctx.record(item.word, { ...G.fillPass(item, { tries: lp.tries, spelled: true, lv: lp.lv, h: lp.h }), clean: false }); } else if (tries) ctx.record(item.word, { ...G.fillPass(item, { tries, spelled }), clean: false });
+    if (tiles) { const lp = leftPass(tiles.ctrl, lvl, tiles.peeks()); if (lp) ctx.record(item.word, { ...G.fillPass(item, { tries: lp.tries, spelled: true, lv: lp.lv, h: lp.h, peeks: lp.peeks }), clean: false }); } else if (tries || peeksN) ctx.record(item.word, { ...G.fillPass(item, { tries, spelled, peeks: peeksN }), clean: false });
     ctx.skip(item.word);
     queue = [...queue.slice(1), queue[0]];
     show();
@@ -704,14 +768,14 @@ function fill(main, ctx, done) {
       main.innerHTML = mixPage(ctx, 'fill', G.GAMES.fill.title, head(), cardBox() + tileBody({ ...spec, tricky: e.tricky }, lv));
       tiles = wireTiles(main, spec, e, {
         lv, pf, onSkip: skip,
-        onRight(p) { live = false; record({ ...G.fillPass(item, { tries: p.tries, spelled: true, lv: p.lv, h: p.h }), clean: p.clean }); spelledRight(); },
+        onRight(p) { live = false; record({ ...G.fillPass(item, { tries: p.tries, spelled: true, lv: p.lv, h: p.h, peeks: p.peeks }), clean: p.clean }); spelledRight(); },
       });
       if (line) tiles.ctrl.say(line);
       window.scrollTo(0, 0);
       return;
     }
     main.innerHTML = mixPage(ctx, 'fill', G.GAMES.fill.title, head(), cardBox()
-      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear the word</button></div>'
+      + '<div class="btnrow btnrow--center btnrow--peek"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear the word</button>' + peekButtonHtml() + '</div>'
       + '<p class="answerline" data-answer role="status" aria-label="Your answer so far"></p>'
       + '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line || 'Spell the missing word. Then tap Check.') + '</p>'
       + '<div data-slot>' + keyboard({ del: true }) + '</div>'
@@ -722,13 +786,14 @@ function fill(main, ctx, done) {
     main.querySelector('[data-check]').addEventListener('click', check);
     main.querySelector('[data-del]').addEventListener('click', del);
     main.querySelectorAll('.key[data-letter]').forEach((b) => b.addEventListener('click', () => put(b.dataset.letter)));
+    peekCtl = keyPeek(main, item.word, { line: '[data-answer]', lock: (on) => { peeking = on; main.querySelector('[data-check]').disabled = on || !typed; }, onPeek: () => { peeksN += 1; }, can: () => live });
     window.scrollTo(0, 0);
   }
   const showTyped = () => { main.querySelector('[data-answer]').textContent = typed; main.querySelector('[data-check]').disabled = !typed; };
-  function put(L) { if (live && !tiles && typed.length < 24) { typed += lc(L); showTyped(); } }
-  function del() { if (live && !tiles) { typed = typed.slice(0, -1); showTyped(); } }
+  function put(L) { if (live && !tiles && !peeking && typed.length < 24) { typed += lc(L); showTyped(); } }
+  function del() { if (live && !tiles && !peeking) { typed = typed.slice(0, -1); showTyped(); } }
   function check() {
-    if (!live || tiles || !typed) return;
+    if (!live || tiles || peeking || !typed) return;
     if (typed !== lc(item.word)) {
       tries += 1;
       typed = '';
@@ -737,13 +802,14 @@ function fill(main, ctx, done) {
       return;
     }
     live = false;
-    record(G.fillPass(item, { tries, spelled: true }));
+    record(G.fillPass(item, { tries, spelled: true, peeks: peeksN }));
     spelledRight();
   }
   function spelledRight() {
     speak(item.word);
     main.querySelector('[data-gaptext]').innerHTML = gapHtml(item.before, item.after, item.word);
-    ['[data-slot]', '.tileword', '.tileline', '.mixbar', '[data-hear]'].forEach((q) => { const el = main.querySelector(q); if (el) el.remove(); });
+    if (peekCtl) { peekCtl.destroy(); peekCtl = null; }
+    ['[data-slot]', '.tileword', '.tileline', '.mixbar', '[data-hear]', '.peekrow'].forEach((q) => { const el = main.querySelector(q); if (el) el.remove(); });
     main.querySelector('.mixpage').insertAdjacentHTML('beforeend', '<div class="mixbar" data-fold="keys"><div class="mixact"><button type="button" class="btn btn--primary btn--big" data-next>' + (queue.length <= 1 ? 'Finish' : 'Next sentence') + ICON.arrow + '</button></div></div>');
     const n = main.querySelector('[data-next]');
     n.addEventListener('click', next);
@@ -763,15 +829,16 @@ function fill(main, ctx, done) {
     document.removeEventListener('keydown', onKey);
     stopDrag();
     if (live && item) {
-      if (tiles) { const lp = leftPass(tiles.ctrl, lvl); if (lp) ctx.record(item.word, { ...G.fillPass(item, { tries: lp.tries, spelled: true, lv: lp.lv, h: lp.h }), clean: false }); } else if (tries) ctx.record(item.word, { ...G.fillPass(item, { tries, spelled }), clean: false });
+      if (tiles) { const lp = leftPass(tiles.ctrl, lvl, tiles.peeks()); if (lp) ctx.record(item.word, { ...G.fillPass(item, { tries: lp.tries, spelled: true, lv: lp.lv, h: lp.h, peeks: lp.peeks }), clean: false }); } else if (tries || peeksN) ctx.record(item.word, { ...G.fillPass(item, { tries, spelled, peeks: peeksN }), clean: false });
     }
-    if (tiles) tiles.ctrl.destroy();
+    if (peekCtl) peekCtl.destroy();
+    if (tiles) tiles.destroy();
   };
 }
 
 /* ------------------------------------------------------------- Mix and match --- */
 function mix(main, ctx, done) {
-  const level = G.levelFor(ctx.year);
+  const level = ctx.sbs ? G.sbsLevel(ctx.year) : G.levelFor(ctx.year);
   const boards = G.mixBoards(mixPool(ctx.entries), level, { exclude: ctx.fillUsed, spare: mixPool(ctx.spare), hidden: [...ctx.hidden], n: ctx.turn });
   if (!boards.length) { Promise.resolve().then(done); return () => {}; }
   const total = boards.length;
@@ -784,11 +851,13 @@ function mix(main, ctx, done) {
   let stopDrag = () => {};
   const board = () => queue[0];
   const slotText = (s) => G.readLine(s.before, s.after);
+  const boardHelp = () => (ctx.sbs ? SBS_BOARD_HELP : BOARD_HELP);
 
   function start(line = '', focus = '') {
     play = boardPlay(board());
     live = true;
-    draw(line || BOARD_HELP, focus);
+    draw(line || boardHelp(), focus);
+    if (ctx.sbs) sayLine(board().slots.map(slotText).join(' ')); // Step by step: the sentences are read aloud once, when a board starts
     window.scrollTo(0, 0);
   }
   function draw(line, focus = '', glow = null) {
@@ -808,24 +877,26 @@ function mix(main, ctx, done) {
       const held1 = play.cardState(c.word) === 'held';
       const isChosen = lc(chosen) === lc(c.word);
       const isGlow = glow && lc(glow.word) === lc(c.word);
-      return cardHtml(c.word, (isChosen ? ' is-chosen' : '') + (held1 ? ' is-used' : '') + (isGlow ? ' is-glow' : ''), ' aria-pressed="' + (isChosen ? 'true' : 'false') + '"' + (held1 ? ' disabled' : ''));
+      const card = cardHtml(c.word, (isChosen ? ' is-chosen' : '') + (held1 ? ' is-used' : '') + (isGlow ? ' is-glow' : ''), ' aria-pressed="' + (isChosen ? 'true' : 'false') + '"' + (held1 ? ' disabled' : ''));
+      return ctx.sbs ? '<span class="mixopt">' + card + optHear(c.word, 'word') + '</span>' : card;
     }).join('');
     main.innerHTML = mixPage(ctx, 'mix', G.GAMES.mix.title, 'Board ' + (finished + 1) + ' of ' + total,
       '<p class="spellline" data-line role="status" aria-live="polite">' + esc(line) + '</p>' + READ_BTN
-      + '<div class="mixboard" role="group" aria-label="Sentences" data-fold="slot">' + slots + '</div>'
-      + '<div class="mixbar" data-fold="keys"><div class="mixtray" role="group" aria-label="Word cards">' + cards + '</div>'
+      + '<div class="mixboard' + (ctx.sbs ? ' mixboard--sbs' : '') + '" role="group" aria-label="Sentences" data-fold="slot">' + slots + '</div>'
+      + '<div class="mixbar' + (ctx.sbs ? ' mixbar--sbs' : '') + '" data-fold="keys"><div class="mixtray" role="group" aria-label="Word cards">' + cards + '</div>'
       + '<div class="mixact"><button type="button" class="btn btn--ghost" data-skip>Skip<span class="sr"> this board. It comes back later.</span></button>'
       + '<button type="button" class="btn btn--primary btn--big" data-check' + (play.canCheck() ? '' : ' disabled') + '>' + TICK + 'Check</button></div></div>');
     stopDrag();
+    wireOptHear(main);
     main.querySelectorAll('[data-card]').forEach((c) => c.addEventListener('click', () => { play.choose(c.dataset.card); draw(chosenLine(), '[data-card="' + c.dataset.card + '"]', glow); }));
     main.querySelectorAll('[data-slot-i]').forEach((s) => s.addEventListener('click', () => tapSlot(Number(s.dataset.slotI), glow)));
     main.querySelector('[data-skip]').addEventListener('click', skip);
     main.querySelector('[data-check]').addEventListener('click', check);
     main.querySelector('[data-read]').addEventListener('click', () => sayLine(b.slots.map((s, i) => (st.placed[i] === undefined ? slotText(s) : '')).filter(Boolean).join(' ')));
-    stopDrag = enableDrag(main, { targets: '[data-slot-i]', onDrop: (w, t) => put(w, Number(t.dataset.slotI), glow) });
+    stopDrag = ctx.sbs ? () => {} : enableDrag(main, { targets: '[data-slot-i]', onDrop: (w, t) => put(w, Number(t.dataset.slotI), glow) });
     focusAfter(main, focus);
   }
-  const chosenLine = () => (play.chosen() ? play.chosen() + ' is chosen. Tap a sentence to put it there.' : BOARD_HELP);
+  const chosenLine = () => (play.chosen() ? play.chosen() + ' is chosen. Tap a sentence to put it there.' : boardHelp());
   function put(word, i, glow = null) {
     if (!live) return;
     const r = play.place(word, i);
@@ -866,7 +937,7 @@ function mix(main, ctx, done) {
     start();
   }
   function onKey(e) {
-    if (e.key === 'Escape' && live && play.chosen()) { play.unchoose(); draw(BOARD_HELP, ''); }
+    if (e.key === 'Escape' && live && play.chosen()) { play.unchoose(); draw(boardHelp(), ''); }
   }
   document.addEventListener('keydown', onKey);
   start();
@@ -879,9 +950,11 @@ function mix(main, ctx, done) {
 
 const PLAY = { missing, unjumble, match, fill, mix, quick };
 /** The games to offer for these words: G.gamesFor for the letter games (a word of one letter has none), the sentence games when enough words have sentences. */
-const offeredGame = (words, id, g = null, bank = {}) => {
-  if (id === 'fill' || id === 'mix') return !!g && sentenceGameOn(g, words, id, bank);
-  return !['missing', 'unjumble'].includes(id) || G.gamesFor(words.map(entryFor), {}, [id]).length > 0;
+const offeredGame = (words, id, g = null, bank = {}, sbs = false) => {
+  if (sbs && id === 'quick') return false; // never offered in Step by step
+  if (id === 'fill' || id === 'mix') return !!g && sentenceGameOn(g, words, id, bank, sbs);
+  if (sbs && id === 'match') return G.gamesFor(words.map(entryFor), {}, [id], { sbs }).length > 0;
+  return !['missing', 'unjumble'].includes(id) || G.gamesFor(words.map(entryFor), {}, [id], { sbs }).length > 0;
 };
 
 /**
@@ -889,7 +962,8 @@ const offeredGame = (words, id, g = null, bank = {}) => {
  * part: mark each game done under this job, so a job left halfway carries on.
  * games: the ids in order; Game day ('games') plays G.dayGames(year, week kind) when none are given.
  */
-export function playGames(main, g, { eyebrow, games = null, part = '', onDone, onNone = null }) {
+export function playGames(main, g, { eyebrow, games = null, part = '', onDone, onNone = null, sbs = null }) {
+  const way = sbs === null ? Su.wayOf(S.readSetup()) === 'sbs' : !!sbs; // Step by step: Meanings only, three cards, tap only (TR-44)
   const words = W.rows(g);
   let end = null;
   let stopped = false;
@@ -898,16 +972,17 @@ export function playGames(main, g, { eyebrow, games = null, part = '', onDone, o
     // As G.recordPass, with the tile help a pass carries (lv 1 to 4, h 1 when the tray filled a letter).
     S.updateWords((d) => {
       const source = pass.source || 'g';
-      return W.addTry(d, { id: S.newId(), word, day, group: g.id, kind: source === 'm' ? 'p' : W.kindOn(d, g, word, day), tries: pass.tries, peeks: 0, clean: pass.clean, source, now: Date.now(), lv: pass.lv, h: pass.h });
+      return W.addTry(d, { id: S.newId(), word, day, group: g.id, kind: source === 'm' ? 'p' : W.kindOn(d, g, word, day), tries: pass.tries, peeks: pass.peeks || 0, clean: pass.clean && !pass.peeks, source, now: Date.now(), lv: pass.lv, h: pass.h });
     });
   };
   const year = childYear();
   const shared = { fillUsed: [], mixUsed: [] }; // Mix and match uses the words Fill in the blanks did not, first
   function start(bank) {
-    const order = games || (part === 'games' ? G.dayGames(year, St.weekKind(g)) : G.GAME_IDS);
-    const offered = (id) => offeredGame(words, id, g, bank);
+    const order = (games || (part === 'games' ? (way ? G.SBS_GAMES : G.dayGames(year, St.weekKind(g))) : G.GAME_IDS)).filter((id) => !(way && id === 'quick'));
+    const offered = (id) => offeredGame(words, id, g, bank, way);
     const left = (part ? order.filter((id) => !W.stepDay(S.readWords(), g, part + ':' + id)) : [...order]).filter(offered);
     const list = left.length ? left : order.filter(offered);
+    if (!list.length && way && !onNone) { onDone(); return; } // Step by step: a job with no game to play still finishes (BR-15 AC3)
     if (!list.length && onNone) { onNone(); return; } // nothing to play (m9): say so, never "<game> done"
     let n = 0;
     const hidden = S.currentPlayer() ? St.hiddenWords(S.readWords(), today()) : new Set();
@@ -926,7 +1001,7 @@ export function playGames(main, g, { eyebrow, games = null, part = '', onDone, o
       const leftLine = (l) => plural(l.length, 'word') + ' to go';
       const ctx = {
         eyebrow: eyebrow + (list.length > 1 ? ' · game ' + n + ' of ' + list.length : ''), words, record, skip, order: turnOrder, leftLine,
-        year, hidden, entries, spare, turn, more: n < list.length, doneToday: null, ...shared,
+        year, hidden, entries, spare, turn, more: n < list.length, doneToday: null, sbs: way, ...shared,
       };
       end = PLAY[id](main, ctx, () => {
         if (end) end(); // its keys stop here, or they'd reach the next game
@@ -950,7 +1025,7 @@ export function gameMode(main, { gid }) {
   const draw = (bank) => {
     main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">My words</span><h1>' + esc(g.name) + '</h1>'
       + '<p class="muted">The same words, any time.</p></div>' + modeSwitch(g, 'game')
-      + '<div class="shortcuts gamecards">' + G.GAME_IDS.filter((k) => offeredGame(W.rows(g), k, g, bank)).map((k) => '<a class="card shortcut" href="' + groupHref(id) + '/game/' + k + '"><span><strong>' + esc(G.GAMES[k].title) + '</strong><br><span class="muted small">' + esc(G.GAMES[k].line) + '</span></span>' + ICON.arrow + '</a>').join('') + '</div>'
+      + '<div class="shortcuts gamecards">' + G.GAME_IDS.filter((k) => offeredGame(W.rows(g), k, g, bank, Su.wayOf(S.readSetup()) === 'sbs')).map((k) => '<a class="card shortcut" href="' + groupHref(id) + '/game/' + k + '"><span><strong>' + esc(G.GAMES[k].title) + '</strong><br><span class="muted small">' + esc(G.GAMES[k].line) + '</span></span>' + ICON.arrow + '</a>').join('') + '</div>'
       + '<h2 class="sectionhead">Practise 3 times</h2>' + dotsListHtml(W.allDots(d, g, today()), false)
       + '</section>';
   };
@@ -964,6 +1039,7 @@ export function oneGame(main, { gid, game }) {
   const g = W.groupById(d, id);
   if (!g) { location.replace('#/'); return undefined; }
   if (!PLAY[game]) { location.replace(groupHref(id) + '/games'); return undefined; }
+  if (game === 'quick' && Su.wayOf(S.readSetup()) === 'sbs') { location.replace(groupHref(id) + '/study/games'); return undefined; } // Step by step has no timed game: on to the Meanings stone
   return playGames(main, g, {
     eyebrow: g.name,
     games: [game],

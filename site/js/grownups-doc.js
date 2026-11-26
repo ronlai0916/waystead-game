@@ -12,6 +12,9 @@ import * as F from './front-doc.js';
 import { switchUrl, accountUrl } from './account/config.js';
 import { stoneView } from './child-doc.js';
 import * as SD from './set-doc.js';
+import * as K from './sbs-week-doc.js';
+import * as SR from './sbs-report-doc.js';
+import * as Rows from './rows-doc.js';
 
 /** Only an adult playing as themselves. A child, or an adult playing as one, never. */
 export const canSeeGrownups = (kind) => kind === 'adult';
@@ -28,7 +31,7 @@ export const PROBLEM_TEXT = {
   'signed-out': 'You\'ve been signed out. Please sign in again.',
   'no-child': 'That child isn\'t on your account.',
   playing: 'You\'re playing as a child. Switch back to yourself first, then try again.',
-  other: 'Something went wrong on our side. Please try again.',
+  other: 'That did not work on our side. Please try again.',
 };
 
 /** What a plan will do, before it's saved. */
@@ -54,7 +57,7 @@ export function groupReport(d, g, today) {
   const test = W.testResults(d, g).filter((x) => x.result);
   return {
     id: g.id, name: g.name, start: g.start, testDate: g.test, canEdit: W.canEdit(d, g),
-    status: s.status, job: s.job ? St.STEP_TEXT[s.job].title : '',
+    status: s.status, job: s.job ? (isSbsWeek(d, g, W.setupOf(d)) ? K.STONE_TEXT : St.STEP_TEXT)[s.job].title : '',
     steps: s.steps,
     // Jobs whose date has gone, still to do (before the test is taken); testWaits: the test date has come, so the test waits for them.
     waiting: today < g.test || s.catchUp ? s.waiting : 0, testWaits: s.catchUp,
@@ -88,13 +91,13 @@ export function dashboard(d, today) {
 
 // ---- word status ----------------------------------------------------------------
 export const STATUS_LABEL = { got: 'Got it', getting: 'Getting there', help: 'Needs help', new: 'Not started' };
-export const STATUS_KEY = 'Got it: 3 in a row done. Getting there: practised, not yet 3 in a row. Needs help: 2 or more wrong letters or a peek in the latest practice, or a slip in the test. Not started: no tries yet.';
+export const STATUS_KEY = 'Got it: 3 in a row done. Getting there: practised, not yet 3 in a row. Needs help: 2 or more letters to try again or a peek in the latest practice, or a slip in the test. Not started: no tries yet.';
 const times = (n) => (n === 1 ? 'once' : n === 2 ? 'twice' : n + ' times');
 
 /**
  * One word's status and its reason.
  *   dots     the 3-in-a-row count the app shows (W.dots)
- *   tries    wrong letters so far (the app counts letters, not goes), peeks  peeks so far
+ *   tries    letters to try again so far (the app counts letters, not goes), peeks  peeks so far
  *   slipped  wrong in the test and still to fix; passed  right in the test or remembered
  *   any      the word has been tried at all
  *   assisted (SB4) every try that counted used letter tiles (levels 1 to 3), a fill or a hint
@@ -113,7 +116,7 @@ export function classify({ dots = 0, tries = 0, peeks = 0, slipped = false, pass
   if (dots >= W.ROW_NEEDED || passed) return { key: 'got', label: STATUS_LABEL.got, reason: passed && dots < W.ROW_NEEDED ? 'right in the test' : '' };
   if (tries >= 2 || peeks >= 1) {
     const why = [];
-    if (tries >= 2) why.push('2 or more wrong letters');
+    if (tries >= 2) why.push('2 or more letters to try again');
     if (peeks) why.push('peeked ' + times(peeks));
     return { key: 'help', label: STATUS_LABEL.help, reason: why.join(', ') };
   }
@@ -183,7 +186,11 @@ export const waitingLabel = (n) => n + (n === 1 ? ' job waiting' : ' jobs waitin
  * waiting: its day has passed and it is not done (St.studyState's `waiting`). "On track" only when nothing is waiting.
  */
 export function weekCard(d, g, today) {
-  const s = St.studyState(d, g, today);
+  const s0 = St.studyState(d, g, today);
+  // F7: a Step-by-step week shows the child's own stone names (sbs-week-doc STONE_TEXT), not Hello words / Fix it in / Game day. Usual weeks are as they were.
+  const sbs = isSbsWeek(d, g, W.setupOf(d));
+  const text = (id) => (sbs ? K.STONE_TEXT[id] : St.STEP_TEXT[id]);
+  const s = sbs ? { ...s0, steps: s0.steps.map((x) => ({ ...x, title: K.STONE_TEXT[x.id].title })) } : s0;
   const done = (id) => s.steps.find((x) => x.id === id).state === 'done';
   const waitingSteps = s.steps.filter((x) => St.BEFORE_TEST.includes(x.id) && x.state !== 'done' && x.state !== 'missed' && x.date < today && !done('test'));
   const started = s.steps.some((x) => x.state === 'done') || d.results.some((r) => r.g === g.id);
@@ -192,14 +199,14 @@ export function weekCard(d, g, today) {
     : waitingSteps.length ? { key: 'waiting', label: waitingLabel(waitingSteps.length) }
       : !started ? { key: 'notstarted', label: CHIP_LABEL.notstarted }
         : { key: 'ontrack', label: CHIP_LABEL.ontrack };
-  const job = s.job ? St.STEP_TEXT[s.job].title : '';
+  const job = s.job ? text(s.job).title : '';
   const todayLine = job || ({ done: 'Done for today', rest: 'No job today', ready: 'Ready for the test', finished: 'Week finished' }[s.status] || '');
   const words = weekWords(d, g, today);
   return {
-    id: g.id, name: g.name, start: g.start, test: g.test, count: g.words.length, back: g.back.length,
+    id: g.id, name: g.name, start: g.start, test: g.test, count: g.words.length, back: g.back.length, sbs,
     chip, waiting: waitingSteps.length, waitingTitles: waitingSteps.filter((x) => x.state !== 'today').map((x) => x.title), waitingToday: waitingSteps.some((x) => x.state === 'today'),
     jobId: s.job || '', today: todayLine, catchUp: s.catchUp, status: s.status,
-    steps: s.steps.map((x) => ({ ...stoneView(x, today, St.doneDay(d, g, x.id)), date: x.date, title: x.title })),
+    steps: s.steps.map((x) => ({ ...stoneView(x, today, St.doneDay(d, g, x.id)), date: x.date, title: x.title, short: text(x.id).short })),
     stars: St.weekStars(d, g), help: words.filter((x) => x.status === 'help').map((x) => x.word),
     short: s.squeezed, canEdit: W.canEdit(d, g), testBegun: W.testBegun(d, g),
   };
@@ -637,4 +644,81 @@ export function childPageWeeks(d, today, lists = []) {
     testLine: W.testDone(d, g) ? (weekTestLine(d, g) || g.name + ' test done') : 'Test on ' + W.dayLabel(g.test),
     setBy: SD.setBy(g.id, g, lists),
   }));
+}
+
+
+// ---- SB6 (TR-46, TR-48): Way of learning, the Step-by-step report, stuck words ---------------------------------------------------------
+export const WAY_NAMES = Object.freeze({ usual: 'Usual way', sbs: 'Step by step' });
+export const WAY_HELP = 'For children who find spelling hard. Smaller steps, help that fades, Peek any time, and no time pressure.';
+export const FIRST_ON_LINE = 'Help in tests is now Extra support. You can change it.';
+export const updateLine = (name) => 'Update the app on every device ' + name + ' uses. An older copy keeps ' + possessive(name) + ' settings but shows the usual jobs.';
+export const sessionHelp = (name) => name + ' can sit more than once a day. This is the most for one sitting.';
+export const BIG_HELP = 'A bigger still picture at the end. Nothing moves.';
+export const AFTER_HELP = 'Choose a time if you want Spelling to finish for the day.';
+export const peekUsualHelp = 'As now: 2 seconds on the keyboard, 3 seconds with tiles.';
+export const previewTitle = (name) => 'See what ' + name + ' will see';
+export const previewHelp = (name) => 'One step of ' + name + '\u2019s first word, with the settings. Nothing is saved.';
+export const wayChangedLine = (setup) => {
+  const w = setup && setup.way;
+  return w && w.at ? 'Last changed ' + (w.by ? 'by ' + w.by + ', ' : '') + shortDate(w.at) + '.' : '';
+};
+/** The tile size a child gets: 56 px in Years 1 and 2, 48 px from Year 3. */
+export const tileSizeLine = (year) => (year === 1 || year === 2 ? 'Years 1 to 2 (56 px)' : 'Years 3 to 6 (48 px)');
+/** { way, min, big, after, peek } for the card, from the child's setup. */
+export function waySettings(setup, year = 0) {
+  const s = setup || {};
+  const sb = Su.sbsOf(s);
+  return { way: Su.wayOf(s), min: sb.min, big: !!sb.big, after: sb.after, peek: Su.peekSecondsOf(s, { input: 'tiles' }), peekSaved: s.peek ? s.peek.s : -1, year };
+}
+/** One line of "Help for each child": "Step by step · Extra support" (Way of learning and the help in tests). */
+export const wayHelpLine = (setup, year, name) => {
+  const c = spellCard(setup, year, name);
+  return WAY_NAMES[Su.wayOf(setup || {})] + ' \u00b7 ' + A.PROFILE_NAME[c.pf];
+};
+
+/** True when the report for this week is the Step-by-step one: the child is on Step by step, or any try of the week has a rung. */
+export function isSbsWeek(d, g, setup) {
+  if (Su.wayOf(setup || W.setupOf(d)) === 'sbs') return true;
+  return !!g && d.results.some((r) => r.g === g.id && Number.isInteger(r.r) && r.r >= 1);
+}
+const dayName = (day) => W.dayLabel(day);
+/**
+ * What a grown-up reads for a Step-by-step week (TR-48): facts only. entryOf(word) gives a word's entry for the "Slips around 'igh'" line.
+ * { words: [{ word, status, pill, line }], stuck: [{ word, line, aside }], rows, sittings: [{ when, minutes, words, end }], test: { spelled, keep, withPeek },
+ *   sentences: [{ word, text, help }], tally, estimate: { line, calm } }
+ */
+export function sbsWeek(d, g, today, { name = '', setup = null, entryOf = () => null, year = 0 } = {}) {
+  const su = setup || W.setupOf(d);
+  const words = g.words.map((word) => {
+    const facts = W.ladderFacts(d, word, today);
+    const st = SR.status(facts);
+    return { word, status: st, pill: SR.STATUS_TEXT[st], line: SR.wordLine(name, word, facts, { entry: entryOf(word) }) };
+  });
+  const stuck = SR.stuckWords(d, g, today).map((x) => ({ word: x.word, day: x.day, line: 'Stuck word: ' + x.word, aside: W.isSetAside(d, g.id, x.word, today) }));
+  const sit = SR.sittings(d, g).map((x) => ({ when: dayName(x.day), minutes: x.minutes + ' min', words: x.words, end: x.finished ? 'Finished' : 'Stopped for now' }));
+  const test = SR.testLines(d, g);
+  const hp = new Set(d.notes.filter((n) => n.g === g.id && n.hp).map((n) => n.id));
+  const sentences = W.notesFor(d, g).map((n) => ({ word: n.w, text: n.x, help: hp.has(n.id) }));
+  const est = K.estimateFor(d, g, today, su, { year });
+  return { words, stuck, rows: Rows.rowsLine(d, g), sittings: sit, test, sentences, tally: SR.tally(words.map((x) => x.status)), estimate: { line: est.line, calm: est.calm }, setAsideFor: (w) => W.isSetAside(d, g.id, w, today) };
+}
+/** "You could try the usual way." when every word was On its own in each of the last two weeks that ended. */
+export function usualWayOffer(d, today, entryOf = () => null) {
+  const ended = W.liveGroups(d).filter((g) => g.test <= today && isSbsWeek(d, g)).sort((a, b) => (a.test < b.test ? -1 : 1));
+  return SR.tryUsualWay(ended.map((g) => g.words.map((w) => W.ladderFacts(d, w, today))));
+}
+export const USUAL_OFFER = (name) => name + ' did every word on their own for two weeks. You could try the usual way.';
+export const setAsideButton = (name) => 'Let ' + name + ' set it aside for today';
+export const bringBackButton = (word) => 'Bring ' + word + ' back';
+export const SET_ASIDE_HELP = 'It comes back first tomorrow. Nothing else changes.';
+export const ASIDE_LINE = 'Set aside for today.';
+/** The lines of the print page / copy text for a Step-by-step week. */
+export function sbsPrintLines(m, { name, test }) {
+  const out = m.words.map((w) => w.line);
+  for (const s of m.stuck) out.push(s.line + (s.aside ? '. ' + ASIDE_LINE : '.'));
+  out.push('Words in a row: ' + m.rows);
+  if (m.test.spelled.length || m.test.keep.length || m.test.withPeek.length) {
+    out.push('Test on ' + test + (m.test.spelled.length ? '. Spelled: ' + m.test.spelled.join(', ') : '') + (m.test.withPeek.length ? '. ' + m.test.withPeek.join('; ') : '') + (m.test.keep.length ? '. To keep practising: ' + m.test.keep.join(', ') : '') + '.');
+  }
+  return out;
 }

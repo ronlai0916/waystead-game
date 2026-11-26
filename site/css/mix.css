@@ -101,3 +101,31 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .mixcard, .mixslot { transition: none; } }
+
+/* ---- FIX-U1a (F6): Step by step Meanings boards: every option has its own Hear, 48 x 48, beside it ---- */
+.matchopt { display: flex; align-items: center; gap: 8px; min-width: 0; } /* S4: at least 8 px between Hear and its option at every size, so a tap on Hear never lands on the answer */
+.matchopt > .matchcard { flex: 1 1 0; min-width: 0; }
+.matchopt > .hearround, .mixopt > .hearround { flex: none; width: 48px; height: 48px; }
+.mixopt { display: inline-flex; align-items: center; gap: 8px; }
+/* one column: a word row is [card | Hear], so the words and then the meanings sit above each other and never need a wider screen than 320 px */
+html body .matchgrid.matchgrid--sbs { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+html body .matchgrid.matchgrid--sbs .matchcol { gap: 8px; }
+@media (min-width: 720px) { html body .matchgrid.matchgrid--sbs { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
+/* 320 x 568: the Step by step boards close up a little so the last option and Check stay above the bar (tiles and Hear keep their size) */
+html[data-h="xs"] body .matchgrid.matchgrid--sbs { gap: 8px; }
+html[data-h="xs"] body .matchgrid.matchgrid--sbs .matchcol { gap: 8px; }
+html[data-h="xs"] body .matchopt { gap: 8px; }
+html[data-h="xs"] body .matchopt > .matchcard { min-height: 48px; padding-block: 3px; line-height: 1.2; }
+html[data-h="xs"] body .mixbar.mixbar--sbs { padding: 4px 2px; }
+html[data-h="xs"] body .mixopt { gap: 8px; }
+html[data-h="xs"] body .mixopt > .mixcard { padding: 4px 8px; }
+
+/* FIX-U5 (S1): a Hear is at least 8 px from ANY neighbour (another option's card or Hear, the next tray row, Skip and Check), at every size */
+html body .mixbar.mixbar--sbs { gap: 8px; }
+html body .mixbar--sbs .mixtray { gap: 8px; }
+
+/* FIX-U4: xs phones (under 600 px of room: 320 x 568, 375 x 667 with Safari's bar, a phone on its side). The Mix board's three options can wrap to three rows of [word | Hear] (a long word at Night's wider fonts: "necessary" with another), which made Check end 10 px under the line.
+   The tray keeps its 48 px rows and 8 px gaps; the room comes from the sentence board (it scrolls inside itself, 80 px shows more than one) and from Skip and Check, which were 56 px because of .btn--big. */
+/* FIX-U5 (S2): Step by step only (the Usual Mix board keeps its 96 px) */
+html[data-h="xs"] body .mixpage > .mixboard.mixboard--sbs { min-height: 80px; }
+html[data-h="xs"] body .mixbar--sbs .mixact .btn, html[data-h="xs"] body .mixbar--sbs .mixact .btn--big { min-height: 48px; height: 48px; }

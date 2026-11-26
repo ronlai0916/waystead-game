@@ -18,8 +18,15 @@ import * as C from './child-doc.js';
 import * as G from './games-doc.js';
 import * as A from './assess-doc.js';
 import * as Tr from './tray.js';
+import * as K from './sbs-week-doc.js'; // SB6: which way a stone runs, and the Step by step names
+import * as SD from './sentence-doc.js';
+import { sbsStone } from './sbs-views.js';
+import { buildSentence, helpMeBuild, HELP_LABEL } from './builder-views.js';
 import { hearInSentence, canSentence } from './sentence.js';
 import { childYear } from './who.js';
+import { peekRowHtml, peekButtonHtml, mountPeek } from './peek.js';
+import { peekMs } from './peek-doc.js';
+import * as Su from './setup-doc.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const today = () => W.localDay(Date.now());
@@ -31,12 +38,13 @@ const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
 export function markFold(root) {
   const set = (sel, v) => root.querySelectorAll(sel).forEach((el) => { if (!el.hasAttribute('data-fold')) el.setAttribute('data-fold', v); });
   set('[data-check]', 'check');
-  set('[data-go], [data-next], [data-play], [data-cover], [data-written], [data-save]', 'next');
+  set('[data-go], [data-next], [data-play], [data-cover], [data-save]', 'next');
   set('[data-hear], [data-instruct]', 'hear');
   set('[data-peekbtn]', 'peek');
   set('[data-skip]', 'skip');
   set('.keyboard', 'keys');
 }
+const wayOf = (d, g, step) => K.wayFor(d, g, step, S.readSetup());
 const head = (step, line) => '<div class="pagehead"><span class="eyebrow">' + esc(St.STEP_TEXT[step].title) + '</span>' + line + '</div>';
 
 /** "Come back to this": straight to that word, in the job it was skipped from. */
@@ -47,21 +55,25 @@ export function comeBackHref(g, w, flow) {
 
 /** Where a job's button goes. */
 export function stepHref(d, g, step, day) {
-  if (step === 'practice') return groupHref(g.id) + '/spell/' + W.rows(g).indexOf(W.queue(d, g, day, 'p')[0] ?? W.rows(g)[0]);
   if (step === 'test') return groupHref(g.id) + '/test';
+  // Step by step (TR-43): Words in a row and Mend (the fix-ups too) are stones of their own, never the grid
+  if ((step === 'practice' || step === 'mend') && wayOf(d, g, step) === 'sbs') return groupHref(g.id) + '/study/' + step;
+  if (step === 'practice') return groupHref(g.id) + '/spell/' + W.rows(g).indexOf(W.queue(d, g, day, 'p')[0] ?? W.rows(g)[0]);
   if (step === 'mend' && St.mendPart(d, g, day) === 'fixups') return groupHref(g.id) + '/spell/' + W.rows(g).indexOf(W.queue(d, g, day, 'f')[0]);
   return groupHref(g.id) + '/study/' + step;
 }
 
-function finishStep(main, g, step) {
+function finishStep(main, g, step, way = 'usual') {
   const day = today();
   S.updateWords((d) => W.markStep(d, g, step, day, Date.now()));
   const d = S.readWords();
-  const s = St.studyState(d, g, day);
+  const sbs = way === 'sbs';
+  const names = sbs ? K.STONE_TEXT : St.STEP_TEXT; // a Step by step child sees the stone names
+  const s = sbs ? K.weekState(d, g, day) : St.studyState(d, g, day);
   const more = s.status === 'job';
   main.innerHTML = '<section class="wrap page"><div class="card result result--good"><div class="result__head"><span class="celebrate"><span class="result__badge">✓</span>' + burstHtml(12, 1.3) + '</span>'
-    + '<h1>' + (more ? esc(St.STEP_TEXT[step].title) + ' done' : 'Done for today!') + '</h1></div>'
-    + '<div class="btnrow">' + (more ? '<a class="btn btn--primary" data-fold="next" href="' + stepHref(d, g, s.job, day) + '">Next: ' + esc(St.STEP_TEXT[s.job].title) + ICON.arrow + '</a>' : '<a class="btn btn--primary" data-fold="next" href="#/">Go to Today' + ICON.arrow + '</a>')
+    + '<h1>' + (more ? esc(names[step].title) + ' done' : 'Done for today!') + '</h1></div>'
+    + '<div class="btnrow">' + (more ? '<a class="btn btn--primary" data-fold="next" href="' + stepHref(d, g, s.job, day) + '">Next: ' + esc(names[s.job].title) + ICON.arrow + '</a>' : '<a class="btn btn--primary" data-fold="next" href="#/">Go to Today' + ICON.arrow + '</a>')
     + '<a class="btn btn--ghost" href="' + groupHref(g.id) + '">This week’s words</a></div></div></section>';
   placeBursts(main);
   window.scrollTo(0, 0);
@@ -96,7 +108,9 @@ function helloPicture(w) {
 
 function wordCard(w, clue) {
   const m = w.meaning;
-  return '<div class="card wordcard wordcard--hello' + (pictureState(w) === 'none' ? ' wordcard--nopic' : '') + '">' + helloPicture(w)
+  // 24a: a picture and a short word share one row on a phone (CSS, device.css); a long word and a sentence card keep their own rows
+  const row = pictureState(w) === 'ready' && !hasSentenceCard(w) && [...w.word].length <= 8;
+  return '<div class="card wordcard wordcard--hello' + (pictureState(w) === 'none' ? ' wordcard--nopic' : '') + (row ? ' wordcard--row' : ' wordcard--stack') + '">' + helloPicture(w)
     + '<div class="wordcard__word">' + chunked(w, '', { tricky: true }) + '</div>'
     + (clue ? '<p class="small"><b>Your clue:</b> ' + esc(clue) + '</p>' : '')
     + '<div class="stackbtns"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear it</button>'
@@ -154,7 +168,7 @@ function hello(main, g) {
 }
 
 /* -------------------------------------------------------------- Fix it in --- */
-// Look, say, hide, write, check; then the word is typed until it's clean 3
+// Look, say, hide, spell and check on the screen (no paper, for any child); then the word is spelled until it's clean 3
 // times in a row. A slip goes back to Look and starts the count again. `start`:
 // a row to open first, from "Come back to this".
 function fix(main, g, start) {
@@ -169,11 +183,13 @@ function fix(main, g, start) {
   let phase = 'look';
   let slipped = false; // this word needed another go
   let timer = null;
+  let peekCtl = null;
   let ctrl = null; // the letter tray, on level 1 to 4
   const w = () => entryFor(word);
   const count = () => W.sessionCount(S.readWords(), g, word, today(), 'x');
   const skipBtn = '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>';
   const page = (title, body, n = count(), cls = '') => {
+    if (peekCtl) { peekCtl.destroy(); peekCtl = null; }
     if (ctrl) { ctrl.destroy(); ctrl = null; }
     main.innerHTML = '<section class="wrap page spellpage' + cls + '">' + head('fix', '<h1>' + esc(title) + '</h1><p class="muted">Word ' + (rows.indexOf(word) + 1) + ' of ' + rows.length + '</p><p class="rowcount" data-row>' + inARowHtml(n) + '</p>') + body + '</section>';
     const b = main.querySelector('[data-skip]');
@@ -191,24 +207,15 @@ function fix(main, g, start) {
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button>'
       + '<button type="button" class="btn btn--primary" data-cover>Hide it' + ICON.arrow + '</button></div></div>' + skipBtn);
     button('[data-hear]', () => speak(w().word));
-    button('[data-cover]', cover);
+    button('[data-cover]', () => { stop(); type(); }); // Hide it: straight to spelling it (TR-40)
     speak(w().word);
-  }
-  function cover() {
-    phase = 'cover';
-    stop();
-    page('Hide and write', '<div class="card spell"><p>The word is hidden. Write it on paper.</p>'
-      + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--ghost" data-hear>' + ICON.play + 'Hear it</button>'
-      + '<button type="button" class="btn btn--primary" data-written>I\'ve written it' + ICON.arrow + '</button></div></div>' + skipBtn);
-    button('[data-hear]', () => speak(w().word));
-    button('[data-written]', type);
   }
   function typeTiles(line, lv, pf, spec) {
     const rules = A.RULES.practice[pf] || A.RULES.practice.normal;
     const entry = w();
-    page('Now spell it', Tr.lineHtml(Tr.instructionFor(lv), Tr.moreFor(spec, lv)) + '<p class="peek" data-peek aria-live="polite"></p>'
-      + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: entry.tricky }) + '<button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button></div>'
-      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>' + Tr.EYE_ICON + 'Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+    page('Hide and spell', Tr.lineHtml(Tr.instructionFor(lv), Tr.moreFor(spec, lv)) + '<p class="peek" data-peek aria-live="polite"></p>'
+      + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: entry.tricky }) + '<div class="btnrow btnrow--peek"><button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button>' + peekButtonHtml() + '</div>'
+      + '<p class="peekhint" data-hint aria-live="polite">' + esc(C.PEEK_HINT) + '</p></div>'
       + '<div data-slot>' + Tr.colHtml(Tr.trayHtml(spec),
         '<div class="btnrow btnrow--center testbtns testbtns--tray"><button type="button" class="btn btn--primary" data-check disabled>' + TICK + 'Check</button>'
         + '<button type="button" class="btn btn--ghost" data-skip>Skip for now<span class="sr">. It comes back later.</span></button></div>') + '</div>', count(), ' tilepage');
@@ -219,7 +226,7 @@ function fix(main, g, start) {
     if (line) ctrl.say(line);
     const hearNow = () => (rules.sentence === 'auto' && canSentence(entry) ? hearInSentence(entry) : speak(entry.word));
     button('[data-hear]', hearNow);
-    button('[data-peekbtn]', peek);
+    mountFixPeek(true);
     button('[data-check]', () => { const r = ctrl.check(); if (r && r.right) check({ tries: r.tries, helped: r.helped }); });
     hearNow();
   }
@@ -230,32 +237,33 @@ function fix(main, g, start) {
     const { lv, pf } = S.helpNow(childYear());
     const spec = lv < 5 ? Tr.specFor(w(), lv, { pf }) : null;
     if (spec) { typeTiles(typeof line === 'string' ? line : '', lv, pf, spec); return; }
-    page('Now type it', '<p class="peek" data-peek aria-live="polite"></p><p class="spellline" role="status">' + esc(typeof line === 'string' ? line : '') + '</p><p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
+    page('Hide and spell', '<p class="peek" data-peek aria-live="polite"></p><p class="spellline" role="status">' + esc(typeof line === 'string' ? line : '') + '</p><p class="answerline" data-answer aria-live="polite" aria-label="Your answer"></p>'
       + '<div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
-      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+      + peekRowHtml({ hint: C.PEEK_HINT })
       + skipBtn + keyboard({ del: true })
       + '<div class="btnrow btnrow--center testbtns"><button type="button" class="btn btn--primary btn--wide" data-check>Check' + ICON.arrow + '</button></div>');
     main.querySelectorAll('.key[data-letter]').forEach((k) => k.addEventListener('click', () => put(k.dataset.letter)));
     button('[data-hear]', () => speak(w().word));
-    button('[data-peekbtn]', peek);
+    mountFixPeek(false);
     button('[data-del]', del);
     button('[data-check]', () => check());
     speak(w().word);
   }
-  function peek() {
-    peeks += 1;
-    main.querySelector('[data-row]').innerHTML = inARowHtml(0);
-    main.querySelector('[data-hint]').textContent = C.PEEKED_LINE;
-    main.querySelector('[data-peek]').textContent = w().word;
-    main.querySelector('[data-peekbtn]').disabled = true;
-    if (ctrl) ctrl.lock(true);
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      if (phase !== 'type') return;
-      main.querySelector('[data-peek]').textContent = '';
-      main.querySelector('[data-peekbtn]').disabled = false;
-      if (ctrl) ctrl.lock(false);
-    }, ctrl ? 3000 : 2000);
+  // The shared Peek (peek.js): it follows the child's Peek time, shows the word on the line above, and freezes the tray while it shows.
+  function mountFixPeek(tiles) {
+    if (peekCtl) peekCtl.destroy();
+    const setup = S.readSetup();
+    peekCtl = mountPeek(main, {
+      word: w().word,
+      ms: peekMs(setup, { way: Su.wayOf(setup), input: tiles ? 'tiles' : 'keys' }),
+      can: () => phase === 'type',
+      lock: (on) => { if (ctrl) ctrl.lock(on); },
+      onPeek: () => {
+        peeks += 1;
+        main.querySelector('[data-row]').innerHTML = inARowHtml(0);
+        main.querySelector('[data-hint]').textContent = C.PEEKED_LINE;
+      },
+    });
   }
   const show = () => { main.querySelector('[data-answer]').textContent = typed; };
   function put(L) { if (typed.length < 24) { typed += L.toLowerCase(); show(); } }
@@ -333,6 +341,7 @@ function fix(main, g, start) {
   return () => {
     clearTimeout(timer);
     recordLeave(); // left after a peek: that still ends the run
+    if (peekCtl) { peekCtl.destroy(); peekCtl = null; }
     if (ctrl) { ctrl.destroy(); ctrl = null; }
     document.removeEventListener('keydown', onKey);
     stop();
@@ -344,12 +353,17 @@ function gameDay(main, g) {
   // SB5 (TR-101): the games of the day by the child's year and the week's length (6 in a full week, 3 to 4 or 2 in a short one).
   return playGames(main, g, { eyebrow: 'Game day', part: 'games', games: G.dayGames(childYear(), St.weekKind(g)), onDone: () => finishStep(main, g, 'games') });
 }
+/** SB6 (TR-44): in Step by step the games stone is Meanings: match, fill and mix always (G.SBS_GAMES, any week, any year), never a timed one, tap only; a game with too few words is left out and the stone still finishes. */
+function meaningsStone(main, g) {
+  const done = () => finishStep(main, g, 'games', 'sbs');
+  return playGames(main, g, { eyebrow: K.STONE_TEXT.games.title, part: 'games', sbs: true, onDone: done, onNone: done });
+}
 function mend(main, g) {
   return playGames(main, g, { eyebrow: 'Mend and keep', games: ['quick'], onDone: () => finishStep(main, g, 'mend') });
 }
 
 /* ------------------------------------------------------- writing sentences --- */
-/** Write one sentence for each of `words`, then onDone(). */
+/** Make one sentence for each of `words`, then onDone(). Returns a cleanup. */
 export function sentences(main, g, onDone) {
   const kind = St.weekKind(g);
   const count = St.storySentences(kind); // full 3, short 2, quick 1
@@ -357,19 +371,32 @@ export function sentences(main, g, onDone) {
   const left = [...words];
   let note = '';
   let draft = '';
+  let builder = null; // the "Help me build it" builder while it is open (BR-34)
+  const closeBuilder = () => { if (builder) { builder(); builder = null; } };
   function draw() {
+    closeBuilder();
     const w = left[0];
     if (!w) { onDone(); return; }
-    main.innerHTML = '<section class="wrap page" data-story>' + head('story', '<h1>Write a sentence</h1><p class="muted">' + (kind === 'full' ? '' : (kind === 'quick' ? 'Quick week: ' : 'Short week: ') + count + (count === 1 ? ' sentence' : ' sentences') + ' today. A full week has 3. ') + 'Sentence ' + (words.length - left.length + 1) + ' of ' + words.length + '</p>') + '<div class="card setting">'
+    main.innerHTML = '<section class="wrap page" data-story>' + head('story', '<h1>Make a sentence</h1><p class="muted">' + (kind === 'full' ? '' : (kind === 'quick' ? 'Quick week: ' : 'Short week: ') + count + (count === 1 ? ' sentence' : ' sentences') + ' today. A full week has 3. ') + 'Sentence ' + (words.length - left.length + 1) + ' of ' + words.length + '</p>') + '<div class="card setting">'
       + '<p>Use this word in a sentence of your own:</p><p class="today__word">' + chunked(entryFor(w)) + '</p>'
       + '<div class="btnrow"><button type="button" class="btn btn--quiet btn--small" data-hear>' + ICON.play + 'Hear it</button></div>'
       + '<label class="small muted" for="sentence">Your sentence</label><textarea id="sentence" class="field" rows="3" maxlength="' + W.MAX_NOTE + '" data-text>' + esc(draft) + '</textarea>'
       + '<p class="small" data-note role="status">' + esc(note) + '</p>'
-      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-save>Save' + ICON.arrow + '</button></div></div></section>';
+      + '<div class="btnrow"><button type="button" class="btn btn--primary" data-save>Save' + ICON.arrow + '</button>'
+      + '<button type="button" class="btn btn--quiet" data-build>' + esc(HELP_LABEL) + '</button></div></div></section>';
     markFold(main);
     const box = main.querySelector('[data-text]');
     box.addEventListener('input', () => { draft = box.value; });
     main.querySelector('[data-hear]').addEventListener('click', () => speak(w));
+    // "Help me build it": the builder (levels 1 and 3) fills the box; leaving it with nothing leaves the box as it was. Nothing is saved until Save.
+    main.querySelector('[data-build]').addEventListener('click', () => {
+      stop();
+      draft = box.value;
+      builder = helpMeBuild(main, {
+        g, word: w, year: childYear(),
+        onDone: (made) => { if (made && made.text) { draft = made.text; note = ''; } setTimeout(draw, 0); },
+      });
+    });
     main.querySelector('[data-save]').addEventListener('click', () => {
       const problem = St.checkSentence(box.value, w);
       if (problem) { note = problem; main.querySelector('[data-note]').textContent = note; return; }
@@ -384,13 +411,14 @@ export function sentences(main, g, onDone) {
     speak(w);
   }
   draw();
+  return () => { closeBuilder(); stop(); };
 }
 
 function examples(main, g, go) {
   const list = W.rows(g).map((x) => shown(entryFor(x))).filter((w) => w.meaning.example);
   main.innerHTML = '<section class="wrap page">' + head('story', '<h1>Your words at work</h1><p class="muted">Read each sentence and listen for your word.</p>')
     + '<div class="list">' + list.map((w, i) => '<div class="card listrow"><p class="example">' + boldWord(w.meaning.example, w.word) + '</p><button type="button" class="btn btn--quiet btn--small" data-say="' + i + '" aria-label="Hear this sentence">' + ICON.play + '</button></div>').join('') + '</div>'
-    + '<div class="btnrow"><button type="button" class="btn btn--primary" data-go>Write my sentences' + ICON.arrow + '</button></div></section>';
+    + '<div class="btnrow"><button type="button" class="btn btn--primary" data-go>Make my sentences' + ICON.arrow + '</button></div></section>';
   main.querySelectorAll('[data-say]').forEach((b) => b.addEventListener('click', () => sayLine(list[Number(b.dataset.say)].meaning.example)));
   main.querySelector('[data-go]').addEventListener('click', () => { stop(); go(); });
 }
@@ -398,23 +426,59 @@ function examples(main, g, go) {
 function storyDay(main, g) {
   let stopped = false;
   let end = null;
-  const write = () => sentences(main, g, () => finishStep(main, g, 'story'));
+  let writing = null;
+  const write = () => { writing = sentences(main, g, () => finishStep(main, g, 'story')); };
   Promise.all([loadStories(), meaningsFor(W.rows(g))]).then(([stories]) => {
     if (stopped) return;
     const story = storyFor(stories, g, D.allChapters());
     if (story) end = storyPage(main, g, story, write); else examples(main, g, write);
   });
+  return () => { stopped = true; if (end) end(); if (writing) writing(); stop(); };
+}
+
+/**
+ * Step by step Story day (TR-45): one sentence for each of the week's words with the fewest (3, 2 or 1), each made in the builder, then the stone is done.
+ * The builder calls onDone(null) when it made and saved nothing: that child has moved on, so the next word comes (nothing is saved or invented here);
+ * a stone never traps a child, so it finishes after the last word either way.
+ */
+export function storySbs(main, g, { build = buildSentence } = {}) { // `build` is for the smoke test (to stand in for the builder)
+  const words = St.sentenceWords(S.readWords(), g, St.storySentences(St.weekKind(g)));
+  const year = childYear();
+  const levels = SD.levelsFor(year, 'sbs');
+  let i = 0;
+  let stopped = false;
+  let end = null;
+  function nextWord() {
+    if (end) { end(); end = null; }
+    if (stopped) return;
+    if (i >= words.length) { finishStep(main, g, 'story', 'sbs'); return; }
+    const at = i;
+    end = build(main, {
+      g, word: words[at], levels, way: 'sbs', year, index: at + 1, of: words.length,
+      onDone: () => { if (stopped || at !== i) return; i += 1; setTimeout(nextWord, 0); }, // a saved sentence or null: either way the next word
+    });
+  }
+  nextWord();
   return () => { stopped = true; if (end) end(); stop(); };
 }
 
 /* ---------------------------------------------------------------- routes --- */
 const PAGES = { hello, fix, games: gameDay, story: storyDay, mend };
+const SBS_STONES = ['hello', 'fix', 'practice', 'mend']; // sbs-views.js runs these
+const SBS_PAGES = { games: meaningsStone, story: storySbs };
 
 export function studyStep(main, { gid, step, n }) {
   const id = safeDecode(gid);
   const d = S.readWords();
   const g = W.groupById(d, id);
   if (!g) { location.replace('#/'); return undefined; }
+  // SB6 (TR-31, TR-43): the way the stone runs is decided by wayFor (a stone started keeps its way; a done one follows today's setting)
+  if (SBS_STONES.includes(step) || SBS_PAGES[step]) {
+    if (wayOf(d, g, step) === 'sbs') {
+      if (!K.canOpen(d, g, step, today(), S.readSetup())) { location.replace(groupHref(id)); return undefined; }
+      return SBS_STONES.includes(step) ? sbsStone(main, { g, step, n }) : SBS_PAGES[step](main, g);
+    }
+  }
   if (!PAGES[step] || !St.canOpen(d, g, step, today())) { location.replace(groupHref(id)); return undefined; }
   if (step === 'mend' && St.mendPart(d, g, today()) === 'fixups') { location.replace(groupHref(id)); return undefined; }
   return PAGES[step](main, g, n);

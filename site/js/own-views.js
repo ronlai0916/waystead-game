@@ -21,6 +21,7 @@ import * as L from './lists-doc.js';
 import * as RD from './role-doc.js';
 import { createRoleStore } from './role-data.js';
 import { adultOnly } from './grownups-views.js';
+import * as PV from './pictures-views.js'; // SB6 WP-8: word pictures
 import { checkTyped, NEEDS_LIST } from './wordcheck.js';
 import { findEntry, meaningsFor } from './word-info.js';
 import { recheckWho } from './who.js';
@@ -483,6 +484,7 @@ function run(main, { kids, master, editing, started, scanOn = false, hand = null
     return head('List saved') + '<div class="gu-own ls-saved" data-own-saved><section class="card gu-panel"><p class="gu-line" role="status" tabindex="-1" data-saved>' + esc(Sc.savedLineFor(saved.shared, saved.names, D.savedLine)) + '</p>'
       + '<h2>' + esc(name) + '</h2><p class="muted">' + esc(wordsLine(words.length)) + ' are ready to use.</p><ul class="ls-chips">' + words.map((w) => '<li>' + esc(w) + '</li>').join('') + '</ul>'
       + (saved.offline ? '<p class="gu-line gu-line--warn" data-saved-offline>' + esc(D.OWN_SAVED_OFFLINE) + '</p>' : '')
+      + (PV.picturesOn() ? '<div class="pv-slot" data-pictures-slot></div>' : '')
       + late.map((id) => '<p class="gu-line gu-line--warn" data-notsent>' + esc(D.notSentLine(nameOf(id))) + '<button type="button" class="btn btn--ghost" data-act="resend">Try again</button></p>').join('')
       + '<div class="btnrow"><a class="btn btn--ghost" href="' + LIST + '/new" data-act="another">Make another list</a><a class="btn btn--ghost" href="' + LIST + '" data-back-list>Back to Word lists</a>'
       + (to.length ? '<a class="btn btn--ghost" href="' + LIST + '/' + enc(oid) + '/results" data-results-link>Results</a>' : '') + '</div></section>'
@@ -623,6 +625,8 @@ function run(main, { kids, master, editing, started, scanOn = false, hand = null
     note = '';
     saved = { names: kidsFor().filter((k) => !out.r.notSent.includes(k.id)).map((k) => k.nickname), notSent: out.r.notSent, shared: kidsFor().length, offline: out.offlineOnly };
     go('saved');
+    const slot = q('[data-pictures-slot]'); // SB6 TR-52: after a list is saved, ask for a picture of each word that has none (never a swap by itself)
+    if (slot) PV.savedNote(slot, { words: [...words], oid });
   }
   const roleName = roleNameNow;
   async function remove() {
@@ -800,6 +804,7 @@ export function listPage(main, { oid: given } = {}) {
   const flash = gave && gave.oid === oid ? gave : null;
   gave = null;
   main.innerHTML = wrap('Word list', '', '<p class="muted">Finding your list…</p>');
+  let stopPics = null;
   (async () => {
     const e = masterFor(oid);
     if (!e || e.gone) { missingPage(main, 'That list isn’t here', 'It may have been deleted, or the link is old. Look in Deleted lists, or go back to Word lists.', LIST, 'Back to Word lists'); return; }
@@ -836,12 +841,16 @@ export function listPage(main, { oid: given } = {}) {
         + (unused.length ? '<p class="muted" data-unused>' + unused.length + (unused.length === 1 ? ' word is' : ' words are') + ' not used yet: ' + esc(unused.join(', ')) + '.</p>' : '');
       const give = '<section class="card gu-panel"><h2>' + esc(L.PAGE.give) + '</h2><p class="muted">' + esc(L.asRole(L.PAGE.giveHelp, role)) + '</p>'
         + (kids.length && !k0.offline ? '<a class="btn btn--ghost" href="' + LIST + '/' + enc(oid) + '/give" data-give>' + esc(L.PAGE.give) + '</a>' : '') + '</section>';
-      const wordsSec = '<h2 class="ls-sec">' + esc(L.PAGE.words) + '</h2><ul class="ls-chips" data-words>' + m.words.map((w) => '<li>' + esc(w) + '</li>').join('') + '</ul>';
+      const picsOn = PV.picturesOn(); // SB6 TR-52: with pictures on, each word is a row with its picture; off, the chips as before
+      const wordsSec = '<h2 class="ls-sec">' + esc(L.PAGE.words) + '</h2>' + (picsOn ? '<div class="pv-host" data-pictures-host></div>' : '<ul class="ls-chips" data-words>' + m.words.map((w) => '<li>' + esc(w) + '</li>').join('') + '</ul>');
       const setLabel = RD.WORDS[role].set;
       main.innerHTML = '<section class="wrap page grownups gu ls" data-own-page>' + backLink(LIST, 'Word lists', ' data-back-list') + head + '<div class="gu-own ls-listpage">' + top + sent + results + given + give + wordsSec
         + '<p><button type="button" class="linkbtn" data-delete-list>' + esc(L.PAGE.deleteList) + '</button></p>'
         + '<p class="gu-error" role="alert" data-error hidden></p>'
         + '<div class="ls-bar" data-bar><a class="btn btn--primary btn--big" href="#/grownups/set/list/' + enc(oid) + '" data-set>' + esc(setLabel) + '</a><p class="small muted">With this list</p></div></div></section>';
+      if (stopPics) { stopPics(); stopPics = null; }
+      const picHost = main.querySelector('[data-pictures-host]');
+      if (picHost) stopPics = PV.mountRows(picHost, { words: m.words, oid, role });
       const del = main.querySelector('[data-delete-list]');
       if (del) del.addEventListener('click', async () => { const r = await deleteFlow(oid, m.name); if (stopped || !r || r === 'gone') return; const er = main.querySelector('[data-error]'); er.textContent = r; er.hidden = false; });
       const u = main.querySelector('[data-undo-give]');
@@ -857,7 +866,7 @@ export function listPage(main, { oid: given } = {}) {
     draw({ name: m.name, words: m.words, to: m.to, info: m.info }, flash);
     settle(main);
   })();
-  return () => { stopped = true; };
+  return () => { stopped = true; if (stopPics) stopPics(); };
 }
 
 /** 03e: who can practise this list. Nothing is set up as a week: no test, no daily jobs. */
@@ -1060,6 +1069,19 @@ const tried = new Set();
 const ready = (view) => (main, params) => {
   const e = (S.readSetup().own || {})[D.safeDecode(params.oid)];
   const need = e && !e.gone ? e.words.filter((w) => !findEntry(w) && !tried.has(w)) : [];
+  // SB6 TR-53: once per page load, the grown-up's APPROVED pictures of these words (a test-due word never gets here: the router's guard comes first).
+  // Off, offline or slow (2.5 s): none, and every word keeps its sentence card. A removed picture is gone on the next load.
+  const pics = e && !e.gone && PV.picturesOn() ? PV.loadApproved(e.words.filter((w) => !findEntry(w))) : null;
+  if (pics) {
+    let stoppedP = false;
+    let innerP = null;
+    main.innerHTML = '<section class="wrap page"><div class="card empty"><h1>Just a moment</h1><p class="muted">Getting your words ready…</p></div></section>';
+    Promise.all([pics.catch(() => {}), need.length ? Promise.race([meaningsFor(need), new Promise((r) => setTimeout(r, 2500))]).catch(() => {}) : null]).then(() => {
+      need.forEach((w) => tried.add(w));
+      if (!stoppedP) innerP = view(main, params);
+    });
+    return () => { stoppedP = true; if (typeof innerP === 'function') innerP(); };
+  }
   if (!need.length) return view(main, params);
   let stopped = false;
   let inner = null;

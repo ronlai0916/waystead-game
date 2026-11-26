@@ -100,7 +100,7 @@ export default function (H) {
     const cv1 = covered();
     const fx1 = fixedEls().map((e) => ({ e, r: e.getBoundingClientRect() }));
     const sy = root.scrollTop;
-    const res = { h, w, doc, sy, sw: root.scrollWidth, cw: root.clientWidth, n: ctl.length, hash: location.hash, a: [], c: [], d: [], b: Math.max(0, root.scrollWidth - root.clientWidth) };
+    const res = { st: document.documentElement.getAttribute('data-style'), h, w, doc, sy, sw: root.scrollWidth, cw: root.clientWidth, n: ctl.length, hash: location.hash, a: [], c: [], d: [], b: Math.max(0, root.scrollWidth - root.clientWidth) };
     const cover0 = (a, b) => { const x = Math.min(a.r, b.right) - Math.max(a.l, b.left), y = Math.min(a.b, b.bottom) - Math.max(a.t, b.top); return x > 0 && y > 0 ? { area: x * y, y } : null; };
     const dname = (e) => e.tagName.toLowerCase() + (typeof e.className === 'string' && e.className.trim() ? '.' + e.className.trim().split(/\\s+/).slice(0, 2).join('.') : '');
     // REACHABILITY (S3): can the control be brought fully clear of the bottom OV px band AND of any fixed or sticky element? Sweep the window (0, the end, and steps between) with the
@@ -162,6 +162,24 @@ export default function (H) {
     await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
     await ev(`document.documentElement.style.fontSize = ${z ? "'130%'" : "''"}`);
     await sleep(90);
+    await settleDevice();
+  }
+  /** FIX-U4: the look is ready: its fonts are in (they load on first use) and js/device.js has written its numbers. */
+  async function lookReady() {
+    await ev(`new Promise((done) => { const t0 = Date.now(); const cs = getComputedStyle(document.body); const fam = (v) => (getComputedStyle(document.documentElement).getPropertyValue(v) || cs.fontFamily).trim();
+      const tick = () => { const ok = document.fonts.status === 'loaded' && document.fonts.check('16px ' + fam('--f-body')) && document.fonts.check('600 16px ' + fam('--f-display')) && document.fonts.check('16px ' + cs.fontFamily); if (ok || Date.now() - t0 > 6000) requestAnimationFrame(() => requestAnimationFrame(() => done(ok))); else setTimeout(tick, 60); };
+      requestAnimationFrame(() => requestAnimationFrame(tick)); })`);
+  await settleDevice();
+  }
+  /** FIX-U4: js/device.js writes data-h, --head-h and --bottom-reserve from a requestAnimationFrame it queues on resize, and --head-h is the top bar's measured height, which a look's fonts change. A measure taken before those land reads the page as it was one look or size ago (night's quiz 21 for 14; paint's quick and test pages 1 to 4 px over, a different page each run). Apply the numbers by hand and look again until two reads in a row agree. */
+  async function settleDevice() {
+    let prev = '';
+    for (let i = 0; i < 10; i += 1) {
+      const now = await ev(`new Promise((done) => { if (window.sbDevice) window.sbDevice.apply(); requestAnimationFrame(() => requestAnimationFrame(() => { const r = document.documentElement; done([r.getAttribute('data-h'), r.style.getPropertyValue('--head-h'), r.style.getPropertyValue('--bottom-reserve'), r.style.getPropertyValue('--app-h'), document.scrollingElement.scrollHeight, Math.round(document.querySelector('.topbar') ? document.querySelector('.topbar').getBoundingClientRect().height : 0)].join('|')); })); })`);
+      if (now === prev) return;
+      prev = now;
+      await sleep(40);
+    }
   }
 
   /** Measure the page as it stands, in every look and at every size. */
@@ -171,10 +189,14 @@ export default function (H) {
     await ev('document.fonts.ready.then(() => true)');
     for (const s of styles) {
       await style(s);
+      await lookReady();
       for (const sz of sizes) {
         for (const z of (s === 'garden' && Z_SIZES.includes(sz.id)) ? [false, true] : [false]) {
           await viewport(sz, z);
-          const m = await ev(MEASURE);
+          // FIX-U4: the signed-in child's account prefs (account/prefs.js) can arrive after the page loads and put the saved look back on localStorage, so the page can drop to garden while the crawl is "in" paint or night. Measure only in the look that is meant.
+          let m = await ev(MEASURE);
+          for (let t = 0; t < 6 && m.st !== s; t += 1) { await style(s); await lookReady(); m = await ev(MEASURE); }
+          if (m.st !== s) throw new Error('the look would not stay ' + s + ' (it is ' + m.st + ')');
           const id = [role, pid, s, sz.id + '(' + sz.w + 'x' + sz.h + ')' + (z ? '+Z' : '')].join(' ');
           const fails = {};
           if (m.a.length) fails.a = Math.max(...m.a.map((x) => x.px));

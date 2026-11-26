@@ -31,10 +31,10 @@ test('classify: Got it, Getting there, Needs help, Not started, each with its re
   assert.equal(P.classify({ any: true }).reason, 'practised');
   assert.deepEqual(P.classify({ dots: 3 }), { key: 'got', label: 'Got it', reason: '' });
   assert.equal(P.classify({ any: true, tries: 1 }).key, 'getting', 'one wrong letter is not yet help');
-  assert.deepEqual(P.classify({ any: true, tries: 3 }), { key: 'help', label: 'Needs help', reason: '2 or more wrong letters' });
+  assert.deepEqual(P.classify({ any: true, tries: 3 }), { key: 'help', label: 'Needs help', reason: '2 or more letters to try again' });
   assert.equal(P.classify({ any: true, tries: 2 }).key, 'help', 'wrong twice');
   assert.equal(P.classify({ any: true, peeks: 1 }).reason, 'peeked once');
-  assert.equal(P.classify({ any: true, peeks: 2, tries: 2 }).reason, '2 or more wrong letters, peeked twice');
+  assert.equal(P.classify({ any: true, peeks: 2, tries: 2 }).reason, '2 or more letters to try again, peeked twice');
   assert.equal(P.classify({ dots: 3, tries: 5, peeks: 1 }).key, 'got', 'a word mended to 3 in a row is Got it');
   assert.equal(P.classify({ dots: 3, slipped: true }).key, 'help', 'a slip in the test, not yet fixed');
   assert.match(P.classify({ slipped: true }).reason, /slipped in the test/);
@@ -51,7 +51,7 @@ test('weekWords: counted from the tries; help first; what we noticed holds only 
   d = W.setClue(d, 'fruit', 'fr-uit', at(plus(1)));
   const rows = P.weekWords(d, g, plus(1));
   assert.deepEqual(rows.map((r) => [r.word, r.status]), [['earth', 'help'], ['heart', 'help'], ['fruit', 'got'], ['build', 'new']]);
-  assert.equal(rows[0].reason, '2 or more wrong letters');
+  assert.equal(rows[0].reason, '2 or more letters to try again');
   assert.equal(rows[1].reason, 'peeked once');
   assert.ok(rows.find((r) => r.word === 'fruit').notes.includes('Memory clue: fr-uit'));
   assert.ok(rows.find((r) => r.word === 'build').notes.includes('Skipped for now today.'));
@@ -227,7 +227,7 @@ test('grown-ups pages: no inline style or script, own stylesheet in the shell, a
   const sw = readFileSync(file('site/sw.js'), 'utf8');
   assert.ok(sw.includes("'css/grownups.css'"));
   assert.match(readFileSync(file('site/index.html'), 'utf8'), /css\/grownups\.css/);
-  assert.match(sw, /VERSION = 'spellbright-2026-11-23b'/);
+  assert.match(sw, /VERSION = 'spellbright-2026-11-25b'/);
   const css = readFileSync(file('site/css/grownups.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   for (const rule of css.split('}').map((r) => r.split('{')[0].trim()).filter((s) => s && !s.startsWith('@') && !/^\d|^(from|to)/.test(s))) {
     for (const sel of rule.split(',').map((x) => x.trim())) assert.match(sel, /^\.gu|^@/, 'scoped to .gu: ' + sel);
@@ -250,7 +250,7 @@ test('S1: wrong letters from a game or meaning match never make "Needs help"', (
   assert.equal(rows.find((r) => r.word === 'fruit').status, 'getting');
   d = tr(d, g, 'build', plus(1), { clean: false, tries: 2 });                // real spelling practice
   rows = P.weekWords(d, g, plus(1));
-  assert.deepEqual([rows[0].word, rows[0].status, rows[0].reason], ['build', 'help', '2 or more wrong letters']);
+  assert.deepEqual([rows[0].word, rows[0].status, rows[0].reason], ['build', 'help', '2 or more letters to try again']);
   d = tr(d, g, 'build', plus(1), { clean: false, tries: 1, source: 'x' });   // Fix it in counts as practice
   assert.equal(P.weekWords(d, g, plus(1))[0].tries, 3);
 });
@@ -281,7 +281,7 @@ test('S1: slipped in the test and still to fix stays "Needs help · slipped in t
   d = tr(d, g, 'earth', plus(5), { kind: 't' });
   const r = P.weekWords(d, g, plus(5)).find((x) => x.word === 'fruit');
   assert.deepEqual([r.status, r.reason], ['help', 'slipped in the test']);
-  assert.match(P.STATUS_KEY, /2 or more wrong letters/);
+  assert.match(P.STATUS_KEY, /2 or more letters to try again/);
 });
 
 // ---- fix round: the path never prints a past date as "Today" --------------------------------------

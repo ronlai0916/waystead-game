@@ -1,3 +1,6 @@
+// THIS FILE IS A COPY: edit shared/safe-text/ and run `node tools/sync-shared.mjs`.
+// Shared by Composition and Spellbright (SB6 TR-28): the child-safe check on what a child types. Spellbright passes its own lists
+// (the curriculum, Wordbright's common tiers, the week's words) and no comic names.
 // The child-safe check on what a child types into a comic (C2): a describing word,
 // a typed sentence or speech bubble, a story spark, a title. Pure: isKnown(word)
 // is passed in (Wordbright's word list, built without blocked words; wordcheck.js).

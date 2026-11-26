@@ -18,8 +18,12 @@ import { childYear, playerName } from './who.js';
 import * as G from './games-doc.js';
 import * as SENT from './sentences-data.js';
 import { accountOrigin } from './account/config.js';
+import * as K from './sbs-week-doc.js';
+import * as Su from './setup-doc.js';
+import * as SD from './session-doc.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
+const hhmmNow = () => { const n = new Date(); return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); };
 const today = () => W.localDay(Date.now());
 const groupHref = (id) => '#/words/g/' + encodeURIComponent(id);
 
@@ -54,6 +58,12 @@ const SVG = {
 export const backLink = (label = 'Today', to = '#/') => '<a class="backlink" href="' + esc(to) + '" data-backlink>' + SVG.back + esc(label) + '</a>';
 
 /* ------------------------------------------------------------ the stones --- */
+/** Step by step: the seven stones carry their own names (STONE_TEXT); `st` is returned as it was for any other way. */
+export function namedState(st, setup) {
+  if (!st || Su.wayOf(setup) !== 'sbs') return st;
+  return { ...st, steps: st.steps.map((s) => (K.STONE_TEXT[s.id] ? { ...s, title: K.STONE_TEXT[s.id].title, line: K.STONE_TEXT[s.id].line } : s)) };
+}
+
 const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const dayShort = (day) => W.dayParts(day)[0]; // "Sun"
 const plural = (n, one, many = one + 's') => n + ' ' + (n === 1 ? one : many);
@@ -126,13 +136,15 @@ export const testWhen = (g, day) => { const n = W.daysBetween(day, g.test); retu
  *   jobs (how many today), say (what Read it to me reads).
  * `jobs` = todayJobs; `year` = the child's school year (Game day's game count); `score` = { right, of } on the day the test was done.
  */
-export function todayText({ g, st, day, year = 0, jobs = [], testStarted = false, score = null }) {
+export function todayText({ g, st, day, year = 0, jobs = [], testStarted = false, score = null, finishedLine = '', sbs = false }) {
   if (!g) return { line: '', sub: 'No week yet. Your grown-up sets your weeks. You can still practise.', big: 'Pick words', bigSub: 'Choose words to practise', to: 'practice', jobs: 0 };
   const kind = St.weekKind(g);
   const gamesN = G.dayGames(year, kind).length;
   const sentN = St.storySentences(kind);
   const when = testWhen(g, day);
-  const dayLine = 'Day ' + dayNumber(g, day) + ' of ' + weekLength(g) + ' · your test is on ' + when;
+  // F9: a Step by step child's lines are 8 words or fewer ("Day 3 of 5 · test on Saturday", "All done. Test tomorrow.")
+  const dayLine = sbs ? 'Day ' + dayNumber(g, day) + ' of ' + weekLength(g) + ' · test ' + (/^[A-Z][a-z]+day$/.test(when) ? 'on ' : '') + when
+    : 'Day ' + dayNumber(g, day) + ' of ' + weekLength(g) + ' · your test is on ' + when;
   const shortLine = kind !== 'full' && day < g.test ? { quick: 'Quick', short: 'Short' }[kind] + ' week: test on ' + W.dayLabel(g.test) + '.' : '';
   const out = (o) => ({ line: shortLine, jobs: jobs.length, ...o });
   if (st.status === 'job') {
@@ -147,10 +159,13 @@ export function todayText({ g, st, day, year = 0, jobs = [], testStarted = false
     if (jobs.length > 1) {
       const names = thenList(jobs.map((s) => s.title));
       const games = jobs.some((s) => s.id === 'games');
-      const sub = kind === 'quick'
+      const sub = sbs ? (kind === 'quick' ? 'Quick week: ' : 'Today: ') + jobs.length + ' jobs.' : kind === 'quick'
         ? 'Quick week: ' + jobs.length + ' jobs today, test on ' + W.dayLabel(g.test) + '.' + (games ? ' Game day has ' + plural(gamesN, 'game') + '.' : '')
         : 'Today: ' + jobs.length + ' jobs.' + (games && kind === 'short' ? ' Game day: ' + plural(gamesN, 'game') + '.' : '');
       return out({ line: kind === 'quick' ? '' : shortLine, sub, big: 'Do today’s jobs', bigSub: names, to: 'job' });
+    }
+    if (st.job === 'games' && sbs) { // F7: the Meanings stone, under its own name (the Usual way's Game day counts games a Step by step child does not play)
+      return out({ sub: kind === 'full' ? dayLine : 'Your test is on ' + when + '.', big: step.title, bigSub: step.line, to: 'job' });
     }
     if (st.job === 'games') {
       return out({ sub: kind === 'full' ? dayLine : 'Game day: ' + plural(gamesN, 'game') + ' with your words.', big: 'Game day', bigSub: plural(gamesN, 'game') + ' · about ' + (GAME_MINUTES[gamesN] || 10) + ' minutes', to: 'job' });
@@ -163,10 +178,10 @@ export function todayText({ g, st, day, year = 0, jobs = [], testStarted = false
       const missed = score.of - score.right;
       return out({ line: '', sub: 'Test done: ' + score.right + ' of ' + score.of + '. Well done!', ...(missed ? { big: 'Practise the ' + plural(missed, 'test word'), bigSub: 'Words you missed today', to: 'tricky' } : { ...WB, bigSub: 'You did them all' }) });
     }
-    return out({ line: '', sub: 'Today’s job is done. See you tomorrow!', ...WB, bigSub: 'A word game, as a treat' });
+    return out({ line: '', sub: finishedLine || 'Today’s job is done. See you tomorrow!', ...WB, bigSub: 'A word game to enjoy' });
   }
   if (st.status === 'rest') return out({ line: '', sub: 'No job today. Have a rest.', big: 'Pick words', bigSub: 'Choose words to practise', to: 'practice' });
-  if (st.status === 'ready') return out({ line: '', sub: 'Every job this week is done. Your test is ' + (W.daysBetween(day, g.test) === 1 ? 'tomorrow' : 'on ' + W.dayLabel(g.test)) + '.', ...WB, bigSub: 'You earned it' });
+  if (st.status === 'ready') return out({ line: '', sub: (sbs ? 'All done. Test ' : 'Every job this week is done. Your test is ') + (W.daysBetween(day, g.test) === 1 ? 'tomorrow' : 'on ' + W.dayLabel(g.test)) + '.', ...WB, bigSub: 'You earned it' });
   return out({ line: '', sub: 'Your week is finished. Your grown-up will set your next week.', big: 'Pick words', bigSub: 'Choose words to practise', to: 'practice' });
 }
 
@@ -234,14 +249,17 @@ export function childHome(main) {
   if (pick.stale) setWeek(''); // the saved week is finished, gone or reset: the home shows its own pick
   const r = St.roomState(d, day, pick.group);
   const g = r.group;
-  const st = g ? St.studyState(d, g, day) : null;
+  const setupNow = S.readSetup();
+  const sbsWay = Su.wayOf(setupNow) === 'sbs';
+  const st = g ? namedState(St.studyState(d, g, day), setupNow) : null;
   const year = childYear();
   const testStarted = !!(g && r.step && r.step.id === 'test' && W.testLeft(d, g).length < g.words.length); // stopped part-way: no word is named
   const jobs = g && st ? todayJobs(d, g, day, st) : [];
   const done = g && st ? st.steps.find((x) => x.id === 'test') : null;
   const results = g && done && done.state === 'done' && St.doneDay(d, g, 'test') === day ? W.testResults(d, g) : [];
   const score = results.length ? { right: results.filter((x) => x.result.right).length, of: results.length } : null;
-  const t = todayText({ g, st, day, year, jobs, testStarted, score: st && st.status === 'done' ? score : null });
+  const t = todayText({ g, st, day, year, jobs, testStarted, sbs: sbsWay, score: st && st.status === 'done' ? score : null,
+    finishedLine: sbsWay && SD.afterTime(setupNow, hhmmNow()) ? 'Spelling is finished for today.' : '' });
   const locked = St.dueGroups(d, day).length > 0; // a test is due: Practice, Words to practise again and Games stay shut until it is done
   const tricky = S.trickyWords().length;
   const setBy = g ? C.setByLine(g.id, byCached(S.readSetup())) : '';
@@ -273,7 +291,7 @@ export function childHome(main) {
     + (takeSaved() ? '<p class="savedline" role="status" data-saved>' + C.SAVED_LINE + '</p>' : '')
     + '<div class="today__l"><div class="today__head"><p class="eyebrow">' + esc(C.weekdayName(day) + (setBy ? ' · ' + setBy : '')) + '</p>'
     + '<h1 class="today__hello">' + (name ? 'Hello, ' + esc(name) + '!' : 'Hello!') + '</h1></div>'
-    + weekLine + shortLine + stones
+    + (sbsWay && g ? '<p class="sbs-tag" data-sbs-tag>Step by step</p>' : '') + weekLine + shortLine + stones
     + '<div class="today__subrow"' + (st && st.catchUp ? ' data-catchup' : '') + '><p class="today__sub">' + esc(t.sub) + '</p>'
     + '<button type="button" class="btn btn--ghost hearit hearit--icon" data-hear title="Read it to me" aria-label="Read it to me: ' + esc(t.sub) + '">' + SVG.say + '<span class="hearit__t">Read it to me</span></button></div>'
     + thingsHtml + (back ? '<div class="comeback">' + back + '</div>' : '') + '</div>'
@@ -335,7 +353,7 @@ export function pathPage(main, { gid }) {
   const g = W.groupById(d, safeDecode(gid));
   if (!g) { location.replace('#/'); return undefined; }
   const day = today();
-  const st = St.studyState(d, g, day);
+  const st = namedState(St.studyState(d, g, day), S.readSetup());
   const year = childYear();
   const kind = St.weekKind(g);
   const setBy = C.setByLine(g.id, byCached(S.readSetup()));
@@ -345,14 +363,18 @@ export function pathPage(main, { gid }) {
     const body = { href: x.step ? stepHref(d, g, x.step.id, day) : '', icon: x.id === 'test' ? SVG.flag : x.id === 'mend' ? SVG.again : icon[x.state], title: x.title, sub: x.sub, first: live };
     return '<li class="pathrow2 pathrow2--' + x.state + '">' + tileHtml({ ...body, attr: x.step ? (live ? ' data-job data-step="' : ' data-again="') + x.step.id + '"' : '' }) + '</li>';
   });
-  const bits = [setBy, kind !== 'full' ? { quick: 'Quick week', short: 'Short week' }[kind] : 'Day ' + dayNumber(g, day) + ' of ' + weekLength(g), C.starsText(St.weekStars(d, g)) + ' so far', 'your test is on ' + W.dayLabel(g.test)].filter(Boolean);
-  const sub = bits.join(' · ');
+  const sbsWay = Su.wayOf(S.readSetup()) === 'sbs';
+  const dayBit = kind !== 'full' ? { quick: 'Quick week', short: 'Short week' }[kind] : 'Day ' + dayNumber(g, day) + ' of ' + weekLength(g);
+  // F9: a Step by step child reads two short lines ("Day 5 of 5 · test Sat 7 Nov", "20 stars · Set by Sam"), each 8 words or fewer
+  const sub = sbsWay ? [dayBit, 'test ' + W.dayLabel(g.test)].join(' · ')
+    : [setBy, dayBit, C.starsText(St.weekStars(d, g)) + ' so far', 'your test is on ' + W.dayLabel(g.test)].filter(Boolean).join(' · ');
+  const sub2 = sbsWay ? [C.starsText(St.weekStars(d, g)), setBy].filter(Boolean).join(' · ') : '';
   main.innerHTML = '<section class="wrap page childpath" data-path>'
     + '<div class="pagehead"><span class="eyebrow">' + esc(g.name) + ' · ' + plural(g.words.length, 'word') + '</span>'
     + '<div class="instruct"><h1>My week</h1><button type="button" class="hearround" data-hear aria-label="Hear it">' + SVG.hear + '</button></div></div>'
-    + '<div class="path__top">' + stonesHtml(st.steps, day) + '<p class="path__sub">' + esc(sub) + '</p></div>'
+    + '<div class="path__top">' + stonesHtml(st.steps, day) + '<p class="path__sub">' + esc(sub) + '</p>' + (sub2 ? '<p class="path__sub">' + esc(sub2) + '</p>' : '') + '</div>'
     + '<ol class="pathlist" aria-label="My week">' + rows.join('') + '</ol></section>';
-  main.querySelector('[data-hear]').addEventListener('click', () => sayLine('My week. ' + sub + '. Tap today\'s job to start.'));
+  main.querySelector('[data-hear]').addEventListener('click', () => sayLine('My week. ' + sub + '. ' + (sub2 ? sub2 + '. ' : '') + 'Tap today\'s job to start.'));
   return () => stop();
 }
 
@@ -599,9 +621,11 @@ export function applyChrome(child, path, pending = false) {
   $('child-menu').hidden = !(mode === 'home' || mode === 'page');
   $('child-back').hidden = mode !== 'page';
   $('child-stop').hidden = mode !== 'job';
+  const brkBtn = $('child-break');
+  if (brkBtn && mode !== 'job') brkBtn.hidden = true;
   const name = $('job-name');
   name.hidden = mode !== 'job';
-  name.textContent = mode === 'job' ? C.jobTitle(path, S.readWords(), today()) : '';
+  name.textContent = mode === 'job' ? C.jobTitle(path, S.readWords(), today(), { names: K.STONE_TEXT, sbs: (gid, step) => { const dd = S.readWords(); const gg = W.groupById(dd, safeDecode(gid)); return !!gg && K.wayFor(dd, gg, step, S.readSetup()) === 'sbs'; } }) : '';
   if (mode !== 'home' && mode !== 'page') closeMenu(false);
   const brand = document.querySelector('.brand');
   if (brand) brand.toggleAttribute('inert', mode === 'home'); // the mark links to the page you are on
@@ -630,10 +654,31 @@ export function openStop(opener) {
   dlg.querySelector('[data-keepgoing]').focus();
 }
 
+/** Step by step (WP-6): the runner's Break and Stop for the job bar. Stop is one tap with no sheet; Break appears beside it. */
+let sbsHooks = null;
+export function useSbsChrome({ stop: onStop, brk: onBreak }) {
+  const hooks = { stop: onStop, brk: onBreak };
+  sbsHooks = hooks;
+  const stopBtn = document.getElementById('child-stop');
+  let b = document.getElementById('child-break');
+  if (stopBtn && !b) {
+    b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'child-break';
+    b.className = 'childbtn childbtn--break';
+    b.setAttribute('aria-label', 'Break');
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h11v5a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5z"/><path d="M16 10h2a2 2 0 0 1 0 5h-2"/></svg><span class="childbtn__t">Break</span>';
+    stopBtn.before(b);
+    b.addEventListener('click', () => { if (sbsHooks && sbsHooks.brk) sbsHooks.brk(); });
+  }
+  if (b) b.hidden = false;
+  return { release() { if (sbsHooks === hooks) sbsHooks = null; const x = document.getElementById('child-break'); if (x) x.hidden = true; } };
+}
+
 /** Wire the three buttons once. backTo(path) gives the usual one-level-up target. */
 export function wireChrome({ currentPath, parentOf }) {
   $('child-menu').addEventListener('click', (e) => (sheet ? closeMenu() : openMenu(e.currentTarget)));
   $('child-back').addEventListener('click', () => { const p = currentPath(); location.hash = C.backTarget(p) || parentOf(p); });
-  $('child-stop').addEventListener('click', (e) => openStop(e.currentTarget));
+  $('child-stop').addEventListener('click', (e) => (sbsHooks && sbsHooks.stop ? sbsHooks.stop() : openStop(e.currentTarget)));
   window.addEventListener('hashchange', () => closeMenu(false));
 }

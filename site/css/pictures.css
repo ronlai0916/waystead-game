@@ -1,0 +1,84 @@
+/* ==========================================================================
+   Word pictures (SB6 WP-8, TR-52): a list's rows with their pictures, the grid of pictures to check, the check sheet, the remove question,
+   the Word pictures card. Loaded by pictures-views.js when the first picture screen opens (the feature ships off). Every rule is under .pv
+   (or the .pv-* names), so nothing here reaches a child's page. Tokens only (garden, paint and night each define them). Targets are 44 px or more.
+   ========================================================================== */
+.pv { display: grid; gap: 10px; }
+.pv-page { padding-top: 24px; padding-bottom: 56px; }
+.pv-mut { color: var(--muted); font-size: 0.95rem; }
+.pv-help { color: var(--muted); font-size: 0.95rem; max-width: 62ch; }
+.pv-h { font-size: clamp(1.6rem, 6vw, 2.2rem); margin: 4px 0 0; }
+
+/* the one-line notes: a soft line with an icon (never red) */
+.pv-note { display: flex; align-items: center; gap: 10px; padding: 12px 16px; margin: 0 0 4px; border-radius: var(--r); background: var(--accent-soft); color: var(--text); font-weight: 700; }
+.pv-note--info, .pv-note--soft { background: var(--help-bg); color: var(--help-fg); }
+.pv-note--ok { background: var(--accent-soft); color: var(--text); }
+.pv-note svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.pv-link { margin-left: auto; color: var(--link); font-weight: 700; text-decoration: underline; min-height: 44px; display: inline-flex; align-items: center; }
+
+/* the check line above the rows */
+.pv-checkline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; margin: 0; border-radius: var(--r); background: var(--surface); border: var(--card-border); }
+.pv-checkline > span { width: 24px; height: 24px; display: inline-grid; place-items: center; color: var(--accent-strong); }
+.pv-checkline svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.pv-checkline b { flex: 1; min-width: 8rem; }
+.pv-checkline .btn { min-height: 48px; }
+
+/* a word's row: picture, word and state, one button */
+.pv-rows { display: grid; }
+.pv-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.pv-rows > .pv-row:first-child { border-top: 0; }
+.pv-grow { flex: 1; min-width: 8rem; display: grid; gap: 2px; }
+.pv-grow b { font-family: var(--f-display); font-size: 1.15rem; overflow-wrap: anywhere; }
+.pv-row .btn, .pv-btns .btn, .pv-gcard .btn { min-height: 48px; }
+.pv-sub { flex-basis: 100%; }
+.pv-btns { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 0 8px 76px; }
+.pv-btns--col { display: grid; padding: 0; gap: 10px; }
+.pv-btns .btn svg { width: 18px; height: 18px; }
+.pv-danger { color: var(--bad); text-decoration: underline; box-shadow: none; }
+.pv-big { min-height: 52px !important; }
+
+/* the picture (a thumbnail) or the still tile; never a spinner */
+.pv-pic { flex: none; width: 56px; height: 56px; border-radius: 12px; overflow: hidden; border: var(--card-border); background: var(--surface-2); display: inline-grid; place-items: center; box-sizing: border-box; }
+.pv-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pv-pic svg { width: 26px; height: 26px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pv-pic--still { border-style: dashed; }
+.pv-pic--md { width: 64px; height: 64px; }
+.pv-pic--lg { width: 100%; height: auto; aspect-ratio: 1; border-radius: var(--r); }
+.pv-pic--lg svg, .pv-pic--xl svg { width: 40%; height: 40%; }
+.pv-pic--xl { width: min(100%, 300px); height: auto; aspect-ratio: 1; border-radius: var(--r-lg); }
+.pv-sheetpic { display: grid; place-items: center; }
+
+/* the grid: pictures to check */
+.pv-useall { min-height: 52px; justify-self: start; min-width: 12rem; }
+.pv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.pv-gcard { display: grid; gap: 8px; padding: 10px; border-radius: var(--r); border: 2px solid var(--line); background: var(--surface); align-content: start; }
+.pv-gcard b { font-family: var(--f-display); font-size: 1.1rem; overflow-wrap: anywhere; }
+.pv-gcard .btn { padding: 6px 10px; font-size: 0.95rem; line-height: 1.2; }
+.pv-gcard--making { border-style: dashed; }
+
+/* remove: the sheet at the foot of the list */
+.pv-sheet { margin-top: 8px; padding: 14px 16px; border-radius: var(--r-lg) var(--r-lg) 0 0; border: var(--card-border); background: var(--surface); display: grid; gap: 10px; box-shadow: var(--shadow); }
+.pv-sheet h2 { font-size: 1.25rem; margin: 0; }
+.pv-sheet p { margin: 0; color: var(--muted); }
+
+/* the card: plan, left, credits */
+.pv-kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: baseline; margin: 0; }
+.pv-kv dt { color: var(--muted); }
+.pv-kv dd { margin: 0; font-weight: 700; text-align: right; }
+.pv-card { gap: 14px; }
+.pv-credits { display: grid; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+.pv-credits h3 { margin: 0; font-size: 1.1rem; }
+.pv-credits .bigline { margin: 0; }
+.pv-credits .field { min-height: 48px; }
+.pv-credits .btn { min-height: 48px; }
+.pv-credits .btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.pv-credits .ledgertable { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.pv-credits .ledgertable th, .pv-credits .ledgertable td { text-align: left; padding: 6px 4px; border-top: 1px solid var(--line); }
+.pv-credits .ledgertable .num { text-align: right; white-space: nowrap; }
+.pv-credits summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
+
+@media (max-width: 420px) {
+  .pv-btns { padding-left: 0; }
+  .pv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 820px) { .pv-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); } }

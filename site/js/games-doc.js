@@ -8,6 +8,7 @@
 import * as R from './spell-run.js';
 import * as W from './words-doc.js';
 import { gapOf, usableMeaning } from './info-doc.js';
+import { RULES } from './sbs-rules.js';
 
 // SB5 (WP-A2, TR-91 and TR-101): Fill in the blanks (`fill`) and Mix and match (`mix`) join Game day beside Meaning match, which stays.
 // Their rules are below the Meaning match section. Entries for those two games carry text the word-info side has already guarded:
@@ -46,10 +47,15 @@ export function shuffled(list, rand = Math.random) {
  */
 export const afterPass = (list, clean) => (clean ? list.slice(1) : list);
 export const afterSkip = (list) => [...list.slice(1), list[0]];
-export const passOf = (run) => ({ tries: run.tries, clean: R.isClean(run) });
+// SB6 (TR-41): a Peek makes the pass not clean and is written on it (`peeks`), so the word comes back once more and the grown-up's count has it.
+export const passOf = (run) => ({ tries: run.tries, clean: R.isClean(run), ...(run.peeks ? { peeks: run.peeks } : {}) });
+/** A word left halfway after a slip or a Peek: it still tells the week, never clean. */
+export const leftPassOf = (run) => ({ tries: run.tries, clean: false, ...(run.peeks ? { peeks: run.peeks } : {}) });
+/** A pass with the Peeks a screen counted: a Peek is never clean. */
+export const withPeeks = (pass, peeks = 0) => (peeks > 0 ? { ...pass, clean: false, peeks } : pass);
 /** A game's pass into the saved value. */
-export function recordPass(d, g, word, { tries, clean, source = 'g', lv, h }, { id, day, now }) {
-  return W.addTry(d, { id, word, day, group: g.id, kind: source === 'm' ? 'p' : W.kindOn(d, g, word, day), tries, peeks: 0, clean, source, now, lv, h });
+export function recordPass(d, g, word, { tries, clean, source = 'g', lv, h, peeks = 0 }, { id, day, now }) {
+  return W.addTry(d, { id, word, day, group: g.id, kind: source === 'm' ? 'p' : W.kindOn(d, g, word, day), tries, peeks: peeks || 0, clean: clean && !peeks, source, now, lv, h });
 }
 
 // ---- Missing letters -----------------------------------------------------------------
@@ -84,10 +90,13 @@ function rawBlanks(entry, rand) {
 const NEEDS_LETTERS = ['flower', 'missing', 'unjumble'];
 export const playable = (entry, game) => !(NEEDS_LETTERS.includes(game) && [...entry.word].length < 2);
 /** The games to offer for a chapter's words. */
-export function gamesFor(entries, chapter = {}, games = GAME_IDS) {
+export function gamesFor(entries, chapter = {}, games = GAME_IDS, { sbs = false } = {}) {
   const defined = entries.filter((e) => e.meaning && e.meaning.definition).length;
+  const need = sbs ? RULES.meanings.cards : MATCH_SIZE;
   return games.filter((g) => {
-    if (g === 'match') return !chapter.noMatch && defined >= MATCH_SIZE;
+    if (sbs && g === 'quick') return false; // never offered in Step by step
+    if (sbs && NEEDS_LETTERS.includes(g)) return entries.filter((e) => playable(e, g)).length >= RULES.meanings.cards;
+    if (g === 'match') return !chapter.noMatch && defined >= need;
     if (g === 'fill') return entries.filter((e) => fillText(e)).length >= MIN_SENTENCE_WORDS;
     if (g === 'mix') return entries.filter((e) => mixStatements(e, 0).length).length >= MIN_SENTENCE_WORDS;
     if (NEEDS_LETTERS.includes(g)) return entries.some((e) => playable(e, g));
@@ -126,14 +135,14 @@ export function jumble(word, rand = Math.random) {
  * a short last round is filled with words already played, then `spare` ones,
  * which aren't scored.
  */
-export function matchRounds(entries, spare = [], rand = Math.random) {
+export function matchRounds(entries, spare = [], rand = Math.random, size = MATCH_SIZE) {
   const list = shuffled(entries, rand);
   const out = [];
-  for (let i = 0; i < list.length; i += MATCH_SIZE) {
-    const own = list.slice(i, i + MATCH_SIZE);
+  for (let i = 0; i < list.length; i += size) {
+    const own = list.slice(i, i + size);
     const fill = [...list.slice(0, i), ...shuffled(spare, rand)].filter((e, n, all) => !own.some((o) => o.word === e.word) && all.findIndex((x) => x.word === e.word) === n);
     const cards = [...own.map((e) => ({ word: e.word, meaning: e.meaning.definition, scored: true })),
-      ...fill.slice(0, MATCH_SIZE - own.length).map((e) => ({ word: e.word, meaning: e.meaning.definition, scored: false }))];
+      ...fill.slice(0, size - own.length).map((e) => ({ word: e.word, meaning: e.meaning.definition, scored: false }))];
     out.push({ cards: shuffled(cards, rand), meanings: shuffled(cards.map((c) => c.meaning), rand) });
   }
   return out;
@@ -153,9 +162,9 @@ export const matchPasses = (state, round) => round.cards.filter((c) => c.scored)
 // ---- Quick-fire ----------------------------------------------------------------------
 /** The gentle timer's length. It runs out with a kind word and nothing else: time plays no part in a pass. */
 export const quickSeconds = (word) => 8 + word.length;
-export function quickPass(word, typed) {
+export function quickPass(word, typed, peeks = 0) {
   const right = R.checkAnswer(word, typed);
-  return { tries: right ? 0 : 1, clean: right };
+  return withPeeks({ tries: right ? 0 : 1, clean: right }, peeks);
 }
 
 // ---- Game day by year and week kind (TR-101, BRS-change-2 2.2) -------------------------------------------
@@ -182,6 +191,18 @@ export function levelFor(year) {
   if (year === 5 || year === 6) return { fill: 'spell', items: 6, boards: ['statement', 'statement'], cards: 4, spare: true };
   return { fill: 'pick', choices: 4, items: 6, boards: ['statement', 'statement'], cards: 4, lookAlike: true };
 }
+
+/**
+ * Step by step (TR-44, BR-15): the easiest level for every year. Three cards a board, pick from 3 (Years 5 and 6 spell the gap, with Peek),
+ * no spare card. Tap only: the views never call enableDrag in this way.
+ */
+export function sbsLevel(year) {
+  const n = RULES.meanings.cards;
+  const spell = year === 5 || year === 6;
+  return { fill: spell ? 'spell' : 'pick', choices: n, items: 5, boards: ['statement', 'statement'], cards: n };
+}
+/** The Meanings job in Step by step: the three games that are not spelling from nothing, in this order. */
+export const SBS_GAMES = ['match', 'fill', 'mix'];
 
 // ---- shared bits -------------------------------------------------------------------------------------
 const lc = (w) => String(w).toLowerCase();
@@ -265,9 +286,9 @@ export function fillChoices(item, weekWords, level, hidden = [], rand = Math.ran
  * The pass for one sentence, ready for recordPass: a pick is source 'm' (as Meaning match: it can earn the day's star, never "remembered");
  * a spelled gap is source 'g' (as Missing letters), with the tile help `lv` and `h` when given.
  */
-export function fillPass(item, { tries = 0, spelled = false, lv, h } = {}) {
-  const base = { word: item.word, tries, clean: !tries };
-  return spelled ? { ...base, source: 'g', ...(lv ? { lv } : {}), ...(h ? { h } : {}) } : { ...base, source: 'm' };
+export function fillPass(item, { tries = 0, spelled = false, lv, h, peeks = 0 } = {}) {
+  const base = { word: item.word, tries, clean: !tries && !peeks };
+  return spelled ? { ...base, source: 'g', ...(lv ? { lv } : {}), ...(h ? { h } : {}), ...(peeks ? { peeks } : {}) } : { ...base, source: 'm' };
 }
 
 // ---- Mix and match (TR-91, TR-101) --------------------------------------------------------------------
@@ -337,3 +358,14 @@ export function glowFor(state, board) {
 }
 /** The scored slots' passes once the board is done (source 'm'; a word is clean when none of its drops missed). */
 export const boardPasses = (state, board) => board.slots.filter((s) => s.scored).map((s) => ({ word: s.word, tries: state.tries[s.word] || 0, clean: !state.tries[s.word], source: 'm' }));
+
+/** What one flower round leaves behind (SB6 check P2c). A peek is never "won"; in Step by step a slip keeps its petals but the round is not from memory either. */
+export function flowerResult({ entry, state, peeked = false, slips = 0, wrong = 0, tiled = false, sbs = false }) {
+  const won = state === 'won' && !peeked && !(sbs && slips); // Normal: petals decide; a lost petal does not unwin a word
+  return { entry, won, wrong, slips, ...(sbs ? { sbs: true } : {}), ...(peeked ? { peeked: true } : tiled && !(sbs && slips) ? { tiles: true } : {}) };
+}
+/** What the word list does with a flower round: 'correct' (out of Words to practise again), 'missed' (in), or 'skip' (a peek or a tiled round says nothing). */
+export function flowerNote(r) {
+  if (r.peeked || r.tiles) return 'skip';
+  return r.won ? 'correct' : 'missed';
+}

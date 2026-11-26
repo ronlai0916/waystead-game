@@ -128,9 +128,40 @@ test('the gaps option, level 5, keypad', () => {
     const s2 = T.tilesFor(e, level, seed, { lexicon: LEX });
     const own = new Set([...e.word].filter((c) => c === c.toLowerCase()).map(lc));
     for (const c of own) assert.ok(k.includes(c), e.word + ' ' + c);
-    assert.equal(k.length, own.size + (s2.tiles.length - s2.gaps.length), e.word);
+    assert.equal(k.length, own.size + Math.max(T.MIN_WRONG_TILES, s2.tiles.length - s2.gaps.length), e.word);
     assert.equal(new Set(k).size, k.length);
     assert.ok(k.every((c) => c === lc(c)));
+  }
+});
+
+test('petals are always fewer than the wrong tiles (flower game with tiles)', () => {
+  assert.equal(T.MIN_WRONG_TILES, 3); assert.equal(T.MIN_PETALS, 2); assert.equal(T.MAX_PETALS, 6);
+  assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 12].map(T.petalsFor), [2, 2, 2, 2, 3, 4, 5, 6, 6, 6]);
+  for (let n = 3; n <= 30; n += 1) assert.ok(T.petalsFor(n) < n && T.petalsFor(n) >= 2 && T.petalsFor(n) <= 6, 'n ' + n);
+  assert.equal(T.wrongTilesOf('Straight', ['c', 'r', 'a', 'i', 'h', 't', 's', 'e', 'g', 'z']), 3);
+  const seen = new Set();
+  const synth = Array.from({ length: 13 }, (_, i) => ({ word: 'abcdefghijklmn'.slice(0, i + 2), chunks: ['abcdefghijklmn'.slice(0, i + 2)] }));
+  for (const e of [...all, ...synth]) for (const level of [1, 2, 3, 4]) for (const day of DAYS) {
+    const k = T.keypadFor(e, level, T.seedOf(e.word, day), { lexicon: LEX });
+    const wrong = T.wrongTilesOf(e.word, k);
+    assert.ok(wrong >= 3, e.word + ' L' + level + ' wrong ' + wrong);
+    const p = T.petalsFor(wrong);
+    assert.ok(p < wrong && p >= 2 && p <= 6, e.word + ' L' + level);
+    assert.ok(k.length <= 18, e.word); // at most three rows of six keys
+    assert.equal(new Set(k).size, k.length);
+    seen.add(e.word.length + ':' + level);
+  }
+  for (let len = 2; len <= 14; len += 1) for (let level = 1; level <= 4; level += 1) {
+    assert.ok(seen.has(len + ':' + level), 'length ' + len + ' level ' + level);
+  }
+});
+test('keypad extras respect the mirror guard and never spell a blocked word from the tray', () => {
+  for (const e of all.slice(0, 200)) for (const level of [1, 2, 3, 4]) {
+    const k = T.keypadFor(e, level, T.seedOf(e.word, DAYS[0]), { lexicon: LEX });
+    const inWord = new Set([...e.word.toLowerCase()]);
+    for (const c of k) if (!inWord.has(c) && c in { b: 1, d: 1, p: 1, q: 1, n: 1, u: 1, m: 1, w: 1 }) {
+      assert.ok(level >= 3 && inWord.has({ b: 'd', d: 'b', p: 'q', q: 'p', n: 'u', u: 'n', m: 'w', w: 'm' }[c]), e.word + ' ' + c);
+    }
   }
 });
 

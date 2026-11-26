@@ -40,9 +40,9 @@ export const WEEK_KINDS = ['quick', 'short', 'full'];
 
 export const STEP_TEXT = {
   hello: { title: 'Hello words', short: 'Hello', line: 'Meet each word: hear it, see what it means, then play the flower game.' },
-  fix: { title: 'Fix it in', short: 'Fix', line: 'Look, say, hide, write and check each word, then spell it 3 times in a row.' },
+  fix: { title: 'Fix it in', short: 'Fix', line: 'Look, say, hide, spell and check each word, then spell it 3 times in a row.' },
   games: { title: 'Game day', short: 'Games', line: 'Quick games with your words.' },
-  story: { title: 'Story day', short: 'Story', line: 'See your words at work, then write sentences of your own.' },
+  story: { title: 'Story day', short: 'Story', line: 'See your words at work, then make sentences of your own.' },
   practice: { title: 'Practice day', short: 'Practice', line: 'One round of the practice grid: every word, hidden and spoken, 3 times in a row.' },
   test: { title: 'Test day', short: 'Test', line: 'Each word is spoken, with no peeking and one go each.' },
   mend: { title: 'Mend and keep', short: 'Mend', line: 'Mend any words that slipped, then a quick-fire round of them all.' },

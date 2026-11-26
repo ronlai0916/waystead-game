@@ -1,0 +1,436 @@
+/* SB6 Step by step (TR-43, WP-6): the child's ladder, Meet, rows, Break, First/then and end screens. Ported from the approved design (sb6-process/design/sb6.css, Rounds 1-3).
+   Tokens only (garden, paint and night each define them); no timer, no red, no shake, no flash; transitions at most 150 ms. Loaded by sbs-views.js when a stone opens.
+   Frame variables come from device.js: --app-h, --bottom-reserve, --head-h and html[data-h] (xs under 600 px of room, s under 720, m under 860, l). */
+html[data-style="garden"] { --hedge-pad: 10px; }
+
+/* ---------- the child's session page: one fixed layout ---------- */
+.s6 {
+  box-sizing: border-box; width: 100%; max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px;
+  padding: calc(4px + var(--hedge-pad, 0px)) 16px var(--bottom-reserve); min-height: calc(var(--app-h) - var(--head-h));
+}
+body.is-sbs .topbar__inner { padding: 4px 16px; gap: 8px; min-height: 56px; box-sizing: border-box; }
+body.is-sbs .childbtn { height: 48px; padding: 0 14px 0 10px; font-size: 1rem; }
+body.is-sbs .childbtn--break { margin-left: auto; }
+body.is-sbs .jobname { margin-left: 0; font-size: 0.95rem; color: var(--muted); flex: 1; min-width: 0; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.is-sbs .topbar .tag { flex: none; }
+@media (max-width: 359.98px) { body.is-sbs .childbtn { padding: 0 10px 0 8px; font-size: 0.95rem; gap: 6px; } body.is-sbs .childbtn svg { width: 20px; height: 20px; } }
+
+/* progress strip: words today (dots) on the left, the step row on the right. No numbers, no percentage. */
+.s6-strip0 { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 28px; }
+.s6-dots { display: inline-flex; align-items: center; gap: 6px; font-size: 0.92rem; color: var(--muted); }
+.s6-dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gap-edge); box-sizing: border-box; background: transparent; display: inline-block; }
+.s6-dots i.is-done { background: var(--accent); border-color: var(--accent); }
+.s6-dots i.is-now { background: var(--sun, var(--gold, var(--sunshine, var(--tile-bg)))); border-color: var(--gap-edge); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gap-edge); }
+.s6-dots span { margin-left: 4px; }
+.s6-steps { display: inline-flex; align-items: flex-end; gap: 3px; height: 24px; }
+.s6-steps i { width: 10px; border-radius: 3px 3px 1px 1px; box-sizing: border-box; border: 2px solid var(--gap-edge); background: transparent; display: inline-block; }
+.s6-steps i.is-done { background: var(--accent); border-color: var(--accent); }
+.s6-steps i.is-now { background: var(--tile-bg); border-color: var(--text); }
+.s6-steps i.is-skip { border-style: dotted; opacity: 0.8; }
+.s6-steps--l { height: 40px; gap: 5px; } .s6-steps--l i { width: 16px; }
+
+/* picture and Hear and the one instruction */
+.s6-head { display: flex; align-items: center; gap: 8px; }
+.s6-pic { flex: none; width: 112px; height: 112px; border-radius: var(--r); overflow: hidden; border: var(--card-border); background: var(--surface-2); display: grid; place-items: center; box-sizing: border-box; }
+.s6-pic svg { width: 100%; height: 100%; display: block; }
+html[data-h="xs"] .s6-pic { width: 64px; height: 64px; }
+html[data-h="s"] .s6-pic { width: 84px; height: 84px; }
+html[data-h="m"] .s6-pic { width: 104px; height: 104px; }
+html[data-h="l"] .s6-pic { width: 132px; height: 132px; }
+html:is([data-h="xs"], [data-h="s"]) .s6[data-tall] .s6-pic { display: none; } /* a long word at R-all on a short phone (4 tray rows): the picture goes first, never the tiles */
+.s6-pic--tile { font-family: var(--f-ipa); font-weight: 700; font-size: 2.4rem; background: var(--tile-bg); color: var(--tile-fg); }
+.s6-pic--sent { padding: 8px; font-family: var(--f-ipa); font-size: 0.9rem; line-height: 1.25; text-align: left; place-items: center start; background: var(--surface); }
+html[data-h="xs"] .s6-pic--sent { font-size: 0.72rem; padding: 4px; line-height: 1.15; }
+.s6-line { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 4px 6px 4px 12px; box-sizing: border-box; border-radius: var(--r); background: var(--surface); border: var(--card-border); }
+.s6-line p { margin: 0; flex: 1; min-width: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.12rem; line-height: 1.22; }
+html[data-h="xs"] .s6-line p { font-size: 1rem; }
+.s6-line.is-ok { background: var(--good-soft); border: 2px solid var(--good); color: var(--good); }
+.s6-line.is-soft { background: var(--soft-bg); border: 2px solid var(--soft-fg); color: var(--soft-fg); }
+.s6-line.is-ok p, .s6-line.is-soft p { color: inherit; }
+.s6-line svg.tk { width: 26px; height: 26px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.s6 .hearround { width: 48px; height: 48px; }
+.s6-warn { margin: 0; min-height: 28px; padding: 2px 12px; border-radius: 999px; background: var(--soft-bg); color: var(--soft-fg); border: 2px solid var(--soft-fg); font-family: var(--f-display); font-weight: 600; font-size: 0.98rem; display: flex; align-items: center; gap: 8px; box-sizing: border-box; min-height: 36px; }
+.s6-warn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* boxes */
+.s6-boxes { padding: 4px 0; }
+.s6-boxes .tileboxes { margin: 0; --lh: 48px; }
+html[data-h="xs"] .s6-boxes .tileboxes { --lh: 44px; }
+.tileboxes .lgap.is-peeked { background: var(--surface-2); color: var(--muted); border: 2px dotted var(--gap-edge); }
+.tileboxes .lgap.is-slip { border: 3px solid var(--text); border-style: solid; background: var(--gap-bg); }
+.tileboxes .lgap.is-heldout { border-style: solid; background: var(--surface); opacity: 1; }
+.tileboxes .lshown.is-lit { background: var(--tile-bg); border-color: var(--tile-edge); }
+.tileboxes .lshown.is-peeked { color: var(--text); }
+.tileboxes .lgap.is-right { color: var(--text); }
+.tileboxes .lgap.is-fixed { border-style: solid; }
+
+/* Peek and Check */
+.s6-peekrow { display: flex; justify-content: center; align-items: center; gap: 12px; }
+.s6-peek { min-height: 48px; min-width: 132px; font-family: var(--f-display); }
+.s6-peek svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.s6-peek.is-nudge { box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--glow); } /* still outline, no movement */
+.s6-peek.is-showing { background: var(--surface-2); border-color: var(--gap-edge); }
+.s6-peek:disabled, .s6-peek.is-used { opacity: 1; color: var(--muted); background: var(--surface-2); border-color: var(--line); box-shadow: none; }
+.s6 .traycol { padding-top: 0; }
+.s6 .keyboard--tray { padding: 8px 6px; }
+.s6 .keyboard--tray .keyboard-row { flex-wrap: wrap; width: 100%; }
+.keyboard--tray.t56, .keyboard--tray.t48 { --tgap: 8px; }
+.keyboard--tray.t56.t56 { --tw: 56px; --th: 56px; --tfs: 30px; }
+.keyboard--tray.t48.t48 { --tw: 48px; --th: 48px; --tfs: 26px; }
+.s6 .keyboard--tray .ltile { box-sizing: border-box; }
+.s6 .keyboard--tray .ltile.is-held { background: transparent; border-style: dashed; box-shadow: none; opacity: 0.35; color: var(--text); }
+.s6-check { width: 100%; min-height: 52px; margin-top: 8px; font-family: var(--f-display); font-size: 1.15rem; }
+.s6-check svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.s6-check:disabled { opacity: 1; background: var(--surface-2); color: var(--muted); box-shadow: none; border-color: var(--line); cursor: default; }
+.s6-act { display: flex; gap: 8px; margin-top: 8px; }
+.s6-act .btn { flex: 1; min-height: 52px; }
+
+/* the Break screen, the stop sheet, plain calm cards */
+.s6-card { background: var(--surface); border: var(--card-border); border-radius: var(--r-lg); padding: 14px 16px; box-sizing: border-box; box-shadow: var(--shadow); }
+.s6-card h2, .s6-card h1 { margin: 0 0 4px; font-family: var(--f-display); font-size: 1.3rem; line-height: 1.2; }
+.s6-card p { margin: 0 0 6px; font-size: 1rem; line-height: 1.4; }
+.s6-card p.mut { color: var(--muted); }
+.s6-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 12px; padding: 0 4px; }
+.s6-mid h1 { margin: 0; font-family: var(--f-display); font-size: 1.6rem; line-height: 1.2; }
+.s6-mid p { margin: 0; font-size: 1.05rem; color: var(--text); max-width: 26ch; }
+.s6-mid p.mut { color: var(--muted); }
+.s6-foot { margin-top: auto; display: grid; gap: 8px; }
+.s6-foot .btn { width: 100%; min-height: 52px; font-family: var(--f-display); font-size: 1.12rem; }
+.s6-ring { width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; border: 8px solid var(--ring-still, var(--accent)); box-sizing: border-box; background: var(--surface); }
+.s6-ring svg { width: 54px; height: 54px; fill: none; stroke: var(--text); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.s6-ring--big { width: 168px; height: 168px; box-shadow: 0 0 0 10px var(--bg), 0 0 0 16px var(--accent-soft); }
+.s6-ring--big svg { width: 76px; height: 76px; }
+.s6-offer { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: var(--r-lg); background: var(--surface); border: var(--card-border); box-sizing: border-box; }
+.s6-offer p { margin: 0; flex: 1; font-family: var(--f-display); font-weight: 600; font-size: 1.02rem; }
+.s6-offer .btn { min-height: 48px; padding: 8px 16px; }
+.s6-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.s6-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; min-height: 28px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; background: var(--accent-soft); color: var(--text); border: 2px solid var(--accent); box-sizing: border-box; }
+.s6-pill--sbs { background: var(--help-bg); color: var(--help-fg); border-color: var(--help-fg); }
+
+/* first/then */
+.s6-ft { display: grid; gap: 10px; }
+.s6-ft__row { display: flex; align-items: center; gap: 10px; background: var(--surface); border: var(--card-border); border-radius: var(--r-lg); padding: 10px 10px 10px 12px; box-sizing: border-box; min-height: 76px; }
+.s6-ft__lab { font-family: var(--f-display); font-weight: 700; font-size: 1.2rem; flex: none; min-width: 3.2rem; }
+.s6-ft__pics { display: flex; gap: 3px; flex: none; }
+html[data-h] .s6-ft__pics .s6-pic { width: 44px; height: 44px; border-radius: 10px; }
+html[data-h="xs"] .s6-ft__pics .s6-pic { width: 36px; height: 36px; }
+.s6-ft__txt { flex: 1; min-width: 0; font-family: var(--f-display); font-weight: 600; font-size: 1.12rem; line-height: 1.2; }
+.s6-ft__arrow { text-align: center; color: var(--muted); height: 12px; line-height: 12px; }
+
+/* Meet it */
+.s6-word { text-align: center; font-family: var(--f-ipa); font-weight: 700; font-size: clamp(2.2rem, 11vw, 3rem); line-height: 1.1; letter-spacing: 0.02em; padding: 4px 0; }
+.s6-word .syl1 { color: var(--accent-strong); } .s6-word .syl2 { color: var(--sb); }
+.s6-word .tricky { text-decoration: underline; text-decoration-thickness: 5px; text-underline-offset: 6px; text-decoration-color: var(--sb); }
+.s6-word .lit { background: var(--tile-bg); color: var(--tile-fg); border-radius: 8px; padding: 0 3px; }
+.s6-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s6-two .btn { min-height: 52px; font-family: var(--f-display); padding-inline: 10px; }
+.s6-two .btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.s6-mean { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: var(--r); background: var(--surface-2); border: 2px solid var(--line); }
+.s6-mean p { margin: 0; flex: 1; font-size: 1.02rem; line-height: 1.3; }
+.s6-mean small { display: block; color: var(--muted); font-weight: 700; font-size: 0.85rem; }
+
+/* word cards (meanings, rows, builder cards) */
+.s6-cards { display: grid; gap: 8px; }
+.s6-cardbtn { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; min-height: 56px; padding: 8px 14px; border-radius: var(--r); background: var(--surface); border: 2px solid var(--field-edge); color: var(--text); font-family: var(--f-body); font-size: 1.05rem; line-height: 1.3; cursor: pointer; box-sizing: border-box; }
+.s6-cardbtn.is-picked { background: var(--placed-bg); border: 3px solid var(--gap-edge); }
+.s6-cardbtn.is-right { background: var(--good-soft); border-color: var(--good); }
+.s6-cardbtn.is-outline { box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--glow); }
+html[data-h] .s6-cardbtn .s6-pic { width: 40px; height: 40px; border-radius: 10px; }
+.s6-cardbtn b { font-family: var(--f-display); font-size: 1.15rem; }
+.s6-cardbtn.is-set { background: var(--placed-bg); border-color: var(--gap-edge); }
+.s6-slots { display: flex; flex-wrap: wrap; gap: 8px; }
+.s6-slot { min-height: 48px; min-width: 64px; display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 12px; border: 2px dashed var(--gap-edge); background: var(--gap-bg); font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; box-sizing: border-box; color: var(--text); }
+button.s6-slot { cursor: pointer; font-family: var(--f-display); }
+.s6-slot.is-filled { border-style: solid; background: var(--placed-bg); }
+.s6-slot.is-next { border-width: 4px; }
+.s6-slot small { display: block; font-size: 0.7rem; color: var(--muted); font-weight: 700; line-height: 1; }
+.s6-sentence { font-family: var(--f-display); font-weight: 600; font-size: 1.25rem; line-height: 1.8; margin: 0; }
+.s6-sentence .gap { display: inline-block; min-width: 4.2ch; height: 1.6em; vertical-align: middle; border-radius: 10px; border: 2px dashed var(--gap-edge); background: var(--gap-bg); margin: 0 2px; }
+.s6-sentence .gap.is-on { border-width: 4px; }
+.s6-sentence .gap.is-filled { border-style: solid; background: var(--placed-bg); padding: 0 8px; min-width: 0; line-height: 1.5; display: inline-block; }
+.s6-sentence b { font-weight: 700; }
+
+/* mix and match board */
+.s6-board { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: stretch; }
+.s6-board .col { display: grid; gap: 8px; align-content: start; }
+
+/* keyboard (Years 5-6, the app's own keys) */
+.s6 .keyboard:not(.keyboard--tray) { gap: 6px; }
+.s6 .keyboard:not(.keyboard--tray) .key { height: 48px; min-height: 48px; width: min(46px, calc((100vw - 56px) / 10)); min-width: 30px; flex: none; }
+
+/* small pieces for the week pages */
+.s6-h1 { margin: 0; font-family: var(--f-display); font-size: 1.7rem; line-height: 1.15; }
+.s6-ann { margin: 0; padding: 6px 10px; border: 2px dashed var(--field-edge); border-radius: 12px; color: var(--muted); font-size: 0.85rem; line-height: 1.35; }
+.s6-model { text-align: center; font-family: var(--f-ipa); font-weight: 700; font-size: 1.9rem; line-height: 1.1; padding: 4px 8px; border-radius: var(--r); background: var(--surface-2); border: 2px solid var(--line); letter-spacing: 0.04em; }
+html[data-h="xs"] .s6-model { font-size: 1.5rem; padding: 2px 8px; }
+.s6-path { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.s6-stone { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 12px; border-radius: var(--r); background: var(--surface); border: 2px solid var(--line); box-sizing: border-box; }
+.s6-stone__dot { width: 36px; height: 36px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--surface-2); color: var(--text); border: 2px solid var(--field-edge); box-sizing: border-box; }
+.s6-stone__t { flex: 1; display: grid; font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; line-height: 1.2; }
+.s6-stone__t small { font-family: var(--f-body); font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+.s6-stone.is-today { border: 3px solid var(--stone-edge, var(--gap-edge)); background: var(--stone-wait-bg, var(--surface)); }
+.s6-stone.is-today .s6-stone__dot { background: var(--stone-today, var(--tile-bg)); color: var(--stone-today-fg, var(--text)); }
+.s6-stone.is-done .s6-stone__dot { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.s6-stone.is-wait { color: var(--text); }
+
+.s6 .keyboard--tray .keyboard-row { gap: 8px !important; }
+html[data-h] .s6-pic.sm { width: 40px; height: 40px; border-radius: 10px; }
+html[data-h] .s6-pic.md { width: 64px; height: 64px; border-radius: 12px; }
+
+/* words in a row: one card per word, each with its own picture button, boxes and Hear */
+.s6-hearall { flex: none; min-width: 96px; height: 48px; padding: 0 12px 0 10px; border-radius: 24px; border: 2px solid var(--line); background: var(--surface-2); color: var(--text); display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-display); font-weight: 600; font-size: 0.82rem; line-height: 1.05; text-align: left; cursor: pointer; box-sizing: border-box; }
+.s6-hearall svg { width: 22px; height: 22px; flex: none; fill: none; stroke: var(--sb); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.s6-rowcards { display: grid; gap: 6px; }
+.s6-rowcard { display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 6px; border-radius: var(--r); background: var(--surface); border: 2px solid var(--line); box-sizing: border-box; min-height: 56px; }
+.s6-rowcard.is-active { border: 3px solid var(--gap-edge); padding: 3px 3px 3px 5px; }
+.s6-rowcard.is-ok { background: var(--good-soft); border-color: var(--good); }
+.s6-rowcard.is-soft { background: var(--soft-bg); border-color: var(--soft-fg); }
+.s6-rowcard .s6-rowpic { flex: none; width: 44px; height: 44px; padding: 0; border: 0; background: none; border-radius: 10px; overflow: hidden; cursor: pointer; display: block; }
+.s6-rowcard .s6-rowpic .s6-pic { width: 44px; height: 44px; border-radius: 10px; border-width: 2px; }
+html[data-h="xs"] .s6-rowcard .s6-rowpic { display: none; }
+.s6-rowcard .s6-boxes { flex: 1; min-width: 0; padding: 0; }
+.s6-rowcard .tileboxes { --lh: 44px; --lmax: 36px; --lfs: 26px; --lg: 3px; justify-content: flex-start; }
+.s6-rowcard .tileboxes.tb-40, .s6-rowcard .tileboxes.tb-36, .s6-rowcard .tileboxes.tb-32 { --lmax: 36px; --lg: 3px; }
+.s6-rowcard .hearround { width: 48px; height: 48px; }
+.s6-rowcard .mk { flex: none; width: 26px; height: 26px; display: grid; place-items: center; }
+.s6-rowcard .mk svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.s6-rowcard.is-ok .mk { color: var(--good); } .s6-rowcard.is-soft .mk { color: var(--soft-fg); }
+.s6-tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: var(--soft-bg); color: var(--soft-fg); border: 1.5px solid var(--soft-fg); }
+.s6-sentcard { padding: 8px 8px 8px 14px; border-radius: var(--r); background: var(--surface); border: 2px solid var(--line); display: flex; align-items: center; gap: 8px; }
+.s6-sentcard .s6-sentence { flex: 1; font-size: 1.12rem; line-height: 1.6; }
+.s6-hint { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.s6.kb .s6-boxes { padding: 0; }
+html:is([data-h="xs"], [data-h="s"]) .s6.kb .s6-pic { display: none; }
+.s6-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.s6-chip { display: inline-flex; align-items: center; min-height: 44px; padding: 4px 14px; border-radius: 999px; font-family: var(--f-ipa); font-weight: 700; font-size: 1.1rem; background: var(--surface); border: 2px solid var(--line); box-sizing: border-box; }
+.s6-chip--ok { background: var(--good-soft); border-color: var(--good); }
+.s6-chip--keep { background: var(--soft-bg); border-color: var(--soft-fg); color: var(--soft-fg); }
+
+/* compaction on a short phone (data-h xs: under 600 px of room): no hedge, 44 px bar buttons, tighter rows */
+html[data-h="xs"][data-style] { --hedge-pad: 0px; }
+html[data-h="xs"] body.is-sbs .topbar::after { display: none; }
+html[data-h="xs"] body.is-sbs .childbtn { height: 44px; }
+html[data-h="xs"] body.is-sbs .topbar__inner { padding-block: 4px; min-height: 52px; }
+html[data-h="xs"] .s6 { gap: 6px; padding-top: 4px; }
+html[data-h="xs"] .s6-check, html[data-h="xs"] .s6-act .btn, html[data-h="xs"] .s6-foot .btn { min-height: 48px; }
+html[data-h="xs"] .s6-check { margin-top: 6px; }
+html:is([data-h="xs"], [data-h="s"]) .s6-rowcards { gap: 4px; }
+html[data-h="s"] .s6-rowcard { min-height: 52px; }
+html[data-h="xs"] .s6-rowcard { min-height: 48px; padding-block: 1px; }
+html[data-h="xs"] .s6-rowcard .tileboxes { --lh: 44px; --lfs: 24px; }
+html[data-h="xs"] .s6.rows .s6-strip0 { display: none; }
+.s6-mdots { display: none; }
+html[data-h="xs"] .s6.rows .s6-mdots { display: inline-flex; gap: 4px; flex: none; }
+.s6-mdots i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--gap-edge); box-sizing: border-box; }
+.s6-mdots i.is-done { background: var(--accent); border-color: var(--accent); } .s6-mdots i.is-now { background: var(--tile-bg); }
+html[data-h="xs"] .s6-line { min-height: 48px; }
+html[data-h="xs"] .s6-keyrow .key { height: 44px; }
+html[data-h="xs"] .s6-rowcard { padding-block: 0; min-height: 48px; }
+html[data-h="xs"] .s6-rowcard.is-active { padding: 0 3px 0 5px; border-width: 2px; border-color: var(--gap-edge); box-shadow: inset 0 0 0 1px var(--gap-edge); }
+html[data-h="xs"] .s6.rows .s6-line { padding-block: 0; min-height: 44px; }
+html[data-h="xs"] .s6.rows .s6-hearall { height: 44px; }
+html[data-h="xs"] .s6.kb .key { height: 44px; min-height: 44px; }
+html[data-h="xs"] .s6.kb .s6-peek { min-height: 44px; }
+.s6 .traycol { display: block !important; }
+/* this layer owns the tray column (the app's compact grid for short phones is not used: Check stays full width under the tray) */
+html[data-h] .s6 .traycol { display: block !important; background: none !important; padding: 0 !important; border-radius: 0 !important; }
+html[data-h] .s6 .traycol > .keyboard--tray { display: flex !important; }
+html[data-h] .s6 .traycol .keyboard-row { display: flex !important; grid-column: auto; }
+html[data-h] .s6 .keyboard--tray { padding: 8px 6px !important; background: var(--tray-bg); border-radius: var(--r); }
+html[data-h] .s6 .traycol > .keyboard:not(.keyboard--tray) { width: calc(100% + 16px) !important; margin-inline: -8px !important; container-type: inline-size; gap: 6px; }
+html[data-h] .s6 .keyboard:not(.keyboard--tray) .keyboard-row { gap: 3px; }
+html[data-h] .s6 .keyboard:not(.keyboard--tray) .key { width: calc((100cqw - 27px) / 10) !important; min-width: 27px !important; max-width: 46px; height: 48px; }
+html[data-h] .s6 .keyboard:not(.keyboard--tray) .key.key--del { width: calc(2 * (100cqw - 27px) / 10 + 3px) !important; max-width: none; }
+html[data-h="xs"] .s6 .keyboard:not(.keyboard--tray) .key { height: 44px; min-height: 44px; }
+
+/* ================= ROUND 2 =================
+   M1: one bottom-anchored block. .s6-upper (strip, instruction, stage) takes the spare height; .s6-block (boxes + word Hear, Peek/Undo,
+   tray or keyboard, Check) keeps its own height with 12-16 px gaps and sits at the foot, so spare space is ABOVE the boxes, never between them. */
+.s6.prac { gap: 0; }
+.s6-upper { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.s6-stage { flex: 1 1 0; min-height: 0; container-type: size; display: grid; place-items: center; }
+.s6-stage .s6-pic { width: min(160px, 100cqh, 100cqw); height: min(160px, 100cqh, 100cqw); }
+.s6-stage .s6-pic--sent { width: 100%; max-width: 360px; height: auto; max-height: 100cqh; aspect-ratio: auto; padding: 10px 14px; font-size: 1.15rem; }
+@container (max-height: 47px) { .s6-stage .s6-pic { display: none; } }
+.s6.prac .s6-head .s6-line { min-height: 52px; }
+.s6-block { flex: none; display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
+html[data-h="l"] .s6-block { gap: 16px; }
+html[data-h="xs"] .s6-block { gap: 10px; padding-top: 8px; }
+.s6-block .s6-check { margin-top: 0; }
+.s6-model { text-align: center; font-family: var(--f-ipa); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.06em; }
+/* boxes + the word's own Hear on one line */
+.s6-boxline { display: flex; align-items: center; gap: 6px; }
+.s6-boxline .s6-boxes { flex: 1; min-width: 0; padding: 0; }
+.s6-boxline .hearround { flex: none; }
+.s6-boxes .tileboxes.is-chunked { gap: var(--lg); align-items: center; }
+.tileboxes .chunk { display: inline-flex; flex: none; gap: var(--lg); }
+.tileboxes .tileboxes__rail { display: inline-flex; gap: var(--lg); padding-bottom: 5px; border-bottom: 4px solid var(--gap-edge); }
+.tileboxes.is-chunked { --n: var(--n1); }
+.tileboxes.is-chunked.is-two { --n: var(--n2); flex-wrap: wrap; row-gap: 8px; }
+.tileboxes.is-chunked.is-two .chunk { flex: none; }
+.tileboxes.is-chunked.is-two::after { content: none; }
+/* M4: the two lines are two chunks, each centred */
+.tileboxes.is-chunked.is-two .chunk { justify-content: center; }
+/* the tray: two rows reserved so the boxes do not move between rungs; used tiles are invisible (no placeholder that looks like a missing tile) */
+.s6-block .keyboard--tray { min-height: calc(2 * var(--th, 48px) + var(--tgap, 8px) + 16px); box-sizing: border-box; align-content: center; display: flex; }
+.s6-block .keyboard--tray .keyboard-row { gap: var(--tgap, 8px); justify-content: center; align-content: flex-start; }
+.s6 .keyboard--tray .ltile.is-used { visibility: hidden; }
+.s6-peek.is-hidden { visibility: hidden; }
+.s6-undo { min-width: 112px; }
+.s6-undo:disabled { opacity: 1; color: var(--muted); background: var(--surface-2); border-color: var(--line); }
+.s6-peek.is-used { opacity: 1; }
+.s6-offer { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; }
+.s6-offer p { margin: 0; font-family: var(--f-display); font-weight: 600; }
+/* the strip: the warning sits inside it, wrapping, and the step row never shrinks */
+.s6-strip0 { flex-wrap: wrap; row-gap: 4px; }
+.s6-strip0 .s6-dots { flex: 1 1 auto; min-width: 0; flex-wrap: wrap; }
+.s6-strip0 .s6-dots span { margin-left: 4px; white-space: normal; }
+.s6-steps { flex: none; }
+.s6-steps i.is-now { outline: 2px solid var(--text); outline-offset: 1px; }
+.s6-steps i.is-done.is-now { background: var(--accent); }
+/* keyboard keys: 27-28 px wide (keyboard only, a grown-up choice), always 48 px tall */
+html[data-h] .s6-block > .keyboard:not(.keyboard--tray) { width: calc(100% + 16px); margin-inline: -8px; container-type: inline-size; display: flex; flex-direction: column; gap: 6px; }
+html[data-h] .s6-block > .keyboard:not(.keyboard--tray) .keyboard-row { display: flex; justify-content: center; gap: 3px; }
+html[data-h] .s6-block > .keyboard:not(.keyboard--tray) .key { width: calc((100cqw - 27px) / 10); min-width: 27px; max-width: 46px; height: 48px; min-height: 48px; }
+html[data-h] .s6-block > .keyboard:not(.keyboard--tray) .key.key--del { width: calc(2 * (100cqw - 27px) / 10 + 3px); max-width: none; }
+html[data-h] .s6.kb .s6-block > .keyboard .key { height: 48px; min-height: 48px; }
+/* 1180x640 (tablet landscape): two columns, picture and instruction left, the block right */
+@media (min-width: 900px) and (max-height: 700px) {
+  .s6.prac { max-width: 1100px; flex-direction: row; gap: 24px; align-items: stretch; }
+  .s6.prac .s6-upper { flex: 1 1 0; }
+  .s6.prac .s6-block { flex: 1 1 0; justify-content: flex-end; }
+  .s6.prac .tileboxes { --lmax: 52px; }
+}
+.tileboxes.is-chunked.is-two.is-two { --lmax: 40px; --lfs: 32px; --lg: 4px; }
+.s6-rowcard .tileboxes.is-chunked.is-two.is-two { --lmax: 36px; --lg: 3px; }
+
+/* meaning options: each has its own Hear */
+.s6-opt { display: flex; align-items: center; gap: 6px; }
+.s6-opt .s6-cardbtn { flex: 1; min-width: 0; }
+.s6-opt .hearround { flex: none; }
+.s6-mrow { flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; font-size: 1rem; }
+.s6-mrow small { font-size: 0.78rem; font-weight: 700; color: var(--muted); line-height: 1.1; }
+.s6-wordline { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.s6-wordline .s6-word { font-size: 2rem; padding: 0; }
+.s6-chips--words { display: flex; flex-wrap: wrap; gap: 8px; }
+.s6-chipbtn { min-height: 48px; min-width: 64px; padding: 6px 16px; border-radius: 999px; border: 2px solid var(--field-edge); background: var(--surface); color: var(--text); font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; box-sizing: border-box; }
+.s6-chipbtn.is-picked { background: var(--placed-bg); border: 3px solid var(--gap-edge); }
+.s6-chipbtn.is-set { background: var(--placed-bg); border-color: var(--gap-edge); color: var(--text); opacity: 1; }
+.s6-stage--pic { display: grid; place-items: center; flex: none; }
+.s6-stage--pic .s6-pic { width: 88px; height: 88px; }
+html[data-h="xs"] .s6.mean .s6-stage--pic { display: none; }
+html[data-h="xs"] .s6.mean .s6-wordline .s6-word { font-size: 1.7rem; }
+/* the word "Test" on test screens */
+.s6-testtag { display: inline-flex; align-items: center; min-height: 28px; padding: 2px 14px; border-radius: 999px; font-family: var(--f-display); font-weight: 700; font-size: 1rem; background: var(--help-bg); color: var(--help-fg); border: 2px solid var(--help-fg); box-sizing: border-box; flex: none; }
+/* M2: the row list fills the free height and scrolls inside itself; cards go to compact lines by height (frame.js); a part-line is the cue */
+.s6.rows .s6-upper { gap: 6px; }
+.s6-rowlist { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; border-radius: var(--r); }
+.s6-rowlist .s6-rowcards { display: grid; gap: 6px; align-content: start; }
+.s6-rowlist.is-lines .s6-rowcard { min-height: 44px; padding-block: 0; }
+.s6-rowlist.is-lines .s6-rowpic { width: 44px; height: 44px; display: grid; place-items: center; }
+.s6-rowlist.is-lines .s6-rowpic .s6-pic { width: 34px; height: 34px; border-radius: 8px; }
+.s6-rowlist.is-lines .tileboxes { --lh: 44px; }
+.s6-rowlist.is-lines .s6-rowcards { gap: 4px; }
+.s6-rowlist.is-part { box-shadow: inset 0 -14px 10px -10px var(--shade, rgba(0,0,0,.18)); }
+.s6-rowlist .s6-rowcard { flex: none; }
+@media (max-width: 359.98px) { .s6-rowlist.is-lines .s6-rowpic { display: none; } }
+html[data-h="xs"] .s6.rows .s6-rowcard .s6-rowpic { display: block; }
+@media (max-width: 359.98px) { html[data-h="xs"] .s6.rows .s6-rowcard .s6-rowpic { display: none; } }
+/* wide screens: the play area is one column, never stretched */
+.s6.prac, .s6.mean, .s6.rows { max-width: 560px; }
+/* M5: the row-size path, every size 2..all as compact stones (two short lines, fits 320x568) */
+.s6-sizecard h2 { font-size: 1.15rem; margin: 0 0 10px; }
+.s6-sizes { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px 6px; }
+.s6-size { min-height: 48px; display: grid; place-items: center; border-radius: 14px; border: 2px dashed var(--gap-edge); background: var(--gap-bg); font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; color: var(--text); box-sizing: border-box; }
+.s6-size.is-done { background: var(--good-soft); border: 2px solid var(--good); }
+.s6-size.is-now { background: var(--placed-bg); border: 4px solid var(--gap-edge); }
+.s6-size { position: relative; }
+/* the app's rule for pages with a keyboard would set 8px/6px padding; this page owns its padding */
+body.is-child main > section.s6 { padding-top: calc(4px + var(--hedge-pad, 0px)); padding-bottom: var(--bottom-reserve); }
+html[data-h="xs"] body.is-child main > section.s6 { padding-top: 4px; }
+.s6-boxline { gap: 4px; }
+/* F2: Hear is never under 48 x 48 (the 320 px rule that made it 44 is gone: the boxes give way, see .s6-boxes below) */
+.s6-block > .keyboard { margin: 0 !important; }
+@media (min-width: 900px) and (max-height: 700px) {
+  body.is-child main > section.s6.prac { max-width: 1100px; flex-direction: row !important; gap: 24px; align-items: stretch; }
+  .s6.prac .s6-upper { flex: 1 1 0; min-width: 0; }
+  .s6.prac .s6-block { flex: 1 1 0; min-width: 0; justify-content: flex-end; padding-top: 0; }
+  .s6.prac .s6-stage .s6-pic { width: min(160px, 100cqh, 100cqw); height: min(160px, 100cqh, 100cqw); }
+}
+/* keyboard open (typing): only the instruction, the box, Peek and Save stay */
+.s6.typing { gap: 6px; }
+.s6.typing .s6-line { min-height: 44px; padding-block: 0; }
+.s6.typing .s6-textin { min-height: 48px; }
+.s6.typing .s6-foot { gap: 6px; }
+.s6.typing .s6-foot .btn, .s6.typing .s6-foot .s6-check { min-height: 48px; height: 48px; margin: 0; }
+html[data-h] body.is-child .s6.typing { padding-top: 2px; }
+html[data-h="xs"] body.is-sbs .topbar__inner { min-height: 48px; }
+.s6-foot--own .s6-peek { width: 100%; }
+.s6-block > .keyboard--tray { width: 100% !important; box-sizing: border-box; max-width: 100%; }
+html[data-h="xs"] .s6-ring--big { width: 132px; height: 132px; } html[data-h="xs"] .s6-ring--big svg { width: 60px; height: 60px; }
+html[data-h="xs"] .s6-mid { gap: 8px; }
+html[data-h] .s6-block > .keyboard:not(.keyboard--tray) { height: auto; min-height: 0; padding: 0; justify-content: flex-start; align-content: flex-start; }
+html[data-h] .s6-block > .keyboard:not(.keyboard--tray) .keyboard-row { flex: none; height: 48px; min-height: 0; }
+.s6-block > .keyboard::before { display: none !important; }
+.s6-upper > .s6-sentcard { flex: none; }
+/* a short phone (under 600 px of room): the practice block and the sentence card tighten, keys stay 48 tall */
+html[data-h="xs"] .s6-upper { gap: 6px; }
+html[data-h="xs"] .s6.prac .s6-line { min-height: 44px; padding-block: 0; }
+html[data-h="xs"] .s6-sentcard { padding: 2px 4px 2px 10px; min-height: 48px; }
+html[data-h="xs"] .s6-sentcard .s6-sentence { font-size: 1rem; line-height: 1.3; margin: 0; }
+html[data-h="xs"] .s6-block { gap: 8px; padding-top: 6px; }
+html[data-h="xs"] .s6-block .s6-peek { min-height: 44px; }
+html[data-h="xs"] .s6.prac .s6-check { min-height: 48px; }
+html[data-h="xs"] .s6-block .keyboard--tray { padding: 6px !important; }
+
+/* ================= ROUND 3 (rows) ================= */
+/* N1: the row list sits at the foot of the upper area, 12 px above Peek/Undo; the spare height goes above it */
+.s6.rows .s6-rowlist { display: flex; flex-direction: column; }
+.s6.rows .s6-rowlist > .s6-rowcards { margin-top: auto; flex: none; width: 100%; }
+.s6-focus { display: none; }
+.s6-focus .s6-pic { width: 64px; height: 64px; }
+@media (min-width: 900px) and (max-height: 700px) {
+  .s6.rows .s6-rowlist > .s6-rowcards { margin-top: 0; }
+  .s6.rows .s6-focus { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .s6.rows .s6-block { justify-content: flex-end; gap: 12px; }
+}
+/* N2: the 44 px line picture stays whenever the screen is 360 px or wider */
+.s6-rowcard.is-line .s6-rowpic, .s6-rowlist .s6-rowcard .s6-rowpic { display: block; }
+@media (max-width: 359.98px) { .s6-rowcard.is-line .s6-rowpic, .s6-rowlist .s6-rowcard .s6-rowpic, html[data-h] .s6.rows .s6-rowcard .s6-rowpic { display: none; } }
+/* S3: disabled and used controls have no fill and a muted outline; only "showing" keeps a fill */
+.s6-peek:disabled, .s6-peek.is-used, .s6-undo:disabled { background: transparent; border: 2px solid var(--line); color: var(--muted); box-shadow: none; opacity: 1; }
+.s6-peek.is-showing { background: var(--surface-2); border-color: var(--gap-edge); }
+/* Coulds */
+.s6-hint { font-size: 1rem; color: var(--text); }
+@media (min-width: 768px) {
+  .keyboard--tray.t48.t48.t48 { --tw: 56px; --th: 56px; --tfs: 30px; }
+  .s6.mean .s6-foot, .s6.order .s6-foot { margin-top: 20px; }
+}
+.s6-focus .s6-boxline { width: 100%; }
+
+/* ---- WP-6 additions: row number, calm slip look, stickers, titles, job bar ---- */
+.s6-num { font-weight: 800; font-size: 1.1rem; color: var(--sb, #6B3FA0); }
+.s6-stickers { display: flex; gap: 10px; justify-content: center; font-size: 1.6rem; margin: 4px 0; }
+.s6-title { font-size: 1.35rem; line-height: 1.25; margin: 6px 0; text-align: center; }
+.s6-focuspic { display: none; }
+@media (min-width: 820px) and (max-height: 700px) { .s6-focuspic { display: block; } }
+body.is-sbs .childbtn--break { margin-right: 8px; }
+main.sbs-main { padding-block: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .s6 *, .s6 *::before, .s6 *::after { transition: none !important; animation: none !important; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .s6 * { transition-duration: 120ms; }
+}
+/* the smallest phones (320 x 568): the tray takes only the rows it needs, so Check stays above the Safari bar */
+html[data-h="xs"] .s6-block .keyboard--tray { min-height: 0; }
+
+/* ---- FIX-U1a (F1, F2) ---- */
+/* F2: the Step by step pages without a keyboard (First/then, Meet, the cards) took the page's own bottom padding on top of their own, so the page scrolled 84 px */
+html body.is-child main.sbs-main.sbs-main { padding-block: 0; }
+/* F1: tight levels (tighten() in sbs-views.js): the main button must clear the Safari bar. Level 1 takes the progress strip out of the layout (a screen reader still has it), level 2 closes the gaps. Tiles never shrink. */
+.s6[data-tight] .s6-strip0 { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.s6[data-tight="2"] { gap: 4px; padding-top: 2px; }
+.s6[data-tight="2"] .s6-upper { gap: 4px; }
+.s6[data-tight="2"] .s6-block { gap: 4px; padding-top: 2px; }
+.s6[data-tight="2"] .s6-block .s6-check { margin-top: 0; }

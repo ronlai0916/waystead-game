@@ -28,7 +28,7 @@ export const RULES = {
   quiz: {
     sen: { words: 3, replays: Infinity, sentence: 'auto', peeks: 1, hints: 0, level: 'child', pass: null, feedback: 'each' },
     normal: { words: 5, replays: Infinity, sentence: 'button', peeks: 1, hints: 0, level: 'child', pass: null, feedback: 'each' },
-    top: { words: 5, replays: Infinity, sentence: 'button', peeks: 0, hints: 0, level: 5, pass: null, feedback: 'each' },
+    top: { words: 5, replays: Infinity, sentence: 'button', peeks: 1, hints: 0, level: 5, pass: null, feedback: 'each' }, // SB6 (TR-41): Stretch has one Peek too
   },
   test: {
     sen: { words: 'all', partMax: 6, replays: Infinity, sentence: 'auto', hints: 1, level: 'child', pass: 0.7, feedback: 'end', ready: true },
@@ -48,10 +48,16 @@ export const suggestFor = (year) => ({ lv: (SUGGEST[year] || { lv: 5 }).lv, p: '
 
 const okPf = (pf) => (PROFILES.includes(pf) ? pf : 'normal');
 
-export function rulesFor(kind, pf) {
+/**
+ * The rule for a kind and a help. SB6 (TR-42): `{ way: 'sbs' }` on the weekly TEST gives the Step by step rule, which adds one Peek a word
+ * (`peeks: 1`, `peeksPerWord: 1`). Every other call answers the same object as before (so the Usual way's rules are the ones U-test6 pins).
+ */
+export function rulesFor(kind, pf, { way = 'usual' } = {}) {
   const k = RULES[kind];
   if (!k) return null;
-  return k[okPf(pf)];
+  const rule = k[okPf(pf)];
+  if (kind === 'test' && way === 'sbs') return { ...rule, peeks: 1, peeksPerWord: 1 };
+  return rule;
 }
 
 export function levelFor(kind, pf, childLv) {
@@ -150,7 +156,19 @@ export function kindName(kind, pf, year) {
 // ---- Child copy (exact strings) ----
 const wordsN = (n) => n + (n === 1 ? ' word' : ' words');
 
-export function readyLines(kind, pf, n) {
+/** F5: what the Step by step weekly test allows, said to the child (never "no peeking"): two short sentences. */
+export const SBS_TEST_ALLOWS = ['Hear each word as often as you like.', 'You can peek once on each word.'];
+/** F5/S2: the two lines of what the Step by step weekly test allows THIS child: the Hear line reads the replays of the rule (Stretch help: 2), the Peek line the peeks per word. */
+export function sbsTestAllows(pf) {
+  const r = rulesFor('test', pf, { way: 'sbs' });
+  const rep = r ? r.replays : Infinity;
+  const hear = Number.isFinite(rep) ? 'Hear each word again ' + (rep === 1 ? 'once' : 'up to ' + rep + ' times') + '.' : SBS_TEST_ALLOWS[0];
+  const pk = r && r.peeksPerWord === 1 ? 'You can peek once on each word.' : SBS_TEST_ALLOWS[1];
+  return [hear, pk];
+}
+export function readyLines(kind, pf, n, { sbs = false } = {}) {
+  // F5/F9: the Step by step weekly test says what it allows, in short lines: how often to hear, one Peek (never "no peeking")
+  if (sbs && kind === 'test') return { lines: [wordsN(n) + '.', ...sbsTestAllows(pf), 'Start when you\'re ready.'], button: 'Start' };
   const r = rulesFor(kind, pf);
   const rep = r ? r.replays : Infinity;
   let first;
@@ -166,6 +184,25 @@ export const NEARLY_QUIZ = 'Nearly! Here\'s how it goes.';
 export const FINISH = { hint: 'You can check your answers first.', button: 'Finish' };
 export const WAIT = { line: 'All done. Ready to see how you did?', button: 'Show me' };
 export const SENTENCE_BUTTON = 'In a sentence';
+
+// ---- the Step by step weekly test, as the child meets its end (SB6, TR-13, D7) ----
+// No count, no pass word. Words spelled on their own, then words that will keep coming back (a word spelled after a Peek is one of them).
+export const SBS_TEST_END = { head: 'Test done.', spelled: 'Words you spelled', keep: 'Words we\'ll keep practising', line: 'Well done for finishing.' };
+/** The end of a Step by step weekly test: { head, lines, spelled: [word], keep: [word] }. `words` are the test's words in order; `keep` the ones to practise again. */
+export function sbsTestEnd(words, keep) {
+  const k = new Set((keep || []).map((w) => String(w).toLowerCase()));
+  return {
+    head: SBS_TEST_END.head,
+    lines: [SBS_TEST_END.line],
+    spelled: words.filter((w) => !k.has(String(w).toLowerCase())),
+    keep: words.filter((w) => k.has(String(w).toLowerCase())),
+  };
+}
+/** A weekly test answer as the words record keeps it (TR-13): a peeked word is `peeks: 1`, never clean, `pr` = was the spelling after the Peek right. */
+export function testTry(a) {
+  const peeked = a.pk > 0;
+  return { tries: a.ok ? 0 : 1, peeks: peeked ? a.pk : 0, clean: !!a.ok && !peeked, ...(peeked ? { pr: a.ok ? 1 : 0 } : {}) };
+}
 export const HINT_BUTTON = 'First letter';
 
 export function endLines(kind, pf, { right, of, toPractise: n }, { weekly = false } = {}) {

@@ -90,12 +90,12 @@ const isUpper = (ch) => ch !== ch.toLowerCase() && ch === ch.toUpperCase();
 const LEVEL_SALT = [0, 0x9E3779B1, 0x85EBCA6B, 0xC2B2AE35, 0x27D4EB2F];
 const levelRng = (seed, level) => rng((seed + LEVEL_SALT[level]) >>> 0);
 
-function fillableOf(word) {
+export function fillableOf(word) {
   const chars = [...word];
   if (chars.length === 1) return /\p{L}/u.test(chars[0]) ? [0] : [];
   return chars.map((ch, i) => i).filter((i) => /\p{L}/u.test(chars[i]) && !isUpper(chars[i]));
 }
-const trickyAt = (word, tricky) => {
+export const trickyAt = (word, tricky) => {
   if (!tricky) return [];
   const at = word.toLowerCase().indexOf(String(tricky).toLowerCase());
   return at < 0 ? [] : Array.from({ length: String(tricky).length }, (_, i) => at + i);
@@ -149,14 +149,14 @@ const partnerOf = (ch) => MIRROR[ch.toLowerCase()] || '';
 const barredAll = (level, profile) => level <= 2 || profile === 'sen';
 
 /** Distractor letters, drawn in preference order (sound-alikes, the word's own letters, common ones). */
-function drawDistractors(d, word, gapLetters, level, profile, r) {
+function drawDistractors(d, word, gapLetters, level, profile, r, alts = true, foreign = false) {
   if (d <= 0) return [];
   const lower = word.toLowerCase();
   const inWord = new Set([...lower]);
   const allBarred = barredAll(level, profile);
-  const okLetter = (x) => !(x in MIRROR) || (!allBarred && inWord.has(MIRROR[x]));
+  const okLetter = (x) => !(foreign && inWord.has(x)) && (!(x in MIRROR) || (!allBarred && inWord.has(MIRROR[x])));
   const t1 = [];
-  for (const g of shuffle(gapLetters.map((c) => c.toLowerCase()), r)) for (const x of shuffle([...(ALT[g] || '')], r)) t1.push(x);
+  if (alts) for (const g of shuffle(gapLetters.map((c) => c.toLowerCase()), r)) for (const x of shuffle([...(ALT[g] || '')], r)) t1.push(x);
   const t2 = shuffle([...inWord].filter((c) => /[a-z]/.test(c)), r);
   const t3 = shuffle([...COMMON], r);
   const pool = [...new Set([...t1, ...t2, ...t3, ...shuffle([...ALPHABET], r)])].filter(okLetter);
@@ -200,7 +200,7 @@ function buildsOther(list, spec, level, gapSet, tileChars) {
  * The gaps and tiles for one word at one level. `entry` is { word, chunks, tricky? }; `seed` is
  * from seedOf. Returns null at level 5 (no tiles). `gaps` lets the caller choose the gap positions.
  */
-export function tilesFor(entry, level, seed, { profile = 'normal', lexicon = new Set(), gaps = null } = {}) {
+export function tilesFor(entry, level, seed, { profile = 'normal', lexicon = new Set(), gaps = null, extra: extraCount = null, alts = true, foreign = false } = {}) {
   if (![1, 2, 3, 4].includes(level)) return null;
   const word = entry.word;
   const chars = [...word];
@@ -208,11 +208,14 @@ export function tilesFor(entry, level, seed, { profile = 'normal', lexicon = new
   const n = F.length;
   const single = chars.length === 1 && isUpper(chars[0]);
   let gapList = gaps ? [...new Set(gaps)].filter((i) => F.includes(i)).sort((a, b) => a - b) : gapsFor(word, F, level, entry.tricky, seed).sort((a, b) => a - b);
-  if (gapList.length > 12) gapList = gapList.slice(gapList.length - 12);
+  const capTiles = extraCount === null || extraCount === undefined ? 12 : Infinity; // SB6 ladder: a long word may have more than 12 gaps (D20)
+  if (gapList.length > capTiles) gapList = gapList.slice(gapList.length - capTiles);
   const gapSet = new Set(gapList);
   const gapLetters = gapList.map((i) => chars[i]);
-  const total = Math.min(12, tileTotal(level, n, gapList.length));
-  const want = Math.max(0, total - gapList.length);
+  const total = Math.min(capTiles, extraCount === null || extraCount === undefined ? tileTotal(level, n, gapList.length) : gapList.length + Math.max(0, extraCount));
+  // `foreign` (the flower game's keypad only): every extra letter is NOT in the word, and there are at least MIN_WRONG_TILES of them
+  const want = foreign ? Math.max(MIN_WRONG_TILES, total - gapList.length) : Math.max(0, total - gapList.length);
+  const keep = foreign ? MIN_WRONG_TILES : 0;
   const spec0 = { word, level, letters: chars.map((ch, i) => ({ ch, shown: !gapSet.has(i) })), gaps: gapList };
   const r = rng((seed ^ 0x5bd1e995) >>> 0);
   const tileLetters = (extra) => [...gapLetters, ...(single ? extra.map((x) => x.toUpperCase()) : extra)];
@@ -223,10 +226,10 @@ export function tilesFor(entry, level, seed, { profile = 'normal', lexicon = new
   let extra = [];
   let ok = false;
   for (let attempt = 0; attempt < 20 && !ok; attempt += 1) {
-    extra = drawDistractors(want, word, gapLetters, level, profile, r);
+    extra = drawDistractors(want, word, gapLetters, level, profile, r, alts, foreign);
     ok = !bad(extra);
   }
-  while (!ok && extra.length) { extra = extra.slice(0, -1); ok = !bad(extra); }
+  while (!ok && extra.length > keep) { extra = extra.slice(0, -1); ok = !bad(extra); }
   const letters = tileLetters(extra);
   let order = shuffle(letters, r);
   for (let k = 0; k < 10 && letters.length > 2 && order.join('') === [...letters].sort().join(''); k += 1) order = shuffle(letters, r);
@@ -234,23 +237,33 @@ export function tilesFor(entry, level, seed, { profile = 'normal', lexicon = new
   return { ...spec0, tiles, rows: tiles.length <= 6 ? 1 : 2 };
 }
 
-/** The flower game's keypad: the word's distinct fillable letters plus distractors, lower case, in seeded order. */
+/** The flower game's keypad: the word's distinct fillable letters plus at least MIN_WRONG_TILES letters that are not in the word, lower case, in seeded order. */
 export function keypadFor(entry, level, seed, opts = {}) {
-  const spec = tilesFor(entry, level, seed, opts);
+  const spec = tilesFor(entry, level, seed, { ...opts, foreign: true });
   if (!spec) return [];
-  const profile = opts.profile || 'normal';
   const F = fillableOf(entry.word);
   const own = [...new Set(F.map((i) => [...entry.word][i].toLowerCase()))];
-  const have = new Set(own);
-  const want = Math.max(0, spec.tiles.length - spec.gaps.length);
-  const r = rng((seed ^ 0x2c1b3c6d) >>> 0);
+  const gapLeft = counts(spec.gaps.map((g) => [...entry.word][g].toLowerCase()));
   const extra = [];
-  for (const x of drawDistractors(want + own.length, entry.word, own, level, profile, r)) {
-    if (extra.length === want) break;
-    if (!have.has(x)) { have.add(x); extra.push(x); }
+  for (const t of spec.tiles) {
+    const c = t.ch.toLowerCase();
+    if (gapLeft[c] > 0) gapLeft[c] -= 1; else extra.push(c);
   }
-  return shuffle([...own, ...extra], r);
+  return shuffle([...own, ...extra], rng((seed ^ 0x2c1b3c6d) >>> 0));
 }
+
+// ---- Petals in the flower game with tiles ------------------------------------------------
+// A child who taps every wrong tile must run out of petals first: petals are always fewer than the wrong tiles.
+export const MIN_WRONG_TILES = 3;
+export const MIN_PETALS = 2;
+export const MAX_PETALS = 6;
+/** Letters on the keypad that are not in the word. */
+export const wrongTilesOf = (word, letters) => {
+  const inWord = new Set([...String(word).toLowerCase()]);
+  return letters.filter((c) => !inWord.has(String(c).toLowerCase())).length;
+};
+/** Petals for a keypad with this many wrong tiles: one fewer, at least 2, at most 6. */
+export const petalsFor = (wrongTiles) => Math.max(MIN_PETALS, Math.min(MAX_PETALS, wrongTiles - 1));
 
 // ---- The tray ---------------------------------------------------------------------------
 /** A new tray for a spec. */

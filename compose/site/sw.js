@@ -3,7 +3,7 @@
 // takes over at once and the page reloads itself then (update/update.js). Bump VERSION on
 // every release. Only "compose-…" caches are ever deleted. Account calls are never
 // cached, apart from the Waystead voice's MP3s (the shared "voice" cache).
-const VERSION = 'compose-2026-11-09a';
+const VERSION = 'compose-2026-11-25a';
 
 const SHELL = [
   './',
@@ -48,6 +48,7 @@ const SHELL = [
   'js/nav/nav.js',
   'js/own-views.js',
   'js/safe-text.js',
+  'js/credits/credits.js',
   'js/speech.js',
   'js/store.js',
   'js/tasks.js',

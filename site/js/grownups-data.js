@@ -169,3 +169,40 @@ export function changeSetup(api, id, change, opts) {
     return r.error ? { error: r.error } : { doc: W.withSetup(words, r.setup) };
   }, opts);
 }
+
+// ---- SB6 (TR-10): Step by step settings, written by a grown-up page only -------------------------------------------------
+/**
+ * Turn Step by step on or off for a child: m 'sbs' | 'usual'. The same 409 retry as changeSetup. The first switch-on also sets the
+ * test help to Extra support when no help level was ever chosen (BR-4 AC6). Answers { ok, doc, updated, profileSet } (profileSet: true
+ * when this change set it, so the card can say "Help in tests is now Extra support"), { error } or { problem }.
+ */
+export async function setWay(api, id, m, opts = {}) {
+  const now = opts.now || (() => Date.now());
+  let profileSet = false;
+  const r = await changeSetup(api, id, (s) => {
+    const c = Su.setWay(s, m, now(), opts.who);
+    profileSet = c.profileSet; // the last attempt is the one saved (a 409 re-runs this on the newer copy)
+    return { setup: c.setup };
+  }, { ...opts, now });
+  return r.ok ? { ...r, profileSet } : r;
+}
+/** { min: 5|10|15, big: 0|1, after: ''|'HH:MM' } (any part may be left out): the Step-by-step sitting settings. Answers as changeSetup. */
+export function setSbs(api, id, change, opts = {}) {
+  const now = opts.now || (() => Date.now());
+  return changeSetup(api, id, (s) => ({ setup: Su.setSbs(s, change, now(), opts.who) }), { ...opts, now });
+}
+/** How long a Peek shows: 0 (as now), 2, 3 or 5 seconds. Answers as changeSetup. */
+export function setPeek(api, id, sec, opts = {}) {
+  const now = opts.now || (() => Date.now());
+  return changeSetup(api, id, (s) => ({ setup: Su.setPeek(s, sec, now(), opts.who) }), { ...opts, now });
+}
+
+// ---- SB6 (D25): a grown-up sets a stuck word aside for a day --------------------------------------------------------------
+/**
+ * Set a word of a week aside for `day` ('YYYY-MM-DD'), or bring it back with day ''. The only writer of `aside`: it goes through
+ * changeWords with the grown-up's session, so a child's device never writes it. Answers as changeWords.
+ */
+export function setAsideWord(api, childId, gid, word, day, opts = {}) {
+  const now = opts.now || (() => Date.now());
+  return changeWords(api, childId, (words) => ({ doc: W.setAside(words, gid, word, day, now()) }), { ...opts, now });
+}

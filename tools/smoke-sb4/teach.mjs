@@ -326,7 +326,7 @@ export default function (H) {
       await go(chapterHash());
       await until(isChapter, 'the table');
       const row = await ev('(document.querySelector("tr[data-cid=\\"' + K3 + '\\"]") || {}).innerText || ""');
-      ok(/Something went wrong on our side\. Please try again\./.test(row) && /Try again/.test(row), 'Ada\'s card says so: ' + row);
+      ok(/That did not work on our side\. Please try again\./.test(row) && /Try again/.test(row), 'Ada\'s card says so: ' + row);
       ok(/11 of 12/.test(await cell(CHILD, 'Score')), 'the other rows still draw');
     } finally { acct.fetch = real; }
     // the account says signed out: the usual line, no table

@@ -22,6 +22,14 @@ export function fakeAccount() {
     // 'fake-fail' (status failed), 'fake-slow' (status writing, nothing stored yet), 'fake-dirty' (statements that break the rules).
     // `bank` = word -> { status, statements }; `events` = the words that counted (a new word counts once).
     sentences: { missing: true, on: false, limit: 60, left: 60, hourLeft: 20, paused: false, mode: 'fake', bank: {}, events: [], retryAfter: 0 },
+    // SB6 /api/pictures/* and /api/credits/* (contract v4 A1-A10, WP-8a): `missing` (the default) or `on: false` = every pictures route is a 404.
+    // `trial` = free pictures left, `trialUntil` ('YYYY-MM-DD', null = no trial), `plan` = null | { name, monthly } with `planLeft`, `change` = swapped pictures,
+    // `credits` = story credits, `rate` = pictures per credit, `hourLeft` = makes left this hour (0 = 429 + `retryAfter`), `paused` = 503 on make/swap,
+    // `mode`: 'fake' (a job is ready on its first read), 'fake-slow' (stays making until `finish(word)`), 'fake-fail' (fails and gives the picture back),
+    // `blocked` = Set of words answered 422 refused, `unsuitable` = Set of words answered unsuitable (no spend), `codes` = code -> credits to add,
+    // `ledger` = rows { at, reason, amount, pictures }, `swaps` = count of credit swaps (A10 and swap:true), `jobs` = id -> { id, word, status, family, paidFrom },
+    // `approved` = word -> id, `delay` = a promise that holds A2 / A4 / A10 answers. A child session may only call A6, A7.
+    pictures: { missing: true, on: false, unlimited: false, trial: 5, trialUntil: null, plan: null, planLeft: 0, change: 0, credits: 0, rate: 4, hourLeft: 10, paused: false, swaps: 0, jobs: new Map(), approved: new Map(), delay: 0, mode: 'fake', blocked: new Set(), unsuitable: new Set(), unsuitableSeen: new Set(), codes: {}, ledger: [], retryAfter: 0, seq: 0 },
     scan: { missing: true, on: false, limit: 20, left: 20, hourLeft: 5, paused: false, consent: null, version: 'v1', vendor: 'Test vendor', reply: null },
   };
   const profile = () => {
@@ -118,6 +126,190 @@ export function fakeAccount() {
     return json(404, { error: 'not-found' });
   };
 
+  // ---- SB6 pictures + credits (contract v4, WP-A-account-brief.md) --------------------------------------------------------------
+  const pic = acct.pictures;
+  const today = () => new Date().toISOString().slice(0, 10);
+  const trialLive = () => pic.trial > 0 && !!pic.trialUntil && pic.trialUntil >= today();
+  const picLeft = () => (trialLive() ? pic.trial : 0) + (pic.plan ? pic.planLeft : 0) + pic.change;
+  const famId = () => (acct.who.kind === 'child' ? acct.who.parentId : acct.who.id);
+  const noBody = { ok: true, status: 204, headers: { get: () => null }, json: async () => null };
+  const picId = () => { pic.seq += 1; return String(pic.seq).padStart(32, 'a'); };
+  const WORD = /^[a-z]{2,20}$/;
+  const ledger = (reason, amount, pictures) => pic.ledger.push({ at: new Date().toISOString(), reason, amount, pictures });
+  // Take one picture (trial, then plan, then change); a swap is only taken when `swap` is true. Returns { from } or { res } (the error answer).
+  const spend = (swap) => {
+    if (pic.unlimited) return { from: 'unlimited' };
+    let from = null;
+    const take = () => {
+      if (trialLive()) { pic.trial -= 1; return 'trial'; }
+      if (pic.plan && pic.planLeft > 0) { pic.planLeft -= 1; return 'plan'; }
+      if (pic.change > 0) { pic.change -= 1; return 'change'; }
+      return null;
+    };
+    from = take();
+    if (!from) {
+      if (pic.credits < 1) return { res: json(402, { error: 'no-pictures-left' }) };
+      if (swap !== true) return { res: json(402, { error: 'swap-needed', credits: pic.credits, rate: pic.rate }) };
+      pic.credits -= 1; pic.change += pic.rate; pic.swaps += 1; ledger('exchange', -1, pic.rate);
+      from = take();
+    }
+    ledger('picture', 0, -1);
+    return { from };
+  };
+  const refund = (job) => {
+    const f = job.paidFrom;
+    if (f === 'trial') pic.trial += 1; else if (f === 'plan') pic.planLeft += 1; else if (f === 'change') pic.change += 1;
+    if (f !== 'unlimited') ledger('picture-refund', 0, 1);
+  };
+  const settle = (job) => { // a job that is making finishes (or fails) the first time it is read, unless the mode is slow
+    if (job.status !== 'making' || pic.mode === 'fake-slow') return;
+    if (pic.mode === 'fake-fail') { job.status = 'failed'; refund(job); } else job.status = 'ready';
+  };
+  pic.finish = (word) => { for (const j of pic.jobs.values()) if (j.word === word && j.status === 'making') { j.status = pic.mode === 'fake-fail' ? 'failed' : 'ready'; if (j.status === 'failed') refund(j); } };
+  const jobFor = (fam, word, statuses) => [...pic.jobs.values()].find((j) => j.family === fam && j.word === word && statuses.includes(j.status));
+  const makeJob = (fam, word, swap) => {
+    if (pic.paused) return json(503, { error: 'paused' });
+    if (pic.hourLeft === 0) return json(429, { error: 'hourly-limit' }, { 'Retry-After': String(pic.retryAfter || 3600) });
+    const swapsBefore = pic.swaps;
+    const sp = spend(swap);
+    if (sp.res) return sp.res;
+    if (pic.hourLeft > 0) pic.hourLeft -= 1;
+    const id = picId();
+    pic.jobs.set(id, { id, word, status: 'making', family: fam, paidFrom: sp.from });
+    return json(202, { word, status: 'making', id, ...(pic.swaps > swapsBefore ? { swapped: true } : {}) });
+  };
+  const wordAnswer = (word) => {
+    if (typeof word !== 'string' || !WORD.test(word)) return json(400, { error: 'bad-word' });
+    if (pic.blocked.has(word)) return json(422, { error: 'refused' });
+    return null;
+  };
+  const familyBody = () => ({
+    enabled: true, credits: { available: pic.credits, held: 0, expiring: 0 }, ledger: pic.ledger.slice().reverse(), stories: [],
+    pictures: { unlimited: pic.unlimited, left: pic.unlimited ? null : picLeft(), change: pic.change, trial: trialLive() ? { left: pic.trial, until: pic.trialUntil } : null, plan: pic.plan, rate: pic.rate },
+  });
+  const creditsRoute = async (u, method, init) => {
+    if (pic.missing || !pic.on) return json(404, { error: 'not-found' });
+    const me = acct.who;
+    if (!me || !me.signedIn) return json(401, { signedIn: false });
+    if (me.kind === 'child' || me.playingAs) return json(403, { error: 'adult-session-required' });
+    if (u.pathname.endsWith('/family') && method === 'GET') return json(200, familyBody());
+    if (u.pathname.endsWith('/redeem') && method === 'POST') {
+      const b = init.body ? JSON.parse(init.body) : {};
+      if (typeof b.code !== 'string' || !(b.code in pic.codes)) return json(404, { error: 'invalid-code' });
+      pic.credits += pic.codes[b.code]; delete pic.codes[b.code];
+      return json(200, { ok: true, credits: pic.credits });
+    }
+    return json(404, { error: 'not-found' });
+  };
+  const picturesRoute = async (u, method, init) => {
+    if (pic.missing || !pic.on) return json(404, { error: 'not-found' });
+    const me = acct.who;
+    if (!me || !me.signedIn) return json(401, { signedIn: false });
+    const isChild = me.kind === 'child' || !!me.playingAs;
+    const path = u.pathname;
+    const q = (k) => (u.searchParams.get(k) || '').split(',').filter(Boolean);
+    const fam = famId();
+    const approvedRead = path === '/api/pictures/approved' && method === 'GET';
+    const imageRead = /^\/api\/pictures\/image\/[A-Za-z0-9]+$/.test(path) && method === 'GET';
+    if (approvedRead) {
+      const words = q('words');
+      if (words.length < 1 || words.length > 15) return json(400, { error: 'too-many' });
+      if (words.some((w) => !WORD.test(w))) return json(400, { error: 'bad-word' });
+      return json(200, { items: words.filter((w) => pic.approved.has(w)).map((w) => ({ word: w, id: pic.approved.get(w) })) });
+    }
+    if (imageRead) {
+      const j = pic.jobs.get(path.split('/').pop());
+      const ok = j && j.family === fam && (j.status === 'approved' || (!isChild && j.status === 'ready'));
+      if (!ok) return json(404, { error: 'not-found' });
+      return { ok: true, status: 200, headers: { get: (k) => ({ 'content-type': 'image/webp', 'cache-control': 'private, max-age=86400' })[String(k).toLowerCase()] ?? null }, arrayBuffer: async () => new ArrayBuffer(8), json: async () => null };
+    }
+    if (isChild) return json(403, { error: 'adult-session-required' });
+    if (pic.delay) await pic.delay;
+    const body = init.body ? JSON.parse(init.body) : {};
+    if (path === '/api/pictures/allowance' && method === 'GET') {
+      return json(200, { on: true, unlimited: pic.unlimited, left: pic.unlimited ? null : picLeft(), credits: pic.credits, rate: pic.rate, trial: trialLive() ? { left: pic.trial, until: pic.trialUntil } : null, plan: pic.plan, resets: pic.plan ? firstOfNextMonth() : null, paused: pic.paused });
+    }
+    if (path === '/api/pictures/swap' && method === 'POST') {
+      if (body.credits !== 1) return json(400, { error: 'bad-credits' });
+      if (pic.paused) return json(503, { error: 'paused' });
+      if (pic.unlimited) return json(409, { error: 'unlimited' });
+      if (pic.credits < 1) return json(402, { error: 'no-credits' });
+      pic.credits -= 1; pic.change += pic.rate; pic.swaps += 1; ledger('exchange', -1, pic.rate);
+      return json(200, { change: pic.change, credits: pic.credits, rate: pic.rate });
+    }
+    if (path === '/api/pictures' && method === 'GET') {
+      const words = q('words');
+      if (words.length < 1 || words.length > 15) return json(400, { error: 'too-many' });
+      if (words.some((w) => !WORD.test(w))) return json(400, { error: 'bad-word' });
+      return json(200, { items: words.map((w) => {
+        for (const j of pic.jobs.values()) if (j.family === fam && j.word === w) settle(j);
+        const ap = jobFor(fam, w, ['approved']);
+        const cand = jobFor(fam, w, ['ready', 'making', 'failed', 'none']);
+        const status = cand ? cand.status : ap ? 'approved' : pic.unsuitableSeen.has(w) ? 'unsuitable' : 'none';
+        return { word: w, status, ...(cand && (cand.status === 'ready' || cand.status === 'making') ? { candidate: { id: cand.id } } : {}), ...(ap ? { approved: { id: ap.id } } : {}), at: new Date().toISOString() };
+      }) });
+    }
+    if (path === '/api/pictures' && method === 'POST') {
+      const bad = wordAnswer(body.word);
+      if (bad) return bad;
+      if (pic.paused) return json(503, { error: 'paused' });
+      const w = body.word;
+      const ready = jobFor(fam, w, ['ready']);
+      if (ready) return json(200, { word: w, status: 'ready', id: ready.id });
+      const making = jobFor(fam, w, ['making']);
+      if (making) return json(409, { error: 'already-making', id: making.id });
+      if (pic.unsuitable.has(w)) { pic.unsuitableSeen.add(w); return json(200, { word: w, status: 'unsuitable' }); }
+      return makeJob(fam, w, body.swap);
+    }
+    if (path === '/api/pictures/decide-all' && method === 'POST') {
+      const ids = Array.isArray(body.ids) ? body.ids : null;
+      if (!ids || ids.length < 1 || ids.length > 15) return json(400, { error: 'too-many' });
+      return json(200, { items: ids.map((id) => {
+        const j = pic.jobs.get(id);
+        if (!j || j.family !== fam) return { id, error: 'not-yours' };
+        settle(j);
+        if (j.status !== 'ready') return { id, error: 'not-ready' };
+        const old = pic.approved.get(j.word); if (old) pic.jobs.delete(old);
+        j.status = 'approved'; pic.approved.set(j.word, id);
+        return { word: j.word, approved: { id } };
+      }) });
+    }
+    let m = /^\/api\/pictures\/([A-Za-z0-9]+)\/decide$/.exec(path);
+    if (m && method === 'POST') {
+      const j = pic.jobs.get(m[1]);
+      if (!j) return json(404, { error: 'not-found' });
+      if (j.family !== fam) return json(403, { error: 'not-yours' });
+      settle(j);
+      const choice = body.choice;
+      if (!['use', 'another', 'none'].includes(choice)) return json(400, { error: 'bad-choice' });
+      if (choice === 'another') {
+        if (!['ready', 'approved'].includes(j.status)) return json(409, { error: 'not-ready' });
+        const r = makeJob(fam, j.word, body.swap);
+        if (r.status !== 202) return r;
+        if (j.status === 'ready') pic.jobs.delete(j.id);
+        return r;
+      }
+      if (j.status !== 'ready') return json(409, { error: 'not-ready' });
+      if (choice === 'use') {
+        const old = pic.approved.get(j.word); if (old) pic.jobs.delete(old);
+        j.status = 'approved'; pic.approved.set(j.word, j.id);
+        return json(200, { word: j.word, approved: { id: j.id } });
+      }
+      pic.jobs.delete(j.id);
+      return json(200, { word: j.word, status: 'none' });
+    }
+    m = /^\/api\/pictures\/word\/([^/]+)$/.exec(path);
+    if (m && method === 'DELETE') {
+      const w = m[1];
+      const mine = [...pic.jobs.values()].filter((j) => j.family === fam && j.word === w);
+      if (!mine.length) return json(404, { error: 'not-found' });
+      for (const j of mine) pic.jobs.delete(j.id);
+      pic.approved.delete(w);
+      return noBody;
+    }
+    return json(404, { error: 'not-found' });
+  };
+
   acct.fetch = async (url, init = {}) => {
     const u = new URL(url);
     const method = init.method || 'GET';
@@ -133,6 +325,8 @@ export function fakeAccount() {
     if (u.pathname === '/api/me') return acct.meStatus ? json(acct.meStatus, { error: 'forced' }) : json(200, acct.who || { signedIn: false });
     if (isScan) return scanRoute(u, method, init, rawBytes, rawType);
     if (u.pathname.startsWith('/api/sentences')) return sentencesRoute(u, method, init);
+    if (u.pathname.startsWith('/api/pictures')) return picturesRoute(u, method, init);
+    if (/^\/api\/(credits|story)\/(family|redeem)$/.test(u.pathname)) return creditsRoute(u, method, init);
     if (acct.failNext && acct.failNext.times > 0) {
       acct.failNext.times -= 1;
       return json(acct.failNext.status, { error: 'forced' });

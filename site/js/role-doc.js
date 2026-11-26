@@ -18,6 +18,7 @@ import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import * as SD from './set-doc.js';
 import * as Su from './setup-doc.js';
+import * as SR from './sbs-report-doc.js';
 
 export const ROLES = ['parent', 'tutor', 'teacher'];
 export const roleOf = (x) => (ROLES.includes(x) ? x : 'parent');
@@ -125,6 +126,10 @@ export function menuRows(role) {
 }
 
 // ---- who needs help (BR-25 AC4) -----------------------------------------------------------------------------
+/** "Help for each child" (TR-46): the Way of learning column, in words. */
+export const WAY_COLUMN = 'Way of learning';
+export const wayName = (setup) => (Su.wayOf(setup || {}) === 'sbs' ? 'Step by step' : 'Usual way');
+
 export const NOBODY_LINE = 'Nobody needs extra help this week.';
 export const NEEDS = { testBelow: 0.6, words: 3, jobs: 2 }; // test under 6 of 10; 3 or more words to practise again; 2 or more jobs waiting
 const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
@@ -153,6 +158,11 @@ export function needsHelp(kid, today = (kid && kid.today) || '') {
   if (g && kid.d && today) {
     const waiting = St.studyState(kid.d, g, today).waiting;
     if (waiting >= NEEDS.jobs) out.push({ why: 'jobs', line: plural(waiting, 'job', 'jobs') + ' waiting' });
+  }
+  // SB6 (D25): a stuck word is for the grown-up to see; Step by step children only
+  if (g && kid.d && today && Su.wayOf(W.setupOf(kid.d)) === 'sbs') {
+    const stuck = SR.stuckWords(kid.d, g, today);
+    if (stuck.length) out.push({ why: 'stuck', line: 'Stuck word: ' + stuck[0].word });
   }
   if (kid.sent === false) out.push({ why: 'notsent', line: 'Week not sent yet' });
   return out;

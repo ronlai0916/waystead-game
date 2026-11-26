@@ -3,10 +3,13 @@
 // by both games and saved to their account with the look).
 // THIS FILE IS A COPY: edit shared/voice/ and run `node tools/sync-shared.mjs`.
 //
-// Best = en-GB first; then voices marked Premium, Enhanced or Natural; then
-// known good ones (Apple Serena, Kate, Daniel, Stephanie, Oliver; Chrome's
-// Google UK English; Microsoft's UK voices); then voices on the device (they
-// work offline). Novelty voices (Bubbles, Zarvox, Eddy, Grandma …) are never
+// Best = en-GB first; Apple's Jamie and Serena before every other voice (Ron,
+// 24 Nov: not Daniel), Premium before Enhanced before plain, Jamie first on a
+// tie; then voices marked Premium, Enhanced or Natural; then known good ones
+// (Kate, Stephanie, Oliver, Martha, Arthur; Chrome's Google UK English;
+// Microsoft's UK voices); then voices on the device (they work offline).
+// Daniel is never dropped (some devices have no other British voice) but
+// ranks below the known good ones. Novelty voices (Bubbles, Zarvox, Eddy, Grandma …) are never
 // used. With no British voice, the best English one, and a tip on adding one.
 
 export const VOICE_KEY = 'sb.voice';
@@ -16,7 +19,8 @@ const NOVELTY = new Set(['albert', 'bad news', 'bahh', 'bells', 'boing', 'bubble
   'pipe organ', 'superstar', 'trinoids', 'whisper', 'wobble', 'zarvox', 'deranged', 'hysterical', 'eddy', 'flo', 'grandma',
   'grandpa', 'reed', 'rocko', 'sandy', 'shelley', 'fred', 'junior', 'ralph', 'kathy', 'princess', 'bruce', 'agnes', 'vicki',
   'victoria']);
-const KNOWN_GOOD = /^(serena|kate|daniel|stephanie|oliver|martha|arthur|google uk english (female|male)|microsoft (libby|sonia|ryan|maisie|thomas|hollie|olivia|alfie|bella|elliot|ethan|noah|oliver|abbi))\b/i;
+const PREFERRED = /^(jamie|serena)$/;
+const KNOWN_GOOD = /^(jamie|serena|kate|stephanie|oliver|martha|arthur|google uk english (female|male)|microsoft (libby|sonia|ryan|maisie|thomas|hollie|olivia|alfie|bella|elliot|ethan|noah|oliver|abbi))\b/i;
 
 export const langOf = (v) => String((v && v.lang) || '').replace('_', '-').toLowerCase();
 export const isBritish = (v) => langOf(v) === 'en-gb';
@@ -31,6 +35,11 @@ function score(v) {
   if (/premium/i.test(name)) s += 300;
   else if (/enhanced|natural|neural/i.test(name)) s += 200;
   if (KNOWN_GOOD.test(name)) s += 100;
+  const who = baseName(v) + ' ' + String(v.voiceURI || '');
+  if (isBritish(v) && (PREFERRED.test(baseName(v)) || /\ben-GB\.(jamie|serena)\b/i.test(String(v.voiceURI || '')))) {
+    s += 400; // Jamie and Serena beat every other voice; quality still orders them
+    if (/jamie/i.test(who)) s += 5; // Jamie first on a tie
+  }
   if (v.localService) s += 10;
   if (v.default) s += 1;
   return s;
@@ -62,8 +71,8 @@ export function voiceTip(voices, nav = {}) {
   if (!voices || !voices.length || rankVoices(voices).some(isBritish)) return null;
   const ua = String(nav.userAgent || '');
   const touchMac = /Macintosh/.test(ua) && Number(nav.maxTouchPoints) > 1;
-  if (/iPhone|iPad|iPod/.test(ua) || touchMac) return 'For a British voice: Settings → Accessibility → Spoken Content → Voices → English (UK).';
-  if (/Macintosh/.test(ua)) return 'For a British voice: System Settings → Accessibility → Spoken Content → Manage Voices.';
+  if (/iPhone|iPad|iPod/.test(ua) || touchMac) return 'For a British voice: Settings → Accessibility → Spoken Content → Voices → English (United Kingdom): download Jamie or Serena (Premium or Enhanced).';
+  if (/Macintosh/.test(ua)) return 'For a British voice: System Settings → Accessibility → Spoken Content → Manage Voices → English (United Kingdom): download Jamie or Serena (Premium or Enhanced).';
   return 'For a British voice, add an English (UK) voice in this device’s speech settings.';
 }
 
@@ -79,8 +88,8 @@ export function deviceKind(nav = {}) {
   return 'other';
 }
 export const MORE_VOICE_STEPS = {
-  ios: 'Settings → Accessibility → Spoken Content → Voices → English → English (UK), then download Serena (Premium) or Kate (Enhanced).',
-  mac: 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom).',
+  ios: 'Settings → Accessibility → Spoken Content → Voices → English → English (UK), then download Jamie or Serena (Premium or Enhanced).',
+  mac: 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom), then download Jamie or Serena (Premium or Enhanced).',
   android: 'Settings → System → Languages & input → Text-to-speech output → Speech Services by Google → ⚙ → Install voice data → English (United Kingdom). On Samsung: Settings → General management → Text-to-speech. Menu names differ between phone makers.',
   windows: 'Settings → Time & language → Speech → Manage voices → Add voices → English (United Kingdom). Then restart the browser. In Microsoft Edge, the UK Natural voices (e.g. Sonia, Ryan) are already available.',
   chromeos: 'Settings → Accessibility → Text-to-Speech → Speech engine → add English (UK).',

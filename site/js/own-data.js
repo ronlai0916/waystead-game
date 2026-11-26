@@ -10,6 +10,8 @@ import * as Su from './setup-doc.js';
 import * as A from './grownups-data.js';
 import * as P from './progress-doc.js';
 import { NEEDS_LIST } from './wordcheck.js';
+import { askable } from './pictures-data.js';
+import { wordsToAsk } from './pictures-doc.js';
 
 // ---- the lines a grown-up reads (exact strings) -------------------------------------------
 export const OWN_REFUSED = "We can't use this word yet"; // one line for a blocked word and an unknown one: the block list is never revealed
@@ -240,4 +242,39 @@ export async function syncOwn(api, kids, { now = () => Date.now(), by } = {}) {
     if (!r.ok) for (const x of mine) failed.push({ oid: x.oid, childId });
   });
   return { own, notSent: failed };
+}
+
+// ---- word pictures (SB6 TR-52, D15, D16): ask for a picture for each own word after a list is saved ---------------------------------
+/**
+ * Ask the account for a picture of each own word that has none and no state yet (one A1, one A3, then one A2 per word). Never swaps by itself:
+ * when an ask answers `swap-needed` the caller's confirmSwap({ rate, credits, waiting }) is asked (every time) and only a true answer sends `swap: true`.
+ * pics: createPictures(). words: the list's words. isReady(word): has a ready-made picture. Nothing here touches the DOM or storage.
+ * Answers { off? , problem?, none-left?, made: [word], unsuitable: [word], refused: [word], waiting: [word], asked: [word] }.
+ * `waiting` are the words still to ask when it stopped (not now, a limit, offline); the page keeps a "Make picture" button on them.
+ */
+export async function makePictures(pics, { words, isReady = () => false, confirmSwap = async () => false } = {}) {
+  const out = { made: [], unsuitable: [], refused: [], waiting: [], asked: [] };
+  const a = await pics.allowance();
+  if (a.problem) return { ...out, problem: a.problem, off: a.problem === 'off' };
+  if (a.on !== true) return { ...out, off: true };
+  if (!(a.unlimited || a.left > 0 || a.credits > 0)) return { ...out, noneLeft: true };
+  const all = askable(words);
+  const st = all.length ? await pics.states(all) : { items: [] };
+  if (st.problem) return { ...out, problem: st.problem };
+  const todo = wordsToAsk([words], isReady, st.items.filter((it) => it.status !== 'none')); // A3 answers every word: 'none' means never asked
+  out.asked = todo;
+  for (let i = 0; i < todo.length; i += 1) {
+    const w = todo[i];
+    let r = await pics.ask(w);
+    if (r.problem === 'swap-needed') {
+      const yes = await confirmSwap({ rate: r.rate, credits: r.credits, waiting: todo.length - i });
+      if (yes !== true) { out.waiting = todo.slice(i); return out; }
+      r = await pics.ask(w, { swap: true });
+    }
+    if (r.problem === 'refused') { out.refused.push(w); continue; }
+    if (r.problem === 'already-making') { out.made.push(w); continue; }
+    if (r.problem) { out.waiting = todo.slice(i); out.problem = r.problem; if (r.retryAfter) out.retryAfter = r.retryAfter; return out; }
+    if (r.status === 'unsuitable') out.unsuitable.push(w); else out.made.push(w);
+  }
+  return out;
 }

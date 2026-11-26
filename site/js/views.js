@@ -11,6 +11,7 @@ import { backAgainFor, hiddenToday } from './words-views.js';
 import { isUnlocked, notFound, chapters } from './front-views.js';
 import { backLink, lookHtml, wireLook } from './child-views.js';
 import { playable } from './games-doc.js';
+import * as G from './games-doc.js';
 import { withoutHidden, DAILY_TIME, ROW_LINE } from './study-doc.js';
 import * as A from './assess-doc.js';
 import { runCheck } from './assess-views.js';
@@ -302,14 +303,15 @@ export function customPlay(main) {
     mode: 'mini',
     onFinish: (results) => {
       for (const r of results) {
-        if (r.tiles) continue; // a tiled round is not a spelling from memory: it does not mark a word tricky
-        if (r.won) S.noteCorrect(r.entry.word); else S.noteMissed(r.entry.word, r.entry.chapterId);
+        const note = G.flowerNote(r); // a peeked or tiled round is not a spelling from memory: it neither marks a word tricky nor clears it
+        if (note === 'correct') S.noteCorrect(r.entry.word); else if (note === 'missed') S.noteMissed(r.entry.word, r.entry.chapterId);
       }
-      const missed = results.filter((r) => !r.won).map((r) => r.entry.word);
+      const missed = results.filter((r) => G.flowerNote(r) === 'missed').map((r) => r.entry.word);
+      const stepWay = results.some((r) => r.sbs);
       main.innerHTML = '<section class="wrap page">' + summaryHtml(results, 'All done')
-        + (missed.length ? '<p class="muted">Missed words are now in Words to practise again.</p>' : '')
+        + (missed.length ? '<p class="muted">' + (stepWay ? 'These words are now in Words to practise again.' : 'Missed words are now in Words to practise again.') + '</p>' : '')
         + '<div class="btnrow">'
-        + (missed.length ? '<button type="button" class="btn btn--primary" data-missed>Play the missed words</button>' : '')
+        + (missed.length ? '<button type="button" class="btn btn--primary" data-missed>' + (stepWay ? 'Practise these again' : 'Play the missed words') + '</button>' : '')
         + '<button type="button" class="btn ' + (missed.length ? 'btn--ghost' : 'btn--primary') + '" data-again>Play these again</button>'
         + '<a class="btn btn--ghost" href="#/custom">Pick other words</a></div></section>';
       const replay = (list) => { S.setSelection(list); window.dispatchEvent(new HashChangeEvent('hashchange')); };

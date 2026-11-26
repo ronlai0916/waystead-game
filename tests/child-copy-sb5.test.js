@@ -21,9 +21,9 @@ const long = (s) => parts(s).filter((p) => words(p) > 8 && !DESIGN_LONG.some((r)
 
 test('the step lines and job sentences say hide, not cover', () => {
   for (const f of ['study-doc.js', 'child-doc.js', 'front-doc.js', 'study-views.js']) for (const l of literalsOf(read(f))) assert.doesNotMatch(l, /\bCover\b|\bcover,|\bcover and\b/, f + ': ' + l); // the [data-cover] hook and the 'cover' phase name are code, not words
-  assert.match(St.STEP_TEXT.fix.line, /^Look, say, hide, write/);
-  assert.equal(C.JOB_SENTENCE.fix, 'Look, say, hide and write each word.');
-  assert.equal(F.JOBS.find((j) => j.id === 'fix').help, 'Look, say, hide, write');
+  assert.match(St.STEP_TEXT.fix.line, /^Look, say, hide, spell/);
+  assert.equal(C.JOB_SENTENCE.fix, 'Look, say, hide and spell each word.');
+  assert.equal(F.JOBS.find((j) => j.id === 'fix').help, 'Look, say, hide, spell');
 });
 
 test('no fixed number of games or sentences in a job line', () => {
@@ -34,8 +34,8 @@ test('no fixed number of games or sentences in a job line', () => {
 test('jobSentence: the count from the rules, singular for one', () => {
   assert.equal(C.jobSentence('games', { games: 4 }), 'Play 4 quick games with your words.');
   assert.equal(C.jobSentence('games', { games: 2 }), 'Play 2 quick games with your words.');
-  assert.equal(C.jobSentence('story', { sentences: 3 }), 'Read about your words. Write 3 sentences.');
-  assert.equal(C.jobSentence('story', { sentences: 1 }), 'Read about your words. Write 1 sentence.');
+  assert.equal(C.jobSentence('story', { sentences: 3 }), 'Read about your words. Make 3 sentences.');
+  assert.equal(C.jobSentence('story', { sentences: 1 }), 'Read about your words. Make 1 sentence.');
   assert.equal(C.jobSentence('games'), C.JOB_SENTENCE.games, 'no count: the plain sentence');
   assert.equal(C.jobSentence('hello'), C.JOB_SENTENCE.hello);
 });

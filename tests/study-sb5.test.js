@@ -17,7 +17,8 @@ const ids = (plan) => plan.map((p) => [p.day, p.jobs.map((j) => j.id).join('+')]
 
 test('the test-due and day-spreading rules are byte-for-byte what they were (TR-102: nothing there changes)', () => {
   assert.equal(hash(W.jobFor), 'a9fd0ff9bf8132d6');
-  assert.equal(hash(W.studyJobDay), '5ee9825b5e2d1938');
+  // SB6 TR-12 / R-3, the one allowed change: 'practice' is also done by the step mark the Step by step rows stone writes (`roundDay(…, 'p') || stepDay(…, 'practice')`, the form `fix` has).
+  assert.equal(hash(W.studyJobDay), '0cc382fa9fe2157b');
   assert.equal(hash(W.studyDone), '06274a677df51719');
   assert.equal(hash(JSON.stringify(W.STUDY_JOBS)), '792bb3cf75fe9057');
   assert.equal(hash(JSON.stringify(St.BEFORE_TEST)), '792bb3cf75fe9057');

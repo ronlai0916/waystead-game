@@ -17,7 +17,7 @@ export const SAVED_LINE = 'Your place is saved.';
 export const GAMES_CLOSED = 'Test first, then games.';
 export const FLOWER_GAME = 'Play the flower game';
 export const SKIP_TEXT = 'Skip for now. It comes back later.';
-export const PEEK_HINT = 'Peeking starts your count again.';
+export const PEEK_HINT = 'Peek restarts your count.'; // short: it sits under Hear and Peek on a tile page (M1/F1)
 export const PEEKED_LINE = 'Peeked. Start your count again.';
 export const SPELL_INSTRUCTION = 'Listen, then type the word.';
 export const HELLO_INSTRUCTION = 'Meet this word. Hear it.';
@@ -30,9 +30,9 @@ export const weekdayName = (day) => WEEKDAYS[new Date(day + 'T00:00:00Z').getUTC
 /** One sentence for each job, in a child's words. */
 export const JOB_SENTENCE = {
   hello: 'Meet each word, then play the flower game.',
-  fix: 'Look, say, hide and write each word.',
+  fix: 'Look, say, hide and spell each word.',
   games: 'Play quick games with your words.',
-  story: 'Read about your words. Write sentences.',
+  story: 'Read about your words. Make sentences.',
   practice: 'Spell each word three times in a row.',
   test: 'Spell each word once. Do your best.',
   mend: 'Mend any words that slipped.',
@@ -42,11 +42,11 @@ const BUTTON = { test: 'Start the test' };
 
 /**
  * The sentence for a job, with its count when the caller knows it: Game day "Play 4 quick games with your words." (G.dayGames) and Story day
- * "Read about your words. Write 3 sentences." (St.storySentences). Without a count the plain sentence in JOB_SENTENCE.
+ * "Read about your words. Make 3 sentences." (St.storySentences). Without a count the plain sentence in JOB_SENTENCE.
  */
 export function jobSentence(id, { games = 0, sentences = 0 } = {}) {
   if (id === 'games' && games) return 'Play ' + games + ' quick ' + (games === 1 ? 'game' : 'games') + ' with your words.';
-  if (id === 'story' && sentences) return 'Read about your words. Write ' + sentences + (sentences === 1 ? ' sentence.' : ' sentences.');
+  if (id === 'story' && sentences) return 'Read about your words. Make ' + sentences + (sentences === 1 ? ' sentence.' : ' sentences.');
   return JOB_SENTENCE[id];
 }
 
@@ -177,15 +177,17 @@ export function stoneView(step, day, doneOn = '') {
 }
 
 /** Which job names go in the top bar inside a job, from the route. Games: 'Games'. */
-export function jobTitle(path, d, day) {
+export function jobTitle(path, d, day, { names = null, sbs = null } = {}) {
   const m = /^words\/g\/([^/]+)\/(spell\/\d+|test|study\/([a-z]+)(?:\/\d+)?|game\/[a-z]+)$/.exec(path);
   if (!m) return '';
-  if (m[3]) return (St.STEP_TEXT[m[3]] || { title: '' }).title;
-  if (m[2] === 'test') return St.STEP_TEXT.test.title;
+  // F7: a stone that runs the Step by step way is named by `names` (STONE_TEXT); `sbs(gid, step)` says which
+  const text = (step) => ((names && sbs && sbs(m[1], step) && names[step]) || St.STEP_TEXT[step] || { title: '' }).title;
+  if (m[3]) return text(m[3]);
+  if (m[2] === 'test') return text('test');
   if (m[2].startsWith('game/')) return 'Games';
   const g = W.groupById(d, safeDecode(m[1]));
   const job = g ? W.jobFor(d, g, day) : '';
-  return job === 'fixups' || job === 'fixed-today' ? St.STEP_TEXT.mend.title : St.STEP_TEXT.practice.title;
+  return job === 'fixups' || job === 'fixed-today' ? text('mend') : text('practice');
 }
 
 /** A page inside a job: the child sees "Stop for now" there, and no Menu. */

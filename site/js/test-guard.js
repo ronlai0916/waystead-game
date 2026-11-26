@@ -48,6 +48,11 @@ export const RULES = {
   'grownups/role': 'adult', 'grownups/help': 'adult', 'grownups/more': 'adult', 'grownups/child/:cid/rename/:gid': 'adult',
   'grownups/own/ready': 'adult', 'grownups/own/ready/:id': 'adult', 'grownups/own/ready/:id/copy': 'adult', 'grownups/own/:oid/copy': 'adult', 'grownups/own/:oid/sentences': 'adult', 'grownups/own/:oid/edit': 'adult', 'grownups/own/:oid/give': 'adult',
   'grownups/child/:cid/weeks': 'adult', 'grownups/child/:cid/print/:gid': 'adult',
+
+  // SB6 rules (TR-49): Grown-ups pages only. The child's Step by step screens are the existing 'words/g/:gid/study/:step[/:n]'
+  // ('group') and 'game/:game' rules; Break, First/then and Stop are in-page states, not routes. D25 "Let <name> set it aside for
+  // today" and the stuck words live on the grown-up pages above (report, week, preview), never on a child route.
+  'grownups/pictures': 'adult', 'grownups/pictures/list/:oid': 'adult', 'grownups/child/:cid/preview': 'adult',
 };
 
 // SB4-E/F: an example sentence on a study page must not show a word whose group's test is due.

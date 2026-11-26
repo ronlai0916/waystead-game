@@ -8,6 +8,11 @@
 //     exams?:   { [eid]: { name, words[1..20], from[], date: 'YYYY-MM-DD', at, gone?, reopen? } },
 //     own?:     { [oid]: { name, words[1..15], src: 'typed'|'scan', at, gone?, info? } } }   copies of a grown-up's lists
 //     by?:      { n: 'Mum', at }    SB5 (D34): the name the grown-up chose, which the child sees as "Set by Mum"
+//     way?:     { m: 'sbs'|'usual', at, by? }                       SB6 (TR-10): how the child spells (Step by step or the usual way)
+//     sbs?:     { min: 5|10|15, big: 0|1, after: ''|'HH:MM', at, by? }   SB6: Step-by-step sitting length, big letters, "not before"
+//     peek?:    { s: 0|2|3|5, at, by? }                             SB6: how long a Peek shows (0 = as now: 2 s keys, 3 s tiles)
+//   SB6 (TR-15) keeps any OTHER sub-field that is an object with a numeric `at` and a name like /^[a-z][a-zA-Z0-9]{0,11}$/ (at most 2 KB),
+//   so a later release never loses its setup fields to this one. 23b devices drop way, sbs and peek on re-save; merge puts them back.
 //
 // SB5 additions (WP-A2): own[oid].info (TR-93: the grown-up's sentences and meanings, cleaned by info-doc.js cleanInfo) and `by`
 // (TR-100: cleanName, setBy). 16c devices drop both on re-save; nothing else is lost.
@@ -27,6 +32,14 @@ export const MAX_OWN_WORDS = 15;
 export const MAX_NAME = 40;
 const DAY = 86400000;
 const PROFILES = ['sen', 'normal', 'top'];
+export const WAYS = ['sbs', 'usual'];
+export const SBS_MINUTES = [5, 10, 15];
+export const PEEK_SECONDS = [0, 2, 3, 5];
+export const SBS_DEFAULT = Object.freeze({ min: 10, big: 0, after: '' });
+const KNOWN = ['help', 'profile', 'offer', 'by', 'exams', 'own', 'way', 'sbs', 'peek'];
+const EXTRA_NAME = /^[a-z][a-zA-Z0-9]{0,11}$/;
+const EXTRA_MAX = 2048; // bytes of JSON for one unknown sub-field
+const isTime = (x) => x === '' || (typeof x === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(x));
 
 const isObj = (x) => !!x && typeof x === 'object' && !Array.isArray(x);
 const pos = (x) => (typeof x === 'number' && Number.isFinite(x) && x > 0 ? x : 0);
@@ -87,6 +100,21 @@ export function normalise(x) {
     out.offer = { quiz: x.offer.quiz, exam: x.offer.exam, at: x.offer.at };
   }
   if (isObj(x.by) && cleanName(x.by.n) && pos(x.by.at)) out.by = { n: cleanName(x.by.n), at: x.by.at };
+  // SB6 (TR-10): each validated exactly; anything else is dropped.
+  if (isObj(x.way) && WAYS.includes(x.way.m) && pos(x.way.at)) {
+    out.way = { m: x.way.m, at: x.way.at, ...(by(x.way.by) ? { by: by(x.way.by) } : {}) };
+  }
+  if (isObj(x.sbs) && SBS_MINUTES.includes(x.sbs.min) && (x.sbs.big === 0 || x.sbs.big === 1) && isTime(x.sbs.after) && pos(x.sbs.at)) {
+    out.sbs = { min: x.sbs.min, big: x.sbs.big, after: x.sbs.after, at: x.sbs.at, ...(by(x.sbs.by) ? { by: by(x.sbs.by) } : {}) };
+  }
+  if (isObj(x.peek) && PEEK_SECONDS.includes(x.peek.s) && pos(x.peek.at)) {
+    out.peek = { s: x.peek.s, at: x.peek.at, ...(by(x.peek.by) ? { by: by(x.peek.by) } : {}) };
+  }
+  // SB6 (TR-15): a field this release does not know is kept as it is (an object with a numeric `at`).
+  for (const [f, v] of Object.entries(x)) {
+    if (KNOWN.includes(f) || !EXTRA_NAME.test(f) || !isObj(v) || !pos(v.at) || j(v).length > EXTRA_MAX) continue;
+    out[f] = v;
+  }
   for (const [field, clean] of [['exams', cleanExam], ['own', cleanOwn]]) {
     if (!isObj(x[field])) continue;
     const m = {};
@@ -123,6 +151,24 @@ export function offers(setup) {
 // ---- reads ------------------------------------------------------------------------
 export const helpOf = (x) => (isObj(x) && isObj(x.help) ? x.help : null);
 export const profileOf = (x) => (isObj(x) && isObj(x.profile) ? x.profile : null);
+/** SB6: 'sbs' (Step by step) or 'usual'. Absent = the usual way. */
+export const wayOf = (x) => (isObj(x) && isObj(x.way) && x.way.m === 'sbs' ? 'sbs' : 'usual');
+/** SB6: { min, big, after } with the defaults filled (10 minutes, big 0, no "not before" time). */
+export function sbsOf(x) {
+  const s = isObj(x) && isObj(x.sbs) ? x.sbs : {};
+  return {
+    min: SBS_MINUTES.includes(s.min) ? s.min : SBS_DEFAULT.min,
+    big: s.big === 1 ? 1 : 0,
+    after: isTime(s.after) ? s.after : '',
+  };
+}
+/** SB6: how long a Peek shows, in seconds. `way` defaults to wayOf(x); `input` is 'tiles' or 'keys'. A set 0 means "as now" (3 s tiles, 2 s keys); not set: 3 in Step by step, else as now. */
+export function peekSecondsOf(x, { way, input } = {}) {
+  const asNow = input === 'tiles' ? 3 : 2;
+  const p = isObj(x) && isObj(x.peek) && PEEK_SECONDS.includes(x.peek.s) ? x.peek.s : null;
+  if (p === null) return (way || wayOf(x)) === 'sbs' ? 3 : asNow;
+  return p === 0 ? asNow : p;
+}
 export const liveExams = (x) => Object.entries((isObj(x) && x.exams) || {}).filter(([, e]) => !e.gone)
   .map(([id, e]) => ({ id, ...e })).sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
 export const liveOwn = (x) => Object.entries((isObj(x) && x.own) || {}).filter(([, e]) => !e.gone)
@@ -139,7 +185,12 @@ export function merge(a, b) {
   const x = normalise(a);
   const y = normalise(b);
   const out = {};
-  for (const f of ['help', 'profile', 'offer', 'by']) {
+  for (const f of ['help', 'profile', 'offer', 'by', 'way', 'sbs', 'peek']) {
+    const v = later(x[f], y[f]);
+    if (v) out[f] = v;
+  }
+  for (const f of new Set([...Object.keys(x), ...Object.keys(y)])) { // SB6 (TR-15): unknown fields, the later `at` wins
+    if (KNOWN.includes(f)) continue;
     const v = later(x[f], y[f]);
     if (v) out[f] = v;
   }
@@ -219,5 +270,37 @@ export function setBy(x, n, now) {
   }
   if (s.by && s.by.n === name) return s;
   return { ...s, by: { n: name, at: next(s.by, now) } };
+}
+/**
+ * SB6 (TR-10): the way a child spells. m 'sbs' | 'usual'. Answers { setup, profileSet }. The first switch-on (BR-4 AC6): turning
+ * Step by step on also sets the test help to Extra support (profile 'sen'), but only when no profile is set; `profileSet` says so,
+ * so the card can say it. An unknown `m` changes nothing. The same way again keeps the value (and its `at`).
+ */
+export function setWay(x, m, now, who) {
+  const s = base(x);
+  if (!WAYS.includes(m)) return { setup: s, profileSet: false };
+  if (isObj(s.way) && s.way.m === m) return { setup: s, profileSet: false };
+  let out = { ...s, way: { m, at: next(s.way, now), ...(by(who) ? { by: by(who) } : {}) } };
+  let profileSet = false;
+  if (m === 'sbs' && !profileOf(s)) {
+    out = { ...out, profile: { p: 'sen', at: next(s.profile, now), ...(by(who) ? { by: by(who) } : {}) } };
+    profileSet = true;
+  }
+  return { setup: out, profileSet };
+}
+/** SB6: { min, big, after }; a part left out keeps its current value; a bad part leaves the setup unchanged. */
+export function setSbs(x, change, now, who) {
+  const s = base(x);
+  const cur = sbsOf(s);
+  const c = isObj(change) ? change : {};
+  const v = { min: 'min' in c ? c.min : cur.min, big: 'big' in c ? (c.big === true ? 1 : c.big === false ? 0 : c.big) : cur.big, after: 'after' in c ? c.after : cur.after };
+  if (!SBS_MINUTES.includes(v.min) || (v.big !== 0 && v.big !== 1) || !isTime(v.after)) return s;
+  return { ...s, sbs: { ...v, at: next(s.sbs, now), ...(by(who) ? { by: by(who) } : {}) } };
+}
+/** SB6: how long a Peek shows: 0 (as now), 2, 3 or 5 seconds. Anything else leaves the setup unchanged. */
+export function setPeek(x, sec, now, who) {
+  const s = base(x);
+  if (!PEEK_SECONDS.includes(sec)) return s;
+  return { ...s, peek: { s: sec, at: next(s.peek, now), ...(by(who) ? { by: by(who) } : {}) } };
 }
 export const byOf = (x) => (isObj(x) && isObj(x.by) ? x.by : null);

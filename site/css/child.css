@@ -158,6 +158,7 @@ html.wa-pre body :is(.allgames, .topbar__inner > .thememenu, #player-slot, #them
 .inarow { font-weight: 400; color: var(--muted); font-size: 0.92rem; }
 .peekrow { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; text-align: left; }
 .peekrow__hint { color: var(--muted); font-size: 0.92rem; line-height: 1.3; }
+.peekhint { margin: 2px 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.2; text-align: center; } /* M1/F1: under the Hear and Peek row of a tile page, one short line, no gap */
 .skiprow { display: flex; justify-content: center; margin: 4px 0 0; }
 .spellpage .btnrow--center .btn--wide { margin-top: 8px; }
 
@@ -528,3 +529,9 @@ body.is-child .keyboard .key { min-width: 32px; min-height: 48px; }
   html body main > section.wrap.page.play .play__top .pic, html body main > section.wrap.page.play .flower { height: clamp(64px, calc(var(--app-h) * 0.17), 100px); max-height: clamp(64px, calc(var(--app-h) * 0.17), 100px); }
   html body main > section.wrap.page.spellpage:not(.tilepage) .peekrow, html body main > section.wrap.page.spellpage:not(.tilepage) .skiprow, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .peekrow, html body main > section.wrap.page.spellpage:not(.tilepage) > [data-slot] > .skiprow { margin: 2px 0 0; }
 }
+
+/* SB6 Step by step (WP-6): the home tag and the job bar's Break button */
+.sbs-tag { display: inline-block; margin: 0 0 6px; padding: 2px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; background: var(--sb-soft, rgba(107, 63, 160, 0.12)); color: var(--sb, #6B3FA0); border: 1px solid currentColor; }
+.childbtn--break { min-height: 44px; }
+.childbtn--break svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin-right: 6px; }
+@media (max-width: 420px) { .childbtn--break { min-width: 44px; padding-inline: 10px; } .childbtn--break .childbtn__t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } .childbtn--break svg { margin-right: 0; } }

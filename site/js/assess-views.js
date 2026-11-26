@@ -22,6 +22,7 @@ import { SPELL_INSTRUCTION } from './child-doc.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
 const PEEK_MS = 3000;
+const peekSet = () => { const p = S.readSetup() && S.readSetup().peek; return p && Number(p.s) > 0 ? Number(p.s) * 1000 : 0; }; // a grown-up's Peek time, 0 = as before
 const today = () => W.localDay(Date.now());
 const svg = (d) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
 const HEAR = svg('<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/>');
@@ -54,7 +55,10 @@ const sum = (list, key) => list.reduce((n, r) => n + (r[key] || 0), 0);
 export function runCheck(main, opts) {
   const { kind, scope = {}, words, year } = opts;
   const pf = opts.pf === 'sen' || opts.pf === 'top' ? opts.pf : 'normal';
-  const rule = A.rulesFor(kind, pf);
+  // SB6 (TR-42, D7): a weekly test of a Step by step child has one Peek a word. The way in force when it opens decides (opts.way to say it).
+  const way = kind === 'test' && scope.weekly ? (opts.way || Su.wayOf(S.readSetup())) : 'usual';
+  const sbsTest = kind === 'test' && way === 'sbs';
+  const rule = A.rulesFor(kind, pf, { way });
   const inputLv = A.levelFor(kind, pf, opts.lv);
   const n = words.length;
   const exam = kind === 'exam';
@@ -94,7 +98,7 @@ export function runCheck(main, opts) {
   // ---- the ready screen, a rest, the wait ----
   function ready() {
     mode = 'ready';
-    const r = A.readyLines(kind, pf, n);
+    const r = A.readyLines(kind, pf, n, { sbs: sbsTest });
     screen('<section class="' + cls('ready') + '" data-assess="ready"><div class="assess__card">' + eyebrow + '<h1>' + esc(kindName) + '</h1>'
       + r.lines.map(sayRow).join('')
       + (exam ? '<div class="paperlines" aria-hidden="true"><span>1</span><span>2</span><span>3</span></div>' : '') + '</div>'
@@ -118,7 +122,7 @@ export function runCheck(main, opts) {
 
   // ---- one word ----
   const progressHtml = () => '<div class="assess__prog"><span class="progressline" data-progress>' + esc(A.progressLine(base.done + i + 1, base.of)) + '</span>' + meter(base.done + i, base.of).replace('<div ', '<div aria-label="' + esc(A.progressLine(base.done + i + 1, base.of)) + '" ', 1) + '</div>';
-  const answerOf = (k) => ({ w: words[k].word, ok: rec[k].ok, hr: rec[k].hr, hn: rec[k].hn, pk: rec[k].pk, lv: inputLv });
+  const answerOf = (k) => ({ w: words[k].word, ok: rec[k].ok, hr: rec[k].hr, hn: rec[k].hn, pk: rec[k].pk, lv: inputLv, ...(rec[k].pk ? { pr: rec[k].ok ? 1 : 0 } : {}) });
   function draftNow() {
     if (!opts.onDraft) return;
     opts.onDraft({ i, answers: rec.map((r, k) => (r.typed || r.hr || r.hn || r.pk ? { w: words[k].word, typed: r.typed, hr: r.hr, hn: r.hn, pk: r.pk } : null)) });
@@ -131,6 +135,9 @@ export function runCheck(main, opts) {
     const f = spec.letters.length > 1 && isUp(spec.letters[0].ch) ? 1 : 0;
     return spec.gaps.includes(f) ? f : -1;
   };
+
+  // How long a Peek shows: Step by step by its own setting (3 s unless a grown-up chose 2 or 5); the Usual way as before (3 s, or the grown-up's choice).
+  const peekLength = () => (sbsTest ? Su.peekSecondsOf(S.readSetup(), { way: 'sbs', input: spec ? 'tiles' : 'keys' }) * 1000 : peekSet() || PEEK_MS);
 
   function word() {
     mode = 'word';
@@ -218,7 +225,7 @@ export function runCheck(main, opts) {
           const p = q('[data-peek]');
           if (p) p.textContent = '';
           if (ctrl) { ctrl.lock(false); const s = ctrl.state(); if (nx) nx.disabled = !s.full; } else if (nx) nx.disabled = false;
-        }, PEEK_MS);
+        }, peekLength());
       });
     }
     q('[data-next]').addEventListener('click', commit);
@@ -334,10 +341,12 @@ export function runCheck(main, opts) {
     const right = extra.right !== undefined ? extra.right : result.right;
     const of = extra.of !== undefined ? extra.of : result.of;
     const miss = extra.miss || result.miss;
-    const L = A.endLines(kind, pf, { right, of, toPractise: miss.length }, scope);
+    // Step by step weekly test (D7): no count, no pass word. Two lists: words spelled, and words we'll keep practising (a word spelled after a Peek is one of them).
+    const sb = sbsTest ? A.sbsTestEnd(words.map((e) => e.word), miss) : null;
+    const L = sb ? { head: sb.head, lines: sb.lines, celebrate: false } : A.endLines(kind, pf, { right, of, toPractise: miss.length }, scope);
     const say = [L.head, ...L.lines].join(' ');
     const buttons = extra.buttons || [{ label: 'Back', href: opts.backHref || '#/', primary: true }];
-    const cards = miss.map((w) => {
+    const cards = (sb ? sb.keep : miss).map((w) => {
       const e = words.find((x) => x.word === w) || entryFor(w);
       return '<li class="assess__pcard"><span data-practise-word>' + chunked(e, '', { tricky: true }) + '</span><button type="button" class="hearround" data-hearword="' + esc(w) + '" aria-label="Hear the word">' + HEAR + '</button></li>';
     });
@@ -345,7 +354,8 @@ export function runCheck(main, opts) {
       + (L.celebrate ? '<span class="celebrate passmark" aria-hidden="true"><span class="passmark__badge">' + ICON.star + '</span>' + burstHtml(16, 2) + '</span>' : '')
       + eyebrow + '<div class="assess__says"><h1>' + esc(L.head) + '</h1><button type="button" class="hearround" data-sayall aria-label="Hear this">' + HEAR + '</button></div>'
       + L.lines.map((l) => '<p class="assess__line">' + esc(l) + '</p>').join('') + '</div>'
-      + (cards.length ? '<h2 class="assess__cardhead">Words to practise</h2><ul class="assess__cards">' + cards.join('') + '</ul>' : '')
+      + (sb && sb.spelled.length ? '<h2 class="assess__cardhead">' + esc(A.SBS_TEST_END.spelled) + '</h2><ul class="assess__cards" data-spelled>' + sb.spelled.map((w) => '<li class="assess__pcard"><span>' + chunked(words.find((x) => x.word === w) || entryFor(w), '', { tricky: true }) + '</span><button type="button" class="hearround" data-hearword="' + esc(w) + '" aria-label="Hear the word">' + HEAR + '</button></li>').join('') + '</ul>' : '')
+      + (cards.length ? '<h2 class="assess__cardhead">' + esc(sb ? A.SBS_TEST_END.keep : 'Words to practise') + '</h2><ul class="assess__cards" data-keep>' + cards.join('') + '</ul>' : '')
       + '<div class="assess__end">' + buttons.map((b) => '<a class="btn ' + (b.primary ? 'btn--primary' : 'btn--ghost') + '" href="' + esc(b.href) + '"'
         + (b.attr && /^[a-z-]+$/.test(b.attr) ? ' ' + b.attr : '') + (b.again ? ' data-again' : '') + '>' + esc(b.label) + (b.primary ? ICON.arrow : '') + '</a>').join('') + '</div></section>');
     placeBursts(main);

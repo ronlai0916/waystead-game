@@ -7,6 +7,7 @@ import * as W from './words-doc.js';
 import * as St from './study-doc.js';
 import * as Su from './setup-doc.js';
 import * as Ow from './own-doc.js';
+import * as K from './sbs-week-doc.js';
 
 // ---- the lines a grown-up reads ---------------------------------------------------------------------
 export const SET_TITLE = 'Set a week';
@@ -322,3 +323,21 @@ export function previewFirst(d, { words = [], test, name = '', by = '', year = n
     setBy: setByWords(role, by),
   };
 }
+
+// ---- SB6 (TR-47, D14, D24): the sittings estimate for each Step-by-step child ---------------------------------------------------------
+/**
+ * One line for each ticked child who is on Step by step: [{ name, line, calm }]. kids = [{ nickname, year, d }]; the words and the test date
+ * as the week will be made. Children on the Usual way get none. With one such child the line has no name in front (the page already says whose it is).
+ */
+export function estimateLines({ kids = [], words = [], test, today } = {}) {
+  if (!words.length || !isDay(test) || !isDay(today) || test < today) return [];
+  const sbs = kids.filter(sbsKid);
+  return sbs.map((k) => {
+    const e = K.estimate(words, { minutes: Su.sbsOf(W.setupOf(k.d)).min, today, test, year: Number.isInteger(k.year) && k.year > 0 ? k.year : undefined }); // D21: every word climbs the whole ladder
+    return { name: k.nickname, line: e.line, calm: e.calm, tries: e.tries, sittings: e.sittings };
+  });
+}
+/** Does this child learn Step by step? (k = { d }) */
+export const sbsKid = (k) => !!(k && k.d && Su.wayOf(W.setupOf(k.d)) === 'sbs');
+/** The estimate for one child's changed week (Change a week). */
+export const estimateOne = ({ nickname, year, d, words, test, today }) => estimateLines({ kids: [{ nickname, year, d }], words, test, today });

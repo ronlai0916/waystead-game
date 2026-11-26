@@ -24,8 +24,12 @@ export function picture(w, { blur = null, alt = true } = {}) {
   const cls = 'pic' + (blur != null ? ' pic--blur' : '');
   const label = alt ? 'Picture for ' + w.word : '';
   let inner;
+  const own = ownPictureUrl(w);
   if (hasImage(w)) {
     inner = '<img src="assets/images/' + esc(w.image) + '" alt="' + esc(label) + '" loading="lazy" decoding="async">';
+  } else if (own) {
+    // SB6 TR-53: a grown-up's approved picture of an own word. If it cannot load, the tile below takes its place (the error listener at the foot of this file).
+    inner = '<img src="' + esc(own) + '" alt="' + esc(label) + '" loading="lazy" decoding="async" data-ownpic="' + esc(w.word) + '" data-letter="' + esc(w.word[0].toUpperCase()) + '" data-pos="' + esc((w.meaning && w.meaning.partOfSpeech) || '') + '">';
   } else if (blur != null) {
     inner = '<div class="pic__ph" role="img" aria-label="Picture not drawn yet">' + WAYMARK + '<span>' + esc(w.meaning.partOfSpeech) + '</span></div>';
   } else {
@@ -136,8 +140,18 @@ function initKeyPop() {
 }
 initKeyPop();
 
-/** Where a word's picture stands: 'ready', or 'none' (the on-demand picture service is a later slice). 'pending' is drawn as "Picture on its way". */
-export const pictureState = (w) => (hasImage(w) ? 'ready' : 'none');
+// SB6 TR-53: the grown-up's approved pictures of own words, for THIS page load only (never stored). pictures-views.js fills it (A6, approved ones only).
+let APPROVED = { map: new Map(), url: () => '' };
+/** map: word -> picture id (A6); imageUrl(id): the account's image address. Replaces the whole map, so a removed picture is gone on the next load. */
+export function setApprovedPictures(map, imageUrl) {
+  APPROVED = { map: map instanceof Map ? new Map([...map].map(([w, id]) => [String(w).toLowerCase(), id])) : new Map(), url: typeof imageUrl === 'function' ? imageUrl : () => '' };
+}
+const ownPictureUrl = (w) => {
+  const id = w && typeof w.word === 'string' ? APPROVED.map.get(w.word.toLowerCase()) : null;
+  return id ? APPROVED.url(id) || '' : '';
+};
+/** Where a word's picture stands: 'ready' (a made picture, or a grown-up's approved one), or 'none'. A child never sees "on its way": nothing is shown until it is approved. */
+export const pictureState = (w) => (hasImage(w) || ownPictureUrl(w) ? 'ready' : 'none');
 
 /** "1 of 3 in a row", with its dots. */
 export const inARowHtml = (n, of = 3) => dotsHtml(n, of) + ' <span class="inarow">' + n + ' of ' + of + ' in a row</span>';
@@ -167,4 +181,27 @@ export function meter(done, total) {
 // Widths are set from JS so the page needs no inline style attributes (CSP).
 export function applyMeters(root) {
   root.querySelectorAll('.meter > span[data-w]').forEach((s) => { s.style.width = s.dataset.w + '%'; });
+}
+
+// A picture that will not load (offline, removed): the lettered tile stands in at once, and the word is dropped from the map so a redraw uses the sentence card.
+if (typeof document !== 'undefined') {
+  document.addEventListener('error', (e) => {
+    const img = e.target;
+    if (!img || img.tagName !== 'IMG' || !img.dataset || !img.dataset.ownpic) return;
+    APPROVED.map.delete(img.dataset.ownpic.toLowerCase());
+    const ph = document.createElement('div');
+    ph.className = 'pic__ph';
+    ph.setAttribute('role', 'img');
+    ph.setAttribute('aria-label', 'Picture for ' + img.dataset.ownpic);
+    const box = document.createElement('div');
+    // A screen that spells the word never shows its letter (SB6): inside [data-sbs] or .b6 the tile stays plain and neutral.
+    if (!img.closest('[data-sbs], .b6')) {
+      const b = document.createElement('b');
+      b.textContent = img.dataset.letter || '';
+      box.append(b);
+    }
+    if (!img.closest('[data-sbs], .b6') && img.dataset.pos) { box.append(document.createElement('br')); const sp = document.createElement('span'); sp.textContent = img.dataset.pos; box.append(sp); }
+    ph.append(box);
+    img.replaceWith(ph);
+  }, true);
 }

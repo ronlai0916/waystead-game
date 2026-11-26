@@ -224,9 +224,8 @@ export default function (H) {
       step('Fix it in, level ' + lv);
       await seed('child', withHelp(fixDoc(), lv), DAYS.fix);
       await go('#/words/g/g1/study/fix');
-      await click('[data-cover]');
       let n = await counts();
-      await click('[data-written]');
+      await click('[data-cover]'); // no paper step (SB6): Hide it goes straight to spelling it, and the word is said then
       await until('document.querySelector(".keyboard--tray")', 'the tray');
       const c = await trayCount();
       ok(c.keys === 0 && c.tiles <= 12 && c.rows <= 2 && c.gaps >= 1, 'tray shape ' + JSON.stringify(c));
@@ -241,9 +240,8 @@ export default function (H) {
     step('Fix it in: a slip shows a dot, never a cross, and never what was written');
     await seed('child', withHelp(fixDoc(), 1), DAYS.fix);
     await go('#/words/g/g1/study/fix');
-    await click('[data-cover]');
     const n1 = await counts();
-    await click('[data-written]');
+    await click('[data-cover]');
     await until('document.querySelector(".keyboard--tray")', 'the tray');
     const w1 = (await heardSince(n1)).toLowerCase();
     await click('[data-peekbtn]');
@@ -257,7 +255,6 @@ export default function (H) {
     await seed('child', withHelp(fixDoc(), 5), DAYS.fix);
     await go('#/words/g/g1/study/fix');
     await click('[data-cover]');
-    await click('[data-written]');
     await until('document.querySelector("[data-check]") && document.querySelector(".keyboard .key")', 'the keyboard');
     ok(await ev('document.querySelectorAll(".keyboard .key[data-letter]").length') === 26, 'level 5 keeps the keyboard');
     await keys('zz');
@@ -314,10 +311,19 @@ export default function (H) {
       const nw = await counts();
       await click('[data-hearmain]');
       const word = (await heardSince(nw)).toUpperCase();
+      // 24a: a wrong tile takes a petal, and the petals are fewer than the wrong tiles (the dots, the flower and "Petals left" agree from the start)
+      const wrongTiles = free.filter((L) => !word.includes(L)).length;
+      const petals = await ev('document.querySelectorAll(".flower .petal").length');
+      ok(wrongTiles >= 3, 'level ' + lv + ': ' + wrongTiles + ' wrong tiles on the pad');
+      ok(petals < wrongTiles && petals >= 2 && petals <= 6, 'level ' + lv + ': ' + petals + ' petals for ' + wrongTiles + ' wrong tiles');
+      ok(await ev('document.querySelectorAll(".lives i").length') === petals, 'the dots show ' + petals);
+      ok((await text('[data-wrongtext]')) === 'Petals left: ' + petals, 'Petals left starts at ' + petals + ': ' + await text('[data-wrongtext]'));
       const miss = free.find((L) => !word.includes(L));
       if (miss) {
         await ev('document.querySelector(".key[data-letter=' + miss + ']").click()');
-        ok(await ev('document.querySelectorAll(".flower .petal.fallen").length') === before, 'no petal lost');
+        ok(await ev('document.querySelectorAll(".flower .petal.fallen").length') === before + 1, 'a wrong tile takes a petal');
+        ok((await text('[data-wrongtext]')) === 'Petals left: ' + (petals - 1), 'Petals left ' + (petals - 1) + ': ' + await text('[data-wrongtext]'));
+        ok(await ev('document.querySelectorAll(".lives i.lost").length') === 1, 'one dot is spent');
         ok(await text('[data-line]') === 'Nearly. Try another letter.', 'line ' + await text('[data-line]'));
         ok(await ev('document.querySelector(".key[data-letter=' + miss + ']").disabled'), 'the letter greys out');
       }
@@ -332,6 +338,38 @@ export default function (H) {
     ok(await ev('document.querySelectorAll(".keyboard .key[data-letter]").length') === 26, '26 keys');
     await ev('document.querySelector(".key[data-letter=Z]").click()');
     ok(/Petals left: 5$/.test(await text('[data-wrongtext]')), 'Petals left: 5 of 6, ' + await text('[data-wrongtext]'));
+  });
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // 24a (Ron's iPhone Air, 24 Nov): in Hello words a wrong tile did not take a petal, and a child could tap every wrong tile and still win.
+  scene('SB5 24a flower game with tiles: a wrong tile takes a petal; petals are fewer than the wrong tiles', async () => {
+    await width(390, 844);
+    for (const lv of [1, 2, 3, 4]) {
+      step('Hello words flower game, level ' + lv);
+      await seed('child', withHelp(baseDoc(), lv), MON);
+      await go('#/words/g/g1/study/hello');
+      await until('document.querySelector("[data-play]")', 'the Hello word card');
+      await click('[data-play]');
+      await until('document.querySelector(".keyboard--pad .key") && document.querySelector("[data-wrongtext]")', 'the pad');
+      const nw = await counts();
+      await click('[data-hearmain]');
+      const word = (await heardSince(nw)).toUpperCase();
+      const free = await ev(`[...document.querySelectorAll('.keyboard--pad .key:not(:disabled)')].map((k) => k.dataset.letter)`);
+      const wrong = free.filter((L) => !word.includes(L));
+      const petals = await ev('document.querySelectorAll(".flower .petal").length');
+      ok(wrong.length >= 3, 'at least 3 wrong tiles: ' + wrong.join(''));
+      ok(petals >= 2 && petals <= 6 && petals < wrong.length, petals + ' petals, ' + wrong.length + ' wrong tiles');
+      ok((await text('[data-wrongtext]')) === 'Petals left: ' + petals && await ev('document.querySelectorAll(".lives i").length') === petals, 'Petals left and the dots start at ' + petals);
+      // tapping every wrong tile cannot win: the flower is bare before the last one
+      for (let i = 0; i < wrong.length; i += 1) {
+        if (!await has('.keyboard--pad')) break;
+        await ev('document.querySelector(".key[data-letter=' + wrong[i] + ']").click()');
+        if (i < petals - 1) ok((await text('[data-wrongtext]')) === 'Petals left: ' + (petals - 1 - i), 'tile ' + (i + 1) + ' took a petal: ' + await text('[data-wrongtext]'));
+      }
+      await until('document.querySelector("[data-next]")', 'the word is over');
+      ok(await has('.result--soft'), 'every wrong tile tapped: the word is not won');
+      ok(await ev('document.querySelectorAll(".flower .petal.fallen").length') === petals, 'the flower is bare');
+    }
   });
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -572,7 +610,7 @@ export default function (H) {
     // long words: at least 24 px between Peek and the tray
     for (const [w, h] of [[390, 664], [390, 844]]) {
       await openSpell('accidentally', 4, w, h);
-      const g = await ev(`(() => (document.querySelector('.traycol') || document.querySelector('.keyboard--tray')).getBoundingClientRect().top - document.querySelector('.peekrow').getBoundingClientRect().bottom)()`);
+      const g = await ev(`(() => (document.querySelector('.traycol') || document.querySelector('.keyboard--tray')).getBoundingClientRect().top - document.querySelector('[data-peekbtn]').getBoundingClientRect().bottom)()`);
       ok(g >= 23.5, 'accidentally at ' + w + 'x' + h + ': Peek to tray ' + g);
     }
   });

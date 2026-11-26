@@ -198,3 +198,34 @@ html[data-h="xs"] .sheet { padding-top: 6px; }
   body main > section.wrap.page.play .play__top .flower { height: 100%; width: auto; max-width: 100%; max-height: none; justify-self: center; min-height: 0; }
   body main > section.wrap.page.play .btnrow--center { margin-top: 0; }
 }
+
+/* SB5 24a (24 Nov, Ron's iPhone Air): "Meet this word" (Hello words) must show its main button ("Play the flower game") above --bottom-reserve with no scroll on a phone 744 px or taller
+   (390x844, 393x852, 402x874, 420x912, and Safari 27's two real states 420x746 reserve 8 and 420x845 reserve 79); on 375x667 and 360x640 it scrolls, and the card's own padding-bottom keeps the end clear.
+   The picture shrinks first: its side is the page height less the reserve less 520 px for everything else, at least 84 and at most 150. A short word (up to 8 letters) sits BESIDE the picture
+   (.wordcard--row); a long word and a card with no picture keep the stacked card with the same smaller picture. Hear it, Say the letters, the meaning and the example all stay; every control is 44 px or more. */
+@media (max-width: 600px) {
+  body main > section.hellopage { --hello-pic: clamp(84px, calc(var(--page-h) - var(--bottom-reserve) - 520px), 150px); padding-bottom: 12px; }
+  body main > section.hellopage .pagehead { margin-bottom: 8px; gap: 6px; }
+  body main > section.hellopage .wordcard--hello { gap: 10px; padding: 12px; }
+  body main > section.hellopage .wordcard--hello .pic:not(.pic--sentence) { width: var(--hello-pic); max-width: var(--hello-pic); aspect-ratio: 1; margin: 0 auto; }
+  body main > section.hellopage .wordcard--row { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 14px; }
+  body main > section.hellopage .wordcard--row .pic { margin: 0; }
+  body main > section.hellopage .wordcard--row > :nth-child(n + 3) { grid-column: 1 / -1; }
+  body main > section.hellopage .wordcard--hello .wordcard__word { font-size: clamp(1.9rem, 9vw, 2.4rem); }
+  body main > section.hellopage .stackbtns { gap: 8px; }
+  body main > section.hellopage .stackbtns .btn { min-height: 48px; height: 48px; }
+  body main > section.hellopage .means { gap: 4px; }
+  body main > section.hellopage .means__row { gap: 8px; }
+  body main > section.hellopage .means__row p { margin: 0; }
+  body main > section.hellopage .btnrow--wide { margin-top: 12px; }
+}
+
+/* FIX-U1a (M1/F1): a 320 x 568 tile page keeps Check above the bar. The picture has already gone; the heading row shares its line with the count, and the one-line Peek hint stays for a screen reader only. */
+html[data-h="xs"] body.is-child main > section.wrap.page.tilepage .pagehead { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 0 8px; margin: 0; }
+html[data-h="xs"] body.is-child main > section.wrap.page.tilepage .pagehead > h1 { margin: 0; font-size: 1.1rem; line-height: 1.2; flex: 0 1 auto; min-width: 0; }
+html[data-h="xs"] body.is-child main > section.wrap.page.tilepage .pagehead .rowcount { margin: 0; flex: none; font-size: 0.85rem; }
+html[data-h="xs"] body.is-child .tilepage .peekhint { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+html[data-h="xs"] body.is-child .tilepage .tileline { min-height: 44px; padding-block: 0; margin: 0; }
+html[data-h="xs"] body.is-child .tilepage .tileword { gap: 2px; padding-block: 4px; }
+html[data-h="xs"] body.is-child .tilepage .tileword .tileboxes { margin: 0; }
+html[data-h="xs"] body.is-child main > section.wrap.page.tilepage { gap: 4px; padding-top: 2px; }

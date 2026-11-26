@@ -24,6 +24,7 @@ import * as OV from './own-views.js'; // SB4-WP7
 import * as SC from './scan-views.js'; // SB4-WP8
 import * as SET from './set-views.js'; // SB5 (Set a week, Change a week)
 import * as RV from './results-views.js'; // SB5 (results for a list)
+import * as PV from './pictures-views.js'; // SB6 (word pictures, grown-up pages)
 import { adultParent } from './nav-doc.js'; // SB5 (TR-4)
 import { createRoleStore } from './role-data.js'; // SB5 (role: redirects and landing)
 import { safeDecode } from './chapters-doc.js';
@@ -151,6 +152,10 @@ const ROUTES = [
   ['grownups/role', GU.rolePage],
   ['grownups/help', GU.helpTable],
   ['grownups/more', GU.askMore], // SB5 (at-limit homes: Ask for more places)
+  // SB6 routes (TR-49): all 'adult' in test-guard.js. previewPage is WP-7's (setup-views.js): looked up when opened.
+  ['grownups/pictures', PV.picturesCard],
+  ['grownups/pictures/list/:oid', PV.picturesPage],
+  ['grownups/child/:cid/preview', later(SU, 'previewPage', GU.childDashboard)],
   ['grownups/teach', redirect(() => (roleNow() === 'teacher' ? 'grownups' : 'grownups/own'))],
   ['grownups/teach/:oid', redirect((p) => (piece(p.oid) ? 'grownups/own/' + piece(p.oid) + '/results' : 'grownups/own'))],
 
@@ -204,7 +209,8 @@ function parentOf(path) {
   if (parts[0] === 'grownups' && parts[1] === 'own' && parts[3] && ['results', 'edit', 'give', 'copy', 'sentences'].includes(parts[3])) return '#/grownups/own/' + parts[2];
   if (parts[0] === 'grownups' && parts[1] === 'more') return '#/grownups';
   if (parts[0] === 'grownups' && parts[1] === 'child' && parts[2] && parts[3] === 'week' && parts[4]) return '#/grownups/child/' + parts[2] + '/weeks';
-  if (parts[0] === 'grownups' && parts[1] === 'child' && parts[2] && ['weeks', 'print', 'rename'].includes(parts[3])) return '#/grownups/child/' + parts[2];
+  if (parts[0] === 'grownups' && parts[1] === 'pictures') return '#/grownups/own'; // SB6 (TR-49): the grid of one list and the Word pictures card
+  if (parts[0] === 'grownups' && parts[1] === 'child' && parts[2] && ['weeks', 'print', 'rename', 'preview'].includes(parts[3])) return '#/grownups/child/' + parts[2];
   if (parts[0] === 'grownups' && (parts[1] === 'yourself' || parts[1] === 'role' || parts[1] === 'help')) return '#/grownups';
   // SB4-WP7 parentOf
   // SB4-WP8 parentOf

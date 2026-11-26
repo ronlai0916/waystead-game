@@ -36,6 +36,10 @@ export const PROFILES = [
   { id: 'iphone-17pro', label: 'iPhone 17 Pro, Safari 26', w: 402, h: 874, ua: SAFARI26, touch: 5, sat: 62, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'm' },
   { id: 'iphone-16', label: 'iPhone 16, Safari 26', w: 393, h: 852, ua: SAFARI26, touch: 5, sat: 59, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
   { id: 'iphone-14', label: 'iPhone 14, Safari 26', w: 390, h: 844, ua: SAFARI26, touch: 5, sat: 47, sab: 34, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 's' },
+  // SB6 (TR-70): the smallest phone, iPhone SE 1st generation, 320 x 568 with Safari's bar, modelled like iphone-se (bar 78, reserve 84 as device.js gives it).
+  // sb6: true = today's SB5 pages were never built for it (Fix it in, practice, the games need 9 px more width and about 80 px more height): the 'SB5 devices' scenes skip it unless DEVICES_ALL=1;
+  // the SB6 harness (tools/smoke-sb6) measures it, and baseline-23b.json holds today's numbers.
+  { id: 'iphone-se1', label: 'iPhone SE (1st gen), Safari, 320x568 (SB6)', w: 320, h: 568, ua: SAFARI26, touch: 5, sat: 20, sab: 0, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'xs', sb6: true },
   { id: 'iphone-se', label: 'iPhone SE, Safari 26', w: 375, h: 667, ua: SAFARI26, touch: 5, sat: 20, sab: 0, bar: 78, os: 'ios', browser: 'safari', reserve: 84, cls: 'xs' },
   { id: 'iphone-chrome', label: 'iPhone 16, Chrome', w: 393, h: 700, ua: CHROME_IOS, touch: 5, sat: 0, sab: 0, bar: 0, os: 'ios', browser: 'chrome', reserve: 12, cls: 's' },
   { id: 'pixel-9', label: 'Pixel 9, Chrome', w: 412, h: 915, ua: PIXEL, touch: 5, sat: 0, sab: 0, bar: 0, os: 'android', browser: 'chrome', reserve: 16, cls: 'l' },
@@ -43,10 +47,14 @@ export const PROFILES = [
   { id: 'samsung-360x640', label: 'Samsung 360x640, Samsung Internet', w: 360, h: 640, ua: SAMSUNG, touch: 5, sat: 0, sab: 0, bar: 0, os: 'android', browser: 'samsung', reserve: 16, cls: 's' },
   { id: 'ipad-portrait', label: 'iPad 820x1180, Safari', w: 820, h: 1180, ua: IPAD, touch: 5, sat: 0, sab: 20, bar: 0, os: 'ipados', browser: 'safari', reserve: 36, cls: 'l' },
   { id: 'ipad-landscape', label: 'iPad 1180x820, Safari', w: 1180, h: 820, ua: IPAD, touch: 5, sat: 0, sab: 20, bar: 0, os: 'ipados', browser: 'safari', reserve: 36, cls: 'm' },
+  // SB6 (D17): tablet portrait and landscape are as important as phones for Step by step. ipad-portrait (820x1180) and ipad-landscape (1180x820) are above;
+  // 1180x640 is a landscape iPad with Safari's bars (the two-column rule in CLAUDE.md). Today's flower game, Mix and the adult Type-all page scroll or end 1 to 26 px under the line there
+  // (found by WP-10, 24 Nov): the 'SB5 devices' scenes skip it unless DEVICES_ALL=1; the SB6 harness measures it and baseline-23b.json holds today's numbers.
+  { id: 'ipad-landscape-bars', label: 'iPad 1180x640, Safari with bars (SB6)', w: 1180, h: 640, ua: IPAD, touch: 5, sat: 0, sab: 20, bar: 0, os: 'ipados', browser: 'safari', reserve: 36, cls: 's', sb6: true },
   { id: 'desktop', label: 'Desktop 1280x800', w: 1280, h: 800, ua: DESK, touch: 0, sat: 0, sab: 0, bar: 0, os: 'desktop', browser: 'chrome', reserve: 16, cls: 'm' },
 ];
 
-const CONTROLS = '[data-check],[data-next],[data-hear],[data-hearmain],[data-peekbtn],[data-skip],[data-go],[data-job],[data-fold="check"],[data-fold="next"]';
+const CONTROLS = '[data-check],[data-next],[data-hear],[data-hearmain],[data-peekbtn],[data-skip],[data-go],[data-job],[data-fold="check"],[data-fold="next"],[data-play]';
 
 export default function (H) {
   const { scene, go, click, ev, ok, until, sleep, open, acct, signedOutBlank, seedChild, weekDoc, gameDayDoc, practiceDayDoc, studied, MON, plus, W, CHILD, CHILD2, ADULT, send } = H;
@@ -94,7 +102,7 @@ export default function (H) {
   const MEASURE = (limit) => `(() => {
     const limit = ${limit}, ih = innerHeight, root = document.scrollingElement;
     const vis = (e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); if (r.width < 2 || r.height < 2 || cs.visibility === 'hidden' || cs.display === 'none') return false; for (let n = e; n && n !== document.documentElement; n = n.parentElement) if (n.hidden || n.hasAttribute('inert') || n.getAttribute('aria-hidden') === 'true') return false; return true; };
-    const name = (e) => (e.dataset && Object.keys(e.dataset).find((k) => ['check','next','hear','hearmain','peekbtn','skip','go','job'].includes(k))) || e.tagName.toLowerCase();
+    const name = (e) => (e.dataset && Object.keys(e.dataset).find((k) => ['check','next','hear','hearmain','peekbtn','skip','go','job','play'].includes(k))) || e.tagName.toLowerCase();
     const seen = new Set();
     const ctl = [...document.querySelectorAll(${JSON.stringify(CONTROLS)})].filter(vis).map((e) => ({ e, r: e.getBoundingClientRect() })).filter(({ e, r }) => { const k = name(e) + Math.round(r.bottom); if (seen.has(k)) return false; seen.add(k); return true; });
     const hit = (e, r) => { for (const [fx, fy] of [[0.5, 0.5], [0.15, 0.5], [0.85, 0.5]]) { const x = r.left + r.width * fx, y = r.top + r.height * fy; if (y < 0 || y > ih || x < 0 || x > innerWidth) return 'off-screen'; const t = document.elementFromPoint(x, y); if (t && !e.contains(t) && !t.contains(e)) return 'covered by ' + (t.className || t.tagName); } return ''; };
@@ -130,7 +138,7 @@ export default function (H) {
   const KEYS = 'document.querySelector(".keyboard .key, .tray .key, .ltile, .keyboard--tray")';
   const D1 = plus(1); const D2 = plus(2); const D4 = plus(4); const D5 = plus(5);
   const FLOWER_LIST = `(async () => { const c = await (await fetch('data/curriculum.json')).json(); return c.year_3_4.chapters.flatMap((ch) => ch.words.map((w) => w.word)).slice(0, 10); })()`;
-  const fixTyping = async () => { await click('[data-cover]'); await click('[data-written]'); await until('document.querySelector("[data-check]") && ' + KEYS, 'Fix it in typing'); };
+  const fixTyping = async () => { await click('[data-cover]'); if (await ev('!!document.querySelector("[data-written]")')) await click('[data-written]'); await until('document.querySelector("[data-check]") && ' + KEYS, 'Fix it in typing'); };
   // Set a week: Children step, Next, the New tab, Word by word
   const toWordByWord = async () => {
     await sleep(400);
@@ -147,7 +155,7 @@ export default function (H) {
   const PAGES = [
     ['child-today', childSeed(gameDayDoc, D2), D2, '#/', 'document.querySelector("[data-room=job]")', null, { today: true }],
     ['child-fix-keyboard', childSeed(helloDone, D1), D1, '#/words/g/g1/study/fix', 'document.querySelector("[data-cover]")', fixTyping, { fit: true }],
-    ['child-fix-tiles', childTiles(helloDone, D1, 1), D1, '#/words/g/g1/study/fix', 'document.querySelector("[data-cover]")', async () => { await click('[data-cover]'); await click('[data-written]'); await until('document.querySelector("[data-check]") && document.querySelector(".keyboard--tray .ltile, .keyboard--tray")', 'Fix it in tiles'); }, { fit: true }],
+    ['child-fix-tiles', childTiles(helloDone, D1, 1), D1, '#/words/g/g1/study/fix', 'document.querySelector("[data-cover]")', async () => { await click('[data-cover]'); if (await ev('!!document.querySelector("[data-written]")')) await click('[data-written]'); await until('document.querySelector("[data-check]") && document.querySelector(".keyboard--tray .ltile, .keyboard--tray")', 'Fix it in tiles'); }, { fit: true }],
     ['child-practice', childSeed(practiceDayDoc, D4), D4, '#/words/g/g1/spell/0', 'document.querySelector(".spellbox.is-next")', null, { fit: true }],
     ['child-test', childSeed(() => studied(weekDoc()), D5), D5, '#/words/g/g1/test', 'document.querySelector("[data-next]") && ' + KEYS, null, { fit: true }],
     ['child-quiz', childSeed(gameDayDoc, D2), D2, '#/words/g/g1/quiz', 'document.querySelector("[data-check],[data-next],.keyboard .key,main h1")', null, { fit: true }],
@@ -166,6 +174,10 @@ export default function (H) {
       await go('#/custom/play');
       await until('document.querySelector(".blanks") && document.querySelector("[data-wrongtext]")', 'the flower game with tiles');
     }, { flower: true, last: true, fitTall: true }],
+    // 24a: "Meet this word", the card before the flower game: the main button in view above the reserve at 744+ px, reachable above it by scrolling on the shortest phones
+    ['child-hello-card', childSeed(weekDoc, MON), MON, '#/words/g/g1/study/hello', 'document.querySelector("[data-play]")', async () => { await sleep(300); }, { last: true, reach: true, fitTall: true }],
+    ['child-hello-card-tiles', childTiles(weekDoc, MON, 1), MON, '#/words/g/g1/study/hello', 'document.querySelector("[data-play]")', async () => { await sleep(300); }, { last: true, reach: true, fitTall: true }],
+    ['child-hello-card-night', childSeed(weekDoc, MON), MON, '#/words/g/g1/study/hello', 'document.querySelector("[data-play]")', async () => { await sleep(300); }, { last: true, reach: true, fitTall: true, night: true }],
     ['child-hello-tiles', childTiles(weekDoc, MON, 1), MON, '#/words/g/g1/study/hello', 'document.querySelector("[data-play]")', async () => { await click('[data-play]'); await until('document.querySelector(".blanks") && document.querySelector("[data-wrongtext]")', 'Hello words flower game'); }, { flower: true, last: true, fitTall: true }],
     ['child-hello-keys', childSeed(weekDoc, MON), MON, '#/words/g/g1/study/hello', 'document.querySelector("[data-play]")', async () => { await click('[data-play]'); await until('document.querySelector(".blanks") && document.querySelector("[data-wrongtext]")', 'Hello words flower game'); }, { flower: true, last: true, fitTall: true }],
     ['adult-word-by-word-night', adultSeed(D2), D2, '#/grownups/set', 'document.querySelector(".st-page")', async () => { await toWordByWord(); }, { bar: '.st-bar', optional: true, last: true, fields: true, night: true }],
@@ -218,7 +230,7 @@ export default function (H) {
     if (!o.sheet && !o.bar && !o.fixedBars) {
       if (!m.ctl.length && !o.noctl) add('no main buttons found');
       for (const c of m.ctl) {
-        if (c.b > limit + 0.5) add(c.n + ' bottom ' + c.b + ' is ' + (c.b - limit) + ' px below the line ' + limit + ' (reserve ' + p.reserve + ')');
+        if (c.b > limit + 0.5 && !(o.reach && (p.h < 744 || p.w > 600))) add(c.n + ' bottom ' + c.b + ' is ' + (c.b - limit) + ' px below the line ' + limit + ' (reserve ' + p.reserve + ')');
         if (c.t < 0) add(c.n + ' top ' + c.t + ' is above the screen');
         if (c.bad) add(c.n + ' ' + c.bad);
         if (c.r > m.iw + 0.5 || c.l < -0.5) add(c.n + ' is cut off sideways (' + c.l + '..' + c.r + ' of ' + m.iw + ')');
@@ -249,7 +261,7 @@ export default function (H) {
       await ev(`document.scrollingElement.scrollTo({ top: 0, behavior: 'instant' })`);
       num.lastTop = top.b; num.lastEnd = end.b; num.lastWho = end.who;
       if (o.last && !o.bar && !o.sheet && end.b > limit + 0.5) add('the last content (' + end.who + ') ends at ' + end.b + ' when scrolled to the end: under the reserve line ' + limit);
-      if (o.fitTall && p.w >= 390 && p.h >= 744 && (top.b > limit + 0.5 || r)) add('must fit with no scrolling: the last content (' + top.who + ') ends at ' + top.b + ', the reserve line is ' + limit + (r ? ', the page scrolls' : ''));
+      if (o.fitTall && p.w >= 390 && p.h >= 744 && !(o.reach && p.w > 600) && (top.b > limit + 0.5 || r)) add('must fit with no scrolling: the last content (' + top.who + ') ends at ' + top.b + ', the reserve line is ' + limit + (r ? ', the page scrolls' : ''));
     }
     if (o.fields) {
       const f = await ev(`(() => { const lum = (c) => { const v = c.map((x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
@@ -311,6 +323,7 @@ export default function (H) {
       let n = 0;
       for (const p of PROFILES) {
         if (only && !only.test(p.id)) continue;
+        if (p.sb6 && !process.env.DEVICES_ALL) continue; // the two SB6 profiles (iphone-se1, ipad-landscape-bars): today's pages were not built for them, see their comments
         for (const pg of PAGES.filter(pick)) {
           if (onlyPages && !onlyPages.test(pg[0])) continue;
           await runPage(p, pg, defects);
@@ -357,6 +370,7 @@ export default function (H) {
     ok(!defects.length, defects.length + ' bar-change defects (listed above)');
   });
   make('child keyboard and tile pages', (pg) => /^child-(fix|practice|test|quiz|quick|flower|hello)/.test(pg[0]));
+  make('Meet this word fits', (pg) => /^child-hello-card/.test(pg[0]));
   make('child Today, games and Menu', (pg) => /^child-(today|game|menu)/.test(pg[0]));
   make('grown-up pages', (pg) => /^adult-/.test(pg[0]));
 }

@@ -23,6 +23,18 @@
 //   pf 'sen'|'top' (the help used, on a k:'t' try only). A try with lv 1..3, h or hn is "assisted": it still earns
 //   dots, stars and jobs, but it can't make a word remembered. No new `k`, no new `s`.
 //
+//   SB6 (Step by step; TRS TR-10..TR-16). Everything is optional and absent = today's behaviour; no new `k`, no new `s`:
+//   · group: any unknown field named like /^[a-z][a-zA-Z0-9]{0,11}$/ of at most 1 KB is kept as it is (TR-15). (A `focus` field from an
+//     earlier build is such a field: kept, never acted on, D21.)
+//   · try: r 1..31 (rung code; the whole-word code is RULES.rungs.allCode = 31, MAX_RUNG), j 'h'|'f'|'w'|'k'|'b'|'m'|'q' (stone), ss (sitting id, 6 chars), sl (slip box indices, at most 5),
+//     rw 2..10 (row size), pr 0|1 (a test word spelled after a Peek: right or not); note: bl 1|3|4, hp 1;
+//   · steps: '<group>|se:<ss>' (a sitting ended), '<group>|rw:<k>' and '<group>|rw:<k>:<i>' (rows done), '<group>|practice';
+//   · top level: aside?: { ['<group>|<word lower case>']: { day: 'YYYY-MM-DD' | '', at } } (SB6 D25): a grown-up sets a stuck word aside for one
+//     day (day '' = brought back). Written ONLY by grownups-data setAsideWord; newest `at` wins in merge; dropped once its day has passed.
+//   · top level: any other key whose value is a JSON object or array of at most 4 KB is kept (extras) and merged by `.at`.
+//   · folded days gain: RUNG slots 1..15 (bits 16..30, thermometer: a clean try at a rung sets every slot up to its own; the whole word
+//     sets slot 15, a partial rung saturates at slot 14), and ALL_FIRST (bit 7), ALL_TRIED (bit 6), R_TRY (bit 5); ladderFacts reads them.
+//
 //   k: 'p' practice, 't' the test, 'f' a fix-up. A practice or fix-up try may
 //   also have s: 'x' (Fix it in), 'g' (a spelling game) or 'm' (Meaning match);
 //   no s means the grid. Meaning match doesn't test spelling: it can earn the
@@ -54,6 +66,7 @@
 import { mergeLog, foldOldest, newest } from './account/merge.js';
 import * as Su from './setup-doc.js';
 import * as Ow from './own-doc.js';
+import { RULES } from './sbs-rules.js';
 
 export const DOC_KEY = 'words';
 export const TRIM_AT = 48 * 1024;
@@ -79,6 +92,18 @@ const FIX_FIRST = 16; // a fix-up's first try that day was clean
 // as it always did: FIRST or TEST_RIGHT.
 const RECALL = 16384;
 const ERA = 32768;
+// SB6 (TR-12): the ladder's facts, kept in a folded day so trimming never loses them. SB5 merges keep these bits (they OR folds).
+// Bit budget: 1..16 and 256..32768 were used before; 32, 64, 128 and 65536 up were free. Slots take 1<<16 .. 1<<30 (fifteen), the three flags
+// take 32, 64 and 128. Bit 31 is never used (it is the sign in JS).
+export const MAX_RUNG = 31; // a rung code a try may carry (D20: a word of 20 letters needs partial codes up to 20)
+export const ALL_RUNG = (RULES.rungs && Number.isInteger(RULES.rungs.allCode) ? RULES.rungs.allCode : MAX_RUNG); // the whole-word code (31)
+const TOP_SLOT = 15;
+const slotOf = (r) => (r === ALL_RUNG ? TOP_SLOT : Math.min(r, TOP_SLOT - 1));
+const SLOT_BIT = (k) => 1 << (15 + k); // slot 1..15 -> 1<<16 .. 1<<30
+const RUNG_BITS = 0x7fff << 16;
+const ALL_FIRST = 1 << 7; // the first whole-word try of that word that day was clean, no Peek
+const ALL_TRIED = 1 << 6; // a whole-word try was made that day (so a later one is not the first)
+const R_TRY = 1 << 5; // any try with a rung was made that day (the word has "met")
 // Practise 3 times: 3 clean spellings in a row that day, by flow.
 const ROW = { p: 2048, x: 4096, f: 8192 }; // the grid, Fix it in, fix-ups
 const ROW_BITS = ROW.p | ROW.x | ROW.f;
@@ -89,9 +114,20 @@ const MATCH_CLEAN = 512;
 const SPELT = 1024; // someone spelled the word that day
 export const ROW_NEEDED = 3;
 const SKIP_KEEP_MS = 3 * 86400000; // a skip only matters on its own day
+const PROTECT_MS = 24 * 3600 * 1000; // SB6: trim folds the tries from the last 24 hours (or the newest sitting's first try) on last
 export const MAX_NOTES = 60; // sentences kept when the value is trimmed
 export const MAX_CLUE = 80;
 export const MAX_NOTE = 160;
+
+// SB6 (TR-15): top-level keys this release knows; any other key with a small JSON object or array is kept.
+const TOP = ['v', 'resetAt', 'groups', 'results', 'folded', 'steps', 'clues', 'notes', 'skips', 'weekPick', 'setup', 'own', 'aside'];
+const TOP_NAME = /^[A-Za-z][A-Za-z0-9_]{0,23}$/;
+export const MAX_EXTRA = 4096; // bytes of JSON for one unknown top-level key
+const GROUP_KNOWN = ['name', 'start', 'test', 'words', 'back', 'at', 'gone'];
+const GROUP_NAME = /^[a-z][a-zA-Z0-9]{0,11}$/;
+export const MAX_GROUP_EXTRA = 1024; // bytes of JSON for one unknown group field
+const jbytes = (x) => new TextEncoder().encode(JSON.stringify(x)).length;
+const lc = (w) => String(w).toLowerCase();
 
 export const emptyDoc = () => ({ v: 1, resetAt: 0, groups: {}, results: [], folded: {}, steps: {}, clues: {}, notes: [], skips: [] });
 export const sizeOf = (d) => new TextEncoder().encode(JSON.stringify(d)).length;
@@ -108,7 +144,11 @@ export function normalise(d) {
   out.resetAt = num(d.resetAt);
   for (const [id, g] of Object.entries(isObj(d.groups) ? d.groups : {})) {
     if (!isObj(g) || !isDay(g.start) || !isDay(g.test)) continue;
-    out.groups[id] = { name: String(g.name || ''), start: g.start, test: g.test, words: strings(g.words), back: strings(g.back), at: num(g.at), ...(g.gone ? { gone: num(g.gone) } : {}) };
+    const words = strings(g.words);
+    out.groups[id] = { name: String(g.name || ''), start: g.start, test: g.test, words, back: strings(g.back), at: num(g.at), ...(g.gone ? { gone: num(g.gone) } : {}) };
+    for (const [f, v] of Object.entries(g)) { // SB6 (TR-15): a group field this release does not know, kept as it is
+      if (!GROUP_KNOWN.includes(f) && GROUP_NAME.test(f) && v !== undefined && jbytes(v) <= MAX_GROUP_EXTRA) out.groups[id][f] = v;
+    }
   }
   out.results = (Array.isArray(d.results) ? d.results : []).filter((r) => isObj(r) && typeof r.id === 'string' && typeof r.w === 'string'
     && typeof r.g === 'string' && isDay(r.d) && ['p', 't', 'f'].includes(r.k) && num(r.at));
@@ -130,7 +170,40 @@ export function normalise(d) {
   if (!Su.isEmpty(setup)) out.setup = setup;
   const own = Ow.normalise(d.own);
   if (!Ow.isEmpty(own)) out.own = own;
+  const aside = cleanAside(d.aside);
+  if (aside) out.aside = aside;
+  for (const [k, v] of Object.entries(d)) { // SB6 (TR-15): a top-level key this release does not know, kept as it is
+    if (!TOP.includes(k) && TOP_NAME.test(k) && v !== null && typeof v === 'object' && jbytes(v) <= MAX_EXTRA) out[k] = v;
+  }
   return out;
+}
+
+// ---- SB6 (D25): a grown-up sets a stuck word aside for today --------------------------------------------------------------
+const asideKey = (gid, word) => gid + '|' + String(word).toLowerCase();
+function cleanAside(a) {
+  if (!isObj(a)) return null;
+  const out = {};
+  for (const [key, e] of Object.entries(a)) {
+    if (!/^[^|]+\|[^|]+$/.test(key) || key.length > 80 || !isObj(e) || !num(e.at) || !(e.day === '' || isDay(e.day))) continue;
+    out[key] = { day: e.day, at: e.at };
+  }
+  return Object.keys(out).length ? out : null;
+}
+/** An entry is spent once its day has passed (a brought-back mark: three days after it was made). */
+const asideLive = (e, today, now) => (e.day ? e.day >= today : now - e.at < 3 * DAY_MS);
+/** Is this word set aside by a grown-up for `day`? */
+export const isSetAside = (d, gid, word, day) => { const e = d && d.aside && d.aside[asideKey(gid, word)]; return !!e && !!e.day && e.day === day; };
+/**
+ * A grown-up sets a word aside for `day` ('YYYY-MM-DD'), or brings it back (day ''). Answers the new words value. WRITTEN ONLY by
+ * grownups-data setAsideWord (a child's device never calls this). `at` always goes up so the change wins the merge; spent entries go.
+ */
+export function setAside(d, gid, word, day, now) {
+  if (typeof gid !== 'string' || !gid || gid.includes('|') || typeof word !== 'string' || !word.trim() || word.includes('|') || !(day === '' || isDay(day))) return d;
+  const key = asideKey(gid, word.trim());
+  const prev = (d.aside || {})[key];
+  const today = localDay(now);
+  const kept = Object.fromEntries(Object.entries(d.aside || {}).filter(([k, e]) => k !== key && asideLive(e, today, now)));
+  return { ...d, aside: { ...kept, [key]: { day, at: Math.max(now, (prev ? prev.at : 0) + 1) } } };
 }
 
 // ---- days ----------------------------------------------------------------------
@@ -198,7 +271,7 @@ export const needsStarter = (d) => !Object.values(d.groups).some((g) => g.at > d
 export function editGroup(d, id, changes, today, now) {
   const g = d.groups[id];
   if (!g || g.gone) return { error: 'That week has gone.' };
-  const next = { ...g, at: now };
+  const next = { ...g, at: Math.max(now, g.at + 1) }; // never ties with the stored copy (as delete and restore)
   if ('name' in changes) {
     const name = String(changes.name || '').trim().slice(0, MAX_NAME);
     if (!name) return { error: 'Please give the week a name.' };
@@ -255,7 +328,25 @@ export function restoreGroup(d, id, now) {
 
 // ---- tries ---------------------------------------------------------------------
 /** One try: { id, word, day, group, kind: 'p'|'t'|'f', tries, peeks, clean, source?: 'x'|'g', now }. */
-export function addTry(d, { id, word, day, group, kind, tries, peeks, clean, source, now, lv, h, hn, hr, pf }) {
+export const JOBS = ['h', 'f', 'w', 'k', 'b', 'm', 'q']; // SB6 `j`: Meet, Letter ladder, rows, quick check, builder level 2, Mend, Practice-page game
+export const MAX_SLIPS = 5;
+export const MAX_BOX = 19;
+/** SB6: a list of slip box indices as stored (distinct integers 0..19, ascending, at most 5), or [] when none is valid. */
+export const cleanSlips = (a) => (Array.isArray(a) ? [...new Set(a.filter((i) => Number.isInteger(i) && i >= 0 && i <= MAX_BOX))].sort((x, y) => x - y).slice(0, MAX_SLIPS) : []);
+const isSitting = (x) => typeof x === 'string' && /^[a-z0-9]{6}$/.test(x);
+export function addTry(d, { id, word, day, group, kind, tries, peeks, clean, source, now, lv, h, hn, hr, pf, r, j, ss, sl, rw, pr }) {
+  // SB6 (TR-13): a test word spelled after a Peek is { c: 0, p >= 1, pr } so it is out of the pass mark and goes to "keep practising".
+  // `pr` counts only when a Peek really happened (peeks >= 1): it is never invented, and then `c` is forced to 0.
+  const peeked = kind === 't' && peeks >= 1 && (pr === 0 || pr === 1);
+  if (peeked) clean = false;
+  const sbs = {
+    ...(Number.isInteger(r) && r >= 1 && r <= MAX_RUNG ? { r } : {}),
+    ...(JOBS.includes(j) ? { j } : {}),
+    ...(isSitting(ss) ? { ss } : {}),
+    ...(cleanSlips(sl).length ? { sl: cleanSlips(sl) } : {}),
+    ...(Number.isInteger(rw) && rw >= 2 && rw <= 10 ? { rw } : {}),
+    ...(peeked ? { pr } : {}),
+  };
   // SB4 optional fields: written only when set, never undefined or 0. Absent = a keyboard try.
   const extra = {
     ...(Number.isInteger(lv) && lv >= 1 && lv <= 4 ? { lv } : {}),
@@ -264,26 +355,40 @@ export function addTry(d, { id, word, day, group, kind, tries, peeks, clean, sou
     ...(hr > 0 ? { hr } : {}),
     ...(kind === 't' && (pf === 'sen' || pf === 'top') ? { pf } : {}),
   };
-  return { ...d, results: [...d.results, { id, w: word, d: day, g: group, k: kind, t: tries, p: peeks, c: clean ? 1 : 0, ...(source ? { s: source } : {}), ...extra, at: now }] };
+  return { ...d, results: [...d.results, { id, w: word, d: day, g: group, k: kind, t: tries, p: peeks, c: clean ? 1 : 0, ...(source ? { s: source } : {}), ...extra, ...sbs, at: now }] };
 }
 const byTime = (a, b) => a.at - b.at || (a.id < b.id ? -1 : 1);
 const unaided = (r) => !!r.c && !r.t && !r.p;
 /** Tile help (SB4): the letters were mostly given (lv 1..3), the tray filled one, or a first-letter hint. Absent fields: a keyboard try. */
 export const assisted = (r) => (r.lv >= 1 && r.lv <= 3) || !!r.h || r.hn > 0;
 /** Unaided and not assisted: this counts towards remembered. */
-export const recall = (r) => unaided(r) && !assisted(r);
+export const recall = (r) => unaided(r) && !assisted(r) && !(Number.isInteger(r.r) && r.r >= 1 && r.r < ALL_RUNG); // SB6 (M4): a try at a rung below the whole word (a Copy, a gap) is practice, never recall
 const cellKey = (g, w) => g + '|' + w;
 const wordOfKey = (key) => key.slice(key.indexOf('|') + 1);
 
 const isMatch = (r) => r.s === 'm';
 // The first go of a day is the first time the word is spelled.
 const firstOf = (days, day) => !(day in days) || (!!(days[day] & MATCH) && !(days[day] & SPELT));
-function flagsOf(r, first) {
+const validRung = (r) => Number.isInteger(r.r) && r.r >= 1 && r.r <= MAX_RUNG;
+// SB6 (TR-12): the rung bits of one try. `prev` is what the day already holds (for ALL_FIRST: the first rung-8 try that day).
+/** The bits of slots 1..k (k 1..15), without relying on 32-bit wrap: slot 1 is bit 16, slot 15 is bit 30. */
+const thermometer = (k) => (0x7fff >> (TOP_SLOT - k)) << 16;
+function rungBits(r, first, prev, rec) {
+  if (!validRung(r)) return rec && r.k !== 't' ? RUNG_BITS : 0; // a Normal keyboard or level-4 first go is R-all on its own
+  let bits = R_TRY;
+  if (unaided(r)) bits |= thermometer(slotOf(r.r)); // slots 1 .. its own
+  if (r.r === ALL_RUNG) {
+    bits |= ALL_TRIED;
+    if (unaided(r) && !(prev & ALL_TRIED)) bits |= ALL_FIRST;
+  }
+  return bits;
+}
+function flagsOf(r, first, prev = 0) {
   if (isMatch(r)) return MATCH | (unaided(r) ? MATCH_CLEAN : 0);
   const test = r.k === 't' ? (r.c ? TEST_RIGHT : TEST_WRONG) : 0;
   const fix = first && r.k === 'f' && unaided(r) ? FIX_FIRST : 0;
   const rec = (first && recall(r)) || (r.k === 't' && r.c && !assisted(r)) ? RECALL : 0;
-  return (first && unaided(r) ? FIRST : 0) | (r.c ? CLEAN : 0) | test | fix | SPELT | ERA | rec;
+  return (first && unaided(r) ? FIRST : 0) | (r.c ? CLEAN : 0) | test | fix | SPELT | ERA | rec | rungBits(r, first, prev, !!((first && recall(r)) && r.k !== 't'));
 }
 /** A day folded before SB4 has no ERA bit: bring it up (it counted FIRST or TEST_RIGHT) so it can join a newer one. */
 const eraOf = (flags) => (!flags || flags & ERA ? flags : flags | ERA | (flags & (FIRST | TEST_RIGHT) ? RECALL : 0));
@@ -315,7 +420,7 @@ function ledger(d) {
     if (!cells.has(key)) cells.set(key, {});
     const c = cells.get(key);
     const first = firstOf(c, r.d);
-    c[r.d] = (c[r.d] || 0) | flagsOf(r, first);
+    c[r.d] = (c[r.d] || 0) | flagsOf(r, first, c[r.d] || 0);
     const flow = flowOf(r);
     if (flow) {
       const k = runKey(r.g, r.w, r.d, flow);
@@ -425,8 +530,10 @@ export function setClue(d, word, text, now) {
   return { ...d, clues: { ...d.clues, [word]: { t, at: now } } };
 }
 export const clueFor = (d, word) => (d.clues[word] || { t: '' }).t;
-export function addNote(d, { id, group, word, text, day, now }) {
-  return { ...d, notes: [...d.notes, { id, g: group, w: word, x: String(text).trim().slice(0, MAX_NOTE), d: day, at: now }] };
+/** A sentence. SB6: bl 1|3|4 (the builder level) and hp 1 ("Show me" was used: with help) are written only when set. */
+export function addNote(d, { id, group, word, text, day, now, bl, hp }) {
+  const sbs = { ...(bl === 1 || bl === 3 || bl === 4 ? { bl } : {}), ...(hp ? { hp: 1 } : {}) };
+  return { ...d, notes: [...d.notes, { id, g: group, w: word, x: String(text).trim().slice(0, MAX_NOTE), d: day, ...sbs, at: now }] };
 }
 export const notesFor = (d, g) => d.notes.filter((x) => x.g === g.id);
 
@@ -437,6 +544,87 @@ function rememberedIn(L, w) {
 }
 export const isRemembered = (d, w) => rememberedIn(ledger(d), w);
 export function goodDays(d, w) { return Object.entries(ledger(d).days.get(w) || {}).filter(([, ok]) => ok).map(([day]) => day).sort(); }
+
+// ---- SB6: the ladder's facts about a word (TR-12) ----------------------------------------
+const SECURE_DAYS = (RULES.secure && RULES.secure.days) || 2;
+const SIDE_JOBS = ['w', 'k', 'b', 'q']; // stones that are not the ladder itself
+const KEEP_SLIPS = (RULES.slip && RULES.slip.keep) || 5;
+const USUAL_DAYS = (RULES.slip && RULES.slip.usualDays) || 2;
+/** The highest rung a day's flags say the child reached on their own: the rung bits, else R-all for a recall day, else 1 for a clean first go that was assisted (a day an older device folded), else 0. */
+function rungOfDay(flags) {
+  if (flags & MATCH && !(flags & SPELT)) return 0;
+  for (let k = TOP_SLOT; k >= 1; k -= 1) if (flags & SLOT_BIT(k)) return k === TOP_SLOT ? ALL_RUNG : k;
+  if (flags & R_TRY) return 0;
+  if (countsFold(flags)) return ALL_RUNG; // RECALL (or, on a day folded before SB4, FIRST or a right test answer)
+  return flags & FIRST ? 1 : 0;
+}
+/**
+ * What the ladder needs to know about a word, across every week it is in, from the tries and the folded days:
+ *   best        highest rung reached on its own on a day before `today` (0 = none); bestToday: the same for today
+ *   allDays     days the whole word was spelled first go on its own (rung 8 first, or a recall)
+ *   secure      allDays on RULES.secure.days different days: "Got it"
+ *   metOn       the first day a try had a rung ('' = not met); days: every such day, oldest first
+ *   peeksTotal, slipsTotal   over every try (and every fold) of the word, Meaning match left out
+ *   resume      { r, clean, day, ss } of the newest ladder try of the word (from unfolded tries; rows, checks and builder tries are not the ladder), else null:
+ *               r is the exact saved step (the rung code tried), clean is true when that try had no slip and no Peek. The next sitting resumes a word
+ *               in progress at this step (D22: nothing is parked)
+ *   lastSitting { ss, day, peekedEvery, slipRungs } for the newest sitting (`ss`) that has a try of this word, else null
+ *               peekedEvery: every rung 2..7 tried in the sitting had a Peek on some try (at least one such rung)
+ *               slipRungs: the distinct rungs with a slip in the sitting, ascending
+ *   slipSpots   box indices of the last RULES.slip.keep slips on unfolded tries, newest first, each once (holds no letter)
+ *   usualSpots  of those slips, the indices seen on RULES.slip.usualDays different days, ascending
+ */
+export function ladderFacts(d, word, today, L = ledger(d)) {
+  const w = lc(word);
+  const days = new Map(); // day -> flags, all weeks
+  let peeksTotal = 0;
+  let slipsTotal = 0;
+  for (const [key, cell] of L.cells) {
+    if (lc(wordOfKey(key)) !== w) continue;
+    for (const [day, flags] of Object.entries(cell)) days.set(day, (days.get(day) || 0) | flags);
+  }
+  for (const [key, f] of Object.entries(d.folded)) if (lc(wordOfKey(key)) === w) { peeksTotal += f.p; slipsTotal += f.t; }
+  const mine = d.results.filter((r) => lc(r.w) === w && !isMatch(r)).sort(byTime);
+  for (const r of mine) { peeksTotal += num(r.p); slipsTotal += num(r.t); }
+  let best = 0;
+  let bestToday = 0;
+  const allDays = [];
+  const met = [];
+  for (const [day, flags] of [...days].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+    const rung = rungOfDay(flags);
+    if (day < today) best = Math.max(best, rung); else if (day === today) bestToday = Math.max(bestToday, rung);
+    if (flags & (ALL_FIRST | RECALL)) allDays.push(day);
+    if (flags & (R_TRY | RUNG_BITS)) met.push(day);
+  }
+  // the newest sitting
+  const sat = mine.filter((r) => isSitting(r.ss));
+  let lastSitting = null;
+  if (sat.length) {
+    const ss = sat[sat.length - 1].ss;
+    const tries = sat.filter((r) => r.ss === ss);
+    const rungs = tries.filter(validRung).filter((r) => !SIDE_JOBS.includes(r.j)); // the ladder's own tries (rows, checks, builder are not)
+    const slipRungs = [...new Set(rungs.filter((r) => r.t > 0).map((r) => r.r))].sort((a, b) => a - b);
+    const hidden = [...new Set(rungs.filter((r) => r.r >= 2 && r.r < ALL_RUNG).map((r) => r.r))];
+    lastSitting = {
+      ss,
+      day: tries[tries.length - 1].d,
+      peekedEvery: hidden.length > 0 && hidden.every((k) => rungs.some((r) => r.r === k && r.p > 0)),
+      slipRungs,
+    };
+  }
+  const ladder = mine.filter((r) => validRung(r) && !SIDE_JOBS.includes(r.j));
+  const last = ladder.length ? ladder[ladder.length - 1] : null;
+  const resume = last ? { r: last.r, clean: unaided(last), day: last.d, ss: isSitting(last.ss) ? last.ss : '' } : null;
+  const window = [];
+  for (const r of [...mine].reverse()) {
+    for (const i of cleanSlips(r.sl)) window.push({ i, day: r.d });
+    if (window.length >= KEEP_SLIPS) break;
+  }
+  const spots = window.slice(0, KEEP_SLIPS);
+  const slipSpots = [...new Set(spots.map((x) => x.i))];
+  const usualSpots = slipSpots.filter((i) => new Set(spots.filter((x) => x.i === i).map((x) => x.day)).size >= USUAL_DAYS).sort((a, b) => a - b);
+  return { best, bestToday, allDays, secure: allDays.length >= SECURE_DAYS, metOn: met[0] || '', days: met, peeksTotal, slipsTotal, resume, lastSitting, slipSpots, usualSpots };
+}
 
 // ---- the test --------------------------------------------------------------------
 /** The word's test result: { right, day }, or null. The first answer stands. */
@@ -469,7 +657,7 @@ export function fixups(d, g) {
 export const STUDY_JOBS = ['hello', 'fix', 'games', 'story', 'practice'];
 /** The day a study job was finished, or ''. Practice day is a whole round of the grid; Fix it in a mark or a whole round of it. */
 export function studyJobDay(d, g, step) {
-  if (step === 'practice') return roundDay(d, g, 'p');
+  if (step === 'practice') return roundDay(d, g, 'p') || stepDay(d, g, 'practice');
   if (step === 'fix') return stepDay(d, g, 'fix') || roundDay(d, g, 'x');
   return stepDay(d, g, step);
 }
@@ -570,12 +758,14 @@ const LOG = {
         const both = days[day] && (days[day] & ERA) !== (flags & ERA) ? [eraOf(days[day]), eraOf(flags)] : [days[day] || 0, flags];
         days[day] = both[0] | both[1];
       }
-    } else days[r.d] = eraOf(days[r.d] || 0) | flagsOf(r, firstOf(days, r.d));
+    } else days[r.d] = eraOf(days[r.d] || 0) | flagsOf(r, firstOf(days, r.d), days[r.d] || 0);
     return { ...f, days };
   },
   emptyFold: () => ({ n: 0, t: 0, p: 0, through: 0, days: {} }),
 };
 
+// SB6: at an equal `at` the copy with more in it wins (longer JSON, then the larger text), so a copy that has `focus` beats one that lost it.
+const biggerJson = (q, p) => { const a = JSON.stringify(q); const b = JSON.stringify(p); return a.length > b.length || (a.length === b.length && a > b); };
 export function merge(a, b) {
   const x = normalise(a);
   const y = normalise(b);
@@ -584,7 +774,7 @@ export function merge(a, b) {
   for (const id of new Set([...Object.keys(x.groups), ...Object.keys(y.groups)])) {
     const p = x.groups[id];
     const q = y.groups[id];
-    const g = !p ? q : !q ? p : q.at > p.at || (q.at === p.at && JSON.stringify(q) > JSON.stringify(p)) ? q : p;
+    const g = !p ? q : !q ? p : q.at > p.at || (q.at === p.at && biggerJson(q, p)) ? q : p;
     if (g.at > out.resetAt) out.groups[id] = g;
   }
   const later = (x) => x.at > out.resetAt;
@@ -605,17 +795,57 @@ export function merge(a, b) {
   if (!Su.isEmpty(setup)) out.setup = setup;
   const own = Ow.merge(x.own, y.own);
   if (!Ow.isEmpty(own)) out.own = own;
+  const aside = {};
+  for (const k of new Set([...Object.keys(x.aside || {}), ...Object.keys(y.aside || {})])) {
+    const p = (x.aside || {})[k];
+    const q = (y.aside || {})[k];
+    aside[k] = !p ? q : !q ? p : q.at > p.at || (q.at === p.at && biggerJson(q, p)) ? q : p;
+  }
+  if (Object.keys(aside).length) out.aside = aside;
+  // SB6 (TR-15): a key this release does not know
+  for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) {
+    if (TOP.includes(k)) continue;
+    const p = x[k];
+    const q = y[k];
+    const at = (v) => (v && typeof v === 'object' && !Array.isArray(v) && typeof v.at === 'number' && Number.isFinite(v.at) ? v.at : null);
+    // the larger `.at`; at a tie, or when one has none, the larger JSON (the same rule as groups), so every device ends on one copy
+    const v = p === undefined ? q : q === undefined ? p : at(p) !== null && at(q) !== null && at(p) !== at(q) ? (at(q) > at(p) ? q : p) : biggerJson(q, p) ? q : p;
+    if (at(v) !== null && at(v) <= out.resetAt) continue; // a reset wins by time
+    out[k] = v;
+  }
   return out;
 }
 
 export function trim(d, now) {
+  if (d.aside) { // a set-aside mark is spent once its day has passed
+    const today = localDay(now);
+    const live = Object.fromEntries(Object.entries(d.aside).filter(([, e]) => asideLive(e, today, now)));
+    if (Object.keys(live).length !== Object.keys(d.aside).length) {
+      const { aside, ...rest } = d;
+      d = Object.keys(live).length ? { ...rest, aside: live } : rest;
+    }
+  }
   if (sizeOf(d) <= TRIM_AT) return d;
   const groups = Object.fromEntries(Object.entries(d.groups).filter(([, g]) => !g.gone || now - g.gone < 90 * DAY_MS));
   // A job's part marks ('fix:2') only say where to carry on: once the job is done they can go.
+  // SB6: a sitting mark ('se:<ss>') goes with a deleted group; row marks ('rw:…') of a live group never go (the test reads them).
   const steps = Object.fromEntries(Object.entries(d.steps).filter(([key]) => key.slice(0, key.indexOf('|')) in groups
-    && !(key.includes(':') && key.slice(0, key.indexOf(':')) in d.steps)));
+    && !(key.includes(':') && key.slice(0, key.indexOf(':')) in d.steps)
+    && !(key.slice(key.indexOf('|') + 1).startsWith('se:') && groups[key.slice(0, key.indexOf('|'))].gone)));
   const L = ledger(d);
-  const out = foldOldest({ ...d, groups, steps, notes: [...d.notes].sort(byTime).slice(-MAX_NOTES), skips: d.skips.filter((s) => now - s.at < SKIP_KEEP_MS) }, { target: TRIM_TO, sizeOf, ...LOG, tally: (f, r) => (isMatch(r) ? f : { ...f, t: f.t + r.t, p: f.p + r.p }) });
+  const base = { ...d, groups, steps, notes: [...d.notes].sort(byTime).slice(-MAX_NOTES), skips: d.skips.filter((s) => now - s.at < SKIP_KEEP_MS) };
+  const fold = { target: TRIM_TO, ...LOG, tally: (f, r) => (isMatch(r) ? f : { ...f, t: f.t + r.t, p: f.p + r.p }) };
+  // SB6 (TR-16): the tries of the last 24 hours and of the newest sitting are folded last: the ladder reads them unfolded (slip spots,
+  // the last sitting). First fold the older ones as far as that gets under the target; only then, if still over, everything oldest first.
+  const sittings = d.results.filter((r) => isSitting(r.ss)).sort(byTime);
+  const lastSs = sittings.length ? sittings[sittings.length - 1].ss : '';
+  // A time SUFFIX is guarded, so folding stays strictly oldest-first (the shared merge drops any try at or before a fold's `through`).
+  const lastStart = lastSs ? Math.min(...sittings.filter((r) => r.ss === lastSs).map((r) => r.at)) : Infinity;
+  const from = Math.min(now - PROTECT_MS, lastStart);
+  const guarded = (r) => r.at >= from;
+  const recent = base.results.filter(guarded);
+  const first = foldOldest({ ...base, results: base.results.filter((r) => !guarded(r)) }, { ...fold, sizeOf: (x) => sizeOf({ ...x, results: [...x.results, ...recent] }) });
+  const out = foldOldest({ ...first, results: [...first.results, ...recent] }, { ...fold, sizeOf });
   // A session reached 3 from a run of tries: folding keeps that, not the run.
   const folded = Object.fromEntries(Object.entries(out.folded).map(([key, f]) => {
     const cell = L.cells.get(key) || {};

@@ -12,6 +12,8 @@ import * as P from './grownups-doc.js';
 import * as Dt from './grownups-data.js';
 import { adultOnly } from './grownups-views.js';
 import * as AC from './adult-chrome.js';
+import * as L from './ladder-doc.js';
+import { entryFor } from './word-info.js';
 import * as RD from './role-doc.js';
 import { adultName } from './adult-doc.js';
 import { playerName, recheckWho } from './who.js';
@@ -48,6 +50,8 @@ const I = {
   print: svg('<path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2"/><path d="M7 14h10v6H7z"/>'),
   star: svg('<path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>'),
   plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  info: svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'),
+  eye: svg('<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
 };
 
 const wrap = (eyebrow, title, line, body) => '<section class="wrap page grownups gu"><div class="pagehead"><span class="eyebrow">' + esc(eyebrow) + '</span><h1>' + esc(title) + '</h1>'
@@ -175,8 +179,13 @@ export function spellingPage(main, { cid }) {
     const year = yearOf(c.child);
     main.innerHTML = '<section class="wrap page grownups gu gu-spell" data-spelling>' + backLink(childHref(id), name + '’s page')
       + '<div class="pagehead"><span class="eyebrow">' + esc(name + yearBit(year)) + '</span><h1>' + esc(P.spellTitle(name)) + '</h1><p class="muted">' + esc(P.spellSub(name, year)) + '</p></div>'
-      + '<div data-slot="status"></div><p class="small muted gu-changed" data-changed></p><div data-slot="warn"></div><div class="gu-set" data-body></div></section>';
+      + '<div data-slot="status"></div><p class="small muted gu-changed" data-changed></p><div data-slot="warn"></div><div data-way-host></div><div class="gu-set" data-body></div></section>';
     main.querySelector('[data-slot="status"]').replaceWith(statusEl);
+    mountWay();
+  }
+  const wayVisit = {};
+  function mountWay() {
+    mountWayCard(main.querySelector('[data-way-host]'), { id, child: c.child, words: c.words, visit: wayVisit, onChange: (w) => { c = { ...c, words: w, setup: W.setupOf(w) }; draw(); mountWay(); } });
   }
 
   function draw(focus) {
@@ -319,6 +328,123 @@ export function mountSetupCard(host, ctx) {
     }
   };
   draw();
+}
+
+/* ------------------------------------------------------ SB6: Way of learning (TR-46) --- */
+const spellingChangeHref = (id) => spellHref(id);
+const previewHref = (id) => childHref(id) + '/preview';
+const segHtml = (key, label, options, cur, extra = '') => '<div class="gu-seg' + extra + '" role="group" aria-label="' + esc(label) + '">'
+  + options.map(([v, t]) => '<button type="button" data-seg="' + key + '" data-v="' + esc(String(v)) + '" aria-pressed="' + (String(v) === String(cur)) + '">' + esc(t) + '</button>').join('') + '</div>';
+/** The pure markup of the way card (exported so a test can read it). set = P.waySettings(setup, year); note = the first switch-on line or ''. */
+export function wayCardHtml({ name, id, setup, set, note = '' }) {
+  const sbs = set.way === 'sbs';
+  const changed = P.wayChangedLine(setup);
+  const way = '<div class="gu-wrow">' + segHtml('way', 'Way of learning', [['usual', P.WAY_NAMES.usual], ['sbs', P.WAY_NAMES.sbs]], set.way)
+    + '<p class="gu-fine">' + esc(P.WAY_HELP) + '</p>' + (changed ? '<p class="gu-fine" data-way-changed>' + esc(changed) + '</p>' : '') + '</div>';
+  const first = note ? '<p class="gu-note gu-note--ok" role="status" data-firston>' + I.check + '<span>' + esc(note) + '</span></p><div class="gu-actions noprint"><a class="btn btn--ghost" href="' + spellingChangeHref(id) + '" data-testhelp>Change test help</a></div>' : '';
+  if (!sbs) {
+    const cur = set.peekSaved > 0 ? set.peekSaved : 0;
+    return way + first + '<div class="gu-wrow"><h3 class="gu-wrow__t">Peek time' + (cur === 0 ? ' <small>As now</small>' : '') + '</h3>' + segHtml('peek', 'Peek time', [[0, 'As now'], [2, '2 s'], [3, '3 s'], [5, '5 s']], cur)
+      + '<p class="gu-fine">' + esc(P.peekUsualHelp) + '</p></div>';
+  }
+  const after = set.after;
+  return way + first
+    + '<div class="gu-wrow"><h3 class="gu-wrow__t">Session length <small>per sitting</small></h3>' + segHtml('min', 'Session length', [[5, '5 min'], [10, '10 min'], [15, '15 min']], set.min) + '<p class="gu-fine">' + esc(P.sessionHelp(name)) + '</p></div>'
+    + '<div class="gu-wrow"><h3 class="gu-wrow__t">Peek time</h3>' + segHtml('peek', 'Peek time', [[2, '2 s'], [3, '3 s'], [5, '5 s']], set.peek) + '</div>'
+    + '<div class="gu-wrow"><h3 class="gu-wrow__t">Bigger celebrations</h3>' + segHtml('big', 'Bigger celebrations', [[0, 'Off'], [1, 'On']], set.big ? 1 : 0) + '<p class="gu-fine">' + esc(P.BIG_HELP) + '</p></div>'
+    + '<div class="gu-wrow"><h3 class="gu-wrow__t">No practice after</h3>' + segHtml('after', 'No practice after', [['off', 'Off'], ['time', 'Set a time']], after ? 'time' : 'off')
+    + (after ? '<label class="gu-timefield"><span>Finish for the day at</span><input class="gu-input" type="time" data-after value="' + esc(after) + '"></label>' : '') + '<p class="gu-fine">' + esc(P.AFTER_HELP) + '</p></div>'
+    + '<p class="gu-note gu-note--soft" data-updateline>' + I.info + '<span>' + esc(P.updateLine(name)) + '</span></p>'
+    + '<div class="gu-actions noprint"><a class="btn btn--ghost" href="' + previewHref(id) + '" data-preview>' + I.eye + esc(P.previewTitle(name)) + '</a></div>'
+  ;
+}
+/**
+ * The Way of learning card (TR-46) in `host`. ctx: { id, child, words, visit, onChange(words) }. Each tap saves at once through
+ * grownups-data setWay / setSbs / setPeek (a grown-up page only; nothing is stored on this device).
+ */
+export function mountWayCard(host, ctx) {
+  if (!host) return;
+  const name = ctx.child.nickname;
+  const year = yearOf(ctx.child);
+  let saving = false;
+  let warn = '';
+  const visit = ctx.visit || {};
+  const draw = (focus) => {
+    const setup = W.setupOf(ctx.words);
+    host.innerHTML = '<section class="card gu-way" data-waycard aria-labelledby="gu-way-h"><h2 id="gu-way-h">Way of learning</h2>' + wayCardHtml({ name, id: ctx.id, setup, set: P.waySettings(setup, year), note: visit.firstOn ? P.FIRST_ON_LINE : '' })
+      + '<p class="gu-line gu-line--warn" role="alert" data-way-warn' + (warn ? '' : ' hidden') + '>' + esc(warn) + '</p></section>';
+    host.querySelectorAll('[data-seg]').forEach((b) => b.addEventListener('click', () => pick(b.dataset.seg, b.dataset.v)));
+    const t = host.querySelector('[data-after]');
+    if (t) t.addEventListener('change', () => { if (/^([01]\d|2[0-3]):[0-5]\d$/.test(t.value)) save((o) => Dt.setSbs(childApi(), ctx.id, { after: t.value }, o), '[data-after]'); });
+    if (focus) { const el = host.querySelector(focus); if (el) el.focus(); }
+  };
+  const pick = (key, v) => {
+    const key2 = '[data-seg="' + key + '"][data-v="' + v + '"]';
+    if (key === 'way') save((o) => Dt.setWay(childApi(), ctx.id, v, o), key2, true);
+    else if (key === 'min') save((o) => Dt.setSbs(childApi(), ctx.id, { min: Number(v) }, o), key2);
+    else if (key === 'big') save((o) => Dt.setSbs(childApi(), ctx.id, { big: v === '1' }, o), key2);
+    else if (key === 'peek') save((o) => Dt.setPeek(childApi(), ctx.id, Number(v), o), key2);
+    else if (key === 'after') {
+      if (v === 'off') save((o) => Dt.setSbs(childApi(), ctx.id, { after: '' }, o), key2);
+      else { const cur = Su.sbsOf(W.setupOf(ctx.words)).after; if (!cur) save((o) => Dt.setSbs(childApi(), ctx.id, { after: '18:30' }, o), '[data-after]'); }
+    }
+  };
+  async function save(call, focus, isWay) {
+    if (saving) return;
+    saving = true;
+    warn = '';
+    host.querySelectorAll('button, input').forEach((el) => { el.disabled = true; });
+    const r = await call({ who: byName() });
+    saving = false;
+    if (!host.isConnected) return;
+    if (r.problem === 'playing' || r.problem === 'no-child') { redraw(); return; }
+    if (r.problem === 'signed-out') recheckWho();
+    if (r.problem || r.error) { warn = (r.problem ? P.PROBLEM_TEXT[r.problem] : r.error) + ' Nothing has been changed.'; draw(focus); return; }
+    ctx.words = W.normalise(r.doc);
+    if (isWay) visit.firstOn = !!r.profileSet;
+    if (ctx.onChange) ctx.onChange(ctx.words);
+    else draw(focus);
+  }
+  draw();
+}
+
+/* ------------------------------------------------------ SB6: See what <name> will see (TR-47) --- */
+/** The preview, as markup: one step (the middle one) of the first word, the child's settings, nothing recorded. */
+export function previewHtml({ name, word, spec, setup, year }) {
+  const sb = Su.sbsOf(setup);
+  const picture = spec
+    ? '<div class="gu-seecard gu-seecard--prev" aria-hidden="true"><p class="gu-seecard__say">Fill the missing letters.</p><div class="gu-seecard__word">'
+      + spec.letters.map((l) => (l.shown ? '<span class="gu-tp gu-tp--shown">' + esc(l.ch) + '</span>' : '<span class="gu-tp gu-tp--gap"></span>')).join('') + '</div>'
+      + '<div class="gu-seecard__tray">' + spec.tiles.map((t) => '<span class="gu-tp gu-tp--tile">' + esc(t.ch) + '</span>').join('') + '</div></div>'
+    : '<p class="gu-fine" data-prevnone>There is no step to show yet.</p>';
+  return '<div class="gu-prev" data-preview-card aria-label="Preview">' + picture + '</div>'
+    + '<dl class="gu-kv"><dt>Peek time</dt><dd>' + esc(Su.peekSecondsOf(setup, { way: 'sbs', input: 'tiles' }) + ' s') + '</dd><dt>Tile size</dt><dd>' + esc(P.tileSizeLine(year)) + '</dd><dt>Session</dt><dd>' + esc(sb.min + ' min') + '</dd></dl>';
+}
+export function previewPage(main, { cid }) {
+  if (!adultOnly(main) || noApi()) return undefined;
+  const id = safeDecode(cid);
+  let stopped = false;
+  main.innerHTML = wrap('Grown-ups', 'See what your child will see', '', '<p class="muted">Loading…</p>');
+  loadChild(id).then((c) => {
+    if (stopped) return;
+    if (c.problem) { showProblem(main, c.problem); return; }
+    const name = c.child.nickname;
+    const day = today();
+    const setup = W.setupOf(c.words);
+    const o = P.childOverview(c.words, day, Date.now());
+    const g = o.current ? W.groupById(c.words, o.current.id) : null;
+    const word = g ? g.words[0] : '';
+    let spec = null;
+    if (word) {
+      const entry = entryFor(word);
+      try { spec = L.traySpec(entry, L.middleCode(entry), { day, input: 'tiles' }); } catch (e) { spec = null; }
+    }
+    main.innerHTML = '<section class="wrap page grownups gu gu-previewpage" data-previewpage>' + backLink(childHref(id), P.spellTitle(name))
+      + '<div class="pagehead"><span class="eyebrow">Preview</span><h1>' + esc(P.previewTitle(name)) + '</h1><p class="muted">' + esc(P.previewHelp(name)) + '</p></div>'
+      + previewHtml({ name, word, spec, setup, year: yearOf(c.child) })
+      + '<div class="gu-actions noprint"><a class="btn btn--primary" href="' + childHref(id) + '" data-close>Close</a></div></section>';
+  });
+  return () => { stopped = true; };
 }
 
 /* ------------------------------------------------------ the report sections --- */

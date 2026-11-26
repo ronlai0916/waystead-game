@@ -13,17 +13,20 @@ import * as C from './child-doc.js';
 import * as St from './study-doc.js';
 import { stepHref, stripHtml, comeBackHref, comeBackHtml, markFold } from './study-views.js';
 import * as G from './games-doc.js';
-import { tileHtml, openSheet, todayJobs, jobLabel } from './child-views.js';
+import { tileHtml, openSheet, todayJobs, jobLabel, namedState } from './child-views.js';
 import { findEntry, entryFor } from './word-info.js';
 import { getWeek, setWeek } from './week-choice.js';
 import { childYear } from './who.js';
 import * as Tr from './tray.js';
+import { peekRowHtml, peekButtonHtml, mountPeek } from './peek.js';
+import { peekMs } from './peek-doc.js';
+import * as Su from './setup-doc.js';
+import * as K from './sbs-week-doc.js';
 import { hearInSentence, canSentence } from './sentence.js';
 import * as A from './assess-doc.js';
 import * as AV from './assess-views.js';
 import { safeDecode } from './chapters-doc.js'; // SB4-WP13: a bad address piece is '' (never throws)
 
-const PEEK_MS = 2000;
 const AGAIN_MS = 1600; // how long a finished word stays before it comes back
 const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const today = () => W.localDay(Date.now());
@@ -85,6 +88,7 @@ function starsLine(d, g, day) {
   const n = W.starsOn(d, g, day);
   return '<p class="starline">' + ICON.star + '<span><b>' + n + ' of ' + W.rows(g).length + '</b> stars today</span></p>';
 }
+const AVnamed = (st) => namedState(st, S.readSetup()); // F7: a Step by step child's stones carry their own names
 const spellHref = (g, w) => groupHref(g.id) + '/spell/' + W.rows(g).indexOf(w);
 
 // Study mode: the group's guided week.
@@ -94,16 +98,19 @@ const STATUS_LINE = {
   ready: ['Every job done', 'Your test is on the way. Keep these words warm with a game.'],
   finished: [JOB.finished.title, JOB.finished.line],
 };
+// F5/F7: a Step by step child's test is called Test day and says what it really allows (how often to hear, one Peek on each word); the Usual way keeps its card.
+const sbsNow = () => Su.wayOf(S.readSetup()) === 'sbs';
+const testText = () => (sbsNow() ? { title: K.STONE_TEXT.test.title, line: A.sbsTestAllows(S.helpNow(childYear()).pf).join(' ') } : JOB.test);
 function testCard(g) {
-  return '<div class="card job job--test" data-testcard><span class="eyebrow">Today</span><h2>' + esc(JOB.test.title) + '</h2><p class="muted">' + esc(JOB.test.line) + '</p>'
+  return '<div class="card job job--test" data-testcard><span class="eyebrow">Today</span><h2>' + esc(testText().title) + '</h2><p class="muted">' + esc(testText().line) + '</p>'
     + '<a class="btn btn--primary" href="' + groupHref(g.id) + '/test" data-job>Start the test' + ICON.arrow + '</a></div>';
 }
 /** In place of any page that would show a test's words (test-guard.js). */
 export function testTodayPage(main, g) {
-  main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">' + esc(g.name) + '</span><h1>' + esc(JOB.test.title) + '</h1></div>' + testCard(g) + '</section>';
+  main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">' + esc(g.name) + '</span><h1>' + esc(testText().title) + '</h1></div>' + testCard(g) + '</section>';
 }
 function studyCard(d, g, day) {
-  const s = St.studyState(d, g, day);
+  const s = AVnamed(St.studyState(d, g, day));
   const step = s.steps.find((x) => x.id === s.job);
   if (s.job === 'test') return testCard(g);
   const late = s.catchUp ? '<p data-catchup>' + esc(St.catchUpLine(g, day)) + '</p>' : '';
@@ -468,8 +475,8 @@ export function spellWord(main, { gid, n }) {
     main.innerHTML = '<section class="wrap page spellpage tilepage"><div class="pagehead">' + eyebrow + '<h1 class="sr">Spell the word</h1><p class="rowcount" data-row></p></div>'
       + Tr.lineHtml(Tr.instructionFor(lv), Tr.moreFor(spec, lv))
       + '<p class="peek" data-peek aria-live="polite"></p>'
-      + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: entry.tricky }) + '<button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button></div>'
-      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>' + Tr.EYE_ICON + 'Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+      + '<div class="card tileword">' + Tr.boxesHtml(spec, { tricky: entry.tricky }) + '<div class="btnrow btnrow--peek"><button type="button" class="btn btn--ghost btn--wide" data-hear>' + ICON.play + 'Hear again</button>' + peekButtonHtml() + '</div>'
+      + '<p class="peekhint" data-hint aria-live="polite">' + esc(C.PEEK_HINT) + '</p></div>'
       + '<div data-slot>' + Tr.colHtml(Tr.trayHtml(spec),
         '<div class="btnrow btnrow--center testbtns testbtns--tray"><button type="button" class="btn btn--primary" data-check disabled>' + TICK + 'Check</button>'
         + '<button type="button" class="btn btn--ghost" data-skip>Skip for now<span class="sr">. It comes back later.</span></button></div>') + '</div></section>';
@@ -480,7 +487,7 @@ export function spellWord(main, { gid, n }) {
       + boxesHtml(w)
       + '<p class="spellline" data-line role="status" aria-live="polite"></p>'
       + '<div data-slot><div class="btnrow btnrow--center"><button type="button" class="btn btn--primary btn--wide" data-hear>' + ICON.play + 'Hear the word</button></div>'
-      + '<div class="peekrow"><button type="button" class="btn btn--ghost" data-peekbtn>Peek</button><span class="peekrow__hint" data-hint>' + C.PEEK_HINT + '</span></div>'
+      + peekRowHtml({ hint: C.PEEK_HINT })
       + '<div class="skiprow"><button type="button" class="linkbtn" data-skip>' + C.SKIP_TEXT + '</button></div>' + keyboard() + '</div></section>';
   }
 
@@ -508,7 +515,7 @@ export function spellWord(main, { gid, n }) {
       + '<div class="btnrow"><a class="btn btn--primary" href="' + (next || groupHref(id)) + '" data-next data-fold="next">' + (next ? 'Next word' : 'Back to my words') + ICON.arrow + '</a>'
       + (next ? '<a class="btn btn--ghost" href="' + groupHref(id) + '">Back to my words</a>' : '') + '</div></div>';
     placeBursts(main);
-    if (spec) { const pr = main.querySelector('.peekrow'); if (pr) pr.remove(); } else line('');
+    if (spec) main.querySelectorAll('[data-peekbtn], [data-hint]').forEach((e) => e.remove()); else line('');
     main.querySelector('[data-next]').focus({ preventScroll: true });
   }
 
@@ -609,28 +616,21 @@ export function spellWord(main, { gid, n }) {
     done = true; // nothing more to record for this visit
     location.hash = nextHref() || groupHref(id);
   });
-  const peekBtn = main.querySelector('[data-peekbtn]');
-  peekBtn.addEventListener('click', () => {
-    if (hold || done) return;
-    run = R.peek(run);
-    showRow(0);
-    main.querySelector('[data-hint]').textContent = C.PEEKED_LINE;
-    hold = true;
-    peekBtn.disabled = true;
-    main.querySelector('[data-peek]').textContent = w;
-    if (ctrl) ctrl.lock(true);
-    timer = setTimeout(() => {
-      hold = false;
-      peekBtn.disabled = false;
-      main.querySelector('[data-peek]').textContent = '';
-      if (ctrl) ctrl.lock(false);
-    }, spec ? 3000 : PEEK_MS);
+  // The Peek is the one component (peek.js): the word shows on the line above the boxes, the keys or tiles are frozen, and the run starts again (the grid's 'reset').
+  const setup = S.readSetup();
+  const peekCtl = mountPeek(main, {
+    word: w,
+    ms: peekMs(setup, { way: Su.wayOf(setup), input: spec ? 'tiles' : 'keys' }),
+    can: () => !hold && !done,
+    lock: (on) => { hold = on; if (ctrl) ctrl.lock(on); },
+    onPeek: () => { run = R.peek(run); showRow(0); main.querySelector('[data-hint]').textContent = C.PEEKED_LINE; },
   });
   showRow(count());
   if (!spec) markNext();
   hearNow();
   return () => {
     clearTimeout(timer);
+    peekCtl.destroy();
     leave();
     if (ctrl) ctrl.destroy();
     document.removeEventListener('keydown', onKey);
@@ -651,14 +651,15 @@ export function testDay(main, { gid }) {
   const left = shuffle(W.testLeft(d0, g)); // a test left halfway carries on with the words still to do
   const year = childYear();
   const { lv, pf } = S.helpNow(year);
+  const sbsTest = Su.wayOf(S.readSetup()) === 'sbs';
   // SB4-WP5: the shared runner. One go at each word, saved at once, so one go stays one go if the test is left halfway.
   return AV.runCheck(main, {
     kind: 'test', scope: { weekly: true }, words: left.map(entryFor), pf, lv, year, backHref: groupHref(id), title: g.name,
     base: { done: total - left.length, of: total },
     save: (a) => {
-      S.updateWords((d) => W.addTry(d, { id: S.newId(), word: a.w, day, group: id, kind: 't', tries: a.ok ? 0 : 1, peeks: 0, clean: !!a.ok, now: Date.now(), lv: a.lv, hr: a.hr, hn: a.hn, pf }));
+      S.updateWords((d) => W.addTry(d, { id: S.newId(), word: a.w, day, group: id, kind: 't', ...A.testTry(a), now: Date.now(), lv: a.lv, hr: a.hr, hn: a.hn, pf }));
       const e = D.entry(a.w);
-      if (e) { if (a.ok) S.noteCorrect(a.w); else S.noteMissed(a.w, e.chapterId); }
+      if (e) { if (A.testTry(a).clean) S.noteCorrect(a.w); else S.noteMissed(a.w, e.chapterId); } // a word spelled after a Peek stays in Words to practise again
     },
     done: () => {
       const res = W.testResults(S.readWords(), g);
@@ -666,13 +667,16 @@ export function testDay(main, { gid }) {
         right: res.filter((x) => x.result && x.result.right).length, of: total, miss: res.filter((x) => x.result && !x.result.right).map((x) => x.word),
         // 11g: the words that slipped go to Words to practise again; then Today (a week's own page is one tap further).
         buttons: res.some((x) => x.result && !x.result.right)
-          ? [{ label: 'Practise the ' + plural(res.filter((x) => x.result && !x.result.right).length, 'test word'), href: '#/tricky', primary: true }, { label: 'Go to Today', href: '#/' }]
+          ? [sbsTest
+            ? { label: 'Practise these words', href: '#/tricky', primary: true } // Step by step: no count (TR-13); Words to practise again holds the peeked words too (Mend opens the day after, so it is never the link here)
+            : { label: 'Practise the ' + plural(res.filter((x) => x.result && !x.result.right).length, 'test word'), href: '#/tricky', primary: true }, { label: 'Go to Today', href: '#/' }]
           : [{ label: 'Go to Today', href: '#/', primary: true }],
       };
     },
   });
 }
 
+const lettersAgain = (n) => n + (n === 1 ? ' letter' : ' letters') + ' to try again';
 // ---- the numbers -----------------------------------------------------------------
 const STATUS = { remembered: 'pill--done', 'test passed': 'pill--done', practising: 'pill--warm', new: '' };
 export function wordsProgress(main) {
@@ -681,8 +685,8 @@ export function wordsProgress(main) {
   const stat = (n, label, sub = '') => '<div class="card stat"><b>' + n + '</b><span>' + esc(label) + '</span>' + (sub ? '<span class="muted small">' + esc(sub) + '</span>' : '') + '</div>';
   const groupCard = (g) => {
     const p = W.groupProgress(d, g);
-    return '<div class="card setting"><h2>' + esc(g.name) + '</h2><p class="muted small">Test on ' + esc(W.dayLabel(g.test)) + ' · ' + plural(p.tries, 'wrong letter') + ' · ' + plural(p.peeks, 'peek') + '</p>'
-      + '<div class="list">' + p.words.map((x) => '<div class="listrow"><span><strong>' + esc(x.word) + '</strong><br><span class="muted small">' + plural(x.tries, 'wrong letter') + ' · ' + plural(x.peeks, 'peek') + '</span></span>'
+    return '<div class="card setting"><h2>' + esc(g.name) + '</h2><p class="muted small">Test on ' + esc(W.dayLabel(g.test)) + ' · ' + lettersAgain(p.tries) + ' · ' + plural(p.peeks, 'peek') + '</p>'
+      + '<div class="list">' + p.words.map((x) => '<div class="listrow"><span><strong>' + esc(x.word) + '</strong><br><span class="muted small">' + lettersAgain(x.tries) + ' · ' + plural(x.peeks, 'peek') + '</span></span>'
         + '<span class="pill ' + STATUS[x.status] + '">' + esc(x.status) + '</span></div>').join('') + '</div>'
       + (p.stars.length ? '<p class="small starsbyday">' + p.stars.map((s) => '<span>' + esc(W.dayLabel(s.day)) + ': ' + s.stars + ' of ' + p.of + '</span>').join('') + '</p>' : '')
       + '</div>';

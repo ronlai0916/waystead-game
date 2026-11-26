@@ -12,10 +12,12 @@ import * as A from './grownups-data.js';
 import * as RD from './role-doc.js'; // SB5 WP-C: three roles, three homes
 import * as AC from './adult-chrome.js'; // the saved role and name (roleStore), the Menu redraw
 import * as AD from './adult-doc.js';
+import * as SR from './sbs-report-doc.js';
+import * as Su from './setup-doc.js';
 import * as Sdata from './set-data.js'; // pushName after a rename
 import * as S from './store.js';
 import * as Ow from './own-doc.js';
-import { mountSetupCard, mountReport, handOffWords } from './setup-views.js'; // SB4-WP6
+import { mountSetupCard, mountReport, mountWayCard, handOffWords } from './setup-views.js'; // SB4-WP6, SB6 way card
 import * as SD from './set-doc.js';
 import { findEntry, hasMeaning, meaningsFor } from './word-info.js';
 import { loadStories } from './stories.js';
@@ -109,7 +111,7 @@ const stoneSay = (v) => v.name + ' ' + ({ done: 'done', today: 'today', todaywai
 /** The seven stones with a key; each stone says its state to a screen reader. */
 function strip(card, who) {
   return '<ol class="gu-stones" aria-label="' + esc(who + '\'s seven jobs') + '">' + card.steps.map((v) => '<li class="' + (v.kind.startsWith('today') ? 'is-today' : '') + '">' + stone(v)
-    + '<span class="gu-stones__name" aria-hidden="true">' + esc(St.STEP_TEXT[v.id].short) + '</span><span class="sr">' + esc(stoneSay(v)) + '</span></li>').join('') + '</ol>';
+    + '<span class="gu-stones__name" aria-hidden="true">' + esc(v.short || St.STEP_TEXT[v.id].short) + '</span><span class="sr">' + esc(stoneSay(v)) + '</span></li>').join('') + '</ol>';
 }
 const fact = (label, value, cls = '') => '<div class="gu-fact ' + cls + '"><dt>' + esc(label) + '</dt><dd' + (value === 'None' ? ' class="is-none"' : '') + '>' + esc(value) + '</dd></div>';
 // The count is the child's own (a missed job that is today's job counts). Today's job is named under "Today", not here again.
@@ -279,7 +281,7 @@ export function grownups(main) {
     if (problem) {
       if (problem === 'playing' || problem === 'no-child' || problem === 'signed-out') { showProblem(main, problem); return; }
       main.innerHTML = '<section class="wrap page grownups gu gh-page" data-notready><div class="gh-page__head"><p class="gh-eyebrow">' + esc(P.longDate(today())) + '</p><h1 class="gh-h1">' + esc(w.home) + '</h1></div>'
-        + '<div class="gh-note gh-note--help" role="status">' + I.info + '<p>Your ' + esc(w.many.replace(' in your class', '')) + ' are not ready to show yet. You can still set a week. Nothing is lost.</p></div>'
+        + '<div class="gh-note gh-note--help" role="status">' + I.info + '<p>Your ' + esc(w.many.replace(' in your class', '')) + ' are not ready to show yet. You can still set a week.</p></div>'
         + '<div><button type="button" class="btn btn--ghost" data-retry>Try again</button></div>'
         + bar(bigBtn(setHref(''), w.set, I.cal, ' data-setweek'), 'You choose the children next') + '</section>';
       main.querySelector('[data-retry]').addEventListener('click', redraw);
@@ -437,6 +439,45 @@ function wordRow(w, g, childName, typedInfo) {
     + '</li>';
 }
 
+
+/* ------------------------------------------------- SB6: the Step-by-step report (TR-48, D25) --- */
+const PILL_KEY = { 'got-it': 'got', 'all-once': 'once', climbing: 'climb', 'not-started': 'none' };
+const sbsPill = (m) => '<span class="gu-pill gu-pill--' + PILL_KEY[m.status] + '" data-wordchip>' + esc(m.pill) + '</span>';
+const lineHtml = (line) => { const i = line.indexOf(': '); return i > 0 ? '<b>' + esc(line.slice(0, i)) + '</b>: ' + esc(line.slice(i + 2)) : esc(line); };
+/** The grown-up's stuck-word block: "Stuck word: night" and the one button that sets it aside for today, or brings it back (D25). */
+export function stuckHtml(stuck, nick) {
+  if (!stuck.length) return '';
+  return '<div class="gu-stuckbox" data-stuckbox>' + stuck.map((x) => '<div class="gu-stuck" data-stuck="' + esc(x.word) + '"><p class="gu-stuck__t"><b>' + esc(x.line) + '</b>' + (x.aside ? ' <span class="gu-pill gu-pill--once" data-aside-state>' + esc(P.ASIDE_LINE.replace(/\.$/, '')) + '</span>' : '') + '</p>'
+    + (x.aside
+      ? '<button type="button" class="btn btn--ghost noprint" data-asideback="' + esc(x.word) + '">' + esc(P.bringBackButton(x.word)) + '</button>'
+      : '<button type="button" class="btn btn--ghost noprint" data-aside="' + esc(x.word) + '">' + esc(P.setAsideButton(nick)) + '</button><p class="gu-fine">' + esc(P.SET_ASIDE_HELP) + '</p>')
+    + '</div>').join('') + '</div>';
+}
+/** The words card of a Step-by-step week: a fact line and one of four statuses for each word; stuck words first. */
+export function sbsWordsHtml(m, nick) {
+  return '<section class="card gu-words gu-sbs" aria-labelledby="gu-words-h" data-sbswords><h2 id="gu-words-h">Words</h2>'
+    + '<p class="small muted">' + esc(Object.values(SR.STATUS_TEXT).join(', ')) + '. Facts from ' + esc(possessive(nick)) + ' practice, never marks.</p>'
+    + stuckHtml(m.stuck, nick)
+    + '<ul class="gu-sbslist">' + m.words.map((w) => '<li class="gu-sw" data-word="' + esc(w.word) + '" data-status="' + w.status + '"><div class="gu-sw__top">' + sbsPill(w) + '</div><p>' + lineHtml(w.line) + '</p></li>').join('') + '</ul>'
+    + '<p class="gu-rows" data-rowsline><b>Words in a row.</b> ' + esc(m.rows) + '</p></section>';
+}
+/** Sittings, the test and the sentences of a Step-by-step week. */
+export function sbsMoreHtml(m, nick, g, offer) {
+  const sit = m.sittings.length
+    ? '<h3>Sittings</h3><table class="gu-tab" data-sittings><thead><tr><th scope="col">When</th><th scope="col">Time</th><th scope="col">Words</th><th scope="col">End</th></tr></thead><tbody>'
+      + m.sittings.map((x) => '<tr><td>' + esc(nb(x.when)) + '</td><td>' + esc(x.minutes) + '</td><td>' + x.words + '</td><td>' + esc(x.end) + '</td></tr>').join('') + '</tbody></table>' : '';
+  const t = m.test;
+  const test = t.spelled.length || t.keep.length || t.withPeek.length
+    ? '<h3>Test</h3><div data-sbstest>' + (t.spelled.length ? '<p><b>Words ' + esc(nick) + ' spelled:</b> ' + esc(t.spelled.join(', ')) + '</p>' : '')
+      + (t.withPeek.length ? '<p><b>Words spelled with a peek:</b> ' + esc(t.withPeek.join(', ')) + '</p>' : '')
+      + (t.keep.length ? '<p><b>Words to keep practising:</b> ' + esc(t.keep.join(', ')) + '</p>' : '')
+      + (t.withPeek.length ? '<p class="gu-fine">A word with a peek does not count towards remembered.</p>' : '') + '</div>' : '';
+  const sent = m.sentences.length ? '<h3>Sentences</h3><ul class="report__list" data-sbssentences>' + m.sentences.map((x) => '<li><b>' + esc(x.word) + ':</b> ' + esc(x.text) + (x.help ? ' <span class="gu-pill gu-pill--once">with help</span>' : '') + '</li>').join('') + '</ul>' : '';
+  const off = offer ? '<p class="gu-note gu-note--ok" data-usualoffer>' + I.info + '<span><b>' + esc(P.USUAL_OFFER(nick)) + '</b></span></p>' : '';
+  if (!sit && !test && !sent && !off) return '';
+  return '<section class="card gu-glance gu-sbsmore" aria-labelledby="gu-sbsmore-h" data-sbsmore><h2 id="gu-sbsmore-h">Step by step: the week so far</h2>' + off + sit + test + sent + '</section>';
+}
+
 export function childDashboard(main, { cid, gid }) {
   if (!adultOnly(main) || needsApi()) return undefined;
   const id = safeDecode(cid);
@@ -494,7 +535,7 @@ export function childDashboard(main, { cid, gid }) {
     const nEarlier = W.liveGroups(d).filter((x) => W.testDone(d, x)).length;
     const earlier = nEarlier || o.deleted.length ? '<a class="gh-sum gu-earlier" href="' + weeksHref(id) + '" data-earlier><b>Earlier weeks</b><span class="gh-go" aria-hidden="true">' + I.chevron + '</span><small>' + plural(nEarlier, 'earlier week') + ' · ' + o.deleted.length + ' deleted</small></a>' : '';
     if (!g) {
-      main.innerHTML = '<section class="wrap page grownups gu" data-noweek>' + head(nick + '\'s week', PRIVACY) + notes + before(null, null, null) + '<div data-setupcard></div>' + pickCard
+      main.innerHTML = '<section class="wrap page grownups gu" data-noweek>' + head(nick + '\'s week', PRIVACY) + notes + before(null, null, null) + '<div data-setupcard></div><div data-waycard></div>' + pickCard
         + '<div class="card gu-empty"><h2>No week yet</h2><p class="muted">Set a week of words and a test date for ' + esc(nick) + '.</p><a class="btn btn--primary" href="' + setHref(id) + '" data-plan>' + I.plus + 'Set a week</a></div><div data-setupreport></div>' + earlier + deleted + '</section>';
       wire(null);
       return;
@@ -502,6 +543,8 @@ export function childDashboard(main, { cid, gid }) {
     const k = P.weekCard(d, g, day);
     const rep = P.groupReport(d, g, day);
     const words = P.weekWords(d, g, day);
+    const setupNow = W.setupOf(d);
+    const sbsM = P.isSbsWeek(d, g, setupNow) ? P.sbsWeek(d, g, day, { name: nick, setup: setupNow, entryOf: findEntry, year: Number(c.child.year) || 0 }) : null;
     const over = W.overall(d);
     const switcher = o.weeks.length > 1
       ? '<p class="gu-switchline" data-manyweeks><b>' + esc(nick) + ' has ' + o.weeks.length + ' weeks running.</b> Pick one to look at, change or delete.</p><ul class="gu-switch" aria-label="' + esc(nick) + '\'s weeks">' + o.weeks.map((x) => '<li><a href="' + weekHref(id, x.id) + '"' + (x.id === g.id ? ' aria-current="page"' : '') + '>' + esc(x.name) + ' · ' + esc(nb(W.dayLabel(x.test))) + '<small class="gh-setby" data-setby>' + esc(byLine(x.id)) + '</small></a></li>').join('') + '</ul>' : '';
@@ -511,13 +554,15 @@ export function childDashboard(main, { cid, gid }) {
       + chip(k.chip.key, k.chip.label + (k.chip.key === 'ontrack' ? ' · nothing waiting' : ''), ' data-chip="' + k.chip.key + '"') + '</div>'
       + '<dl class="gu-facts">' + fact('Today', k.today) + fact('Jobs waiting', waitingText(k)) + fact('Test', nb(W.dayLabel(k.test))) + fact('Stars', plural(k.stars, 'star')) + '</dl>'
       + helpRow(k)
+      + (sbsM && sbsM.estimate.line ? '<p class="gu-est' + (sbsM.estimate.calm ? ' is-calm' : '') + '" data-estimate>' + esc(sbsM.estimate.line) + (sbsM.estimate.calm && k.canEdit ? ' <a href="' + editHref(id, g.id) + '" data-estimate-date>Change the test date</a>' : '') + '</p>' : '')
+      + (sbsM ? '<p class="gu-fine" data-rowsline-glance>' + esc(sbsM.rows) + '</p>' : '')
       + '<div class="gu-actions noprint"><a class="btn btn--ghost" href="' + (k.canEdit ? editHref(id, g.id) : renameHref(id, g.id)) + '" data-edit>' + I.pencil + (k.canEdit ? 'Change words or test date' : 'Rename this week') + '</a>'
       + (k.canEdit ? '<a class="btn btn--ghost" href="' + renameHref(id, g.id) + '" data-rename>' + I.pencil + 'Rename this week</a>' : '')
       + (rep.test.taken ? '<a class="btn btn--ghost" href="' + printHref(id, g.id) + '" data-printpage>' + I.print + 'Print ' + esc(possessive(nick)) + ' results</a>'
         : '<button type="button" class="btn btn--plain" data-print>' + I.print + 'Print this week</button>')
       + '<a class="btn btn--ghost" href="' + setHref(id) + '" data-plannext>' + I.plus + 'Set next week</a>'
       + '<button type="button" class="btn btn--danger" data-delete>Delete this week</button></div></section>';
-    const wordsCard = '<section class="card gu-words" aria-labelledby="gu-words-h"><h2 id="gu-words-h">Words</h2>'
+    const wordsCard = sbsM ? sbsWordsHtml(sbsM, nick) : '<section class="card gu-words" aria-labelledby="gu-words-h"><h2 id="gu-words-h">Words</h2>'
       + '<p class="small muted">' + esc(St.ROW_LINE) + ' Words that need help come first.</p>'
       + '<p class="small muted">' + esc(P.STATUS_KEY) + '</p><ul class="gu-wordlist">' + words.map((w) => wordRow(w, g, nick, !findEntry(w.word))).join('') + '</ul></section>';
     const more = '<section class="card gu-glance" aria-labelledby="gu-more-h"><h2 id="gu-more-h">More about the week</h2>'
@@ -529,7 +574,7 @@ export function childDashboard(main, { cid, gid }) {
       + '<div class="card stat"><b>' + over.independent + '%</b><span>Independent first goes</span><span class="muted small">' + over.clean + ' of ' + plural(over.firstGoes, 'first go', 'first goes') + '</span></div></div>'
       + (rep.sentences.length ? '<h3>Sentences</h3><ul class="report__list">' + rep.sentences.map((s) => '<li><b>' + esc(s.word) + ':</b> ' + esc(s.text) + '</li>').join('') + '</ul>' : '')
       + '<p class="small muted">' + esc(PRIVACY) + '</p><p class="small"><a class="gh-quiet" href="#/grownups/help" data-helplink>' + esc(W3[role].help) + '</a></p></section>';
-    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + byLine(g.id) + ' · ' + P.weekLine(k)) + notes + before(g, k, rep) + '<div data-setupcard></div>' + switcher + glance + path + wordsCard + more + '<div data-setupreport></div>' + earlier + pickCard + deleted + '</section>';
+    main.innerHTML = '<section class="wrap page grownups gu" data-week="' + esc(g.id) + '">' + head(g.name, plural(k.count, 'word') + ' · test ' + nb(W.dayLabel(k.test)) + ' · ' + byLine(g.id) + ' · ' + P.weekLine(k)) + notes + before(g, k, rep) + '<div data-setupcard></div><div data-waycard></div>' + switcher + glance + path + wordsCard + more + (sbsM ? sbsMoreHtml(sbsM, nick, g, P.usualWayOffer(d, day)) : '') + '<div data-setupreport></div>' + earlier + pickCard + deleted + '</section>';
     wire(g);
     // S3-D3: a typed word's meaning comes from Wordbright's list, fetched once; only the word rows are redrawn when it arrives.
     const typedNow = words.map((w) => w.word).filter((w2) => !findEntry(w2) && !meaningTried.has(w2));
@@ -550,6 +595,9 @@ export function childDashboard(main, { cid, gid }) {
     const q = (s) => main.querySelector(s);
     const ctx = { id, child: c.child, words: c.words, progress: c.progress, day: today(), visit, print: !g }; // SB4-WP6
     mountSetupCard(q('[data-setupcard]'), ctx);
+    mountWayCard(q('[data-waycard]'), { id, child: c.child, words: c.words, visit, onChange: (w) => { c = { ...c, words: w }; draw(); const b = main.querySelector('[data-waycard] [aria-pressed="true"]'); if (b) b.focus(); } });
+    main.querySelectorAll('[data-aside]').forEach((b) => b.addEventListener('click', () => aside(g, b.dataset.aside, today(), b)));
+    main.querySelectorAll('[data-asideback]').forEach((b) => b.addEventListener('click', () => aside(g, b.dataset.asideback, '', b)));
     mountReport(q('[data-setupreport]'), ctx);
     const pick = q('[data-weekpick-toggle]');
     if (pick) {
@@ -585,6 +633,22 @@ export function childDashboard(main, { cid, gid }) {
     const undoBtn = q('[data-undo]');
     if (undoBtn) undoBtn.addEventListener('click', () => restore(undo.gid, true));
     main.querySelectorAll('[data-restore]').forEach((b) => b.addEventListener('click', () => restore(b.dataset.restore, false)));
+  }
+  /** D25: only a grown-up, only from here: set a stuck word aside for today ('YYYY-MM-DD'), or bring it back ('' day). */
+  async function aside(g, word, day, btn) {
+    if (!g) return;
+    btn.disabled = true;
+    line = ''; problemLine = '';
+    const r = await A.setAsideWord(childApi(), id, g.id, word, day);
+    if (stopped) return;
+    if (r.problem === 'playing' || r.problem === 'no-child') { showProblem(main, r.problem); return; }
+    if (r.problem === 'signed-out') recheckWho();
+    if (r.problem || r.error) { problemLine = (r.problem ? P.PROBLEM_TEXT[r.problem] : r.error) + ' Nothing has been changed.'; draw(); return; }
+    c = { ...c, words: W.normalise(r.doc) };
+    line = day ? word + ' is set aside for today. It comes back first tomorrow.' : word + ' is back in ' + c.child.nickname + '\u2019s week.';
+    draw();
+    const again = main.querySelector('[data-stuck="' + CSS.escape(word) + '"] button');
+    if (again) again.focus();
   }
   async function restore(gone, fromUndo) {
     problemLine = '';
@@ -772,7 +836,7 @@ export function helpTable(main) {
     if (stopped) return;
     const rows = lc.children.map((c, i) => (reads[i].problem
       ? '<li class="gh-helprow" data-child="' + esc(c.id) + '"><span><b>' + esc(c.nickname) + '</b><small>' + esc(P.PROBLEM_TEXT[reads[i].problem] || P.PROBLEM_TEXT.other) + '</small></span><button type="button" class="btn btn--ghost" data-retry>Try again</button></li>'
-      : '<li class="gh-helprow" data-child="' + esc(c.id) + '"><span><b>' + esc(c.nickname) + '</b><small>' + esc(helpLine(reads[i].setup, c.year, c.nickname)) + '</small></span>'
+      : '<li class="gh-helprow" data-child="' + esc(c.id) + '"><span><b>' + esc(c.nickname) + '</b><small>' + esc(helpLine(reads[i].setup, c.year, c.nickname)) + '</small><small data-way>' + esc(RD.WAY_COLUMN + ': ' + RD.wayName(reads[i].setup)) + '</small></span>'
         + '<a class="btn btn--ghost" href="' + childHref(c.id) + '/spelling" aria-label="Change ' + esc(possessive(c.nickname)) + ' help">Change</a></li>')).join('');
     main.innerHTML = '<section class="wrap page grownups gu gh-page" data-helppage>' + backLink('#/grownups', backName(role))
       + '<div class="gh-page__head"><h1 class="gh-h1">' + esc(W3[role].help) + '</h1><p class="gh-sub">' + esc(HELP_SUB[role]) + '</p></div>'
@@ -869,12 +933,15 @@ export function printWeek(main, { cid, gid } = {}) {
     }
     const sc = scoreOf(d, g);
     const rows = sc.rows.map((x) => ({ word: x.word, text: x.result ? (x.result.right ? 'Right' : 'To practise again') : 'Not tested' }));
+    const setupNow = W.setupOf(d);
+    const sbsM = P.isSbsWeek(d, g, setupNow) ? P.sbsWeek(d, g, W.localDay(Date.now()), { name: nick, setup: setupNow, entryOf: findEntry, year: Number(child.year) || 0 }) : null;
+    const sbsLines = sbsM ? P.sbsPrintLines(sbsM, { name: nick, test: longDay(g.test) }) : [];
     const head = nick + ' · Year ' + child.year + ' · Spellbright';
     const sub = g.name + ' · test ' + longDay(g.test) + (sc.rows.some((x) => x.result) ? ': ' + sc.right + ' of ' + sc.of : '');
     main.innerHTML = '<section class="wrap page grownups gu gh-page gu-printpage" data-printweek>' + back
       + '<div class="gh-page__head"><h1 class="gh-h1">Print for ' + esc(nick) + '</h1></div>'
       + '<div class="gu-paper" data-paper><h2>' + esc(head) + '</h2><p>' + esc(sub) + '</p>'
-      + '<table class="gu-ptable"><thead><tr><th scope="col">Word</th><th scope="col">Result</th></tr></thead><tbody>' + rows.map((r) => '<tr><td>' + esc(r.word) + '</td><td>' + esc(r.text) + '</td></tr>').join('') + '</tbody></table>'
+      + (sbsM ? '<ul class="gu-plines" data-sbsprint>' + sbsLines.map((l) => '<li>' + esc(l) + '</li>').join('') + '</ul>' : '') + '<table class="gu-ptable"><thead><tr><th scope="col">Word</th><th scope="col">Result</th></tr></thead><tbody>' + rows.map((r) => '<tr><td>' + esc(r.word) + '</td><td>' + esc(r.text) + '</td></tr>').join('') + '</tbody></table>'
       + '<p class="small">Only ' + esc(possessive(nick)) + ' results are on this page.</p></div>'
       + '<p class="gh-help noprint">Printed or copied results show children’s names. Keep them safe.</p>'
       + '<p class="gu-line noprint" role="status" data-copied hidden>Copied.</p>'
@@ -883,7 +950,7 @@ export function printWeek(main, { cid, gid } = {}) {
     main.querySelector('[data-printnow]').addEventListener('click', () => window.print());
     const copyBtn = main.querySelector('[data-copy]');
     copyBtn.addEventListener('click', async () => {
-      const text = [head, sub].concat(rows.map((r) => r.word + ': ' + r.text)).join('\n');
+      const text = [head, sub].concat(sbsM ? sbsLines : [], rows.map((r) => r.word + ': ' + r.text)).join('\n');
       const ok = await copyText(text);
       const say = main.querySelector('[data-copied]');
       if (say) { say.textContent = ok ? 'Copied.' : 'We couldn’t copy. Use Print instead.'; say.hidden = false; }

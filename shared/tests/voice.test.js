@@ -30,11 +30,11 @@ const US_ONLY = [v('Samantha', 'en-US'), v('Bubbles', 'en-US'), v('Thomas', 'fr-
 
 test('the best voice: en-GB first, Premium/Enhanced/Natural, then known good; never a novelty voice', () => {
   assert.equal(pickVoice(APPLE).name, 'Serena (Premium)');
-  assert.equal(pickVoice(APPLE.filter((x) => !/Premium/.test(x.name))).name, 'Daniel', 'Daniel, Kate and Arthur are known good; Daniel is the default');
+  assert.equal(pickVoice(APPLE.filter((x) => !/Premium/.test(x.name))).name, 'Arthur', 'Kate and Arthur are known good; Daniel is only a last resort');
   assert.equal(pickVoice(CHROME_WIN).name, 'Google UK English Female');
   assert.equal(pickVoice(EDGE).name, 'Microsoft Sonia Online (Natural) - English (United Kingdom)');
   assert.equal(pickVoice(ANDROID).name, 'English United Kingdom', 'en_GB counts as British');
-  assert.equal(pickVoice([v('Daniel (Enhanced)', 'en-GB'), v('Serena', 'en-GB')]).name, 'Daniel (Enhanced)');
+  assert.equal(pickVoice([v('Daniel (Enhanced)', 'en-GB'), v('Serena', 'en-GB')]).name, 'Serena', 'Serena beats an Enhanced Daniel');
   assert.equal(pickVoice([v('Serena', 'en-GB', { voiceURI: 'com.apple.voice.premium.en-GB.Serena' }), v('Daniel', 'en-GB')]).name, 'Serena', 'Safari marks Premium in the voice URI');
   for (const list of [APPLE, CHROME_WIN, EDGE, ANDROID, US_ONLY]) assert.ok(rankVoices(list).every((x) => !isNovelty(x) && /^en/i.test(x.lang)));
   assert.ok(isNovelty(v('Eddy (English (UK))', 'en-GB')) && isNovelty(v('Grandma (English (UK))', 'en-GB')) && isNovelty(v('Zarvox', 'en-US')));
@@ -43,14 +43,30 @@ test('the best voice: en-GB first, Premium/Enhanced/Natural, then known good; ne
   assert.equal(pickVoice([]), null);
 });
 
+test('Jamie and Serena (any quality) beat every other voice; Daniel stays a last resort', () => {
+  const name = (list, saved) => pickVoice(list, saved).name;
+  assert.equal(name([v('Daniel', 'en-GB'), v('Serena', 'en-GB'), v('Kate (Enhanced)', 'en-GB')]), 'Serena');
+  assert.equal(name([v('Daniel', 'en-GB'), v('Jamie (Enhanced)', 'en-GB'), v('Serena (Premium)', 'en-GB')]), 'Serena (Premium)', 'quality within the pair');
+  assert.equal(name([v('Serena', 'en-GB'), v('Jamie', 'en-GB')]), 'Jamie', 'Jamie first on a tie');
+  assert.equal(name([v('Daniel', 'en-GB'), v('Kate', 'en-GB')]), 'Kate');
+  assert.equal(name([v('Daniel', 'en-GB'), v('Stephanie', 'en-GB'), v('Oliver', 'en-GB'), v('Martha', 'en-GB'), v('Arthur', 'en-GB')]), 'Arthur');
+  assert.equal(name([v('Daniel', 'en-GB'), v('Karen (Enhanced)', 'en-GB')]), 'Karen (Enhanced)', 'any enhanced British voice beats Daniel');
+  assert.equal(name([v('Daniel', 'en-GB')]), 'Daniel');
+  assert.equal(name([v('Daniel', 'en-GB'), v('Jamie', 'en-GB')], 'Daniel'), 'Daniel', 'a saved choice is never overridden');
+  assert.equal(name([v('X', 'en-GB', { voiceURI: 'com.apple.voice.premium.en-GB.Jamie' }), v('Serena (Enhanced)', 'en-GB'), v('Kate (Premium)', 'en-GB')]), 'X', 'matched on the Apple voiceURI');
+  assert.equal(name([v('Jamie', 'en-US'), v('Kate', 'en-GB')]), 'Kate', 'British first');
+  assert.deepEqual(voiceChoices([v('Daniel', 'en-GB'), v('Jamie', 'en-GB'), v('Serena', 'en-GB')], 3).map((c) => c.id), ['Serena', 'Daniel'], 'the best voice is not listed again');
+  assert.ok(rankVoices([v('Daniel', 'en-GB'), v('Bubbles', 'en-GB')]).every((x) => x.name === 'Daniel'), 'novelty voices still out');
+});
+
 test('no British voice: the best English voice, and a one-line tip for this device', () => {
   assert.equal(pickVoice(US_ONLY).name, 'Samantha');
   assert.equal(voiceTip(US_ONLY, { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)' }),
-    'For a British voice: Settings → Accessibility → Spoken Content → Voices → English (UK).');
+    'For a British voice: Settings → Accessibility → Spoken Content → Voices → English (United Kingdom): download Jamie or Serena (Premium or Enhanced).');
   assert.equal(voiceTip(US_ONLY, { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', maxTouchPoints: 5 }),
-    'For a British voice: Settings → Accessibility → Spoken Content → Voices → English (UK).', 'an iPad says it is a Mac');
+    'For a British voice: Settings → Accessibility → Spoken Content → Voices → English (United Kingdom): download Jamie or Serena (Premium or Enhanced).', 'an iPad says it is a Mac');
   assert.equal(voiceTip(US_ONLY, { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', maxTouchPoints: 0 }),
-    'For a British voice: System Settings → Accessibility → Spoken Content → Manage Voices.');
+    'For a British voice: System Settings → Accessibility → Spoken Content → Manage Voices → English (United Kingdom): download Jamie or Serena (Premium or Enhanced).');
   assert.match(voiceTip(US_ONLY, { userAgent: 'Mozilla/5.0 (Windows NT 10.0)' }), /English \(UK\)/);
   assert.equal(voiceTip(APPLE, {}), null, 'a British voice: no tip');
   assert.equal(voiceTip([], {}), null, 'no voices listed yet: no tip');
@@ -73,13 +89,13 @@ test('the saved choice (sb.voice) wins when this device has it; otherwise the be
 });
 
 test('the Voice menu: "Best British voice (<the voice it uses>)", then up to 3 other British voices; the tick follows sb.voice', () => {
-  assert.deepEqual(voiceChoices(APPLE, 3).map((c) => c.id), ['Daniel', 'Arthur', 'Kate'], 'Serena is the best: not listed again');
+  assert.deepEqual(voiceChoices(APPLE, 3).map((c) => c.id), ['Arthur', 'Kate', 'Daniel'], 'Serena is the best: not listed again');
   assert.deepEqual(voiceChoices(CHROME_WIN, 3).map((c) => c.label), ['UK English Male', 'Hazel']);
   const html = voiceItemsHtml(APPLE);
   assert.equal((html.match(/role="menuitemradio"/g) || []).length, 4);
   assert.match(html, /data-voice=""[^>]*>.*Best British voice \(Serena, Premium\)<\/li>/);
   assert.equal((html.match(/Serena/g) || []).length, 1, 'the best voice appears once');
-  assert.match(voiceItemsHtml(APPLE.filter((x) => !/Premium/.test(x.name))), /Best British voice \(Daniel\)<\/li>/);
+  assert.match(voiceItemsHtml(APPLE.filter((x) => !/Premium/.test(x.name))), /Best British voice \(Arthur\)<\/li>/);
   assert.match(voiceItemsHtml(CHROME_WIN), /Best British voice \(UK English Female\)/);
   assert.doesNotMatch(html, /Bubbles|Eddy|Samantha|style=/);
   assert.match(voiceItemsHtml(US_ONLY), /Best voice \(Samantha\)<\/li>/);
@@ -183,14 +199,14 @@ test('G9: one British voice: "Add more British voices" opens the steps for this 
   assert.equal(tip.hidden, true, 'closed at first');
   vm.pick(MORE);
   assert.equal(tip.hidden, false);
-  assert.equal(tip.textContent, 'Settings → Accessibility → Spoken Content → Voices → English → English (UK), then download Serena (Premium) or Kate (Enhanced).');
+  assert.equal(tip.textContent, 'Settings → Accessibility → Spoken Content → Voices → English → English (UK), then download Jamie or Serena (Premium or Enhanced).');
   assert.match(list.html, /aria-expanded="true"/);
   assert.equal(storage.getItem('sb.voice'), null, 'not a voice: nothing saved');
   vm.pick(MORE);
   assert.equal(tip.hidden, true, 'closes again');
   const mac = voiceMenuFor(ONE, MAC);
   mac.vm.pick(MORE);
-  assert.equal(mac.tip.textContent, 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom).');
+  assert.equal(mac.tip.textContent, 'System Settings → Accessibility → Spoken Content → System voice → Manage Voices → English (United Kingdom), then download Jamie or Serena (Premium or Enhanced).');
   const other = voiceMenuFor(ONE, { userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0' });
   other.vm.pick(MORE);
   assert.equal(other.tip.textContent, MORE_VOICE_STEPS.other);
@@ -221,7 +237,7 @@ test('G9: "Add more British voices" steps for each kind of device', () => {
   assert.match(MORE_VOICE_STEPS.android, /^Settings → System → Languages & input → Text-to-speech output → Speech Services by Google → ⚙ → Install voice data → English \(United Kingdom\)\. On Samsung: Settings → General management → Text-to-speech\. Menu names differ between phone makers\.$/);
   assert.match(MORE_VOICE_STEPS.windows, /Manage voices → Add voices → English \(United Kingdom\)\. Then restart the browser\. In Microsoft Edge, the UK Natural voices \(e\.g\. Sonia, Ryan\) are already available\.$/);
   assert.equal(MORE_VOICE_STEPS.chromeos, 'Settings → Accessibility → Text-to-Speech → Speech engine → add English (UK).');
-  assert.match(MORE_VOICE_STEPS.ios, /Serena \(Premium\) or Kate \(Enhanced\)/);
+  assert.match(MORE_VOICE_STEPS.ios, /Jamie or Serena \(Premium or Enhanced\)/);
   assert.match(MORE_VOICE_STEPS.mac, /Manage Voices → English \(United Kingdom\)/);
   // In the menu: one British voice, each device gets its own steps.
   const ONE = [v('Google UK English Female', 'en-GB', { localService: false }), v('Google US English', 'en-US', { localService: false })];

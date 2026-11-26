@@ -24,7 +24,7 @@ export const serverNeeds = (server) => (!server ? 'sign-in' : !server.signedIn ?
 // The items as HTML. With `server` ({ signedIn, online }, G8c), the two
 // Waystead voices come first (greyed, "needs sign-in" / "needs internet",
 // when they cannot be used) and "Best voice" is '@device'; without it, '' as
-// before. "Best voice" is named with the voice it uses: "Best British voice (Daniel)".
+// before. "Best voice" is named with the voice it uses: "Best British voice (Jamie)".
 export function voiceItemsHtml(voices, server = null) {
   const ranked = rankVoices(voices);
   const top = ranked[0];

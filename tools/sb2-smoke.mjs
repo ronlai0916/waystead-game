@@ -374,6 +374,8 @@ const scene = (name, fn) => SCENES.push({ name, fn });
 
 // A clean start: signed out, so the last scene's page can't send its saved values into this one.
 async function signedOutBlank(day) {
+  // SB6 fix round: end the previous scene's page FIRST. Its pollers (Word pictures, prefs sync) must not meet the account's 401 for "signed out" that the next line sets: that was a stray console 401 charged to whichever scene came next.
+  await send('Page.navigate', { url: 'about:blank' });
   acct.who = null;
   await open(day, '#/about');
   await ev('localStorage.clear()');
@@ -444,18 +446,17 @@ async function week() {
     const w = await lastWord();
     if (i === 0) await allViews('day2-fix-look');
     await click('[data-cover]');
-    await until('document.querySelector("[data-written]")', 'Cover');
-    ok(!(await text()).includes(w), 'the word is hidden after Cover');
+    await until('document.querySelector("[data-check]")', 'Hide and spell (no paper step: SB6 D2)');
+    ok(!(await text()).includes(w), 'the word is hidden after Hide it');
+    ok(!/paper|written/i.test(await text('main')), 'no paper line');
+    ok(/Hide and spell/.test(await text('h1')), 'the page says Hide and spell');
     if (i === 0) await allViews('day2-fix-cover');
-    await click('[data-written]');
-    await until('document.querySelector("[data-check]")', 'Type');
     if (i === 1) { // a wrong go first: look again
       await keys(w + 'x');
       await key('Enter');
       await click('[data-go]');
       await until('document.querySelector("[data-cover]")', 'Look again');
       await click('[data-cover]');
-      await click('[data-written]');
       await until('document.querySelector("[data-check]")', 'Type again');
     }
     for (let k = 0; k < 3; k += 1) await typeFix(w);
@@ -857,7 +858,6 @@ scene('Fix it in: a peek, a skip, coming back', async () => {
   const w = await lastWord();
   ok(w === 'earth', 'the second word: ' + w);
   await click('[data-cover]');
-  await click('[data-written]');
   await until('document.querySelector("[data-peekbtn]")', 'Type');
   await click('[data-peekbtn]');
   ok(/0 of 3 in a row/.test(await rowNow()), 'a peek shows 0/3');
@@ -867,7 +867,6 @@ scene('Fix it in: a peek, a skip, coming back', async () => {
   await click('[data-go]');
   await until('document.querySelector("[data-cover]")', 'Look again');
   await click('[data-cover]');
-  await click('[data-written]');
   await until('document.querySelector("[data-check]")', 'Type again');
   for (let k = 0; k < 3; k += 1) await typeFix(w);
   await click('[data-go]');
@@ -882,7 +881,6 @@ scene('Fix it in: a peek, a skip, coming back', async () => {
   await until('document.querySelector("[data-cover]")', 'it opens directly');
   ok(/\/study\/fix\/0$/.test(await ev('location.hash')), 'by its row');
   await click('[data-cover]');
-  await click('[data-written]');
   await until('document.querySelector("[data-check]")', 'Type');
   for (let k = 0; k < 3; k += 1) await typeFix('build');
   await click('[data-go]');
@@ -1096,7 +1094,7 @@ scene('practice: the keyboard, a pressed key, a peek, Stop for now', async () =>
   ok(/Read it to me/.test(await text()) && /Hear the word/.test(await text('[data-hear]')), 'Read it to me and Hear the word');
   ok(await ev('document.querySelectorAll("main svg:not([aria-hidden])").length') === 0, 'the only speaker icon is Hear the word');
   ok(/1\/3|0 of 3 in a row/.test(await rowNow()), 'the dots caption: ' + await rowNow());
-  ok(/Peeking starts your count again\./.test(await text('[data-hint]')), 'the peek hint');
+  ok(/Peek restarts your count\./.test(await text('[data-hint]')), 'the peek hint');
   ok(/Skip for now\. It comes back later\./.test(await text('[data-skip]')) && await ev('document.querySelector("[data-skip]").tagName') === 'BUTTON', 'Skip is a button');
   const skip = await rect('[data-skip]');
   const peek = await rect('[data-peekbtn]');
@@ -1543,7 +1541,7 @@ scene('grown-ups: home with two children, and one child\'s week', async () => {
     ok(/At a glance/.test(glance) && /Today Game day/.test(glance) && /Jobs waiting None/.test(glance) && /Stars/.test(glance), 'at a glance: ' + glance);
     ok(await ev('document.querySelectorAll(".gu-path li").length') === 7, 'the path of seven stones');
     ok(await ev('document.querySelectorAll(".gu-wordlist li").length') === 4 && !await has('table'), 'the words as rows, no table');
-    ok(/Needs help · 2 or more wrong letters/.test(await textOf('[data-word="build"] [data-wordchip]')), 'status with its reason');
+    ok(/Needs help · 2 or more letters to try again/.test(await textOf('[data-word="build"] [data-wordchip]')), 'status with its reason');
     ok(/What we noticed/.test(await textOf('[data-word="heart"]')), 'what we noticed');
     ok(/Memory clue/.test(await textOf('[data-word="build"]')), 'the clue is shown');
     ok((await ev('[...document.querySelectorAll(".gu-wordlist li")].map((e) => e.dataset.word)')).join() === 'build,earth,fruit,heart', 'help first, then the week\'s order');
@@ -1737,7 +1735,7 @@ scene('grown-ups: change a week, before and after the test date, and after the t
   ok(saved().results.length === triesBefore, 'no try destroyed');
   const dots = W.allDots(saved(), g, plus(2));
   ok(dots.find((x) => x.word === 'build') && !dots.some((x) => x.word === 'heart'), 'a removed word no longer counts');
-  ok(/Needs help · 2 or more wrong letters/.test(await textOf('[data-word="build"] [data-wordchip]')), 'a kept word keeps its practice');
+  ok(/Needs help · 2 or more letters to try again/.test(await textOf('[data-word="build"] [data-wordchip]')), 'a kept word keeps its practice');
 
   step('on the test date, no result yet: still open');
   await open(plus(6), '#/grownups/child/' + CHILD + '/plan/g1');
@@ -2383,8 +2381,7 @@ async function kbSeed(role, page) {
   } else if (page === 'fix') { // Fix it in: look, cover, then the typing step
     await go('#/words/g/g1/study/fix');
     await click('[data-cover]');
-    await click('[data-written]');
-    await until('document.querySelector("[data-check]") && document.querySelector(".keyboard .key")', 'Fix it in typing');
+      await until('document.querySelector("[data-check]") && document.querySelector(".keyboard .key")', 'Fix it in typing');
   } else {
     await go('#/words/g/g1/game/quick');
     await until('document.querySelector("[data-game=quick]") && document.querySelector(".keyboard .key")', 'Quick-fire');
@@ -3200,6 +3197,7 @@ scene('SB3-G: the parent switches the week choice off, the child has no switcher
 const H = {
   scene, go, click, ev, ok, has, text, until, key, keys, sleep, shot, width, style, open, acct,
   allowLog: (re) => { allowedLog = re; },
+  netDown: (on) => { netDown = !!on; }, // a scene that makes the network fail on purpose says so
   askRole: (on) => { askRole = !!on; },
   emulate: (features) => send('Emulation.setEmulatedMedia', { media: '', features }), // e.g. [{ name: 'prefers-reduced-motion', value: 'reduce' }]; cleared before every scene
   serve: (path, body) => { if (body === null) overrides.delete(path); else overrides.set(path, body); }, // a site file served from a string for this scene; null clears it
@@ -3211,6 +3209,8 @@ H.send = send; // SB4-WP11: the teacher page's print scenes switch on print medi
 for (const f of readdirSync(join(ROOT, 'tools/smoke-sb4')).filter((n) => n.endsWith('.mjs')).sort()) (await import(pathToFileURL(join(ROOT, 'tools/smoke-sb4', f)))).default(H);
 // SB5: tools/smoke-sb5/*.mjs the same way (fold.mjs is the phone-fold harness, TR-60..61; fold-known.json is its known-failures list, not a scene file)
 if (existsSync(join(ROOT, 'tools/smoke-sb5'))) for (const f of readdirSync(join(ROOT, 'tools/smoke-sb5')).filter((n) => n.endsWith('.mjs')).sort()) (await import(pathToFileURL(join(ROOT, 'tools/smoke-sb5', f)))).default(H);
+// SB6 (WP-10): tools/smoke-sb6/index.mjs builds the shared helpers (H.S6) and loads one scene file per owning WP ('SB6 *' scenes; the baseline run is 'SB6 baseline*').
+if (existsSync(join(ROOT, 'tools/smoke-sb6/index.mjs'))) await (await import(pathToFileURL(join(ROOT, 'tools/smoke-sb6/index.mjs')))).default(H);
 
 // ---- run ------------------------------------------------------------------------------------
 let failed = 0;
@@ -3228,7 +3228,7 @@ async function main() {
     if (ONLY && s.name !== ONLY && !(ONLY.endsWith('*') && s.name.startsWith(ONLY.slice(0, -1)))) continue; // argv[3]: the exact scene name, or a prefix ending in * (e.g. 'SB5 fold*')
     console.log(s.name);
     overrides.clear(); // H.serve is for one scene
-    allowedLog = null; curScene = s.name;
+    allowedLog = null; netDown = false; curScene = s.name;
     await send('Emulation.setEmulatedMedia', { media: '', features: [] }); // H.emulate is for one scene
     try { await s.fn(); console.log('  ok'); } catch (e) {
       failed += 1;
@@ -3239,7 +3239,7 @@ async function main() {
   const seen = [...new Set(problems)];
   console.log('Layout checks: ' + layoutChecks + ' page views (3 styles × 3 widths)');
   console.log('Console or CSP problems: ' + seen.length);
-  seen.slice(0, 20).forEach((p) => console.log('  ' + p.slice(0, 300)));
+  seen.slice(0, 20).forEach((p) => console.log('  ' + (p.length > 400 ? p.slice(0, 160) + ' … ' + p.slice(-220) : p.slice(0, 400))));
   console.log(failed || seen.length ? 'SMOKE FAILED' : 'SMOKE PASSED');
 }
 main().catch((e) => { console.log('harness: ' + e.stack); failed = 1; }).finally(() => {

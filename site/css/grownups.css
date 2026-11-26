@@ -748,3 +748,73 @@
   .gu .gh-namechips { gap: 4px; }
   .gu .gh-chipbtn { padding: 0 8px; }
 }
+
+/* ============ SB6 phase 2 (WP-7): Way of learning, the Step-by-step report, stuck words, the preview. Tokens only. ============ */
+.gu .gu-way { display: grid; gap: 4px; padding: 16px 18px; margin-bottom: 20px; }
+.gu .gu-way h2 { margin: 0 0 4px; }
+.gu .gu-wrow { display: grid; gap: 8px; padding-block: 12px; border-top: 1px solid var(--line); }
+.gu .gu-way h2 + .gu-wrow { border-top: 0; padding-top: 4px; }
+.gu .gu-wrow__t { margin: 0; font-family: var(--f-display); font-size: 1.05rem; font-weight: 700; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 8px; }
+.gu .gu-wrow__t small { font-family: var(--f-body); font-weight: 400; color: var(--muted); font-size: 0.9rem; }
+.gu .gu-fine { margin: 0; color: var(--muted); font-size: 0.93rem; line-height: 1.4; }
+.gu .gu-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 2px solid var(--field-edge); border-radius: 999px; overflow: hidden; background: var(--surface); max-width: 480px; }
+.gu .gu-seg button { min-height: 48px; padding: 6px 8px; border: 0; border-left: 2px solid var(--field-edge); background: transparent; color: var(--text); font-family: var(--f-display); font-weight: 600; font-size: 1rem; cursor: pointer; }
+.gu .gu-seg button:first-child { border-left: 0; }
+.gu .gu-seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.gu .gu-seg button:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+.gu .gu-seg button:disabled { opacity: 0.6; cursor: default; }
+.gu .gu-note { display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: var(--r); background: var(--accent-soft); border: 2px solid var(--line); font-size: 0.98rem; line-height: 1.4; }
+.gu .gu-note svg { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; }
+.gu .gu-note--soft { background: var(--help-bg); border-color: var(--help-fg); color: var(--help-fg); }
+.gu .gu-note--ok { background: var(--good-soft); border-color: var(--good); color: var(--text); }
+.gu .gu-timefield { display: grid; gap: 4px; max-width: 320px; }
+.gu .gu-input { min-height: 48px; width: 100%; box-sizing: border-box; border: 2px solid var(--field-edge); border-radius: 14px; padding: 8px 12px; font: inherit; font-size: 1rem; background: var(--surface); color: var(--text); }
+
+/* the report */
+.gu .gu-pill { display: inline-flex; align-items: center; min-height: 28px; padding: 2px 10px; border-radius: 999px; font-weight: 700; font-size: 0.88rem; border: 2px solid var(--line); background: var(--surface-2); color: var(--text); box-sizing: border-box; white-space: nowrap; }
+.gu .gu-pill--got { background: var(--good-soft); border-color: var(--good); }
+.gu .gu-pill--once { background: var(--accent-soft); border-color: var(--accent); }
+.gu .gu-pill--climb { background: var(--soft-bg); border-color: var(--soft-fg); color: var(--soft-fg); }
+.gu .gu-pill--none { background: transparent; border-style: dashed; border-color: var(--field-edge); color: var(--muted); }
+.gu .gu-sw { display: grid; gap: 4px; padding-block: 10px; border-top: 1px solid var(--line); }
+.gu .gu-sw:first-child { border-top: 0; }
+.gu .gu-sw p { margin: 0; line-height: 1.4; }
+.gu .gu-sw b { font-family: var(--f-ipa); font-size: 1.1rem; }
+.gu .gu-sw__top { display: flex; }
+.gu .gu-rows { margin: 12px 0 0; line-height: 1.4; }
+.gu .gu-est { margin: 8px 0 0; font-weight: 700; line-height: 1.4; }
+.gu .gu-est.is-calm { color: var(--help-fg); }
+.gu .gu-stuckbox { display: grid; gap: 10px; margin-top: 8px; }
+.gu .gu-stuck { display: grid; gap: 8px; justify-items: start; padding: 12px 14px; border-radius: var(--r); background: var(--help-bg); color: var(--help-fg); border: 2px solid var(--help-fg); }
+.gu .gu-stuck__t { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.gu .gu-stuck .btn { min-height: 48px; background: var(--surface); color: var(--text); }
+.gu .gu-stuck .gu-fine { color: inherit; }
+.gu .gu-tab { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.gu .gu-tab th, .gu .gu-tab td { text-align: left; padding: 8px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+.gu .gu-tab th { color: var(--muted); font-size: 0.82rem; border-top: 0; }
+.gu .gu-sbsmore h3 { margin: 14px 0 6px; font-size: 1rem; }
+.gu .gu-plines { margin: 10px 0; padding-left: 1.2rem; display: grid; gap: 4px; }
+
+/* the preview page */
+.gu .gu-prev { border: 2px dashed var(--field-edge); border-radius: var(--r-lg); padding: 10px; display: grid; gap: 8px; background: var(--bg); max-width: 520px; }
+.gu .gu-seecard--prev { border-width: 2px; }
+.gu .gu-kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; max-width: 520px; margin: 14px 0; }
+.gu .gu-kv dt { color: var(--muted); }
+.gu .gu-kv dd { margin: 0; font-weight: 700; text-align: right; }
+.gu .gu-previewpage .gu-actions { margin-top: 16px; }
+@media (max-width: 420px) {
+  .gu .gu-tab { font-size: 0.88rem; }
+  .gu .gu-tab th, .gu .gu-tab td { padding-inline: 4px; }
+  .gu .gu-seg button { padding-inline: 4px; font-size: 0.95rem; }
+}
+@media (min-width: 820px) {
+  .gu .gu-way { max-width: 720px; }
+}
+@media print {
+  .gu .gu-sbs, .gu .gu-sbsmore { border: 1px solid #000; break-inside: avoid; }
+  .gu .gu-sw, .gu .gu-stuck { break-inside: avoid; }
+  .gu .gu-stuck { border: 1px solid #000; }
+  .gu .gu-way, .gu .gu-seg { display: none !important; }
+  .gu .gu-pill { border: 1px solid #000; }
+}
+.gu .gu-sbslist { list-style: none; margin: 14px 0 0; padding: 0; }

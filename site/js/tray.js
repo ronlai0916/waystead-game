@@ -105,15 +105,21 @@ export function boxesHtml(spec, { tricky = '', static: fixed = false } = {}) {
 const narrow = () => typeof innerWidth === 'number' && innerWidth < 360;
 /** The tray and the buttons under it in one column, so on a wide short screen Check sits directly under the tray. */
 export const colHtml = (tray, buttons) => '<div class="traycol">' + tray + buttons + '</div>';
-export function trayHtml(spec, { static: fixed = false } = {}) {
+export function trayHtml(spec, { static: fixed = false, back: withBack = true, size = 0 } = {}) {
   const sizes = rowSizes(spec.tiles.length, narrow() ? 5 : 6);
   let i = 0;
   const rows = sizes.map((k) => '<div class="keyboard-row">' + spec.tiles.slice(i, (i += k)).map((t) => (fixed
     ? '<span class="ltile" data-tile="' + t.id + '">' + esc(t.ch) + '</span>'
     : '<button type="button" class="ltile" data-tile="' + t.id + '" aria-label="' + tileLabel(esc(t.ch)) + '">' + esc(t.ch) + '</button>')).join('') + '</div>').join('');
-  const back = fixed ? '' : '<div class="keyboard-row tray-actions"><button type="button" class="btn btn--ghost tray-back" data-back>' + BACK_ICON + 'Back</button></div>';
-  return '<div class="keyboard keyboard--tray" role="group" aria-label="Letter tiles">' + rows + back + '</div>';
+  const back = fixed || !withBack ? '' : '<div class="keyboard-row tray-actions"><button type="button" class="btn btn--ghost tray-back" data-back>' + BACK_ICON + 'Back</button></div>';
+  return '<div class="keyboard keyboard--tray' + (size === 56 || size === 48 ? ' t' + size : '') + '" role="group" aria-label="Letter tiles">' + rows + back + '</div>';
 }
+
+/**
+ * SB6 (TR-43, Copy rung): the word shown above the boxes as a model. Tap only: it is text, nothing to drag, nothing to press.
+ * Every letter has its own span so a screen can light the letter it is on (class is-lit).
+ */
+export const modelHtml = (word) => '<div class="s6-model" data-model role="img" aria-label="The word: ' + esc(word) + '">' + [...word].map((c, i) => '<span data-i="' + i + '">' + esc(c) + '</span>').join('') + '</div>';
 
 /** The flower game's letters: the same `.key` buttons as the keyboard, in rows of at most 6 (5 on a narrow phone). Revealed letters are already on. */
 export function padHtml(letters, revealed = new Set()) {
@@ -150,10 +156,12 @@ function fly(ch, from, to, size, done) {
 /**
  * Brings the tray in `root` to life. `root` holds the boxes (boxesHtml), the tray (trayHtml) and the line (lineHtml).
  * Returns { key, back, state, reset, check, showWrong, glow, fill, say, restore, hear, lock, destroy }.
- * mode 'test' gives no glow and no help. glowAfter: the miss on a gap after which its right tile glows.
+ * mode 'test' gives no glow and no help. glowAfter: the miss on a gap after which its right tile glows (SB6: the spec's own `glowAfter` when the ladder made it).
+ * SB6: every Check also reports `slips` (the box indices not right at that Check, ascending) and state().slipSpots holds every index missed since the last reset.
  */
-export function mountTray(root, spec, { mode = 'practice', glowAfter = 2, xs = false, onChange, onFull } = {}) {
+export function mountTray(root, spec, { mode = 'practice', glowAfter = spec && spec.glowAfter ? spec.glowAfter : 2, xs = false, onChange, onFull } = {}) {
   let sp = spec;
+  const slipSet = new Set(); // SB6: the box indices that were not right at any Check of this spec, for the try's `sl`
   let st = T.newTray(sp);
   let glowGap = null;
   let pulse = new Set();
@@ -176,7 +184,7 @@ export function mountTray(root, spec, { mode = 'practice', glowAfter = 2, xs = f
   const gapEl = (g) => q('.lgap[data-gap="' + g + '"]');
   const chOf = (id) => sp.tiles.find((t) => t.id === id).ch;
   const placedLetters = () => Object.fromEntries(Object.entries(st.placed).map(([g, id]) => [g, chOf(id)]));
-  const state = () => ({ answer: T.answerOf(st), full: T.full(st), right, tries, checks, helped: st.helped, placed: Object.keys(st.placed).length, misses: { ...st.misses } });
+  const state = () => ({ answer: T.answerOf(st), full: T.full(st), right, tries, checks, helped: st.helped, placed: Object.keys(st.placed).length, misses: { ...st.misses }, placedIds: { ...st.placed }, slipSpots: [...slipSet].sort((a, b) => a - b) });
 
   function paintLine() {
     const t = q('[data-line]');
@@ -334,10 +342,11 @@ export function mountTray(root, spec, { mode = 'practice', glowAfter = 2, xs = f
       right = true;
       render();
       say(LINES.right, 'ok');
-      return { right: true, wrongGaps: [], glowGap: null, filledGap: null, ...state() };
+      return { right: true, wrongGaps: [], slips: [], glowGap: null, filledGap: null, ...state() };
     }
     st = r.st;
     tries += r.wrongGaps.length;
+    r.wrongGaps.forEach((g) => slipSet.add(g));
     let filled = null;
     let glowAt = null;
     if (mode !== 'test') {
@@ -361,7 +370,7 @@ export function mountTray(root, spec, { mode = 'practice', glowAfter = 2, xs = f
     else if (glowAt !== null) line = LINES.glow;
     else if (!T.full(st)) line = LINES.nearly;
     if (line) say(line, 'soft');
-    return { right: false, wrongGaps: r.wrongGaps, glowGap: glowAt, filledGap: filled, line, ...state() };
+    return { right: false, wrongGaps: r.wrongGaps, slips: [...r.wrongGaps].sort((a, b) => a - b), glowGap: glowAt, filledGap: filled, line, ...state() };
   }
   function reset(next = sp) {
     sp = next;
@@ -371,6 +380,7 @@ export function mountTray(root, spec, { mode = 'practice', glowAfter = 2, xs = f
     right = false;
     tries = 0;
     checks = 0;
+    slipSet.clear();
     lead = '';
     clearTimeout(leadTimer);
     clearArriving();
@@ -379,6 +389,17 @@ export function mountTray(root, spec, { mode = 'practice', glowAfter = 2, xs = f
   }
   function hear() {
     return sayLine((q('[data-line]') || {}).textContent || '');
+  }
+  // SB6 (place restore): put tiles back where a reload left them: { gapIndex: tileId }, in gap order. A tile that is gone or already used is skipped.
+  function restorePlaced(map) {
+    let n = 0;
+    for (const g of Object.keys(map || {}).map(Number).sort((a, b) => a - b)) {
+      if (!sp.gaps.includes(g) || g in st.placed) continue;
+      const next = T.put({ ...st, open: g }, map[g]);
+      if (next !== st && g in next.placed) { st = next; n += 1; }
+    }
+    if (n) { clearArriving(); render(); }
+    return n;
   }
 
   root.querySelectorAll('.ltile[data-tile]').forEach((el) => el.addEventListener('click', () => placeTile(el.dataset.tile)));
@@ -392,7 +413,7 @@ export function mountTray(root, spec, { mode = 'practice', glowAfter = 2, xs = f
   if (lead) leadTimer = setTimeout(endLead, 4500);
 
   return {
-    key, back: takeBack, state, reset, check, showWrong, glow, fill, say, restore, hear,
+    key, back: takeBack, state, reset, check, showWrong, glow, fill, say, restore, hear, restorePlaced,
     setBase(text) { base = text; lead = ''; clearTimeout(leadTimer); paintLine(); },
     lock(on) { locked = !!on; render(); },
     destroy() { clearTimeout(timer); clearTimeout(leadTimer); if (xs) document.body.classList.remove('is-xs'); },

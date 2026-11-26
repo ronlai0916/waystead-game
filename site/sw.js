@@ -7,7 +7,7 @@
 // Waystead voice's MP3s (G8c, the "voice" cache): see the fetch handler.
 // Fonts are not in the shell: each style's fonts are cached the first time
 // that style is used (cache-first below).
-const VERSION = 'spellbright-2026-11-23b';
+const VERSION = 'spellbright-2026-11-25b';
 
 const SHELL = [
   './',
@@ -138,6 +138,28 @@ const SHELL = [
   'css/lists.css',
   'css/mix.css',
   'css/device.css',
+  // SB6 files (TR-49). data/builder.json loads on demand, like statements.json. js/safe-text.js and js/credits/credits.js are copies
+  // made by tools/sync-shared.mjs.
+  'js/safe-text.js',
+  'js/credits/credits.js',
+  'js/sbs-rules.js',
+  'js/ladder-doc.js',
+  'js/peek-doc.js',
+  'js/peek.js',
+  'js/rows-doc.js',
+  'js/session-doc.js',
+  'js/sbs-week-doc.js',
+  'js/sbs-report-doc.js',
+  'js/runs-doc.js',
+  'js/sentence-doc.js',
+  'js/sbs-views.js',
+  'js/builder-views.js',
+  'js/pictures-data.js',
+  'js/pictures-doc.js',
+  'js/pictures-views.js',
+  'css/sbs.css',
+  'css/builder.css',
+  'css/pictures.css',
   'data/statements.json',
 ];
 

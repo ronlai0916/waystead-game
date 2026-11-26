@@ -15,7 +15,7 @@ export function storyPage(main, g, story, onDone) {
   main.innerHTML = '<section class="wrap page"><div class="pagehead"><span class="eyebrow">Story day</span><h1>' + esc(story.title) + '</h1>'
     + '<p class="muted">Listen for your words.</p></div><div class="card storycard"><p class="story">' + story.sentences.map((s, i) => '<span class="storyline" data-line="' + i + '">' + lineHtml(s, words) + '</span>').join(' ') + '</p></div>'
     + '<div class="btnrow"><button type="button" class="btn btn--quiet" data-read>' + ICON.play + '<span data-readlabel>Read it to me</span></button>'
-    + '<button type="button" class="btn btn--primary" data-go>Write my sentences' + ICON.arrow + '</button></div></section>';
+    + '<button type="button" class="btn btn--primary" data-go>Make my sentences' + ICON.arrow + '</button></div></section>';
   const label = main.querySelector('[data-readlabel]');
   const light = (i) => main.querySelectorAll('[data-line]').forEach((el) => el.classList.toggle('is-on', Number(el.dataset.line) === i));
   async function read() {

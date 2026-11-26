@@ -5,7 +5,7 @@
 // THIS FILE IS A COPY: edit shared/account/ and run `node tools/sync-shared.mjs`.
 //
 // Removed: sb.progress:<id>, sb.words:<id>, sb.week:<id>, sb.year:<id>, wb.game:<id>, wb.setup:<id>, wb.stats:<id>,
-// sb.role/roleAsk/t3/st/setTab:<id> (SB5, D47), sb.adult:<id> (S7, F-1), wa.prefs:<id>, wa.prefs.mine:<id>, wa.import:<id>:*, wa.sync:<id>:*, wa.player.
+// sb.role/roleAsk/t3/st/setTab:<id> (SB5, D47), sb.adult:<id> (S7, F-1), sb.sbs:<id> (SB6, a Step by step sitting's places), sb.picsSeen:<id> (SB6, the pictures privacy line seen), sb.stickers:<id> (SB6, the builder's sticker picks), wa.prefs:<id>, wa.prefs.mine:<id>, wa.import:<id>:*, wa.sync:<id>:*, wa.player.
 // Also, from sessionStorage when it is passed: the one-read hand-offs sb.copyList (a list's words), sb.setChapter, sb.scanWords,
 // sb.planWords and sb.selection, which would otherwise survive a sign-out in the same tab.
 // Kept: a game whose queue still has changes not yet sent keeps its
@@ -16,7 +16,7 @@ import { PLAYER_KEY } from './player.js';
 
 export const SIGNED_OUT_PARAM = 'signedout';
 const PREFIX = { spellbright: 'sb', wordbright: 'wb' };
-const DATA = ['sb.progress', 'sb.words', 'sb.week', 'sb.year', 'wb.game', 'wb.setup', 'wb.stats', 'sb.role', 'sb.roleAsk', 'sb.t3', 'sb.st', 'sb.setTab', 'sb.adult', 'sb.by'];
+const DATA = ['sb.progress', 'sb.words', 'sb.week', 'sb.year', 'wb.game', 'wb.setup', 'wb.stats', 'sb.role', 'sb.roleAsk', 'sb.t3', 'sb.st', 'sb.setTab', 'sb.adult', 'sb.by', 'sb.sbs', 'sb.picsSeen', 'sb.stickers'];
 const HANDOFFS = ['sb.copyList', 'sb.setChapter', 'sb.scanWords', 'sb.planWords', 'sb.selection'];
 
 function keysOf(storage) {

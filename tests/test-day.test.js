@@ -151,3 +151,33 @@ test('every site script parses (the tests above only read some of them as text)'
     execFileSync(process.execPath, ['--input-type=module', '--check', '-'], { input: readFileSync(dir + f), stdio: ['pipe', 'pipe', 'pipe'] });
   }
 });
+
+// ---- SB6 (TR-49, U-routes6) ----------------------------------------------------------------
+const SB6_ADULT = ['grownups/pictures', 'grownups/pictures/list/:oid', 'grownups/child/:cid/preview'];
+for (const r of SB6_ADULT) {
+  test('SB6: ' + r + ' is a Grown-ups page, a route in app.js, and never blocked on test day', () => {
+    assert.equal(RULES[r], 'adult');
+    assert.ok(routes.includes(r), 'route in app.js');
+    assert.equal(guard(r, due(), plus(5), { oid: 'o1', cid: 'c1' }), null);
+  });
+}
+test('SB6: exactly three new adult rules, and no rule was reclassified', () => {
+  const src = readFileSync(file('site/js/test-guard.js'), 'utf8');
+  const block = src.slice(src.indexOf('// SB6 rules'), src.indexOf('};', src.indexOf('// SB6 rules')));
+  assert.deepEqual([...block.matchAll(/'([^']+)': '(\w+)'/g)].map((m) => m[1] + '=' + m[2]), SB6_ADULT.map((r) => r + '=adult'));
+  // The Step by step child screens and the rows game stay under the existing rules (D13: no new route or game id).
+  assert.equal(RULES['words/g/:gid/study/:step'], 'group');
+  assert.equal(RULES['words/g/:gid/study/:step/:n'], 'group');
+  assert.equal(RULES['words/g/:gid/game/:game'], 'group');
+  assert.equal(RULES['words/g/:gid/test'], 'safe');
+});
+test('SB6: no child route is an adult rule (set-aside, stuck words and the report are Grown-ups pages only)', () => {
+  for (const [r, v] of Object.entries(RULES)) if (v === 'adult') assert.ok(r.startsWith('grownups'), r);
+});
+test('SB6: Back from the new pages (parentOf in app.js)', () => {
+  const app = readFileSync(file('site/js/app.js'), 'utf8');
+  assert.match(app, /parts\[1\] === 'pictures'\) return '#\/grownups\/own'/);
+  assert.match(app, /\['weeks', 'print', 'rename', 'preview'\]\.includes\(parts\[3\]\)\) return '#\/grownups\/child\/' \+ parts\[2\]/);
+  // the pictures rule sits before the generic grownups rule that would send list/:oid to a child page
+  assert.ok(app.indexOf("parts[1] === 'pictures'") < app.indexOf("if (parts[0] === 'grownups') return parts.length > 3"));
+});

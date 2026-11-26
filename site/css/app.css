@@ -741,8 +741,16 @@ ul.report__list.card { padding-left: 34px; }
   body main > .page.spellpage .tileword .btn { min-height: 48px; }
   /* The flower game and Hello's spell-it-out page: a smaller picture and flower, the small lines gone, so "Hear the word" is in the first screen. */
   body main > .page.play .pagehead .muted, body main > .page.play .pagehead .eyebrow, body main > .page.hellopage .pagehead .muted { display: none; }
-  body main > .page.play .play__top .pic, body main > .page.play .flower { height: clamp(72px, calc(var(--app-h) * 0.2), 120px); max-height: clamp(72px, calc(var(--app-h) * 0.2), 120px); }
+  body main > .page.play .play__top .pic, body main > .page.play .flower { height: clamp(64px, calc(var(--app-h) * 0.2), 120px); max-height: clamp(64px, calc(var(--app-h) * 0.2), 120px); }
   body main > .page.play .btnrow--center .btn, body main > .page.play [data-hearmain] { min-height: 48px; height: 48px; }
+  /* Hear and Peek stay on one row here (a short, wide phone): tighter padding, so neither label wraps, clips or drops to a second row */
+  body main > .page .btnrow--peek, body main > .page.play .btnrow--center { gap: 8px; }
+  body main > .page .btnrow--peek > .btn, body main > .page.play .btnrow--center > .btn { padding-inline: 10px; }
+  /* a short phone turned sideways: the play column is narrow, so Peek keeps its 48 px eye and its word is read aloud only (the row never wraps or clips) */
+  body main > .page .btnrow--peek .peek-btn__label, body main > .page.play .btnrow--center .peek-btn__label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  body main > .page.play [data-hearmain] { font-size: 0.88em; } /* with text at 130 % in the narrow column: Hear, 8 px, then the 48 px eye, on one row */
+  body main > .page.play [data-hearmain] svg { display: none; }
+  body main > .page .btnrow--peek .peek-btn, body main > .page.play .btnrow--center .peek-btn { flex: 0 0 48px; min-width: 48px; padding-inline: 0; }
   body main > .page.play .status, body main > .page.play .hint { margin-top: 0; margin-bottom: 0; }
   body.is-child main > section.wrap.page.spellpage { padding-top: 0; }
   body main > .page.spellpage .pagehead { margin-bottom: 0; }
@@ -751,3 +759,32 @@ ul.report__list.card { padding-left: 34px; }
   /* S3-D14: Hear and Peek on a tile page are 8 px or more apart (Hear's 2 px bottom padding + 8), not 3-4: two targets a thumb can hit one for the other. */
   body main > .page.spellpage.tilepage .peekrow { margin-top: 8px; }
 }
+
+/* FIX-U3: on a tile page Peek sits below Hear (as before U1a, the tray 24 px below it) everywhere except a narrow short phone, where the two share a row (M1/F1). 8 px apart on a phone on its side. */
+.tilepage .tileword .btnrow--peek { display: flex; flex-direction: column; align-items: center; flex-wrap: nowrap; gap: 24px; }
+.tilepage .tileword .btnrow--peek > [data-hear] { flex: 0 0 auto; width: 100%; max-width: 320px; }
+.tilepage .tileword .btnrow--peek > .peek-btn { flex: 0 0 auto; width: auto; min-width: 48px; }
+@media (min-width: 640px) and (max-height: 520px) { body main > .page.tilepage .tileword .btnrow--peek { gap: 8px; } }
+@media (max-width: 639px) {
+  html[data-h="xs"] body main > .page.tilepage .tileword .btnrow--peek { flex-direction: row; justify-content: center; gap: 8px; }
+  html[data-h="xs"] body main > .page.tilepage .tileword .btnrow--peek > [data-hear] { flex: 1 1 0; width: auto; min-width: max-content; }
+}
+
+/* ---- SB6 (WP-5a): the one Peek on every spelling screen (peek.js) -------------------------------------------------
+   The word shows in the boxes for a moment: filled letters keep their colour, the missing ones appear lighter and dotted. Nothing moves. */
+.peek-btn { min-height: 48px; min-width: 48px; }
+.peekrow .peek-btn { min-height: 48px; }
+.play .peekrow { justify-content: center; margin: 4px 0; }
+.peek-btn.is-nudge { box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--glow, var(--sb)); } /* still outline, never motion */
+.peek-btn.is-showing, .peek-btn.is-used { background: var(--surface-2); border-color: var(--line); color: var(--muted); box-shadow: none; }
+.peek-btn:disabled { opacity: 1; }
+.spellbox.is-peeked, .blanks span.is-peeked, .tileboxes .lgap.is-peeked { color: var(--muted); border-style: dotted; background: var(--surface-2); }
+.tileboxes .lgap.is-peeked:empty::after { content: attr(data-ch); }
+.blanks span.is-peeked { background: transparent; border-bottom-style: dotted; }
+/* while the word shows, the keys and letters cannot be tapped (no change of look) */
+.is-peek .key, .is-peek .mixcard { pointer-events: none; }
+.gentlebar > span.is-paused { animation-play-state: paused; }
+/* the flower game: Hear and Peek share one row, so the keyboard does not move (the Peek adds no height) */
+.play .btnrow--center, .btnrow--peek { flex-wrap: wrap; gap: 10px; } /* wraps (Peek under Hear) only where the two labels do not fit; neither is ever squeezed or clipped */
+.play .btnrow--center > .btn, .btnrow--peek > .btn { flex: 1 1 0; min-width: max-content; width: auto; max-width: 320px; white-space: nowrap; }
+@media (max-width: 359px) { .play .btnrow--center, .btnrow--peek { gap: 8px; } .play .btnrow--center > .btn, .btnrow--peek > .btn { padding-inline: 10px; } } /* a 320 px phone: both labels still fit on one row */

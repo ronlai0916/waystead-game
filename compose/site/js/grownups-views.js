@@ -13,6 +13,7 @@ import { esc, ICON, stripHtml, wireStrip, toast } from './ui.js';
 import * as AD from './adventure-doc.js';
 import { createStoryApi } from './adventure-api.js';
 import { adventure } from './tasks.js';
+import { creditsCardHtml, wireRedeem } from './credits/credits.js'; // SB6 D10: the one shared card
 
 const PRIVACY = 'Only you and your child can see this.';
 const childHref = (id) => '#/grownups/child/' + encodeURIComponent(id);
@@ -30,30 +31,8 @@ const storyApi = () => { if (!sApi) sApi = createStoryApi({ origin: accountOrigi
 export const useGrownupStoryApi = (a) => { sApi = a; };
 
 // ---- Story Adventure (C2-3): the family's credits, for grown-ups only ------------------------------------
-const REASONS = { pack: 'Credit pack', code: 'Redeem code', plan: 'Monthly plan', admin: 'From Waystead', story: 'A story', 'story-failed': 'Story refunded (pictures couldn\'t be drawn)', expired: 'Plan stories ran out' };
-const when = (t) => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-function creditsHtml(f) {
-  const c = f.credits;
-  const rows = f.ledger.map((l) => '<tr><td>' + esc(when(l.at)) + '</td><td>' + esc(REASONS[l.reason] || l.reason) + '</td><td class="num">' + (l.amount > 0 ? '+' : '') + esc(l.amount) + '</td></tr>').join('');
-  return '<div class="card setting advcredits" data-credits><h2>Story credits</h2>'
-    + '<p class="bigline"><b data-balance>' + esc(c.available) + '</b> available' + (c.held ? ' · ' + esc(c.held) + ' set aside for a story being made' : '') + '</p>'
-    + (c.expiring.length ? '<p class="small muted">' + c.expiring.map((e) => esc(e.amount) + ' from your plan until ' + esc(when(e.at))).join('; ') + '</p>' : '')
-    + '<p class="small muted">Each Story Adventure uses one credit when its first picture is drawn. Redraws are free, and a story whose pictures can\'t be drawn gives its credit back. Children never see these numbers.</p>'
-    + '<form class="stack redeemform" data-redeem><label for="redeem">Redeem a code</label><div class="btnrow"><input id="redeem" class="field" name="code" autocomplete="off" spellcheck="false" maxlength="20" placeholder="XXXX-XXXX-XXXX" data-code><button type="submit" class="btn btn--ghost">Redeem</button></div><p class="small" data-redeemnote role="status"></p></form>'
-    + (rows ? '<details class="ledger"><summary>History</summary><table class="ledgertable"><thead><tr><th>Date</th><th>What</th><th class="num">Credits</th></tr></thead><tbody>' + rows + '</tbody></table></details>' : '')
-    + (f.enabled ? '' : '<p class="small muted">Story Adventure isn\'t open yet: pictures can\'t be drawn until it is.</p>') + '</div>';
-}
-function wireCredits(main, onChange) {
-  const form = main.querySelector('[data-redeem]');
-  if (!form) return;
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const note = main.querySelector('[data-redeemnote]');
-    const r = await storyApi().redeem(main.querySelector('[data-code]').value);
-    if (r.ok) { const msg = r.data.credits + ' credit' + (r.data.credits === 1 ? '' : 's') + ' added.'; note.textContent = msg; toast('Credits added'); onChange(msg); return; }
-    note.textContent = (r.data && r.data.message) || TEXT.network;
-  });
-}
+const showCredits = (f) => creditsCardHtml(f, { product: 'compose' });
+const wireCredits = (main, onChange) => wireRedeem(main, storyApi(), onChange, { onAdded: toast, network: TEXT.network });
 const wrap = (title, line, body) => '<section class="wrap page grownups"><div class="pagehead"><span class="eyebrow">Grown-ups</span><h1>' + esc(title) + '</h1>' + (line ? '<p class="muted">' + esc(line) + '</p>' : '') + '</div>' + body + '</section>';
 const redraw = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
 
@@ -102,7 +81,7 @@ export function grownups(main) {
     const loadCredits = (note = '') => storyApi().family().then((r) => {
       const slot = main.querySelector('[data-creditslot]');
       if (stopped || !slot || !r.ok || !adventure()) return;
-      slot.innerHTML = creditsHtml(r.data);
+      slot.innerHTML = showCredits(r.data);
       if (note) slot.querySelector('[data-redeemnote]').textContent = note;
       wireCredits(slot, loadCredits);
     });

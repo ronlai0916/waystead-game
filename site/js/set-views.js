@@ -122,6 +122,7 @@ export const TEXT = {
   saveChanges: 'Save changes',
   lockedNote: ['The test has started.', ' The words and date can’t change now. You can still rename the week.'],
   nowChip: 'now',
+  estimateDate: 'Change the test date',
   addAWord: 'Add a word',
   trimAddHelp: 'A list plus words you add is saved as a new list in Word lists.',
   trimFull: 'A list holds up to ' + Ow.MAX_WORDS + ' words.',
@@ -204,12 +205,20 @@ const wchips = (words, cls = '') => '<span class="st-chips">' + words.map((w) =>
 
 /** The date chips and, when "Pick a date" is open or holds the date, the date field. `chosen` is the chip's days (2, 3, 5, 7) or 0 for a picked date. */
 export function datesHtml({ today: day, test, pick, label = SD.DATE_CHIPS, min = '', max = '' }) {
-  const on = SD.DATE_CHIPS.find((n) => SD.chipTest(day, n) === test) || 0;
+  const on0 = SD.DATE_CHIPS.find((n) => SD.chipTest(day, n) === test) || 0;
+  const on = pick ? 0 : on0; // "Change the test date" opens the date field even when a chip is on
   const picked = !on && (pick || !!test);
   const chips = SD.DATE_CHIPS.map((n) => '<button type="button" class="' + (on === n ? 'is-on' : '') + '"' + att('data-act', 'chip') + att('data-days', n) + att('aria-pressed', on === n ? 'true' : 'false') + '>' + esc(SD.chipLabel(n)) + '<small>' + esc(W.dayLabel(SD.chipTest(day, n))) + '</small></button>').join('')
     + '<button type="button" class="' + (picked ? 'is-on' : '') + '"' + att('data-act', 'pickdate') + att('aria-pressed', picked ? 'true' : 'false') + '>' + esc(TEXT.pickDate) + (picked && iso(test) ? '<small>' + esc(W.dayLabel(test)) + '</small>' : '') + '</button>';
   const field = picked ? '<div class="st-field st-field--date"><label for="st-date">' + esc(TEXT.dateLabel) + '</label><input id="st-date" class="st-input" type="date" data-date' + att('value', iso(test) ? test : '') + att('min', min) + att('max', max) + '></div>' : '';
   return '<div class="st-dates" role="group"' + att('aria-label', TEXT.testOn) + '>' + chips + '</div>' + field;
+}
+/** SB6 (TR-30a, TR-47): "At least about N sittings of 10 minutes before the test: about X a day." for each ticked Step-by-step child; a calm line gets a link to change the date (C6: the button is just after the live status block, not in it). */
+export function estimateHtml(lines) {
+  if (!lines || !lines.length) return '';
+  const many = lines.length > 1;
+  const link = lines.some((l) => l.calm) ? '<button type="button" class="st-quiet st-est__date" data-act="pickdate" data-estimate-date>' + esc(TEXT.estimateDate) + '</button>' : '';
+  return '<div class="st-est-wrap"><div class="st-est" data-estimate role="status">' + lines.map((l) => '<p class="st-help st-est__line' + (l.calm ? ' is-calm' : '') + '" data-estimate-line' + (Number.isFinite(l.tries) ? att('data-tries', l.tries) + att('data-sittings', l.sittings) : '') + '>' + (many ? '<b>' + esc(l.name) + ':</b> ' : '') + esc(l.line) + '</p>').join('') + '</div>' + link + '</div>';
 }
 /** The one line under the date: plain help, or the amber note for "test tomorrow" (never a blocker). */
 export function lengthHtml(day, test) {
@@ -432,7 +441,7 @@ export function whenHtml(m) {
   const button = primary(m.bar.label, 'set', { disabled: m.bar.disabled, icon: I.tick, why: m.bar.why ? 'st-why' : '' });
   const line = m.bar.why ? '<span id="st-why">' + esc(m.bar.why) + '</span>' : esc(m.bar.line);
   const body = back(m.backLabel) + head + (m.banner || '') + m.summary
-    + '<h2 class="st-h2">' + esc(dateLabel) + '</h2>' + datesHtml(m.dates) + m.length + m.preview + (m.kids || '') + different + name + bar(button, line);
+    + '<h2 class="st-h2">' + esc(dateLabel) + '</h2>' + datesHtml(m.dates) + m.length + (m.estimate || '') + m.preview + (m.kids || '') + different + name + bar(button, line);
   return frame('st-when' + (m.preview ? ' st-has-cue' : '') + (m.length ? ' st-has-len' : ''), body, { inert: !!m.sheet, after: m.sheet || '' });
 }
 
@@ -483,7 +492,7 @@ export function doneHtml(m) {
   else if (r === 'tutor' && m.next) barHtml = bar(primary('Set a week for ' + m.next.name, 'nextlearner', { icon: I.cal }), esc(m.next.note));
   else barHtml = bar('<a class="btn btn--primary btn--big" href="#/grownups">' + esc(r === 'tutor' ? 'Back to my learners' : r === 'teacher' ? 'Back to my class' : TEXT.doneMake) + '</a>');
   const back2 = partial ? '<div class="st-cardlink__row"><a class="btn btn--ghost" href="#/grownups">Back to ' + (r === 'parent' ? 'Children' : 'my ' + RO.WORDS[r].many) + '</a></div>' : '';
-  return frame('st-done', head + errs + nameCard + each + restNote + notSet + (stack.length ? '<div class="st-stack">' + stack.join('') + '</div>' : '') + back2 + barHtml);
+  return frame('st-done', head + errs + nameCard + '<div data-pictures-host></div>' + each + restNote + notSet + (stack.length ? '<div class="st-stack">' + stack.join('') + '</div>' : '') + back2 + barHtml);
 }
 
 /** Rename the week you just set (05j5, 05j6), or a child's week (05j, 05j2-05j4). m: { title, sub, value, help, error, useList, locked, backLabel, saveLine } */
@@ -501,7 +510,7 @@ export function changeHtml(m) {
   const name = '<details class="st-det st-namethis"' + (m.nameOpen ? ' open' : '') + ' data-name-det><summary><span>' + esc(TEXT.nameThis) + '</span><span class="st-det__cue">' + esc(TEXT.optional) + I.go + '</span></summary><div class="st-field st-field--pad"><label for="st-wk">' + esc(TEXT.weekName) + '</label><input id="st-wk" class="st-input" maxlength="' + W.MAX_NAME + '" data-name' + att('value', m.nameValue) + '></div></details>';
   return frame('st-change', back(m.backLabel) + '<div><h1 class="st-h1">Change ' + esc(poss(m.name)) + ' week</h1><p class="st-sub">Only ' + esc(poss(m.name)) + ' week changes.' + (m.other ? ' ' + esc(poss(m.other)) + ' week stays as it is.' : '') + '</p></div>' + (m.notice ? note('<b>Updated with the latest.</b> This week was changed on another device a moment ago.') : '') + (m.error ? errBox(esc(m.error)) : '')
     + '<div class="st-sum"><b>' + esc(m.label) + '</b><button type="button" class="st-quiet st-sum__go" data-act="words">' + esc(TEXT.change) + '</button><small>' + esc(plural(m.count, 'word') + ' · you can change which') + '</small></div>' + (m.wordsOpen ? m.wordsBlock : '')
-    + '<h2 class="st-h2">' + esc(TEXT.testOn) + '</h2>' + m.dates + (m.passed ? note(esc(m.passed)) : '') + m.length + name + bar(primary(TEXT.saveChanges, 'save', { disabled: m.saving }), esc(m.saveLine)));
+    + '<h2 class="st-h2">' + esc(TEXT.testOn) + '</h2>' + m.dates + (m.passed ? note(esc(m.passed)) : '') + m.length + (m.estimate || '') + name + bar(primary(TEXT.saveChanges, 'save', { disabled: m.saving }), esc(m.saveLine)));
 }
 /** Chips of this week's words with a Remove, and one box to add a word (the Change button of 05d). */
 export function wordsBlockHtml(m) {
@@ -850,6 +859,7 @@ export function setWeek(main, params = {}) {
       return {
         title: isTeacher ? RO.WORDS.teacher.set : TEXT.whenTitle, backLabel: fixedCid && kidOf(fixedCid) ? kidOf(fixedCid).nickname : TEXT.wordsTitle.replace('?', ''),
         summary: summaryHtml({ ...sumModel(), role }), dateLabel: dateLabel(), dates: datesModel(), length: lengthHtml(day, st.test),
+        estimate: estimateHtml(SD.estimateLines({ kids: ks.map((k) => ({ nickname: k.nickname, year: k.year, d: k.d })), words: finalWords(), test: st.test, today: day })),
         preview: pm && !pm.error ? previewHtml({ ...pm, dayOpen: st.dayOpen }) : '', kids: kidsBlock, different: diffModel() && { ...diffModel() },
         nameOpen: st.nameOpen, nameValue: st.name, namePlaceholder: defaultWeekName(), banner,
         bar: { label: st.message ? TEXT.tryAgain : setButton(role, names.length ? names : ['your child']), line: st.message ? barLine0(names) + '. ' + TEXT.choicesKept : barLine0(names), disabled: !!why || st.saving || st.offline, why: st.message ? '' : why },
@@ -1033,6 +1043,7 @@ export function setWeek(main, params = {}) {
       const name = weekName().slice(0, W.MAX_NAME);
       const cids = retry && st.done ? st.done.failed.map((f) => f.id) : [...st.cids];
       let oid = st.src && st.src.kind === 'list' ? st.src.id : '';
+      const wasTyped = !!(st.src && st.src.kind === 'typed');
       const opts = { now: () => Date.now(), by: by || undefined };
       // typed or picked words become a Word list first (the master only), and the week ids carry that list's id
       if (st.src && st.src.kind === 'typed' && !oid) {
@@ -1078,6 +1089,9 @@ export function setWeek(main, params = {}) {
       st.done = { ok, failed, oid, weekName: name, words, listWords: st.listWords, role };
       if (st.cids.length && !failed.length) st.cidsSet = ok.map((o) => o.id);
       goStep('done');
+      // WP-8: after a week with typed words, ask for their pictures (the grown-up's own typed words only; never swaps by itself)
+      const own = wasTyped ? words.filter((w) => !findEntry(w)) : [];
+      if (own.length && ok.length && oid) import('./pictures-views.js').then((PV) => PV.savedNote(main.querySelector('[data-pictures-host]'), { words: own, oid })).catch(() => {});
     }
     function doneModel() {
       const d = st.done;
@@ -1180,7 +1194,7 @@ function oneWeek(main, { cid, gid, mode }) {
     const renameModel = () => ({ value: st.name, help: TEXT.nameHelp40, error: st.error, useList: st.error && master ? master.name : '', locked, backLabel: kid.nickname, sub: (locked ? W.dayLabel(g.test) + ' · test started' : rangeLine(g.start, g.test) + ' · ' + g.name), saveLine: locked ? 'Results stay with the week' : kid.nickname + ' sees the new name on Today' });
     const changeModel = () => ({
       name: kid.nickname, other: others.length ? others[0].nickname : '', backLabel: kid.nickname, label: g.name, count: st.words.length, wordsOpen: st.wordsOpen, wordsBlock: wordsBlockHtml({ words: st.words, shown: st.shown, msg: st.msg }),
-      dates: datesChange(), length: lengthHtml(day, st.test), nameOpen: st.nameOpen, nameValue: st.name, saveLine: st.notice ? TEXT.savedLine : kid.nickname + ' sees the change on Today', error: st.error, saving: st.saving, notice: st.notice,
+      dates: datesChange(), length: lengthHtml(day, st.test), estimate: estimateHtml(SD.estimateOne({ nickname: kid.nickname, year: Number(kid.year) || 0, d: c.words, words: st.words, test: st.test, today: day })), nameOpen: st.nameOpen, nameValue: st.name, saveLine: st.notice ? TEXT.savedLine : kid.nickname + ' sees the change on Today', error: st.error, saving: st.saving, notice: st.notice,
       passed: g.test < day && st.test === g.test ? P.passedLine(kid.nickname) : '', // S3-D4
     });
     const datesChange = () => {

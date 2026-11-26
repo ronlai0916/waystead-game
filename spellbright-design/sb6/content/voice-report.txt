@@ -1,0 +1,42 @@
+SB6 builder bank: voice report (builder-check v1)
+A cards-only sentence may use the Waystead voice only when every word is on wordbright/site/data/voice-allow.txt (or voice-names.txt).
+
+Frames whose fixed words and cards are all on the list: 231 of 235
+  noun: 43 of 45
+  verb: 73 of 74
+  adjective: 47 of 47
+  adverb: 29 of 29
+  other: 39 of 40
+
+Frames that must use the device voice (word not on the list):
+  n009 : monday, friday, sunday
+  n090 : friday
+  v006 : monday, friday, sunday
+  o030 : friday
+
+Model sentences all of whose words are on the list: 595 of 608
+Target words not on the list (their sentences use the device voice): Monday, Tuesday, Wednesday, Thursday, Friday, Sunday, Mrs, Christmas
+Models with a word not on the list:
+  Monday : We have art on Monday.
+  Tuesday : I go swimming on Tuesday.
+  Wednesday : Gran visits us on Wednesday.
+  Thursday : We read stories on Thursday.
+  Friday : We sing songs on Friday.
+  Sunday : On Sunday we eat lunch with Gran.
+  always : Gran always bakes on Sunday.
+  Mrs : Mrs Wood put her bag on the chair.
+  Christmas : Many families sing songs at Christmas.
+  climb : We climb the hill each Sunday.
+  grammar : We practise our grammar every Tuesday.
+  gym : We play games in the gym on Wednesday.
+  probably : It will probably rain on Friday.
+
+Words missing from the allow-list (the list is not edited here):
+  christmas  (target word Christmas, model of Christmas)
+  friday  (n009, n090, v006, o030, target word Friday, model of Friday, ...)
+  monday  (n009, v006, target word Monday, model of Monday)
+  mrs  (target word Mrs, model of Mrs)
+  sunday  (n009, v006, target word Sunday, model of Sunday, model of always, model of climb)
+  thursday  (target word Thursday, model of Thursday)
+  tuesday  (target word Tuesday, model of Tuesday, model of grammar)
+  wednesday  (target word Wednesday, model of Wednesday, model of gym)

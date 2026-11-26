@@ -4,7 +4,7 @@
 // Run: node --test tests/
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { memoryStorage, fakeAccount, manualTimers, CHILD_A, KID_A, KID_B } from '../shared/tests/fake-account.js';
@@ -212,4 +212,19 @@ test('the service worker answers for no account call or /api path, except the Wa
   assert.deepEqual(code.match(/account\.waystead\.co\.uk/g), ['account.waystead.co.uk']);
   assert.match(code, /const VOICE_ORIGINS = \['https:\/\/account\.waystead\.co\.uk', 'http:\/\/localhost:3000'\];/);
   assert.match(code, /if \(isVoiceRequest\(url\)\) \{ event\.respondWith\(voiceRecording\(req\)\); return; \}/);
+});
+
+test('SB6: every file in the service worker\'s shell exists, and the SB6 scripts and styles are in it (install would fail otherwise)', () => {
+  const shell = new Function(sw.slice(sw.indexOf('const SHELL'), sw.indexOf("self.addEventListener('install'")) + '; return SHELL;')();
+  for (const f of shell) if (f !== './') assert.ok(existsSync(join(SITE, f)), f + ' is in the shell but not on disk');
+  for (const f of ['sbs-rules', 'ladder-doc', 'peek-doc', 'peek', 'rows-doc', 'session-doc', 'sbs-week-doc', 'sbs-report-doc', 'runs-doc', 'sentence-doc', 'sbs-views', 'builder-views', 'pictures-data', 'pictures-doc', 'pictures-views']) assert.ok(shell.includes('js/' + f + '.js'), f);
+  for (const f of ['sbs', 'builder', 'pictures']) assert.ok(shell.includes('css/' + f + '.css'), f);
+  assert.ok(!shell.includes('data/builder.json'), 'builder.json loads on demand');
+});
+test('SB6: signing out forgets sb.sbs:<id> and sb.picsSeen:<id>, and only that player\'s', async () => {
+  const { forgetPlayer } = await import('../shared/account/forget.js');
+  const m = new Map([['sb.sbs:a', '1'], ['sb.picsSeen:a', '1'], ['sb.sbs:b', '1'], ['sb.picsSeen:b', '1']]);
+  const st = { getItem: (k) => (m.has(k) ? m.get(k) : null), removeItem: (k) => m.delete(k), keys: () => [...m.keys()] };
+  assert.deepEqual(forgetPlayer(st, 'a').removed, ['sb.picsSeen:a', 'sb.sbs:a']);
+  assert.deepEqual([...m.keys()].sort(), ['sb.picsSeen:b', 'sb.sbs:b']);
 });

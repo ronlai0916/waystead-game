@@ -168,3 +168,10 @@
 .st-tri { border-style: dashed; background: var(--surface-2, transparent); }
 .st-g1, .st-g2, .st-g3, .st-g4, .st-g5, .st-g6, .st-g7 { flex: 0 0 auto; }
 .st-savein .st-select { min-height: 48px; }
+
+/* SB6 (TR-47): the sittings estimate under the date. */
+.st-est-wrap { display: grid; gap: 4px; }
+.st-est { display: grid; gap: 4px; }
+.st-est__line { margin: 0; }
+.st-est__line.is-calm { color: var(--help-fg, inherit); }
+.st-est__date { justify-self: start; }
